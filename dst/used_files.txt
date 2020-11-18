@@ -1,6 +1,0 @@
-List of used packages:
-	Utils.Action
-	Utils.Logger
-	config
-	lualib_bundle
-	main

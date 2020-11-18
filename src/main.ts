@@ -1,5 +1,4 @@
-import * as test from "./Utils/Action"
-import * as test2 from "./Utils/Logger"
+import * as Utils from "./Wc3Utils/API"
 
 if (IsGame()){
     let u = CreateUnit(Player(0), FourCC('hfoo'), 0, 0, 0)
@@ -10,7 +9,12 @@ function cb(){
     print('azaza');
 }
 
-let a = new test.Action(cb);
+let a = new Utils.Action(cb)
 a.run()
 
-let a2 = new test2.Logger(true, true, true, true, true, true, true, '', '');
+Utils.Log.msg('axxaxaxz')
+Utils.Log.msg('axxaxaxz')
+Utils.Log.msg('axxaxaxz')
+Utils.Log.msg('axxaxaxz')
+
+//let a2 = new test2.Logger(true, true, true, true, true, true, true, '', '');
