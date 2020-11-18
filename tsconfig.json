@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target": "esnext",
+      "lib": ["esnext"],
+      "moduleResolution": "node",
+      "types": [
+          "lua-types/jit",
+          "./wc3-builder/builder",
+          "./wc3-builder/common"
+        ],
+      "strict": true
+    },
+  }

@@ -1,0 +1,5 @@
+List of used packages:
+	config
+	lualib_bundle
+	main
+	test

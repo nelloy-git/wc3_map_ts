@@ -1,0 +1,3 @@
+[submodule "wc3-builder"]
+	path = wc3-builder
+	url = https://github.com/nelloy-git/wc3-builder
