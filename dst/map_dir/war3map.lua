@@ -1,6 +1,12 @@
 function IsGame()
     return true
 end
+function GetSrc()
+    return nil
+end
+function GetDst()
+    return nil
+end
 function main()
     local success, result = pcall(require, 'main')
     if not success then
@@ -39,6 +45,58 @@ do
 end
 do
     BuildFinal = function(func, ...) return func(...) end
+end
+__required_packages['Utils.Action'] = function()
+	require("lualib_bundle");
+	local ____exports = {}
+	____exports.Action = __TS__Class()
+	local Action = ____exports.Action
+	Action.name = "Action"
+	function Action.prototype.____constructor(self, callback)
+	    self.callback = callback
+	end
+	function Action.prototype.run(self, ...)
+	    local args = {...}
+	    local res
+	    if not ____exports.Action.inside then
+	        ____exports.Action.inside = true
+	        local success
+	        success, res = pcall(
+	            self.callback,
+	            __TS__Unpack(args)
+	        )
+	        if not success then
+	            error(res, 2)
+	        end
+	        ____exports.Action.inside = false
+	    else
+	        res = self.callback(
+	            __TS__Unpack(args)
+	        )
+	    end
+	    return res
+	end
+	Action.inside = false
+	return ____exports
+end
+__required_packages['Utils.Logger'] = function()
+	require("lualib_bundle");
+	local ____exports = {}
+	____exports.Logger = __TS__Class()
+	local Logger = ____exports.Logger
+	Logger.name = "Logger"
+	function Logger.prototype.____constructor(self, show_msg, show_wrn, show_err, autosave, write_msg, write_wrn, write_err, compile_log_path, runtime_log_path)
+	    self.show_msg = show_msg
+	    self.show_wrn = show_wrn
+	    self.show_err = show_err
+	    self.autosave = autosave
+	    self.write_msg = write_msg
+	    self.write_wrn = write_wrn
+	    self.write_err = write_err
+	    self.compile_log_path = compile_log_path
+	    self.runtime_log_path = runtime_log_path
+	end
+	return ____exports
 end
 __required_packages['config'] = function()
 	if IsGame() then
@@ -1942,7 +2000,8 @@ end
 __required_packages['main'] = function()
 	require("lualib_bundle");
 	local ____exports = {}
-	local test = require("test")
+	local test = require("Utils.Action")
+	local test2 = require("Utils.Logger")
 	if IsGame() then
 	    local u = CreateUnit(
 	        Player(0),
@@ -1956,38 +2015,7 @@ __required_packages['main'] = function()
 	    print("azaza")
 	end
 	local a = __TS__New(test.Action, cb)
-	return ____exports
-end
-__required_packages['test'] = function()
-	require("lualib_bundle");
-	local ____exports = {}
-	____exports.Action = __TS__Class()
-	local Action = ____exports.Action
-	Action.name = "Action"
-	function Action.prototype.____constructor(self, callback)
-	    self.callback = callback
-	end
-	function Action.prototype.run(self, ...)
-	    local args = {...}
-	    local res
-	    if not ____exports.Action.inside then
-	        ____exports.Action.inside = true
-	        local success
-	        success, res = pcall(
-	            self.callback,
-	            __TS__Unpack(args)
-	        )
-	        if not success then
-	            error(res, 2)
-	        end
-	        ____exports.Action.inside = false
-	    else
-	        res = self.callback(
-	            __TS__Unpack(args)
-	        )
-	    end
-	    return res
-	end
-	Action.inside = false
+	a:run()
+	local a2 = __TS__New(test2.Logger, true, true, true, true, true, true, true, "", "")
 	return ____exports
 end

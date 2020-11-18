@@ -1,9 +1,7 @@
-/** @noResolution */
 type Callback = (this: void, ...args: any[]) => any;
 
 export class Action {
     private static inside = false;
-    
     private callback: Callback;
 
     constructor(callback: Callback){
