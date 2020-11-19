@@ -21,7 +21,7 @@ export class Logger {
         this.build_log_path = compile_log_path
         this.runtime_log_path = runtime_log_path
 
-        this.build_file = io.open(compile_log_path, "w") as [LuaFile]
+        this.build_file = IsGame() ? undefined : io.open(compile_log_path, "w") as [LuaFile]
     };
 
     public msg(text: string){
@@ -92,10 +92,12 @@ export class Logger {
             Preload("\")\r\n\tstart " + this.runtime_log_path + "\r\n\t(\"")
             PreloadGenEnd(name)
         } else {
-            for (this.saved; this.saved < this.log.length; this.saved++) {
-                this.build_file[0].write(this.log[this.saved] + '\n');
+            if (this.build_file){
+                for (this.saved; this.saved < this.log.length; this.saved++) {
+                    this.build_file[0].write(this.log[this.saved] + '\n');
+                }
+                this.build_file[0].flush()
             }
-            this.build_file[0].flush()
         }
     }
 
@@ -122,5 +124,5 @@ export class Logger {
 
     private log: string[] = [];
     private saved: number = 0;
-    private build_file: [LuaFile];
+    private build_file: [LuaFile] | undefined;
 }

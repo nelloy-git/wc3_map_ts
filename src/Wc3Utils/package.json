@@ -1,0 +1,10 @@
+{
+  "name": "wc3-utils",
+  "author": "nelloy",
+  "files": [
+    "index.ts"
+  ],
+  "devDependencies": {
+    "typescript-to-lua": "^0.32.2"
+  }
+}

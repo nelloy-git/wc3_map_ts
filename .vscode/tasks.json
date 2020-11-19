@@ -1,8 +1,44 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"command": ""
-		}
-	]
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Linux",
+            "type": "shell",
+            "command": "lua5.3 ./wc3-builder/main.lua src dst"
+        },
+        {
+            "label": "Build Windows",
+            "type": "shell",
+            "command": ".\\wc3-builder\\lua53.exe .\\wc3-builder\\main.lua src dst ts"
+        },
+        {
+            "label": "Run Reforged",
+            "type": "shell",
+            "command": "E:\\'Warcraft III'\\_retail_\\x86_64\\'Warcraft III.exe' -launch -loadfile ${workspaceFolder}\\dst\\map_dir -windowmode windowed"
+        },
+        {
+            "label": "Run Linux Reforged",
+            "type": "shell",
+            "command":[
+                //"wineserver -k &&",
+                "rm -r /home/bugrov/lua/wc3/drive_c/dst &&",
+                "cp -r ${workspaceFolder}/dst/map_dir /home/bugrov/lua/wc3/drive_c/dst &&",
+                "export WINEPREFIX=/home/bugrov/lua/wc3 &&",
+                "export WINEESYNC=1  &&",
+                "export WINE=/home/bugrov/.local/share/lutris/runners/wine/lutris-5.7-3-x86_64/bin/wine  &&",
+                "export DXVK_STATE_CACHE_PATH=/home/bugrov/lua/wc3  &&",
+                "export __GL_SHADER_DISK_CACHE_PATH=/home/bugrov/lua/wc3  &&",
+                "export SDL_VIDEO_FULLSCREEN_DISPLAY=off  &&",
+                "export WINEARCH=win64  &&",
+                "export WINE_LARGE_ADDRESS_AWARE=1  &&",
+                "export game_name='Warcraft 3'  &&",
+                "export WINEDLLOVERRIDES='api-ms-win-crt-private-l1-1-0,ucrtbase=n,b;d3d10,d3d10_1,d3d10core,d3d11,dxgi=n;d3d12,nvapi,nvapi64='  &&",
+                "export WC3_EXE=/opt/sda2/'Warcraft III'/_retail_/x86_64/'Warcraft III.exe'  &&",
+                //"$WINE /opt/sda2/'Warcraft III'/_retail_/x86_64/'Warcraft III.exe'"
+                "$WINE \"$WC3_EXE\" -launch -loadfile C:\\\\dst -windowmode windowed",
+            ]
+        }
+    ]
 }
