@@ -1,18 +1,15 @@
-import { int2id, id2int } from'./Funcs'
+import { int2id, id2int, getCurFileDir } from'./Funcs'
 import { Action } from './Action'
+import { ActionList } from './ActionList'
 import { Color } from './Color'
 import { Import } from './Import'
 import { Logger } from './Logger'
 
-let sep = IsGame() ? '\\' : _G.package.config.charAt(0);
-let Log = new Logger(true, true, true,
-                     true,
-                     true, true, true,
-                     GetDst() + sep + '..' + sep + 'log.txt',
-                     'log.txt')
+let Log = Logger.Default
 
-export { int2id, id2int }
+export { int2id, id2int, getCurFileDir }
 export { Action }
+export { ActionList }
 export { Color }
 export { Import }
 export { Log }

@@ -1,5 +1,3 @@
-/** @noSelfInFile */
-
 import { Trigger } from "./Trigger";
 
 export class TriggerEvent {
@@ -81,10 +79,7 @@ export class TriggerEvent {
     }
 
     public applyToTrigger(trigger: Trigger){
-        let trig_handle = trigger.handle()
-        if (!trig_handle){ return }
-
-        this._func(trig_handle, unpack(this._args))
+        this._func(trigger.handle, ...this._args)
     }
 
     private _func: (this: void, trig: jtrigger, ...args: any[])=>jevent;

@@ -1,39 +1,33 @@
+import { Action, ActionList, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
-export class Trigger extends Handle {
+export class Trigger extends Handle<jtrigger> {
     constructor(){
-        super()
-        let handle = CreateTrigger()
-
-        this._id = GetHandleId(handle)
-        this._handle = handle
-        Trigger.id2instance.set(this._id, this)
+        super(CreateTrigger())
+        TriggerAddAction(this.handle, Trigger.runActions)
     }
     
-    static get(handle: jtrigger): Trigger | undefined;
-    static get(id: number): Trigger | undefined;
-    static get(id: jtrigger | number): Trigger | undefined{
-        if (typeof id !== 'number'){
-            id = GetHandleId(id)
-        }
-        return Trigger.id2instance.get(id)
+    public static getTriggering(){return Handle.get(GetTriggeringTrigger()) as Trigger | undefined}
+
+    public get handle(){return this._handle as jtrigger}
+
+    public addAction(callback: (this: void, trig: Trigger)=>void){
+        return this._actions.add(callback)
     }
 
-    public id(){ return this._id }
-    public handle(){ return this._handle }
+    public removeAction(action: Action<[Trigger], void>){
+        return this._actions.remove(action)
+    }
+
+    private static runActions(this: void){
+        let trig = Trigger.getTriggering()
+        trig?._actions.run(trig)
+    }
+
     public destroy(){
-        if(!this._handle){ return }
-        DestroyTrigger(this._handle)
-
-        if (!this._id){ return }
-        Trigger.id2instance.delete(this._id)
-        
-        this._id = undefined
-        this._handle = undefined
+        DestroyTrigger(this.handle)
+        super.destroy()
     }
 
-    private static id2instance = new Map<number, Trigger>();
-
-    private _id: number | undefined;
-    private _handle: jtrigger | undefined;
+    private _actions = new ActionList<[Trigger]>()
 }

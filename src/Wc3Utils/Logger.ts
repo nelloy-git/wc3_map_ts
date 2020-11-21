@@ -58,12 +58,9 @@ export class Logger {
         }
     }
 
-    public err(text: string){
-        if (!this.show_err && !this.write_err){
-            return
-        }
-
+    public err(text: string, lvl?: number | undefined): never{
         let msg = this.format('ERROR', text)
+        
         if (this.show_err){
             print(msg)
         }
@@ -73,6 +70,8 @@ export class Logger {
                 this.save()
             }
         }
+
+        error(msg, lvl)
     }
 
     public save(){
@@ -125,4 +124,13 @@ export class Logger {
     private log: string[] = [];
     private saved: number = 0;
     private build_file: [LuaFile] | undefined;
+}
+
+export namespace Logger {
+    let sep = IsGame() ? '\\' : _G.package.config.charAt(0);
+    export let Default = new Logger(true, true, true,
+                                    true,
+                                    true, true, true,
+                                    GetDst() + sep + '..' + sep + 'log.txt',
+                                    'log.txt')
 }

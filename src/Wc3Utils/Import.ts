@@ -59,7 +59,9 @@ export class Import{
 
     private static copyDir(src: string, dst: string){
         if (!Import.isDir(dst)){
+            print('aa', dst)
             os.execute('mkdir ' + dst)
+            print('bb')
         }  
 
         let list = Import.scanDir(src)
@@ -75,7 +77,7 @@ export class Import{
     }
 
     private static copy(src: string, dst:string){
-        let tree = dst.split('/')
+        let tree = dst.split(Import.sep)
 
         // Make directories.
         for (let i = 1; i < tree.length - 1; i++){
@@ -94,7 +96,7 @@ export class Import{
 
     private static sep = IsGame() ? '\\' : _G.package.config.charAt(0);
 
-    private src:string;
-    private dst:string;
-    private full_dst:string;
+    readonly src: string;
+    readonly dst: string;
+    private full_dst: string;
 }

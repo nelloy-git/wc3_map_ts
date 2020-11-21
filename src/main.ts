@@ -1,10 +1,17 @@
-import {Unit} from './Wc3Handle/index'
+import {Unit, Timer} from './Wc3Handle/index'
 import { id2int } from './Wc3Utils/Funcs'
 import * as Utils from "./Wc3Utils/index"
 
 if (IsGame()){
     let u = new Unit(id2int('hfoo'), 0, 0, Player(0))
-    u.setPos(500, 500)
+    let t = new Timer()
+    t.addAction((timer: Timer): void => {print(u.x, u.y)})
+    t.start(1, true)
+    // SetUnitX(u.handle, 500)
+    // u.x = 1500
+    // u.y = 500
+
+    //print(u.x, u.y)
 }
 
 new Utils.Import(GetSrc() + '\\map_data\\war3map.doo', 'war3map.doo')

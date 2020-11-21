@@ -1,37 +1,33 @@
+/** @noSelfInFile */
+
+import { Action, ActionList } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
-export class Timer extends Handle {
-    constructor(){
-        super()
+export class Timer extends Handle<jtimer> {
+    constructor(){super(CreateTimer())}
+    public static getExpired(){return Handle.get(GetExpiredTimer()) as Timer | undefined}
 
-        this._handle = CreateTimer()
-        this._id = GetHandleId(this._handle)
-        Timer.id2instance.set(this._id, this)
+    public start(timeout: number, periodic:boolean){
+        TimerStart(this.handle, timeout, periodic, Timer.runActions)
     }
-    
-    static get(handle: jtimer): Timer | undefined;
-    static get(id: number): Timer | undefined;
-    static get(id: jtimer | number): Timer | undefined{
-        if (typeof id !== 'number'){
-            id = GetHandleId(id)
-        }
-        return Timer.id2instance.get(id)
-    }
-
-    public id(){ return this._id }
-    public handle(){ return this._handle }
+    public pause(){PauseTimer(this.handle)}
+    public resume(){ResumeTimer(this.handle)}
     public destroy(){
-        if(!this._handle){ return }
-        DestroyTimer(this._handle)
-
-        if (!this._id){ return }
-        Timer.id2instance.delete(this._id)
-
-        this._id = undefined
-        this._handle = undefined
+        PauseTimer(this.handle)
+        DestroyTimer(this.handle)
+        super.destroy()
     }
-    private static id2instance = new Map<number, Timer>();
 
-    private _id: number | undefined;
-    private _handle: jtimer | undefined;
+    public addAction(callback: (timer: Timer)=>void){
+        return this._actions.add(callback)
+    }
+    public removeAction(action: Action<[Timer], void> | undefined){
+        this._actions.remove(action)
+    }
+    private static runActions(this: void){
+        let timer = Timer.getExpired()
+        timer?._actions.run(timer)
+    }
+
+    private _actions = new ActionList<[Timer]>();
 }
