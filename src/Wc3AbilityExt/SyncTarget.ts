@@ -11,7 +11,7 @@ export class SyncTarget extends SyncData<SyncTargetData> {
         super()
     }
 
-    public data2raw(abil_id: number, targets: (Unit | Point)[]){
+    protected data2raw(abil_id: number, targets: (Unit | Point)[]){
         let raw = abil_id.toString()
 
         for (let targ of targets){
