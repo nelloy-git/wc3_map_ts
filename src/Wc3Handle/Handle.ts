@@ -7,13 +7,17 @@ export abstract class Handle<T extends jhandle> {
         Handle.id2instance.set(this._id, this)
     }
 
-    protected static get<gT extends jhandle>(handle: gT): Handle<gT> | undefined;
-    protected static get(id: number): Handle<any> | undefined;
-    protected static get(id: jhandle | number): Handle<any> | undefined{
+    public static get(id: jhandle | number): Handle<jhandle> | undefined{
         if (typeof id !== 'number'){
             id = GetHandleId(id)
         }
         return Handle.id2instance.get(id)
+    }
+
+    public static getWc3Type(handle: jhandle){
+        let s_handle = tostring(handle)
+        let [name, id] = s_handle.split(':')
+        return name
     }
 
     isValid(): boolean{return typeof this._handle !== undefined}

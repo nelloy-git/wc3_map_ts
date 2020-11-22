@@ -22,7 +22,7 @@ export class ActionList<In extends any[]> {
 
         let pos = this._actions.indexOf(action)
         if (pos < 0){return false}
-        this._actions.slice(pos, 1)
+        this._actions.splice(pos, 1)
         return true
     }
 

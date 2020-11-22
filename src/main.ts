@@ -1,17 +1,26 @@
-import {Unit, Timer} from './Wc3Handle/index'
+
+import { SyncTarget } from './Wc3AbilityExt/SyncTarget'
+import { Point } from './Wc3AbilityExt/Point'
+import { Unit } from './Wc3Handle/index'
 import { id2int } from './Wc3Utils/Funcs'
 import * as Utils from "./Wc3Utils/index"
 
 if (IsGame()){
-    let u = new Unit(id2int('hfoo'), 0, 0, Player(0))
-    let t = new Timer()
-    t.addAction((timer: Timer): void => {print(u.x, u.y)})
-    t.start(1, true)
-    // SetUnitX(u.handle, 500)
-    // u.x = 1500
-    // u.y = 500
+    SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
+    SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
+    InitBlizzard()
 
-    //print(u.x, u.y)
+    let u = new Unit(id2int('hfoo'), 0, 0, Player(0))
+    print(u.id)
+
+    let sync = new SyncTarget()
+    function printSync(this:void, pl: jplayer, id: number, targets: (Unit|Point)[]){
+        print(id.toString())
+        print(targets[0])
+    }
+
+    sync.addAction(printSync)
+    sync.send(1313, [u])
 }
 
 new Utils.Import(GetSrc() + '\\map_data\\war3map.doo', 'war3map.doo')

@@ -1,4 +1,4 @@
-import { Color } from "../Wc3Utils/index";
+import { Color, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
 export class Image extends Handle<jimage> {
@@ -10,6 +10,14 @@ export class Image extends Handle<jimage> {
         this._x = 0
         this._y = 0
         this._z = 0
+    }
+    public static get(id: jimage | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'image'){
+            Log.err('Image: got wrong type of handle.', 2)
+        }
+        return instance as Image
     }
 
     public get x(){return this._x}

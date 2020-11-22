@@ -6,8 +6,15 @@ export class Trigger extends Handle<jtrigger> {
         super(CreateTrigger())
         TriggerAddAction(this.handle, Trigger.runActions)
     }
-    
-    public static getTriggering(){return Handle.get(GetTriggeringTrigger()) as Trigger | undefined}
+    public static get(id: jtrigger | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'trigger'){
+            Log.err('Trigger: got wrong type of handle.', 2)
+        }
+        return instance as Trigger
+    }
+    public static getTriggering(){return Trigger.get(GetTriggeringTrigger())}
 
     public get handle(){return this._handle as jtrigger}
 

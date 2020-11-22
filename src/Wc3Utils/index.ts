@@ -1,4 +1,4 @@
-import { int2id, id2int, getCurFileDir } from'./Funcs'
+import { int2id, id2int, wcType } from'./Funcs'
 import { Action } from './Action'
 import { ActionList } from './ActionList'
 import { Color } from './Color'
@@ -7,7 +7,7 @@ import { Logger } from './Logger'
 
 let Log = Logger.Default
 
-export { int2id, id2int, getCurFileDir }
+export { int2id, id2int, wcType }
 export { Action }
 export { ActionList }
 export { Color }

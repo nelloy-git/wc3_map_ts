@@ -16,7 +16,15 @@ export class Ability extends Handle<jability> {
         this._owner = owner
         this._abil_id = abil_id
     }
-    public static getSpell(){return Handle.get(GetSpellAbility()) as Ability | undefined}
+    public static get(id: jability | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'ability'){
+            Log.err('Ability: got wrong type of handle.', 2)
+        }
+        return instance as Ability
+    }
+    public static getSpell(){return Ability.get(GetSpellAbility())}
 
     public owner(){ return this._owner }
     public abil_id(){ return this._abil_id }

@@ -1,13 +1,27 @@
 /** @noSelfInFile */
 
-import { Action, ActionList } from "../Wc3Utils/index";
+import { Action, ActionList, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
 export class Timer extends Handle<jtimer> {
     constructor(){super(CreateTimer())}
-    public static getExpired(){return Handle.get(GetExpiredTimer()) as Timer | undefined}
+
+    public static get(id: jtimer | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'timer'){
+            Log.err('Timer: got wrong type of handle.', 2)
+        }
+        return instance as Timer
+    }
+    public static getExpired(){return Timer.get(GetExpiredTimer())}
+
+    public get timeout(){return this._timeout}
+    public get periodic(){return this._periodic}
 
     public start(timeout: number, periodic:boolean){
+        this._timeout = timeout
+        this._periodic = periodic
         TimerStart(this.handle, timeout, periodic, Timer.runActions)
     }
     public pause(){PauseTimer(this.handle)}
@@ -29,5 +43,7 @@ export class Timer extends Handle<jtimer> {
         timer?._actions.run(timer)
     }
 
+    private _timeout = -1;
+    private _periodic = false;
     private _actions = new ActionList<[Timer]>();
 }

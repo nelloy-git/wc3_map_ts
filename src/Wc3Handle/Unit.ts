@@ -1,10 +1,18 @@
-import { Color } from "../Wc3Utils/index";
+import { Color, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
 export class Unit extends Handle<junit>{
     constructor(unit_id: number, x: number, y: number, owner: jplayer){
         super(CreateUnit(owner, unit_id, x, y, 0))
         this._type_id = unit_id
+    }
+    public static get(id: junit | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'unit'){
+            Log.err('Unit: got wrong type of handle.', 2)
+        }
+        return instance as Unit
     }
 
     public get x(){return GetUnitX(this.handle)}
@@ -19,8 +27,8 @@ export class Unit extends Handle<junit>{
     public get life(){return GetUnitState(this.handle, UNIT_STATE_LIFE)}
     public set life(val: number){SetUnitState(this.handle, UNIT_STATE_LIFE, val)}
 
-    public get maxLife(){return GetUnitState(this.handle, UNIT_STATE_MAX_LIFE)}
-    public set maxLife(val: number){
+    public get lifeMax(){return GetUnitState(this.handle, UNIT_STATE_MAX_LIFE)}
+    public set lifeMax(val: number){
         let perc = GetUnitLifePercent(this.handle)
         BlzSetUnitMaxHP(this.handle, val < 1 ? 1 : val)
         SetUnitState(this.handle, UNIT_STATE_LIFE, 0.01 * perc * val)
@@ -29,8 +37,8 @@ export class Unit extends Handle<junit>{
     public get mana(){return GetUnitState(this.handle, UNIT_STATE_MANA)}
     public set mana(val: number){SetUnitState(this.handle, UNIT_STATE_MANA, val)}
 
-    public get maxMana(){return GetUnitState(this.handle, UNIT_STATE_MAX_MANA)}
-    public set maxMana(val: number){
+    public get manaMax(){return GetUnitState(this.handle, UNIT_STATE_MAX_MANA)}
+    public set manaMax(val: number){
         let perc = GetUnitManaPercent(this.handle)
         BlzSetUnitMaxMana(this.handle, val < 1 ? 1 : val)
         SetUnitState(this.handle, UNIT_STATE_LIFE, 0.01 * perc * val)

@@ -1,10 +1,5 @@
-import { Action, ActionList, Color, Log } from "../Wc3Utils/index";
+import { Color, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
-
-declare function BlzCreateSimpleFrame(name: string, owner: jframehandle|null, createContext: number): jframehandle
-declare function BlzCreateFrame(name: string, owner: jframehandle|null, priority: number, createContext: number): jframehandle
-declare function BlzFrameGetParent(child: jframehandle): jframehandle | null
-declare function BlzFrameSetParent(frame: jframehandle, parent?: jframehandle): void
 
 function createFramehandle(name: string, is_simple: boolean){
     let handle: jframehandle|undefined
@@ -34,6 +29,14 @@ export class Frame extends Handle<jframehandle> {
                 return name
             }
         })())
+    }
+    public static get(id: jframehandle | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'framehandle'){
+            Log.err('Frame: got wrong type of handle.', 2)
+        }
+        return instance as Frame
     }
 
     public get size():[w: number, h: number]{return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]}

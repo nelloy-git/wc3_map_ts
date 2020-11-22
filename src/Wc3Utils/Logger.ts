@@ -67,7 +67,7 @@ export class Logger {
         if (this.write_err){
             this.log.push(msg)
             if (this.autosave){
-                this.save()
+                // this.save()
             }
         }
 

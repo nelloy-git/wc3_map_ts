@@ -1,10 +1,18 @@
-import { Color } from "../Wc3Utils/index";
+import { Color, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
 export class Effect extends Handle<jeffect> {
     constructor(model: string, x: number, y:number, z: number){
         super(AddSpecialEffect(model, x, y))
         BlzSetSpecialEffectHeight(this.handle, z)
+    }
+    public static get(id: jeffect | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'effect'){
+            Log.err('Effect: got wrong type of handle.', 2)
+        }
+        return instance as Effect
     }
 
     public get x(){return BlzGetLocalSpecialEffectX(this.handle)}

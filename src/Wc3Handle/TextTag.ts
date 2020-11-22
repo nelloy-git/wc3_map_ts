@@ -1,9 +1,17 @@
-import { Color } from "../Wc3Utils/index";
+import { Color, Log } from "../Wc3Utils/index";
 import { Handle } from "./Handle";
 
 export class TextTag extends Handle<jtexttag> {
     constructor(){
         super(CreateTextTag())
+    }
+    public static get(id: jtexttag | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+        if (Handle.getWc3Type(instance.handle) != 'textjtexttag'){
+            Log.err('TextTag: got wrong type of handle.', 2)
+        }
+        return instance as TextTag
     }
 
     public get x(){return this._x}
