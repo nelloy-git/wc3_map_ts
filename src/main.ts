@@ -1,9 +1,12 @@
 
-import { SyncTarget } from './Wc3AbilityExt/SyncTarget'
-import { Point } from './Wc3AbilityExt/Point'
-import { Unit } from './Wc3Handle/index'
-import { id2int } from './Wc3Utils/Funcs'
-import * as Utils from "./Wc3Utils/index"
+import { SyncTarget } from './AbilityExt/SyncTarget'
+import { Point } from './AbilityExt/Point'
+import { Timer, Unit } from './Handle'
+import { id2int, Log } from './Utils'
+import * as Utils from "./Utils"
+import { Ability } from './AbilityExt'
+import { TestType } from './AbilityExt/TestType'
+
 
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
@@ -11,16 +14,19 @@ if (IsGame()){
     InitBlizzard()
 
     let u = new Unit(id2int('hfoo'), 0, 0, Player(0))
-    print(u.id)
+    let abil = new Ability(u, TestType)
+    let targeting = true
 
-    let sync = new SyncTarget()
-    function printSync(this:void, pl: jplayer, id: number, targets: (Unit|Point)[]){
-        print(id.toString())
-        print(targets[0])
-    }
-
-    sync.addAction(printSync)
-    sync.send(1313, [u])
+    let t = new Timer()
+    t.addAction(():void => {
+        targeting = !targeting
+        if (!targeting){
+            abil.targetingStart()
+        } else {
+            abil.targetingFinish()
+        }
+    })
+    t.start(3, true)
 }
 
 new Utils.Import(GetSrc() + '\\map_data\\war3map.doo', 'war3map.doo')
