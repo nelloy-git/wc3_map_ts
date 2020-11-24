@@ -159,11 +159,11 @@ private.fdf_normal:setBackground("")
 
 ---@type FdfBackdrop
 private.fdf_pushed = private.default_fdf:getElement('PUSHED')
-private.fdf_normal:setBackground("")
+private.fdf_pushed:setBackground("")
 
 ---@type FdfBackdrop
 private.fdf_disabled = private.default_fdf:getElement('DISABLED')
-private.fdf_normal:setBackground("")
+private.fdf_disabled:setBackground("")
 
 ---@type FdfHighlight
 private.fdf_mouse = private.default_fdf:getElement('MOUSE')

@@ -1,7 +1,13 @@
 export class Import{
     constructor(src:string, dst:string){
+        src = string.gsub(src, '%\\', Import.sep)[0]
+        src = string.gsub(src, '/', Import.sep)[0]
+        
+        dst = string.gsub(dst, '%\\', Import.sep)[0]
+        dst = string.gsub(dst, '/', Import.sep)[0]
+
         this.src = src;
-        this.dst = dst;
+        this.dst = dst
         this.full_dst = GetDst() + Import.sep + dst
 
         if (!IsGame()){
@@ -59,9 +65,7 @@ export class Import{
 
     private static copyDir(src: string, dst: string){
         if (!Import.isDir(dst)){
-            print('aa', dst)
             os.execute('mkdir ' + dst)
-            print('bb')
         }  
 
         let list = Import.scanDir(src)
@@ -94,9 +98,9 @@ export class Import{
         }
     }
 
-    private static sep = IsGame() ? '\\' : _G.package.config.charAt(0);
-
     readonly src: string;
     readonly dst: string;
     private full_dst: string;
+
+    private static sep = IsGame() ? '\\' : _G.package.config.charAt(0);
 }

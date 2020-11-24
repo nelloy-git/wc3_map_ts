@@ -32,7 +32,7 @@ export class Color {
                     + text + '|r'
     }
 
-    public getNumber(){
+    public getWcCode(){
         return BlzConvertColor(math.floor(255 * this._r),
                                math.floor(255 * this._g),
                                math.floor(255 * this._b),

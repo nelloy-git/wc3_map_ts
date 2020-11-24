@@ -57,7 +57,7 @@ export class Frame extends Handle<jframehandle> {
     public get color(){return new Color(this._color)}
     public set color(color: Color){
         this._color = new Color(color)
-        BlzFrameSetVertexColor(this.handle, color.getNumber())
+        BlzFrameSetVertexColor(this.handle, color.getWcCode())
     }
 
     public setPoint(relative: Frame, 

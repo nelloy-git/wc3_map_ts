@@ -30,6 +30,10 @@ export class TriggerEvent {
         return new TriggerEvent(TriggerRegisterEnterRegion, region)
     }
 
+    static newFrameEvent(frame: jframehandle, event: jframeeventtype){
+        return new TriggerEvent(BlzTriggerRegisterFrameEvent, frame, event)
+    }
+
     static newLeaveRegion(region: jregion){
         return new TriggerEvent(TriggerRegisterLeaveRegion, region)
     }

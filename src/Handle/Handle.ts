@@ -18,7 +18,7 @@ export abstract class Handle<T extends jhandle> {
 
     public get id(){
         if (!this._id){
-            return Log.err(Handle.toString() +
+            return Log.err(Handle.name +
                            ': can not get id from destroyed instance.', 2)
         }
         return this._id
@@ -26,7 +26,7 @@ export abstract class Handle<T extends jhandle> {
     
     public get handle(){
         if (!this._handle){
-            return Log.err(Handle.toString() +
+            return Log.err(Handle.name +
                            ': can not get handle from destroyed instance.', 2)
         }
         return this._handle
@@ -34,7 +34,7 @@ export abstract class Handle<T extends jhandle> {
 
     public readonly destroy = (): void => {
         if (!this._handle || !this._id){
-            return Log.err(Handle.toString() +
+            return Log.err(Handle.name +
                            ': can not destroy instance. Already destroyed.', 2)
         }
         

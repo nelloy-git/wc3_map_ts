@@ -1,6 +1,6 @@
 import { Fdf } from "../../Fdf";
 
-export class SimpleFrame extends Fdf {
+export class FdfSimpleFrame extends Fdf {
     constructor(name: string){
         super(name, 'SIMPLEFRAME', true)
     }

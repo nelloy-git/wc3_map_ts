@@ -56,7 +56,7 @@ export abstract class Fdf implements FdfIFace{
         }
 
         for (let [sub_name, sub] of this._subframes){
-            res += '\n    ' + sub.serialize().replaceAll('\n', '\n    ') + '\n'
+            res += '\n    ' + string.gsub(sub.serialize(), '\n', '\n    ') + '\n'
         }
 
         res += '}'

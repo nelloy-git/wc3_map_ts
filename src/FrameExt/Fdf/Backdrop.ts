@@ -2,7 +2,7 @@ import { Fdf } from "../Fdf";
 
 type BackdropCornerFlags = 'UL'|'UR'|'BL'|'BR'|'T'|'L'|'B'|'R'
 
-export class Backdrop extends Fdf {
+export class FdfBackdrop extends Fdf {
     constructor(name: string){
         super(name, 'BACKDROP', false)
     }

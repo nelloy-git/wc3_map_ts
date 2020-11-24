@@ -1,12 +1,12 @@
 import { Fdf } from "../Fdf";
 
-import { Backdrop } from './Backdrop'
-import { Highlight } from './Highlight'
+import { FdfBackdrop } from './Backdrop'
+import { FdfHighlight } from './Highlight'
 import { Text } from './Text'
 
-type GlueTextButtonElement = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
+export type Element = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
 
-export class GlueTextButton extends Fdf {
+export class FdfGlueTextButton extends Fdf {
     constructor(name: string){
         super(name, 'GLUETEXTBUTTON', false)
         this._setParam('ControlStyle', 'AUTOTRACK|HIGHLIGHTONFOCUS|HIGHLIGHTONMOUSEOVER')
@@ -41,20 +41,25 @@ export class GlueTextButton extends Fdf {
         this._text_offset = offset
     }
 
-    public hasElement(elem: GlueTextButtonElement){
+    public hasElement(elem: Element){
         if (this._elements.get(elem)){return true}
         return false
     }
 
+    public getElement(elem: Element){
+        let res = this._elements.get(elem)
+        if (res){return res}
+    }
+
     /** Create element if it does not exist. */
-    public getElement(elem: GlueTextButtonElement){
+    public getOrNewElement(elem: Element){
         let res = this._elements.get(elem)
         if (res){return res}
 
         if (elem == 'NORMAL' || elem == 'PUSHED' || elem == 'DISABLED'){
-            res = new Backdrop(this.name + elem)
+            res = new FdfBackdrop(this.name + elem)
         } else if (elem == 'MOUSE' || elem == 'FOCUS') {
-            res = new Highlight(this.name + elem)
+            res = new FdfHighlight(this.name + elem)
         } else {
             res = new Text(this.name + elem)
         }
@@ -66,5 +71,5 @@ export class GlueTextButton extends Fdf {
     private _height: number = -1;
     private _decorate: boolean = false;
     private _text_offset: [number, number] = [0, 0]
-    private _elements = new Map<GlueTextButtonElement, Backdrop | Highlight | Text>()
+    private _elements = new Map<Element, FdfBackdrop | FdfHighlight | Text>()
 }

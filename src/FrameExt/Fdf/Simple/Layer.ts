@@ -3,14 +3,14 @@ import { Fdf } from "../../Fdf";
 
 type SimpleLayerType = 'ARTWORK'|'BACKGROUND'
 
-export class SimpleLayer extends Fdf {
+export class FdfSimpleLayer extends Fdf {
     constructor(type: SimpleLayerType){
-        super('Layer' + (SimpleLayer._count++).toString(), 'Layer', true)
+        super('Layer' + (FdfSimpleLayer._count++).toString(), 'Layer', true)
         this.layerType = type
     }
 
     public set inherit(other: Fdf | undefined){
-        Log.err(SimpleLayer.name + 
+        Log.err(FdfSimpleLayer.name + 
                 ': can not inherit.', 2)
     }
 
@@ -20,7 +20,7 @@ export class SimpleLayer extends Fdf {
             res += '    ' + param + ' ' + value + ',\n'
         }
         for (let [sub_name, sub] of this._subframes){
-            res += '\n    ' + sub.serialize().replaceAll('\n', '\n    ') + '\n'
+            res += '\n    ' + string.gsub(sub.serialize(), '\n', '\n    ') + '\n'
         }
         res += '}'
         return res

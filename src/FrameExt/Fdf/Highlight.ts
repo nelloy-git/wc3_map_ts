@@ -4,7 +4,7 @@ import { Fdf } from "../Fdf";
 type HighlightType = 'FILETEXTURE' | 'SHADE'
 type HighlightMode = 'ADD' | 'BLEND'
 
-export class Highlight extends Fdf {
+export class FdfHighlight extends Fdf {
     constructor(name: string){
         super(name, 'HIGHLIGHT', false)
     }
