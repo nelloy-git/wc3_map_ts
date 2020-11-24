@@ -11,11 +11,11 @@ export class Text extends Frame {
 
         if (handle instanceof FdfText){
             super(handle)
+            this._text = handle.text
         } else {
             super(handle, false)
+            this._text = ''
         }
-
-        this._text = ''
     }
 
     public get text(){return this._text}

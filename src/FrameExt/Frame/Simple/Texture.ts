@@ -1,40 +1,43 @@
+import { Log } from '../../../Utils'
 import { Frame } from "../../Frame";
 
 export class SimpleTexture extends Frame {
     constructor(handle: jframehandle){
         super(handle, true)
-        this._text = ''
-        this._font = ''
-        this._font_size = 0.01
-        this._font_flags = 0
+        
+        this._texture = ''
+        this._texture_flags = 0
+        this._texture_blend = true
     }
 
-    public get text(){return this._text}
-    public set text(text: string){
-        this._text = text
-        BlzFrameSetText(this.handle, text)
+    public get texture(){return this._texture}
+    public set texture(path: string){
+        this._texture = path
+        BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public get font(){return this._font}
-    public set font(path: string){
-        this._font = path
-        BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
+    public get textureFlags(){return this._texture_flags}
+    public set textureFlags(flags: number){
+        this._texture_flags = flags
+        BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public get fontSize(){return this._font_size}
-    public set fontSize(size: number){
-        this._font_size = size
-        BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
+    public get textureBlend(){return this._texture_blend}
+    public set textureBlend(flag: boolean){
+        this._texture_blend = flag
+        BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public get fontFlags(){return this._font_flags}
-    public set fontFlags(flags: number){
-        this._font_flags = flags
-        BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
+    public addAction(){
+        return Log.err(SimpleTexture.name + 
+                       ': events are not available.')
+    }
+    public removeAction(){
+        return Log.err(SimpleTexture.name + 
+                       ': events are not available.')
     }
 
-    private _text: string;
-    private _font: string;
-    private _font_size: number;
-    private _font_flags: number;
+    private _texture: string;
+    private _texture_flags: number;
+    private _texture_blend: boolean;
 }

@@ -1,7 +1,7 @@
 import { Log } from "../../../Utils";
 import { Fdf } from "../../Fdf";
 
-export class FdfSimpleFrame extends Fdf {
+export class FdfSimpleTexture extends Fdf {
     constructor(name: string){
         super(name, 'Texture', true)
     }
@@ -13,15 +13,15 @@ export class FdfSimpleFrame extends Fdf {
     }
 
     public addSubframe(){
-        return Log.err(FdfSimpleFrame.name + 
+        return Log.err(FdfSimpleTexture.name + 
                        ': can not have subframes.', 2)
     }
     public getSubframe(){
-        return Log.err(FdfSimpleFrame.name + 
+        return Log.err(FdfSimpleTexture.name + 
                        ': can not have subframes.', 2)
     }
     public removeSubframe(){
-        return Log.err(FdfSimpleFrame.name + 
+        return Log.err(FdfSimpleTexture.name + 
                        ': can not have subframes.', 2)
     }
 

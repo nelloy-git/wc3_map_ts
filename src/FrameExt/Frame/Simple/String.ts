@@ -1,3 +1,4 @@
+import { Log } from '../../../Utils'
 import { Frame } from "../../Frame";
 
 export class SimpleString extends Frame {
@@ -31,6 +32,15 @@ export class SimpleString extends Frame {
     public set fontFlags(flags: number){
         this._font_flags = flags
         BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
+    }
+
+    public addAction(){
+        return Log.err(SimpleString.name + 
+                       ': events are not available.')
+    }
+    public removeAction(){
+        return Log.err(SimpleString.name + 
+                       ': events are not available.')
     }
 
     private _text: string;

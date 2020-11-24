@@ -11,11 +11,12 @@ export class Highlight extends Frame {
 
         if (handle instanceof FdfHighlight){
             super(handle)
+            this._texture = handle.alphaFile
         } else {
             super(handle, false)
+            this._texture = ''
         }
 
-        this._texture = ''
         this._texture_flags = 0
         this._texture_blend = true
     }

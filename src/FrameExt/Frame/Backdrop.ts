@@ -11,11 +11,11 @@ export class Backdrop extends Frame {
 
         if (handle instanceof FdfBackdrop){
             super(handle)
+            this._texture = handle.background
         } else {
             super(handle, false)
+            this._texture = ''
         }
-
-        this._texture = ''
         this._texture_flags = 0
         this._texture_blend = true
     }
