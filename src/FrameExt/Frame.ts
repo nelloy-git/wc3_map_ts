@@ -4,33 +4,11 @@ import { Fdf } from "./Fdf";
 
 type FrameEvent = 'ENTER'|'LEAVE'|'UP'|'DOWN'|'WHEEL'|'CLICK'|'DOUBLECLICK'
 
-function createFramehandle(handle: jframehandle | Fdf, is_simple?: boolean){
-    let name
-    if (handle instanceof Fdf){
-        name = handle.name
-        is_simple = handle.is_simple
-    } else {
-        return handle
-    }
-
-    handle = is_simple ? BlzCreateSimpleFrame(name, null, 0) : BlzCreateFrame(name, null, 0, 0)
-    let test_h = is_simple ? BlzCreateSimpleFrame('', null, 0) : BlzCreateFrame('', null, 0, 0)
-
-    if (tostring(handle) == tostring(test_h)){
-        BlzDestroyFrame(handle)
-        BlzDestroyFrame(test_h)
-        return Log.err(Frame.toString() +
-                       ': can not create framehandle with name ' + name)
-    }
-    BlzDestroyFrame(test_h)
-    return handle
-}
-
 export class Frame extends Handle<jframehandle> {
     constructor(fdf: Fdf)
     constructor(handle: jframehandle, is_simple: boolean)
     constructor(handle: jframehandle | Fdf, is_simple?: boolean){
-        super(createFramehandle(handle, is_simple))
+        super(Frame.createFramehandle(handle, is_simple))
         this.isSimple = (typeof is_simple === 'boolean') ? is_simple : (handle as Fdf).is_simple
 
         if (!Frame._wc2event){return}
@@ -52,30 +30,16 @@ export class Frame extends Handle<jframehandle> {
     }
     public static getTriggered(){return Frame.get(BlzGetTriggerFrame())}
 
-    public get pos(){return [this._x, this._y]}
-    public set pos(pos: [x: number, y: number]){
-        [this._x, this._y] = pos
-        if (this._parent){
-            BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
-                             this._parent.handle, FRAMEPOINT_TOPLEFT,
-                             this._x, this._y)
-        } else {
-            BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
-                                this._x, 0.6 - this._y)
-        }
-
-        for (let i = 0; i < this._children.length; i++){
-            this._children[0].pos = this._children[0].pos
-        }
-    }
+    public get pos(){return this._get_pos()}
+    public set pos(pos: [x: number, y: number]){this._set_pos(pos)}
 
     public get absPos(): [number, number]{
         let [parent_absX, parent_absY] = this._parent ? this._parent.absPos : [0, 0]
         return [parent_absX + this._x, parent_absY + this._y]
     }
 
-    public get size():[w: number, h: number]{return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]}
-    public set size(size: [w: number, h: number]){BlzFrameSetSize(this.handle, size[0], size[1])}
+    public get size():[w: number, h: number]{return this._get_size()}
+    public set size(size: [w: number, h: number]){this._set_size(size)}
 
     public get parent(){return this._parent}
     public set parent(parent: Frame | null){
@@ -87,9 +51,7 @@ export class Frame extends Handle<jframehandle> {
         this._parent = parent
         if (parent){
             parent._children.push(this)
-        } else {
-            BlzFrameSetParent(this.handle, Frame._console_ui_backdrop)
-        }
+        } 
 
         this.pos = this.pos
         this.visible = this.visible
@@ -184,6 +146,33 @@ export class Frame extends Handle<jframehandle> {
         BlzDestroyFrame(this.handle)
     }
 
+    protected get _get_pos(){return (): [x: number, y: number] => {
+        return [this._x, this._y]
+    }}
+    protected get _set_pos(){return (pos: [x: number, y: number]) => {
+        [this._x, this._y] = pos
+        if (this._parent){
+            BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
+                             this._parent.handle, FRAMEPOINT_TOPLEFT,
+                             this._x, this._y)
+        } else {
+            BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
+                                this._x, 0.6 - this._y)
+        }
+
+        for (let i = 0; i < this._children.length; i++){
+            this._children[0].pos = this._children[0].pos
+        }
+    }}
+
+    protected get _get_size(){return (): [x: number, y: number] => {
+        return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]
+    }}
+    protected get _set_size(){return (size: [w: number, h: number]) =>{
+        print(size[0], size[1])
+        BlzFrameSetSize(this.handle, size[0], size[1])
+    }}
+
     readonly isSimple: boolean;
     private _x: number = 0;
     private _y: number = 0;
@@ -209,7 +198,36 @@ export class Frame extends Handle<jframehandle> {
         ['WHEEL', new ActionList()],
     ])
 
+    private static createFramehandle(handle: jframehandle | Fdf, is_simple?: boolean){
+        if (!(handle instanceof Fdf)){return handle}
+
+        let name = handle.name
+        is_simple = handle.is_simple
+    
+        handle = is_simple ?
+                    BlzCreateSimpleFrame(name, Frame._origin_game_ui as jframehandle, 0)
+                    : BlzCreateFrame(name, Frame._console_ui_backdrop as jframehandle, 0, 0)
+        let test_h = is_simple ? 
+                        BlzCreateSimpleFrame('', Frame._origin_game_ui as jframehandle, 0)
+                        : BlzCreateFrame('', Frame._console_ui_backdrop as jframehandle, 0, 0)
+    
+        if (tostring(handle) == tostring(test_h)){
+            return Log.err(Frame.name +
+                           ': can not create framehandle with name ' + name)
+        }
+        BlzDestroyFrame(test_h)
+        return handle
+    }
+
+    private static readonly _origin_game_ui = (()=>{
+        if (!IsGame()){return}
+
+        return BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0)
+    })()
+
     private static readonly _console_ui_backdrop = (()=>{
+        if (!IsGame()){return}
+
         let h = BlzGetFrameByName("ConsoleUIBackdrop", 0)
         BlzFrameClearAllPoints(h)
         BlzFrameSetAbsPoint(h, FRAMEPOINT_BOTTOMLEFT, 0, 0.6)
@@ -232,10 +250,10 @@ export class Frame extends Handle<jframehandle> {
     })() : undefined
 
     private static _runActions(this: void){
-        let frame = Frame.getTriggered()
-        if (!frame){return}
         let event = Frame._wc2event?.get(BlzGetTriggerFrameEvent())
         if (!event){return}
+        let frame = Frame.getTriggered()
+        if (!frame){return}
 
         let pl = GetTriggerPlayer()
         // Drop focus
@@ -258,6 +276,10 @@ export class Frame extends Handle<jframehandle> {
         Frame._trigger = t
     }
 
-    private static _trigger: Trigger | undefined;
+    private static _trigger: Trigger | undefined = IsGame() ? (()=>{
+        let t = new Trigger()
+        t.addAction(Frame._runActions)
+        return t
+    })() : undefined;
     private static _trigger_events: TriggerEvent[] = []
 }

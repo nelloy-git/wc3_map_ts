@@ -1,5 +1,5 @@
 import { Log } from "../../Utils";
-import { Text as FdfText} from '../Fdf/Text'
+import { FdfText as FdfText} from '../Fdf/Text'
 import { Frame } from "../Frame";
 
 export class Text extends Frame {

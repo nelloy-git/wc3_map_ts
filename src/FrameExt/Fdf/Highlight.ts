@@ -33,19 +33,19 @@ export class FdfHighlight extends Fdf {
 
     public get highlightType(){return this._highlight_type}
     public set highlightType(type: HighlightType){
-        this._setParam('HighlightType', type)
+        this._setParam('HighlightType',  '\"' + type + '\"')
         this._highlight_type = type
     }
 
     public get alphaFile(){return this._alpha_path}
     public set alphaFile(path: string){
-        this._setParam('HighlightAlphaFile', path)
+        this._setParam('HighlightAlphaFile',  '\"' + path + '\"')
         this._alpha_path = path
     }
 
     public get alphaMode(){return this._alpha_mode}
     public set alphaMode(mode: HighlightMode){
-        this._setParam('HighlightAlphaMode', mode)
+        this._setParam('HighlightAlphaMode', '\"' + mode + '\"')
         this._alpha_mode = mode
     }
 

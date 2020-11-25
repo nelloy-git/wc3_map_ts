@@ -1,6 +1,6 @@
 import { Fdf } from "../../Fdf";
 
-export class FdfSimpleStatusbar extends Fdf {
+export class FdfSimpleStatusBar extends Fdf {
     constructor(name: string){
         super(name, 'SIMPLEFRAME', true)
     }
@@ -36,9 +36,16 @@ export class FdfSimpleStatusbar extends Fdf {
         }
         this._all_points = flag
     }
+
+    public get barTexture(){return this._bar_texture}
+    public set barTexture(path: string){
+        this._bar_texture = path
+        this._setParam('BarTexture', '\"' + path + '\"')
+    }
     
     private _width: number = -1;
     private _height: number = -1;
     private _decorate: boolean = false;
     private _all_points: boolean = false;
+    private _bar_texture: string = '';
 }

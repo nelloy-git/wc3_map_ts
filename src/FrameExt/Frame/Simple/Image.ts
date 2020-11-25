@@ -6,14 +6,14 @@ import { SimpleTexture } from './Texture';
 
 export class SimpleImage extends Frame {
     constructor()
-    constructor(handle: jframehandle, texture: jframehandle)
-    constructor(handle?: jframehandle, texture?: jframehandle){
+    constructor(handle: jframehandle, texture: SimpleTexture)
+    constructor(handle?: jframehandle, texture?: SimpleTexture){
         if (!handle){
             super(SimpleImage._default_fdf)
             this._texture = new SimpleTexture(BlzGetFrameByName(SimpleImage.name + 'DefaultFdfTexture', 0))
         } else {
             super(handle, true)
-            this._texture = new SimpleTexture(texture as jframehandle)
+            this._texture = texture as SimpleTexture
         }
     }
 

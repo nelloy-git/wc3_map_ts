@@ -51,7 +51,11 @@ export class FdfFile {
         // Make directories.
         for (let i = 1; i < tree.length - 1; i++){
             tree[i] = tree[i - 1] + FdfFile._sep + tree[i]
-            os.execute('mkdir ' + (FdfFile._sep == '/' ? '-p ' : '/Q ') + tree[i])
+            if (FdfFile._sep == '/'){
+                os.execute('mkdir -p ' + tree[i])
+            } else {
+                os.execute('if not exist ' + tree[i] + ' mkdir ' + tree[i])
+            }
         }
 
         let [fdf] = io.open(fdf_path, 'w')

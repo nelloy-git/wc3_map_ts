@@ -15,8 +15,8 @@ export class Action<In extends any[], Out> {
             let success
             [success, res] = pcall(this._callback, ...args);
 
-            if (typeof res === 'string') {
-                return Log.err(Action.toString() + ': ' + res, 2);
+            if (!success) {
+                return Log.err(Action.toString() + ': ' + (res as string), 2);
             }
 
             Action.inside = false;
@@ -25,7 +25,7 @@ export class Action<In extends any[], Out> {
             res = this._callback(...args);
         }
 
-        return res;
+        return (res as Out);
     }
     
     private static inside = false;

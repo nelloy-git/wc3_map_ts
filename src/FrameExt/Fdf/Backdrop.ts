@@ -57,7 +57,7 @@ export class FdfBackdrop extends Fdf {
 
     public get background(){return this._background}
     public set background(path: string){
-        this._setParam('BackdropBackground', path)
+        this._setParam('BackdropBackground', '\"' + path + '\"')
         this._background = path
     }
 

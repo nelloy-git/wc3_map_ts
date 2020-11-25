@@ -8,6 +8,10 @@
           "./wc3-builder/builder",
           "./wc3-builder/common"
         ],
-      "strict": true
+      "strict": true,
+      // "experimentalDecorators": true
     },
+    "tstl": {
+      //"luaTarget": "JIT",
+    }
   }

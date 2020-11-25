@@ -8,7 +8,7 @@ export class FdfSimpleString extends Fdf {
 
     public get text(){return this._text}
     public set text(text: string){
-        this._setParam('Text', text)
+        this._setParam('Text', '\"' + text + '\"')
         this._text = text
     }
 
@@ -19,7 +19,7 @@ export class FdfSimpleString extends Fdf {
     }
 
     public get fontSize(){return this._font_size}
-    public set fintSize(size: number){
+    public set fontSize(size: number){
         this._setParam('Font', '\"' + this._font + '\", ' + size.toString())
         this._font_size = size
     }

@@ -6,14 +6,14 @@ import { SimpleString } from './String';
 
 export class SimpleText extends Frame {
     constructor()
-    constructor(handle: jframehandle, string: jframehandle)
-    constructor(handle?: jframehandle, string?: jframehandle){
+    constructor(handle: jframehandle, string: SimpleString)
+    constructor(handle?: jframehandle, string?: SimpleString){
         if (!handle){
             super(SimpleText._default_fdf)
             this._string = new SimpleString(BlzGetFrameByName(SimpleText.name + 'DefaultFdfString', 0))
         } else {
             super(handle, true)
-            this._string = new SimpleString(string as jframehandle)
+            this._string = string as SimpleString
         }
     }
 
@@ -47,7 +47,7 @@ export class SimpleText extends Frame {
         let text = new FdfSimpleString(SimpleText.name + 'DefaultFdfString')
             text.text = ''
             text.font = 'fonts\\nim_____.ttf'
-            text.fintSize = 0.008
+            text.fontSize = 0.008
         fdf.addSubframe(text)
         return fdf
     })()

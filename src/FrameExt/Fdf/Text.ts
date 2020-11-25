@@ -4,7 +4,7 @@ import { Fdf } from "../Fdf";
 type TextJustificationHorz = 'JUSTIFYLEFT'|'JUSTIFYCENTER'|'JUSTIFYRIGHT'
 type TextJustificationVert = 'JUSTIFYTOP'|'JUSTIFYMIDDLE'|'JUSTIFYBOTTOM'
 
-export class Text extends Fdf {
+export class FdfText extends Fdf {
     constructor(name: string){
         super(name, 'TEXT', false)
     }
@@ -33,7 +33,7 @@ export class Text extends Fdf {
 
     public get text(){return this._text}
     public set text(text: string){
-        this._setParam('Text', text)
+        this._setParam('Text',  '\"' + text + '\"')
         this._text = text
     }
 

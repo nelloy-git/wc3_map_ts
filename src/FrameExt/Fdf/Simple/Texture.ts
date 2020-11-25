@@ -8,7 +8,7 @@ export class FdfSimpleTexture extends Fdf {
 
     public get textureFile(){return this._file}
     public set textureFile(path: string){
-        this._setParam('File', path)
+        this._setParam('File', '\"' + path + '\"')
         this._file = path
     }
 

@@ -2,14 +2,14 @@ import { Fdf } from "../Fdf";
 
 import { FdfBackdrop } from './Backdrop'
 import { FdfHighlight } from './Highlight'
-import { Text } from './Text'
+import { FdfText } from './Text'
 
 export type Element = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
 
 export class FdfGlueTextButton extends Fdf {
     constructor(name: string){
         super(name, 'GLUETEXTBUTTON', false)
-        this._setParam('ControlStyle', 'AUTOTRACK|HIGHLIGHTONFOCUS|HIGHLIGHTONMOUSEOVER')
+        this._setParam('ControlStyle', '\"AUTOTRACK\"')
     }
 
     public get width(){return this._width}
@@ -61,15 +61,44 @@ export class FdfGlueTextButton extends Fdf {
         } else if (elem == 'MOUSE' || elem == 'FOCUS') {
             res = new FdfHighlight(this.name + elem)
         } else {
-            res = new Text(this.name + elem)
+            res = new FdfText(this.name + elem)
         }
-        this._elements.set(elem, res)
+        this._applyElement(elem, res)
         return res
+    }
+
+    private _applyElement(elem: Element, sub: FdfBackdrop | FdfHighlight | FdfText){
+        let param = FdfGlueTextButton._elem2param.get(elem) as string
+        this._setParam(param, '\"' + this.name + elem + '\"')
+        if (elem == 'MOUSE' && !this._track_mouse){
+            this._track_mouse = true
+            let style = this._getParam('ControlStyle') as string
+            this._setParam('ControlStyle', style.slice(0, style.length - 1) + '|HIGHLIGHTONMOUSEOVER\"')
+        }
+        if (elem == 'FOCUS' && !this._track_focus){
+            this._track_focus = true
+            let style = this._getParam('ControlStyle') as string
+            this._setParam('ControlStyle', style.slice(0, style.length - 1) + '|HIGHLIGHTONFOCUS\"')
+        }
+        this._elements.set(elem, sub)
+        this.addSubframe(sub)
     }
     
     private _width: number = -1;
     private _height: number = -1;
     private _decorate: boolean = false;
     private _text_offset: [number, number] = [0, 0]
-    private _elements = new Map<Element, FdfBackdrop | FdfHighlight | Text>()
+
+    private _track_mouse: boolean = false
+    private _track_focus: boolean = false
+    private _elements = new Map<Element, FdfBackdrop | FdfHighlight | FdfText>()
+
+    private static _elem2param = new Map<Element, string>([
+        ['NORMAL', 'ControlBackdrop'],
+        ['PUSHED', 'ControlPushedBackdrop'],
+        ['DISABLED', 'ControlDisabledBackdrop'],
+        ['MOUSE', 'ControlMouseOverHighlight'],
+        ['FOCUS', 'ControlFocusHighlight'],
+        ['TEXT', 'ButtonText']
+    ])
 }

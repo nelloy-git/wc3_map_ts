@@ -7,6 +7,8 @@ import * as Utils from "./Utils"
 import { Ability } from './AbilityExt'
 import { TestType } from './AbilityExt/TestType'
 
+import { GlueTextButton, OriginMinimap, OriginPortrait, Screen } from './FrameExt'
+
 
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
@@ -14,19 +16,23 @@ if (IsGame()){
     InitBlizzard()
 
     let u = new Unit(id2int('hfoo'), 0, 0, Player(0))
-    let abil = new Ability(u, TestType)
-    let targeting = true
+
+    let im = new GlueTextButton()
+    Screen.addAction(([x0, y0]) => {
+        im.pos = [x0, y0]
+    })
+    im.size = [0.1, 0.1]
+    im.addAction('CLICK', ():void => {print('click')})
 
     let t = new Timer()
-    t.addAction(():void => {
-        targeting = !targeting
-        if (!targeting){
-            abil.targetingStart()
-        } else {
-            abil.targetingFinish()
-        }
+    t.addAction(()=>{
+        let portrait = OriginPortrait.instance()
+
+        if (!portrait){return}
+        portrait.size = [0.1, 0.1]
+        portrait.pos = [0.2, 0.1]
     })
-    t.start(3, true)
+    t.start(1, true)
 }
 
 new Utils.Import(GetSrc() + '\\map_data\\war3map.doo', 'war3map.doo')
