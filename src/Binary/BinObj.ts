@@ -1,6 +1,6 @@
 import { Log } from "../Utils";
 import { BinObjData, BinObjField } from "./BinObjData";
-import { bytes, int2byte } from "./Utils";
+import { bytes, int2byte, id2byte } from "./Utils";
 
 
 export class BinObj {
@@ -9,7 +9,7 @@ export class BinObj {
         this.base = base
     }
 
-    public serialize(){
+    public serialize(): bytes{
         let res: bytes = ''
 
         let count = 0
@@ -17,7 +17,8 @@ export class BinObj {
             res += field.id + data.typeBytes() + data.bytes() + BinObj._block_end
             count++
         }
-        res = int2byte(this.id) + int2byte(this.base) +
+
+        res = id2byte(this.base) + id2byte(this.id) + 
               int2byte(count) + res
 
         return res

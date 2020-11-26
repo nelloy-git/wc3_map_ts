@@ -14,8 +14,12 @@ declare namespace math {
     function frexp(this:void, v: number): [number, number]
 }
 
-export function int2byte(int: number): bytes{
+export function id2byte(int: number): bytes{
     return string.pack('>I4', int)
+}
+
+export function int2byte(int: number): bytes{
+    return string.pack('<I4', int)
 }
 
 export function str2byte(str: string): bytes{
@@ -53,7 +57,7 @@ export function float2byte(float: number): bytes{
 }
 
 export function byte2int(data: bytes): number{
-    return string.unpack('>I4', data)
+    return string.unpack('<I4', data)
 }
 
 export function byte2str(data: bytes): string{

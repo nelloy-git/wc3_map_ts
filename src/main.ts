@@ -28,9 +28,6 @@ if (IsGame()){
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()
 
-    let u = new Unit(id2int('hfoo'), 0, 0, Player(0))
+    let u = new Unit(bin_unit.id, 0, 0, Player(0))
 
 }
-
-
-//let a2 = new test2.Logger(true, true, true, true, true, true, true, '', '');

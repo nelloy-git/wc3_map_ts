@@ -18,15 +18,15 @@ export class BinFile {
     public save(){
         let byte = string.char
 
-        let res = byte(2) + byte(0) + byte(0) + byte(0) +
-                  byte(0) + byte(0) + byte(0) + byte(0) +
+        let res = '\2\0\0\0\0\0\0\0' +
                   int2byte(this.data.length)
 
         for (let i = 0; i < this.data.length; i++){
-            res += this.data[i].serialize()
+            let bytes = this.data[i].serialize()
+            res += bytes
         }
 
-        let [f] = io.open(this.path, 'w')
+        let [f] = io.open(this.path, 'wb')
         f?.write(res)
         f?.close()
     }

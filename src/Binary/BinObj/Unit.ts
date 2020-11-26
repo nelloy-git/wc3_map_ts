@@ -14,6 +14,6 @@ export class BinUnit extends BinObj {
         this._setValue(field, val)
     }
 
-    private static _path = (GetDst() ? GetDst() : '') + _G.package.config.charAt(0) + 'war3map.w3u'
-    private static _file = new BinFile(BinUnit._path)
+    private static _path = Macro(GetDst() + _G.package.config.charAt(0) + 'war3map.w3u')
+    private static _file = new BinFile(BinUnit._path as string)
 }
