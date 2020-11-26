@@ -12,6 +12,6 @@
       // "experimentalDecorators": true
     },
     "tstl": {
-      //"luaTarget": "JIT",
+      "luaTarget": "5.3",
     }
   }
