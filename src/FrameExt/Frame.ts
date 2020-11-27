@@ -2,8 +2,6 @@ import { Handle, Trigger, TriggerEvent } from "../Handle";
 import { Action, ActionList, Color, Log, wcType } from "../Utils";
 import { Fdf } from "./Fdf";
 
-type FrameEvent = 'ENTER'|'LEAVE'|'UP'|'DOWN'|'WHEEL'|'CLICK'|'DOUBLECLICK'
-
 export class Frame extends Handle<jframehandle> {
     constructor(fdf: Fdf)
     constructor(handle: jframehandle, is_simple: boolean)
@@ -104,21 +102,27 @@ export class Frame extends Handle<jframehandle> {
         BlzFrameSetVertexColor(this.handle, c.getWcCode())
     }
 
+    public get alpha(){return this._color.a}
+    public set alpha(a: number){
+        this._color.a = a
+        BlzFrameSetAlpha(this.handle, a)
+    }
+
     public get enable(){return this._enable}
     public set enable(flag: boolean){
         this._enable = flag
         BlzFrameSetEnable(this.handle, flag)
     }
 
-    public addAction(event: FrameEvent,
+    public addAction(event: Frame.Event,
                      callback: (this: void,
                                 frame: Frame,
-                                event: FrameEvent,
+                                event: Frame.Event,
                                 pl: jplayer)=>void){
         return this._actions.get(event)?.add(callback)
     }
 
-    public removeAction(action: Action<[Frame, FrameEvent, jplayer], void>){
+    public removeAction(action: Action<[Frame, Frame.Event, jplayer], void>){
         let found = false
         for (let [event, list] of this._actions){
             found = list.remove(action)
@@ -169,7 +173,6 @@ export class Frame extends Handle<jframehandle> {
         return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]
     }}
     protected get _set_size(){return (size: [w: number, h: number]) =>{
-        print(size[0], size[1])
         BlzFrameSetSize(this.handle, size[0], size[1])
     }}
 
@@ -181,21 +184,21 @@ export class Frame extends Handle<jframehandle> {
     private _visible: boolean = true;
     private _tooltip: Frame | null = null;
     private _is_tooltip: number = 0;
-    private _tooltip_show_action: Action<[Frame, FrameEvent, jplayer], void> | undefined;
-    private _tooltip_hide_action: Action<[Frame, FrameEvent, jplayer], void> | undefined;
+    private _tooltip_show_action: Action<[Frame, Frame.Event, jplayer], void> | undefined;
+    private _tooltip_hide_action: Action<[Frame, Frame.Event, jplayer], void> | undefined;
     private _level: number = 0;
     private _color: Color = new Color(1, 1, 1, 1)
     private _enable: boolean = true;
 
     private _events: TriggerEvent[] = []
-    private _actions = new Map<FrameEvent, ActionList<[Frame, FrameEvent, jplayer]>>([
-        ['CLICK', new ActionList()],
-        ['DOUBLECLICK', new ActionList()],
-        ['DOWN', new ActionList()],
-        ['ENTER', new ActionList()],
-        ['LEAVE', new ActionList()],
-        ['UP', new ActionList()],
-        ['WHEEL', new ActionList()],
+    private _actions = new Map<Frame.Event, ActionList<[Frame, Frame.Event, jplayer]>>([
+        ['CLICK',      new ActionList()],
+        ['DOUBLECLICK',new ActionList()],
+        ['DOWN',       new ActionList()],
+        ['ENTER',      new ActionList()],
+        ['LEAVE',      new ActionList()],
+        ['UP',         new ActionList()],
+        ['WHEEL',      new ActionList()],
     ])
 
     private static createFramehandle(handle: jframehandle | Fdf, is_simple?: boolean){
@@ -238,7 +241,7 @@ export class Frame extends Handle<jframehandle> {
     })()
 
     private static _wc2event = IsGame() ? (()=>{
-        return new Map<jframeeventtype, FrameEvent>([
+        return new Map<jframeeventtype, Frame.Event>([
             [FRAMEEVENT_CONTROL_CLICK, 'CLICK'],
             [FRAMEEVENT_MOUSE_DOUBLECLICK, 'DOUBLECLICK'],
             [FRAMEEVENT_MOUSE_DOWN, 'DOWN'],
@@ -282,4 +285,8 @@ export class Frame extends Handle<jframehandle> {
         return t
     })() : undefined;
     private static _trigger_events: TriggerEvent[] = []
+}
+
+export namespace Frame {
+    export type Event = 'ENTER'|'LEAVE'|'UP'|'DOWN'|'WHEEL'|'CLICK'|'DOUBLECLICK'
 }

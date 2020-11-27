@@ -21,8 +21,8 @@ export class Backdrop extends Frame {
     }
 
     public get texture(){return this._texture}
-    public set texture(path: string){
-        this._texture = path
+    public set texture(path: string | undefined){
+        this._texture = path ? path : ''
         BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 

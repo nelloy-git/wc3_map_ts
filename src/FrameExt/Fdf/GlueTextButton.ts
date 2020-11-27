@@ -4,8 +4,6 @@ import { FdfBackdrop } from './Backdrop'
 import { FdfHighlight } from './Highlight'
 import { FdfText } from './Text'
 
-export type Element = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
-
 export class FdfGlueTextButton extends Fdf {
     constructor(name: string){
         super(name, 'GLUETEXTBUTTON', false)
@@ -41,18 +39,18 @@ export class FdfGlueTextButton extends Fdf {
         this._text_offset = offset
     }
 
-    public hasElement(elem: Element){
+    public hasElement(elem: FdfGlueTextButton.Element){
         if (this._elements.get(elem)){return true}
         return false
     }
 
-    public getElement(elem: Element){
+    public getElement(elem: FdfGlueTextButton.Element){
         let res = this._elements.get(elem)
         if (res){return res}
     }
 
     /** Create element if it does not exist. */
-    public getOrNewElement(elem: Element){
+    public getOrNewElement(elem: FdfGlueTextButton.Element){
         let res = this._elements.get(elem)
         if (res){return res}
 
@@ -67,7 +65,7 @@ export class FdfGlueTextButton extends Fdf {
         return res
     }
 
-    private _applyElement(elem: Element, sub: FdfBackdrop | FdfHighlight | FdfText){
+    private _applyElement(elem: FdfGlueTextButton.Element, sub: FdfBackdrop | FdfHighlight | FdfText){
         let param = FdfGlueTextButton._elem2param.get(elem) as string
         this._setParam(param, '\"' + this.name + elem + '\"')
         if (elem == 'MOUSE' && !this._track_mouse){
@@ -91,9 +89,9 @@ export class FdfGlueTextButton extends Fdf {
 
     private _track_mouse: boolean = false
     private _track_focus: boolean = false
-    private _elements = new Map<Element, FdfBackdrop | FdfHighlight | FdfText>()
+    private _elements = new Map<FdfGlueTextButton.Element, FdfBackdrop | FdfHighlight | FdfText>()
 
-    private static _elem2param = new Map<Element, string>([
+    private static _elem2param = new Map<FdfGlueTextButton.Element, string>([
         ['NORMAL', 'ControlBackdrop'],
         ['PUSHED', 'ControlPushedBackdrop'],
         ['DISABLED', 'ControlDisabledBackdrop'],
@@ -101,4 +99,8 @@ export class FdfGlueTextButton extends Fdf {
         ['FOCUS', 'ControlFocusHighlight'],
         ['TEXT', 'ButtonText']
     ])
+}
+
+export namespace FdfGlueTextButton {
+    export type Element = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
 }

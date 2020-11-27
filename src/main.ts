@@ -19,6 +19,8 @@ import { BinUnit, BinUnitField } from './Binary'
 import { Timer, Unit } from './Handle'
 import { id2int, Log } from './Utils'
 import * as Utils from "./Utils"
+import { SimpleStatusBar, SimpleText } from './FrameExt'
+import { InterfaceAbilityPanel } from './Interface/Ability/Panel'
 
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
@@ -30,4 +32,12 @@ if (IsGame()){
 
     let u = new Unit(bin_unit.id, 0, 0, Player(0))
 
+    let panel = new InterfaceAbilityPanel(5, 2)
+    panel.pos = [0, 0.56]
+    panel.size = [0.2, 0.04]
+    // let cd = new InterfaceAbilityCooldown()
+
+    // let btn = new SimpleStatusBar()
+    // btn.pos = [0.4, 0.3]
+    // btn.size = [0.1, 0.05]
 }

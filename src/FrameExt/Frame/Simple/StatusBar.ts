@@ -98,7 +98,7 @@ export class SimpleStatusBar extends Frame {
                 forw_layer.addSubframe(forw_string)
                     let forw_border = new FdfSimpleTexture(name + 'Border')
                     forw_border.textureFile = 'UI\\Feedback\\XPBar\\human-xpbar-border.blp'
-                forw_layer.addSubframe
+                forw_layer.addSubframe(forw_border)
             forw_frame.addSubframe(forw_layer)
         fdf.addSubframe(forw_frame)
 

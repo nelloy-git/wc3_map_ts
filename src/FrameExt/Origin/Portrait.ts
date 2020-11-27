@@ -61,6 +61,9 @@ export class OriginPortrait extends OriginFrame {
             BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
 
             OriginPortrait._instance = new OriginPortrait(handle, is_simple)
+            OriginPortrait._instance.pos = [0, 0]
+            OriginPortrait._instance.size = [0.1, 0.1]
+
             Screen.addAction(() => {
                 if (!OriginPortrait._instance){return}
 

@@ -7,6 +7,10 @@ export abstract class Targeting {
         Targeting._current = undefined
     }
 
+    public static isActive(){
+        return Targeting._current != undefined
+    }
+
     /* Final function */
     public readonly start = (abil: AbilityIface,
                              callback: (this: void,

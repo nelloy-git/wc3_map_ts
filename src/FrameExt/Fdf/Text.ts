@@ -1,9 +1,6 @@
 import { Color } from "../../Utils";
 import { Fdf } from "../Fdf";
 
-type TextJustificationHorz = 'JUSTIFYLEFT'|'JUSTIFYCENTER'|'JUSTIFYRIGHT'
-type TextJustificationVert = 'JUSTIFYTOP'|'JUSTIFYMIDDLE'|'JUSTIFYBOTTOM'
-
 export class FdfText extends Fdf {
     constructor(name: string){
         super(name, 'TEXT', false)
@@ -52,7 +49,7 @@ export class FdfText extends Fdf {
     }
 
     public get justification(){return [this._just_horz, this._just_vert]}
-    public set justification(val: [TextJustificationHorz, TextJustificationVert]){
+    public set justification(val: [FdfText.JustificationHorz, FdfText.JustificationVert]){
         this._just_horz = val[0]
         this._just_vert = val[1]
         
@@ -66,8 +63,8 @@ export class FdfText extends Fdf {
     private _text: string = ''
     private _font: string = ''
     private _font_size: number = 0.01
-    private _just_horz: TextJustificationHorz = 'JUSTIFYCENTER'
-    private _just_vert: TextJustificationVert = 'JUSTIFYMIDDLE'
+    private _just_horz: FdfText.JustificationHorz = 'JUSTIFYCENTER'
+    private _just_vert: FdfText.JustificationVert = 'JUSTIFYMIDDLE'
     // TODO
     private _just_offset: [number, number] = [0, 0]
     private _color: Color = new Color(1, 1, 1, 1)
@@ -75,4 +72,9 @@ export class FdfText extends Fdf {
     private _color_disabled: Color = new Color(1, 1, 1, 1)
     private _color_shadow: Color = new Color(1, 1, 1, 1)
     private _shadow_offset: [number, number] = [0, 0]
+}
+
+export namespace FdfText {
+    export type JustificationHorz = 'JUSTIFYLEFT'|'JUSTIFYCENTER'|'JUSTIFYRIGHT'
+    export type JustificationVert = 'JUSTIFYTOP'|'JUSTIFYMIDDLE'|'JUSTIFYBOTTOM'
 }

@@ -2,7 +2,7 @@ import { Fdf } from "../../Fdf";
 
 export class FdfSimpleStatusBar extends Fdf {
     constructor(name: string){
-        super(name, 'SIMPLEFRAME', true)
+        super(name, 'SIMPLESTATUSBAR', true)
     }
 
     public get width(){return this._width}

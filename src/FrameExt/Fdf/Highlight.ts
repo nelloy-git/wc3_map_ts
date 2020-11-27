@@ -1,9 +1,6 @@
 import { Color } from "../../Utils";
 import { Fdf } from "../Fdf";
 
-type HighlightType = 'FILETEXTURE' | 'SHADE'
-type HighlightMode = 'ADD' | 'BLEND'
-
 export class FdfHighlight extends Fdf {
     constructor(name: string){
         super(name, 'HIGHLIGHT', false)
@@ -32,7 +29,7 @@ export class FdfHighlight extends Fdf {
     }
 
     public get highlightType(){return this._highlight_type}
-    public set highlightType(type: HighlightType){
+    public set highlightType(type: FdfHighlight.Type){
         this._setParam('HighlightType',  '\"' + type + '\"')
         this._highlight_type = type
     }
@@ -44,7 +41,7 @@ export class FdfHighlight extends Fdf {
     }
 
     public get alphaMode(){return this._alpha_mode}
-    public set alphaMode(mode: HighlightMode){
+    public set alphaMode(mode: FdfHighlight.Mode){
         this._setParam('HighlightAlphaMode', '\"' + mode + '\"')
         this._alpha_mode = mode
     }
@@ -58,8 +55,13 @@ export class FdfHighlight extends Fdf {
     private _width: number = -1;
     private _height: number = -1;
     private _decorate: boolean = false;
-    private _highlight_type: HighlightType = 'SHADE';
+    private _highlight_type: FdfHighlight.Type = 'SHADE';
     private _alpha_path: string = ''
-    private _alpha_mode: HighlightMode = 'ADD'
+    private _alpha_mode: FdfHighlight.Mode = 'ADD'
     private _color: Color = new Color(1, 1, 1, 1)
+}
+
+export namespace FdfHighlight {
+    export type Type = 'FILETEXTURE' | 'SHADE'
+    export type Mode = 'ADD' | 'BLEND'
 }

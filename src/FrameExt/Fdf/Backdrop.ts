@@ -1,6 +1,5 @@
+import { Backdrop } from "..";
 import { Fdf } from "../Fdf";
-
-type BackdropCornerFlags = 'UL'|'UR'|'BL'|'BR'|'T'|'L'|'B'|'R'
 
 export class FdfBackdrop extends Fdf {
     constructor(name: string){
@@ -70,7 +69,7 @@ export class FdfBackdrop extends Fdf {
     }
 
     public get cornerFlags(){return this._cornerFlags}
-    public set cornarFlags(flags: BackdropCornerFlags[]){
+    public set cornarFlags(flags: Backdrop.CornerFlags[]){
         let s_flags = flags.length > 0 ? flags[0] : ''
         for (let i = 1; i < flags.length; i++){
             s_flags += '|' + flags[i]
@@ -120,9 +119,13 @@ export class FdfBackdrop extends Fdf {
     private _tile_size: number = 1;
     private _background: string = '';
     private _insets: [number, number, number, number] = [0, 0, 0, 0];
-    private _cornerFlags: BackdropCornerFlags[] = [];
+    private _cornerFlags: Backdrop.CornerFlags[] = [];
     private _cornerSize: number = 0;
     private _edgeFile: string = '';
     private _blend: boolean = false;
     private _mirrored: boolean = false;
+}
+
+export namespace Backdrop {
+    export type CornerFlags = 'UL'|'UR'|'BL'|'BR'|'T'|'L'|'B'|'R'
 }

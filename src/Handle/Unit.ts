@@ -69,8 +69,7 @@ export class Unit extends Handle<junit>{
     get dispersionDamage(){return this._dispersion_damage}
     set dispersionDamage(val: number){
         this._dispersion_damage = val
-        let dices = math.floor(val * this.baseDamage)
-        BlzSetUnitDiceSides(this.handle, dices < 1 ? 1 : dices, 0)
+        BlzSetUnitDiceSides(this.handle, math.floor(val * this.baseDamage) + 1, 0)
     }
 
     get attackCooldownDefault(){return this._attack_cooldown_default}
@@ -107,6 +106,6 @@ export class Unit extends Handle<junit>{
     
     private _type_id: number;
     private _color: Color = new Color(1, 1, 1, 1);
-    private _dispersion_damage: number = 0.15;
+    private _dispersion_damage: number = 0.3;
     private _attack_cooldown_default: number;
 }

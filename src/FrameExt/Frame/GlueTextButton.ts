@@ -6,10 +6,8 @@ import { Text } from './Text'
 
 import { FdfBackdrop } from '../Fdf/Backdrop'
 import { FdfHighlight } from '../Fdf/Highlight'
-import { FdfGlueTextButton, Element} from '../Fdf/GlueTextButton'
+import { FdfGlueTextButton } from '../Fdf/GlueTextButton'
 import { Frame } from "../Frame";
-
-export {Element}
 
 export class GlueTextButton extends Frame {
     constructor()
@@ -45,13 +43,13 @@ export class GlueTextButton extends Frame {
         if (text){this._elements.set('TEXT', text)}
     }
 
-    public getElement(elem: Element){
+    public getElement(elem: GlueTextButton.Element){
         return this._elements.get(elem)
     }
 
-    private _elements: Map<Element, Backdrop | Highlight | Text>
+    private _elements: Map<GlueTextButton.Element, Backdrop | Highlight | Text>
 
-    private static getElementIfExist(fdf: FdfGlueTextButton, elem: Element){
+    private static getElementIfExist(fdf: FdfGlueTextButton, elem: GlueTextButton.Element){
         let fdf_elem = fdf.getElement(elem)
         if (!fdf_elem){return}
     
@@ -86,4 +84,8 @@ export class GlueTextButton extends Frame {
 
         return fdf
     })()
+}
+
+export namespace GlueTextButton {
+    export type Element = FdfGlueTextButton.Element
 }

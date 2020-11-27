@@ -1,18 +1,18 @@
 import { Unit } from '../Handle'
 import { AbilitySynced } from './Ability/Synced'
-import { Charges } from './Charges'
+import { Charges, Event as ChargesEvent } from './Charges'
 import { Type } from './Type'
 
 export class Ability extends AbilitySynced {
     constructor(owner: Unit, type: Type){
         super(owner, type)
-        this._charges.addAction('COUNT_CHANGED', ()=>{this._updateCharges()})
+        this.charges.addAction(ChargesEvent.COUNT_CHANGED, ()=>{this._updateCharges()})
     }
 
     protected _updateCharges(){
-        this._charges.cooldown = this.type.data.chargeCooldown(this)
-        this._charges.countMax = this.type.data.chargeMax(this)
+        this.charges.cooldown = this.type.data.chargeCooldown(this)
+        this.charges.countMax = this.type.data.chargeMax(this)
     }
 
-    private _charges = new Charges()
+    readonly charges = new Charges()
 }
