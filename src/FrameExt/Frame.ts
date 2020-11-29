@@ -158,7 +158,7 @@ export class Frame extends Handle<jframehandle> {
         if (this._parent){
             BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
                              this._parent.handle, FRAMEPOINT_TOPLEFT,
-                             this._x, this._y)
+                             this._x, -this._y)
         } else {
             BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
                                 this._x, 0.6 - this._y)

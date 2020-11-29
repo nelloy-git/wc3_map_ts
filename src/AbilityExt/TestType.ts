@@ -15,7 +15,8 @@ class TestCasting extends Casting {
 
 class TestData extends Data {
     public name(abil: AbilityIface): string {return 'TestType'}
-    public icon(abil: AbilityIface): string {return 'TestIcon'}
+    public iconNormal(abil: AbilityIface): string {return 'TestIcon'}
+    public iconDisabled(abil: AbilityIface): string {return 'TestIcon'}
     public tooltip(abil: AbilityIface): string {return 'TestTooltip'}
     public lifeCost(abil: AbilityIface): number {return 0}
     public manaCost(abil: AbilityIface): number {return 0}

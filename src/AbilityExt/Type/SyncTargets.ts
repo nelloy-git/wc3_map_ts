@@ -1,13 +1,13 @@
-import { Action, ActionList, Log } from '../Utils/index'
-import { SyncData } from '../Input/index'
-import { Unit } from '../Handle/index'
+import { Action, ActionList, Log } from '../../Utils/index'
+import { SyncData } from '../../Input/index'
+import { Unit } from '../../Handle/index'
 
-import { Point } from './Point'
-import { AbilityTargets } from './Ability/Iface'
+import { Point } from '../Point'
+import { AbilityTargets } from '../Ability/Iface'
 
 type SyncTargetData = [number, AbilityTargets]
 
-export class SyncTarget extends SyncData<SyncTargetData> {
+export class SyncTargets extends SyncData<SyncTargetData> {
     constructor(){
         super()
     }
@@ -17,12 +17,12 @@ export class SyncTarget extends SyncData<SyncTargetData> {
 
         for (let targ of targets){
              if (targ instanceof Unit){
-                raw += SyncTarget._sep + 
-                       SyncTarget._prefUnit + SyncTarget._prefSep + 
+                raw += SyncTargets._sep + 
+                       SyncTargets._prefUnit + SyncTargets._prefSep + 
                        targ.id.toString()
             } else if (targ instanceof Point){
-                raw += SyncTarget._sep + 
-                       SyncTarget._prefPoint +SyncTarget._prefSep +
+                raw += SyncTargets._sep + 
+                       SyncTargets._prefPoint +SyncTargets._prefSep +
                        targ.toString()
              }
         }
@@ -31,21 +31,21 @@ export class SyncTarget extends SyncData<SyncTargetData> {
     }
 
     protected raw2data(raw: string): SyncTargetData{
-        let vals = raw.split(SyncTarget._sep)
+        let vals = raw.split(SyncTargets._sep)
 
         let abil_id = parseInt(vals[0])
         let targets: AbilityTargets = []
         for (let i = 1; i < vals.length; i++){
             let targ
-            let [pref, val] = vals[i].split(SyncTarget._prefSep)
-            if (pref == SyncTarget._prefUnit){
+            let [pref, val] = vals[i].split(SyncTargets._prefSep)
+            if (pref == SyncTargets._prefUnit){
                 targ = Unit.get(parseInt(val))
-            } else if (pref == SyncTarget._prefPoint){
+            } else if (pref == SyncTargets._prefPoint){
                 targ = new Point(val)
             }
             
             if (typeof targ === 'undefined'){ 
-               return Log.err(SyncTarget.toString() + 
+               return Log.err(SyncTargets.toString() + 
                               ': can not parse targets.')
             }
 

@@ -1,10 +1,12 @@
 import { Log } from '../../Utils'
 import { AbilityBase } from './Base'
-import { SyncTarget } from '../SyncTarget'
+import { SyncTargets } from '../Type/SyncTargets'
 import { AbilityIface, AbilityTargets } from './Iface'
 
 export abstract class AbilitySyncing extends AbilityBase {
+    
     protected abstract _receivedTargets(targets: AbilityTargets): void;
+
     protected static _sendTargets(this: void, abil: AbilityIface, targets: AbilityTargets){
         AbilitySyncing._syncer?.send(abil.id, targets)
     }
@@ -15,8 +17,8 @@ export abstract class AbilitySyncing extends AbilityBase {
         (abil as AbilitySyncing)._receivedTargets(targets)
     }
     
-    private static _syncer = IsGame() ? (():SyncTarget=>{
-        let sync = new SyncTarget()
+    private static _syncer = IsGame() ? (():SyncTargets=>{
+        let sync = new SyncTargets()
         sync.addAction(AbilitySyncing._recTargets)
         return sync
     })() : undefined;

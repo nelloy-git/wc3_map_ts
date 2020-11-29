@@ -33,8 +33,8 @@ if (IsGame()){
     let u = new Unit(bin_unit.id, 0, 0, Player(0))
 
     let panel = new InterfaceAbilityPanel(5, 2)
-    panel.pos = [0, 0.56]
-    panel.size = [0.2, 0.04]
+    panel.pos = [0, 0.52]
+    panel.size = [0.2, 0.08]
     // let cd = new InterfaceAbilityCooldown()
 
     // let btn = new SimpleStatusBar()

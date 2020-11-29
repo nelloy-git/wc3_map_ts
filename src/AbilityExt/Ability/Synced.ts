@@ -3,9 +3,9 @@ import { Action, ActionList } from "../../Utils";
 import { Type } from "../Type";
 
 import { AbilityIface, AbilityEvent, AbilityTargets } from './Iface'
-import { AbilityASync } from "./ASync";
+import { AbilityTargeting } from "./Targeting";
 
-export abstract class AbilitySynced extends AbilityASync{
+export abstract class AbilitySynced extends AbilityTargeting{
     constructor(owner: Unit, type: Type){
         super(owner, type)
 

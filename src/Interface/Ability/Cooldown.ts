@@ -6,7 +6,6 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     constructor(){
         super()
 
-        this._size = this.size
         this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
 
         this._text.parent = this
@@ -65,7 +64,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         this._text.text = s_time
     }
 
-    private _size: [number, number];
+    private _size: [number, number] = this._get_size();
 
     private _cd_part: number = 0;
     private _charges: AbilityCharges | undefined;
