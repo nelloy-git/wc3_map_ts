@@ -3,17 +3,17 @@ import { SyncData } from '../../Input/index'
 import { Unit } from '../../Handle/index'
 
 import { Point } from '../Point'
-import { AbilityTargets } from '../Ability/Iface'
+import { AbilityBase, Targets } from '../Ability/Base'
 
-type SyncTargetData = [number, AbilityTargets]
+type SyncTargetData = [AbilityBase, Targets]
 
 export class SyncTargets extends SyncData<SyncTargetData> {
     constructor(){
         super()
     }
 
-    protected data2raw(abil_id: number, targets: AbilityTargets){
-        let raw = abil_id.toString()
+    protected data2raw(abil: AbilityBase, targets: Targets){
+        let raw = abil.id.toString()
 
         for (let targ of targets){
              if (targ instanceof Unit){
@@ -24,7 +24,7 @@ export class SyncTargets extends SyncData<SyncTargetData> {
                 raw += SyncTargets._sep + 
                        SyncTargets._prefPoint +SyncTargets._prefSep +
                        targ.toString()
-             }
+            }
         }
 
         return raw
@@ -34,7 +34,7 @@ export class SyncTargets extends SyncData<SyncTargetData> {
         let vals = raw.split(SyncTargets._sep)
 
         let abil_id = parseInt(vals[0])
-        let targets: AbilityTargets = []
+        let targets: Targets = []
         for (let i = 1; i < vals.length; i++){
             let targ
             let [pref, val] = vals[i].split(SyncTargets._prefSep)
@@ -52,7 +52,13 @@ export class SyncTargets extends SyncData<SyncTargetData> {
             targets.push(targ)
         }
 
-        return [abil_id, targets]
+        let abil = AbilityBase.get(abil_id)
+        if (!abil){
+            return Log.err(SyncTargets.name + 
+                           ': got invalid ability id.')
+        }
+
+        return [abil, targets]
     }
 
     private static readonly _sep = ';'

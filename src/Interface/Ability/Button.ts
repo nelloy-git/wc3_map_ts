@@ -1,5 +1,6 @@
-import { Ability } from "../../AbilityExt";
+import { Ability, AbilityTypeTargeting } from "../../AbilityExt";
 import { Backdrop, GlueTextButton } from '../../FrameExt'
+import { Frame } from "../../FrameExt";
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
 
@@ -17,6 +18,8 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this._cooldown.pos = [0, 0]
 
         this.size = this.size
+        this.visible = false
+        this.addAction('CLICK', (f: Frame, e:Frame.Event, pl:jplayer) => {this._clicked(pl)})
     }
 
     get size(){return this._get_size()}
@@ -34,10 +37,22 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this._abil = abil
 
         this._charges.ability = abil
+        this._cooldown.ability = abil
 
         this.visible = abil != undefined
         let icon = this.getElement('NORMAL') as Backdrop | undefined
         if (icon){icon.texture = abil?.type.data.iconNormal(abil)}
+    }
+
+    private _clicked(pl: jplayer){
+        if (!this._abil){return}
+
+        let active = AbilityTypeTargeting.getActiveAbility(pl)
+        if (this._abil == active){
+            this._abil.targetingCancel(pl)
+        } else {
+            this._abil.targetingStart(pl)
+        }
     }
 
     private _abil: Ability | undefined

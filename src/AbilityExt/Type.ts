@@ -9,7 +9,7 @@ export class Type {
         this.targeting = targeting
     }
 
-    public readonly casting: Casting;
-    public readonly data: Data;
-    public readonly targeting: Targeting;
+    readonly casting: Casting;
+    readonly data: Data;
+    readonly targeting: Targeting;
 }

@@ -40,7 +40,7 @@ export class OriginCommandButton extends OriginFrame {
         super.size = size
     }
 
-    private static _instance: (OriginFrame | undefined)[];
+    private static _instance: (OriginFrame | undefined)[] = [];
     private static _init_timer = IsGame() ? (() => {
         let t = new Timer()
         t.addAction(() => {

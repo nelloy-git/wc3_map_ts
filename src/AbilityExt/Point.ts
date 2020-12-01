@@ -12,16 +12,16 @@ export class Point {
         }
     }
 
-    public x;
-    public y;
-
-    public toString(){
+    toString(){
         return Point._l_border +
                this.x.toString() +
                Point._sep +
                this.y.toString +
                Point._r_border
     }
+
+    x: number;
+    y: number;
 
     private static _parse(str: string): [number, number]{
         if (str.charAt(0) != Point._l_border ||

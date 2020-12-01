@@ -1,9 +1,9 @@
-import { AbilityIface } from '../Ability/Iface'
+import { AbilityBase } from '../Ability/Base'
 
 export abstract class Casting {
-    public abstract start(abil: AbilityIface): void;
-    public abstract casting(abil: AbilityIface): void;
-    public abstract cancel(abil: AbilityIface): void;
-    public abstract interrupt(abil: AbilityIface): void;
-    public abstract finish(abil: AbilityIface): void;
+    public abstract start(abil: AbilityBase): void;
+    public abstract casting(abil: AbilityBase): void;
+    public abstract cancel(abil: AbilityBase): void;
+    public abstract interrupt(abil: AbilityBase): void;
+    public abstract finish(abil: AbilityBase): void;
 }

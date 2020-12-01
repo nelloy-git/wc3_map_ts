@@ -1,5 +1,5 @@
 import { Action } from '../../Utils'
-import { AbilityCharges, AbilityChargesEvent } from "../../AbilityExt";
+import { Ability, AbilityCharges} from "../../AbilityExt";
 import { SimpleImage, SimpleText } from "../../FrameExt";
 
 export class InterfaceAbilityCooldown extends SimpleImage {
@@ -24,22 +24,24 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         this._text.fontSize = 0.35 * size[1]
     }
 
-    setCharges(charges: AbilityCharges | undefined){
-        this._charges?.removeAction(this._changed_action)
-        this._charges?.removeAction(this._cooldown_action)
+    get ability(){return this._abil}
+    set ability(abil: Ability | undefined){
+        if (this._charges){
+            this._charges?.removeAction(this._changed_action)
+            this._charges?.removeAction(this._cooldown_action)
+        }
 
-        this._charges = charges
-        if (!charges){this.visible = false; return}
+        this._abil = abil
+        this._charges = abil ? abil.charges : undefined
+        if (!this._charges){this.visible = false; return}
 
         this.visible = true
-        this._changed_action = charges.addAction(AbilityChargesEvent.COUNT_CHANGED,
-                                                 (charges: AbilityCharges): void => {
-                                                    this._chargesChanged(charges)
-                                                })
-        this._cooldown_action = charges.addAction(AbilityChargesEvent.COOLDOWN_LOOP,
-                                                  (charges: AbilityCharges): void => {
-                                                    this._cooldownLoop(charges)
-                                                  })
+        this._changed_action = this._charges.addAction('COUNT_CHANGED',
+                                                        (charges: AbilityCharges): void => 
+                                                            {this._chargesChanged(charges)})
+        this._cooldown_action = this._charges.addAction('COOLDOWN_LOOP',
+                                                        (charges: AbilityCharges): void =>
+                                                            {this._cooldownLoop(charges)})
     }
 
     private _chargesChanged(charges: AbilityCharges){
@@ -67,9 +69,10 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     private _size: [number, number] = this._get_size();
 
     private _cd_part: number = 0;
+    private _abil: Ability | undefined;
     private _charges: AbilityCharges | undefined;
-    private _changed_action: Action<[AbilityCharges, AbilityChargesEvent], void> | undefined;
-    private _cooldown_action: Action<[AbilityCharges, AbilityChargesEvent], void> | undefined
+    private _changed_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined;
+    private _cooldown_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined
 
     private _text = new SimpleText()
 }

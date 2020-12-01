@@ -1,48 +1,51 @@
 import { Action } from "../../Utils";
 import { Unit } from '../../Handle'
 import { Point } from '../Point'
+import { Type } from "../Type";
 
-export type AbilityTargets = (Unit | Point)[]
-export type AbilityEvent = 'START' | 'CASTING' | 'CANCEL' | 'INTERRUPT' | 'FINISH'
+export type Targets = (Unit | Point)[]
+export type Event = 'START' | 'CASTING' | 'CANCEL' | 'INTERRUPT' | 'FINISH'
 
-export abstract class AbilityBase {
-    constructor(owner: Unit){
-        this.owner = owner
-        this.id = AbilityBase.newId()
-        AbilityBase._id2abil.set(this.id, this)
-    }
-    public static get(id: number){
-        return AbilityBase._id2abil.get(id)
-    }
+export interface AbilityBase {
+    readonly id: number;
+    readonly owner: Unit;
+    readonly type: Type;
+  
+    targetingStart(pl: jplayer): void;
+    targetingCancel(pl: jplayer): void;
+    targetingFinish(pl: jplayer, targets?: Targets): void;
 
-    public readonly owner: Unit;
-    public readonly id: number;
+    castingStart(targets: Targets): void;
+    castingPeriod(): void;
+    castingCancel(): void;
+    castingInterrupt(): void;
+    castingFinish(): void;
 
-    private static _id2abil = new Map<number, AbilityBase>()
+    getTargets(): Targets | undefined
 
-    // No implementation   
-    abstract targetingStart(pl: jplayer): void;
-    abstract targetingCancel(pl: jplayer): void;
-    abstract targetingFinish(pl: jplayer, targets?: AbilityTargets): void;
-
-    abstract castingStart(targets: AbilityTargets): void;
-    abstract castingPeriod(): void;
-    abstract castingCancel(): void;
-    abstract castingInterrupt(): void;
-    abstract castingFinish(): void;
-
-    abstract get targets(): AbilityTargets | undefined
-
-    abstract addAction(event: AbilityEvent,
+    addAction(event: Event,
                        callback: (abil: AbilityBase,
-                                  event: AbilityEvent)=>void):
-                                     Action<[AbilityBase, AbilityEvent], void> | undefined
+                                  event: Event)=>void):
+                                    Action<[AbilityBase, Event], void> | undefined
 
-    abstract removeAction(action: Action<[AbilityBase, AbilityEvent], void>): boolean
+    removeAction(action: Action<[AbilityBase, Event], void>): boolean
+}
 
-    private static _last_id = 0
-    private static newId(){
-        AbilityBase._last_id += 1
-        return AbilityBase._last_id
+export namespace AbilityBase {
+    export function register(abil: AbilityBase){
+        let id = newId()
+        _id2abil.set(id, abil)
+        return id
     }
+
+    export function get(id: number){
+        return _id2abil.get(id)
+    }
+
+    let _last_id = 0
+    function newId(){
+        _last_id += 1
+        return _last_id
+    }
+    let _id2abil = new Map<number, AbilityBase>()
 }

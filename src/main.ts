@@ -21,6 +21,8 @@ import { id2int, Log } from './Utils'
 import * as Utils from "./Utils"
 import { SimpleStatusBar, SimpleText } from './FrameExt'
 import { InterfaceAbilityPanel } from './Interface/Ability/Panel'
+import { TestType } from './AbilityExt/TestType'
+import { Ability, AbilityContainer } from './AbilityExt'
 
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
@@ -31,13 +33,12 @@ if (IsGame()){
     InitBlizzard()
 
     let u = new Unit(bin_unit.id, 0, 0, Player(0))
+    let container = new AbilityContainer(u)
 
     let panel = new InterfaceAbilityPanel(5, 2)
     panel.pos = [0, 0.52]
     panel.size = [0.2, 0.08]
-    // let cd = new InterfaceAbilityCooldown()
-
-    // let btn = new SimpleStatusBar()
-    // btn.pos = [0.4, 0.3]
-    // btn.size = [0.1, 0.05]
+    
+    let test_abil = new Ability(u, TestType)
+    panel.setAbility(0, 0, test_abil)
 }

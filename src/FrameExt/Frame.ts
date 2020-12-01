@@ -105,7 +105,7 @@ export class Frame extends Handle<jframehandle> {
     public get alpha(){return this._color.a}
     public set alpha(a: number){
         this._color.a = a
-        BlzFrameSetAlpha(this.handle, a)
+        BlzFrameSetAlpha(this.handle, Math.floor(255 * a))
     }
 
     public get enable(){return this._enable}

@@ -1,21 +1,16 @@
 import { Action, ActionList } from '../Utils'
 import { TimerObj } from '../Handle'
 
-export enum Event {
-    COOLDOWN_LOOP = 'COOLDOWN_LOOP',
-    COUNT_CHANGED = 'COUNT_CHANGED'
-}
-
 export class Charges {
     constructor(){
-        this._timer.addAction('PERIOD', ()=>{this._actions.get(Event.COOLDOWN_LOOP)?.run(this, Event.COOLDOWN_LOOP)})
+        this._timer.addAction('PERIOD', ()=>{this._actions.get('COOLDOWN_LOOP')?.run(this, 'COOLDOWN_LOOP')})
         this._timer.addAction('FINISH', ()=>{this.count += 1})
     }
     
-    public get count(){return this._count}
-    public set count(count: number){
+    get count(){return this._count}
+    set count(count: number){
         count = count < 0 ? 0 : count > this._count_max ? this._count_max : count
-        if (this._count != count){this._actions.get(Event.COUNT_CHANGED)?.run(this, Event.COUNT_CHANGED)}
+        if (this._count != count){this._actions.get('COUNT_CHANGED')?.run(this, 'COUNT_CHANGED')}
 
         this._count = count
         if (count < this._count_max){
@@ -28,27 +23,27 @@ export class Charges {
 
     }
 
-    public get countMax(){return this._count_max}
-    public set countMax(max: number){
+    get countMax(){return this._count_max}
+    set countMax(max: number){
         this._count_max = max
         this.count = this._count
     }
 
-    public get pause(){return this._pause}
-    public set pause(flag: boolean){this._timer.pause(flag)}
+    get pause(){return this._pause}
+    set pause(flag: boolean){this._timer.pause(flag)}
 
-    public get timeLeft(){return this._timer.timeLeft}
-    public set timeLeft(left: number){this._timer.timeLeft = left}
+    get timeLeft(){return this._timer.timeLeft}
+    set timeLeft(left: number){this._timer.timeLeft = left}
 
-    public get cooldown(){return this._cooldown}
-    public set cooldown(cd: number){this._cooldown = cd}
+    get cooldown(){return this._cooldown}
+    set cooldown(cd: number){this._cooldown = cd}
 
-    public addAction(event: Event,
-                     callback: (this: void, charges: Charges, event: Event)=>void){
+    addAction(event: Charges.Event,
+                     callback: (this: void, charges: Charges, event: Charges.Event)=>void){
         return this._actions.get(event)?.add(callback)
     }
 
-    public removeAction(action: Action<[Charges, Event], void> | undefined){
+    removeAction(action: Action<[Charges, Charges.Event], void> | undefined){
         if (!action){return false}
 
         let found = false
@@ -59,7 +54,7 @@ export class Charges {
         return found
     }
 
-    public destroy(){
+    destroy(){
         this._timer.destroy()
     }
 
@@ -68,8 +63,12 @@ export class Charges {
     private _cooldown = 1;
     private _pause = false;
     private _timer = new TimerObj();
-    private readonly _actions = new Map<Event, ActionList<[Charges, Event]>>([
-        [Event.COOLDOWN_LOOP, new ActionList],
-        [Event.COUNT_CHANGED, new ActionList],
+    private readonly _actions = new Map<Charges.Event, ActionList<[Charges, Charges.Event]>>([
+        ['COOLDOWN_LOOP', new ActionList],
+        ['COUNT_CHANGED', new ActionList],
     ])
+}
+
+export namespace Charges {
+    export type Event = 'COOLDOWN_LOOP' | 'COUNT_CHANGED'
 }

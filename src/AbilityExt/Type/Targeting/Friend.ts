@@ -2,7 +2,7 @@ import { Mouse, Selection } from '../../../Input'
 import { ImageArc, Timer, Unit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
 
-import { AbilityTargets } from '../../Ability/Iface'
+import { Targets } from '../../Ability/Base'
 import { Targeting } from '../Targeting'
 
 export class TargetingFriend extends Targeting {
@@ -14,19 +14,26 @@ export class TargetingFriend extends Targeting {
         TargetingFriend.enable = false
     }
 
-    protected _finish(targets?: AbilityTargets){
+    protected _finish(targets?: Targets){
         if (!targets){
             let hovered = Unit.getMouseFocus()
+            if (!hovered){this.cancel(GetLocalPlayer())}
             targets = hovered ? [hovered] : []
         }
         TargetingFriend.enable = false
 
+        let abil = Targeting.getActiveAbility(GetLocalPlayer())
+        if (!abil){
+            return Log.err(TargetingFriend.name + 
+                           ': to finish targeting start it first.', 2)
+        }
+
         if (targets.length != 1 || 
             !(targets[0] instanceof Unit) ||
-            targets[0].isEnemy(Targeting.ability.owner)){
+            targets[0].isEnemy(abil.owner)){
 
-            Log.err(TargetingFriend.name + 
-                    ': can apply only 1 friendly Unit.', 3)
+            return Log.err(TargetingFriend.name + 
+                           ': can apply only 1 friendly Unit.', 3)
         }
 
         return targets
@@ -55,7 +62,7 @@ export class TargetingFriend extends Targeting {
         if (!TargetingFriend._enabled){return}
 
         let hovered = Unit.getMouseFocus()
-        let owner = Targeting.ability?.owner
+        let owner = Targeting.getActiveAbility(GetLocalPlayer())?.owner
 
         // Restore color if highlight color has not been changed.
         if (TargetingFriend._previous &&
@@ -87,12 +94,26 @@ export class TargetingFriend extends Targeting {
         let size = hovered ? hovered.getCollisionSize() : 32
         TargetingFriend._circle?.setPolarPos(x - size / 2, y - size / 2, size, 0, 2 * math.pi)
     }
+
+    private static _mouseClick(this: void, event: Mouse.Event, pl: jplayer, btn: jmousebuttontype){
+        if (pl != GetLocalPlayer()){return}
+        if (!TargetingFriend._enabled){return}
+
+        let cur_instance = Targeting.getActiveInstance(pl)
+        if(!(cur_instance instanceof TargetingFriend)){return}
+
+        btn == MOUSE_BUTTON_TYPE_LEFT ? cur_instance.finish(pl) : cur_instance.cancel(pl)
+    }
+
     private static _mouseTimer = IsGame() ? (():Timer=>{
         let t = new Timer()
         t.addAction(TargetingFriend._mouseTrack)
         t.start(0.02, true)
         return t
     })() : undefined
+
+    private static _mouseAction = Mouse.addAction('UP', TargetingFriend._mouseClick)
+
     private static _previous: Unit | undefined;
     private static _highlight: Color = new Color(0.3, 1, 0.3, 1);
     private static _prev_color: Color = new Color(1, 1, 1, 1);

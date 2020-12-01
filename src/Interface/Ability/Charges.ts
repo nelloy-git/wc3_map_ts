@@ -1,5 +1,5 @@
 import { Action } from '../../Utils'
-import { Ability, AbilityCharges, AbilityChargesEvent } from "../../AbilityExt";
+import { Ability, AbilityCharges} from "../../AbilityExt";
 import { Backdrop, SimpleText } from "../../FrameExt";
 
 export class InterfaceAbilityCharges extends Backdrop {
@@ -23,17 +23,19 @@ export class InterfaceAbilityCharges extends Backdrop {
 
     get ability(){return this._abil}
     set ability(abil: Ability | undefined){
-        this._abil = abil
-        this._charges = abil?.charges
+        if (this._charges){
+            this._charges.removeAction(this._charges_action)
+        }
 
-        this._charges?.removeAction(this._charges_action)
+        this._abil = abil
+        this._charges = abil ? abil.charges : undefined
 
         if (!this._charges){this.visible = false; return}
 
-        this.visible = true
-        this._charges_action = this._charges.addAction(AbilityChargesEvent.COUNT_CHANGED,
-                                                        (charges: AbilityCharges)=>
-                                                            {this._chargesChanged(charges)})
+        this.visible = this._charges.countMax > 1
+        this._charges_action = this._charges.addAction('COUNT_CHANGED',
+                                                       (charges: AbilityCharges)=>
+                                                           {this._chargesChanged(charges)})
         this._chargesChanged(this._charges)
     }
 
@@ -48,7 +50,7 @@ export class InterfaceAbilityCharges extends Backdrop {
 
     private _abil: Ability | undefined;
     private _charges: AbilityCharges | undefined;
-    private _charges_action: Action<[AbilityCharges, AbilityChargesEvent], void> | undefined;
+    private _charges_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined;
 
     private _text = new SimpleText()
 }

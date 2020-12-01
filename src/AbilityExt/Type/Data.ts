@@ -1,17 +1,17 @@
-import { AbilityIface, AbilityTargets } from '../Ability/Iface'
+import { AbilityBase, Targets } from '../Ability/Base'
 
 export abstract class Data {
-    public abstract name(abil: AbilityIface): string
-    public abstract iconNormal(abil: AbilityIface): string
-    public abstract iconDisabled(abil: AbilityIface): string
-    public abstract tooltip(abil: AbilityIface): string;
-    public abstract lifeCost(abil: AbilityIface): number;
-    public abstract manaCost(abil: AbilityIface): number;
-    public abstract chargeUsed(abil: AbilityIface): number;
-    public abstract chargeMax(abil: AbilityIface): number;
-    public abstract chargeCooldown(abil: AbilityIface): number;
-    public abstract castingTime(abil: AbilityIface): number;
-    public abstract isAvailable(abil: AbilityIface): boolean;
-    public abstract consume(abil: AbilityIface): void;
-    public abstract areTargetsValid(abil: AbilityIface, targets: AbilityTargets): boolean;
+    public abstract name(abil: AbilityBase): string
+    public abstract iconNormal(abil: AbilityBase): string
+    public abstract iconDisabled(abil: AbilityBase): string
+    public abstract tooltip(abil: AbilityBase): string;
+    public abstract lifeCost(abil: AbilityBase): number;
+    public abstract manaCost(abil: AbilityBase): number;
+    public abstract chargeUsed(abil: AbilityBase): number;
+    public abstract chargeMax(abil: AbilityBase): number;
+    public abstract chargeCooldown(abil: AbilityBase): number;
+    public abstract castingTime(abil: AbilityBase): number;
+    public abstract isAvailable(abil: AbilityBase): boolean;
+    public abstract consume(abil: AbilityBase): boolean;
+    public abstract areTargetsValid(abil: AbilityBase, targets: Targets): boolean;
 }

@@ -8,7 +8,7 @@ export class InterfaceAbilityPanel extends Backdrop {
         this._cols = cols
         this._rows = rows
 
-        // this.alpha = 0
+        this.alpha = 0
         for (let y = 0; y < rows; y++){
             this._backgrounds.push([])
             this._buttons.push([])
@@ -61,7 +61,7 @@ export class InterfaceAbilityPanel extends Backdrop {
         fdf.backgroudTileSize = 0.2
         fdf.background = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-background'
         fdf.blendAll = true
-        fdf.insets = [0.01, 0.01, 0.01, 0.01]
+        fdf.insets = [0.001, 0.001, 0.001, 0.001]
         fdf.cornarFlags = ['UL', 'UR', 'BL', 'BR', 'T', 'L', 'B', 'R']
         fdf.cornerSize = 0.0125
         fdf.edgeFile = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-border'

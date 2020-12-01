@@ -1,86 +1,87 @@
-import { Action, Log } from '../../Utils'
-import { AbilityBase, AbilityTargets } from '../Ability/Base'
+import { Log } from '../../Utils'
+import { AbilityBase, Targets } from '../Ability/Base'
 import { SyncTargets } from './SyncTargets'
 
 export abstract class Targeting {
-    public static cancelCurrent(pl: jplayer){
-        if (Targeting._current){Targeting._current.cancel(pl)}
-        Targeting._current = undefined
+    static cancelActive(pl: jplayer){
+        let cur = Targeting._current[GetPlayerId(pl)]
+        if (cur){cur.cancel(pl)}
     }
 
-    public static isActive(pl: jplayer){
-        return Targeting._is_player_targeting[GetPlayerId(pl)]
+    static getActiveAbility(pl: jplayer){
+        return Targeting._abil[GetPlayerId(pl)]
+    }
+
+    static getActiveInstance(pl: jplayer){
+        return Targeting._current[GetPlayerId(pl)]
     }
 
     /* Final function */
-    public readonly start = (pl: jplayer,
-                             abil: AbilityBase) => {
+    readonly start = (pl: jplayer, abil: AbilityBase) => {
+        let pl_id = GetPlayerId(pl)
+
+        Targeting.cancelActive(pl)
+        Targeting._current[pl_id] = this
+        Targeting._abil[pl_id] = abil
+
         if (pl == GetLocalPlayer()){
-            Targeting._is_player_targeting[GetPlayerId(pl)] = true
-        } else {                       
-            Targeting.cancelCurrent(pl)
-            Targeting._is_player_targeting[GetPlayerId(pl)] = true
-            Targeting._current = this
-            Targeting._abil = abil
-            
             this._start()
         }
     }
 
     /* Final function */
-    public readonly cancel = (pl: jplayer): void => {
-        if (Targeting._current != this){
-            Log.err(Targeting.name + 
-                    ': can not cancel inactive targeting. ' +
-                    'Use static cancelCurrent() instead.', 2)
+    readonly cancel = (pl: jplayer) => {
+        let pl_id = GetPlayerId(pl)
+        if (Targeting._current[pl_id] != this){
+            return Log.err(Targeting.name + 
+                           ': can not cancel inactive targeting. ' +
+                           'Use static cancelCurrent() instead.', 2)
         }
-        Targeting._is_player_targeting[GetPlayerId(pl)] = false
-        Targeting._current = undefined
-        this._cancel()
+
+        if (pl == GetLocalPlayer()){
+            this._cancel()
+        }
+
+        Targeting._current[pl_id] = undefined
+        Targeting._abil[pl_id] = undefined
     }
 
     /** Final function.
         Use 'targets == Unit[]' to force targets. */
-    public readonly finish = (pl: jplayer, targets?: AbilityTargets): void => {
-        if (Targeting._current != this){
-            Log.err(Targeting.name + 
-                    ': can not finish inactive targeting.', 2)
+    readonly finish = (pl: jplayer, targets?: Targets): void => {
+        let pl_id = GetPlayerId(pl)
+        if (Targeting._current[pl_id] != this){
+            return Log.err(Targeting.name + 
+                           ': can not finish inactive targeting.', 2)
         }
-        if (!Targeting._abil){return}
+        let abil = Targeting._abil[pl_id]
+        if (!abil){
+            return Log.err(Targeting.name + 
+                           ': current ability for player has not been set.', 2)
+        }
 
-        Targeting._is_player_targeting[GetPlayerId(pl)] = false
-        Targeting._current = undefined
+        /* Sync targets from local player. */
+        if (pl == GetLocalPlayer()){
+            Targeting._syncer?.send(abil, this._finish(targets))
+        }
 
-        targets = this._finish(targets)
+        Targeting._current[pl_id] = undefined
+        Targeting._abil[pl_id] = undefined
     }
 
     protected abstract _start(): void
     protected abstract _cancel(): void
     /** 'targets = undefined' should capture targets by itself. */
-    protected abstract _finish(targets?: AbilityTargets): AbilityTargets
+    protected abstract _finish(targets?: Targets): Targets
+
+    private static _current: (Targeting | undefined)[] = [];
+    private static _abil: (AbilityBase | undefined)[] = [];
 
     private static _syncer = IsGame() ? (():SyncTargets => {
         let sync = new SyncTargets()
-        sync.addAction(Targeting._receiveTargets)
+        sync.addAction((pl: jplayer, abil: AbilityBase, targets: Targets) => {
+            abil.castingStart(targets)
+        })
         return sync
     })() : undefined;
-
-    private static _sendTargets(targets: AbilityTargets){
-        Targeting._syncer?.send(Targeting._abil, targets)
-    }
-
-    private static _receiveTargets(this: void, pl: jplayer,
-                                   abil_id: number, targets: AbilityTargets){
-        let abil = AbilityBase.get(abil_id)
-        if (!abil){return Log.err('TODO')}
-        abil.castingStart(targets)
-    }
-
-    protected static get current(){return Targeting._current}
-    protected static get ability(){return Targeting._abil}
-
-    private static _is_player_targeting: boolean[];
-    private static _current: Targeting | undefined;
-    private static _abil: AbilityBase;
-    private static _action: Action<[AbilityBase, AbilityTargets], void>;
 }

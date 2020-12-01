@@ -62,7 +62,7 @@ export class Logger {
         let msg = this.format('ERROR', text)
         
         if (this.show_err){
-            //print(msg)
+            print(msg)
         }
         if (this.write_err){
             this.log.push(msg)
@@ -71,7 +71,7 @@ export class Logger {
             }
         }
 
-        error(msg, lvl)
+        error('', lvl ? lvl + 1 : 1)
     }
 
     public save(){
