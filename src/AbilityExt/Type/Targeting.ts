@@ -54,7 +54,7 @@ export abstract class Targeting {
             return Log.err(Targeting.name + 
                            ': can not finish inactive targeting.', 2)
         }
-        let abil = Targeting._abil[pl_id]
+        let abil = Targeting.getActiveAbility(pl)
         if (!abil){
             return Log.err(Targeting.name + 
                            ': current ability for player has not been set.', 2)
@@ -62,7 +62,10 @@ export abstract class Targeting {
 
         /* Sync targets from local player. */
         if (pl == GetLocalPlayer()){
-            Targeting._syncer?.send(abil, this._finish(targets))
+            let abil_targets = this._finish(targets)
+            if (abil_targets){
+                Targeting._syncer?.send(abil, abil_targets)
+            }
         }
 
         Targeting._current[pl_id] = undefined
@@ -72,7 +75,7 @@ export abstract class Targeting {
     protected abstract _start(): void
     protected abstract _cancel(): void
     /** 'targets = undefined' should capture targets by itself. */
-    protected abstract _finish(targets?: Targets): Targets
+    protected abstract _finish(targets?: Targets): Targets | undefined
 
     private static _current: (Targeting | undefined)[] = [];
     private static _abil: (AbilityBase | undefined)[] = [];

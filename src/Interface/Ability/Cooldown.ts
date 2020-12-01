@@ -45,9 +45,9 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     }
 
     private _chargesChanged(charges: AbilityCharges){
-        let alpha = charges.count < 1 ? 0.85 : 0.25
+        let alpha = charges.count < 1 ? 0.85 : 0.35
         this.alpha = alpha
-        this._text.alpha = alpha
+        this._text.visible = !(charges.count == charges.countMax)
     }
 
     private _cooldownLoop(charges: AbilityCharges){
@@ -55,12 +55,12 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         let full = charges.cooldown
         this._cd_part = left / full
 
-        this._set_size([this._size[0], this._cd_part * this._size[1]])
+        this._set_size([this._cd_part * this._size[0], this._size[1]])
 
         let time = math.floor(left / 0.1)
         let s_time = time.toString()
-        s_time = time < 10 ? 
-                    s_time.slice(0, s_time.length) + '.' + s_time.slice(s_time.length)
+        s_time = time >= 10 ? 
+                    s_time.slice(0, s_time.length - 1) + '.' + s_time.slice(s_time.length - 1)
                     : '0.' + time.toString()
 
         this._text.text = s_time

@@ -15,12 +15,16 @@ export class TargetingFriend extends Targeting {
     }
 
     protected _finish(targets?: Targets){
+        TargetingFriend.enable = false
+        
         if (!targets){
             let hovered = Unit.getMouseFocus()
-            if (!hovered){this.cancel(GetLocalPlayer())}
+            if (!hovered){
+                this.cancel(GetLocalPlayer())
+                return
+            }
             targets = hovered ? [hovered] : []
         }
-        TargetingFriend.enable = false
 
         let abil = Targeting.getActiveAbility(GetLocalPlayer())
         if (!abil){
@@ -102,7 +106,11 @@ export class TargetingFriend extends Targeting {
         let cur_instance = Targeting.getActiveInstance(pl)
         if(!(cur_instance instanceof TargetingFriend)){return}
 
-        btn == MOUSE_BUTTON_TYPE_LEFT ? cur_instance.finish(pl) : cur_instance.cancel(pl)
+        if (btn == MOUSE_BUTTON_TYPE_LEFT){
+            cur_instance.finish(pl)
+        } else {
+            cur_instance.cancel(pl)
+        }
     }
 
     private static _mouseTimer = IsGame() ? (():Timer=>{

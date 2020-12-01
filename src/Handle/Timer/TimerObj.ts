@@ -8,8 +8,11 @@ export class TimerObj {
         this._timer_action = TimerObj._timer?.addAction((t: Timer)=>{this._timerLoop(t)})
     }
 
-    public get timeLeft(){return this._end - this._start}
-    public set timeLeft(left: number){this._end = this._start + left}
+    public get timeLeft(){return this._end - TimerObj._timer_time}
+    public set timeLeft(left: number){
+        this._start = TimerObj._timer_time
+        this._end = this._start + left
+    }
 
     public start(timeout: number){
         this._start = TimerObj._timer_time

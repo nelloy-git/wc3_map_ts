@@ -11,6 +11,10 @@ export class Ability implements AbilityBase {
         this.type = type
         this.id = AbilityBase.register(this)
 
+        this.charges = new Charges()
+        this.charges.addAction('COUNT_CHANGED', ()=>{Ability._updateCharges(this)})
+        Ability._updateCharges(this)
+
         this._casting = new TimerObj()
         this._casting.addAction('PERIOD', ():void => {this._castingPeriod()})
         this._casting.addAction('FINISH', ():void => {this._castingFinish()})
@@ -49,6 +53,7 @@ export class Ability implements AbilityBase {
                                t_name + '.consume methods.')
             }
             this.type.casting.start(this)
+            this._casting.start(this.type.data.castingTime(this))
             this._actions.get('START')?.run(this, 'START')
 
             return true
@@ -120,14 +125,12 @@ export class Ability implements AbilityBase {
         ['FINISH', new ActionList()],
     ])
 
-    readonly charges = (() => {
-        let c = new Charges()
-        c.addAction('COUNT_CHANGED', ()=>{
-            c.cooldown = this.type.data.chargeCooldown(this)
-            c.countMax = this.type.data.chargeMax(this)
-        })
-        return c
-    })()
+    readonly charges: Charges;
+
+    private static _updateCharges(abil: Ability){
+        abil.charges.cooldown = abil.type.data.chargeCooldown(abil)
+        abil.charges.countMax = abil.type.data.chargeMax(abil)
+    }
 
     private static _last_id = 0
     private static newId(){

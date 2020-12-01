@@ -6,6 +6,7 @@ export class InterfaceAbilityCharges extends Backdrop {
     constructor(){
         super()
         
+        this.visible = false
         this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
 
         this._text.parent = this
@@ -32,7 +33,6 @@ export class InterfaceAbilityCharges extends Backdrop {
 
         if (!this._charges){this.visible = false; return}
 
-        this.visible = this._charges.countMax > 1
         this._charges_action = this._charges.addAction('COUNT_CHANGED',
                                                        (charges: AbilityCharges)=>
                                                            {this._chargesChanged(charges)})

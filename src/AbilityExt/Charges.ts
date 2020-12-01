@@ -3,16 +3,20 @@ import { TimerObj } from '../Handle'
 
 export class Charges {
     constructor(){
-        this._timer.addAction('PERIOD', ()=>{this._actions.get('COOLDOWN_LOOP')?.run(this, 'COOLDOWN_LOOP')})
-        this._timer.addAction('FINISH', ()=>{this.count += 1})
+        this._timer.addAction('PERIOD', ()=>{
+            this._actions.get('COOLDOWN_LOOP')?.run(this, 'COOLDOWN_LOOP')
+        })
+        this._timer.addAction('FINISH', ()=>{
+            this.count += 1
+        })
     }
     
     get count(){return this._count}
     set count(count: number){
         count = count < 0 ? 0 : count > this._count_max ? this._count_max : count
-        if (this._count != count){this._actions.get('COUNT_CHANGED')?.run(this, 'COUNT_CHANGED')}
-
+        let prev = this._count
         this._count = count
+        
         if (count < this._count_max){
             if (this._timer.timeLeft < 0){
                 this._timer.start(this._cooldown)
@@ -21,6 +25,9 @@ export class Charges {
             this._timer.cancel()
         }
 
+        if (prev != count){
+            this._actions.get('COUNT_CHANGED')?.run(this, 'COUNT_CHANGED')
+        }
     }
 
     get countMax(){return this._count_max}
@@ -64,8 +71,8 @@ export class Charges {
     private _pause = false;
     private _timer = new TimerObj();
     private readonly _actions = new Map<Charges.Event, ActionList<[Charges, Charges.Event]>>([
-        ['COOLDOWN_LOOP', new ActionList],
-        ['COUNT_CHANGED', new ActionList],
+        ['COOLDOWN_LOOP', new ActionList()],
+        ['COUNT_CHANGED', new ActionList()],
     ])
 }
 
