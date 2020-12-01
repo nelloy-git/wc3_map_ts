@@ -1,4 +1,4 @@
-import { TimerObj, Unit } from '../Handle'
+import { TimerList, Unit } from '../Handle'
 import { Action, ActionList, Log } from "../Utils";
 
 import { AbilityBase, Targets, Event } from './Ability/Base'
@@ -11,11 +11,9 @@ export class Ability implements AbilityBase {
         this.type = type
         this.id = AbilityBase.register(this)
 
-        this.charges = new Charges()
-        this.charges.addAction('COUNT_CHANGED', ()=>{Ability._updateCharges(this)})
-        Ability._updateCharges(this)
+        this.charges.addAction('COUNT_CHANGED', ()=>{this._updateCharges()})
+        this._updateCharges()
 
-        this._casting = new TimerObj()
         this._casting.addAction('PERIOD', ():void => {this._castingPeriod()})
         this._casting.addAction('FINISH', ():void => {this._castingFinish()})
     }
@@ -103,19 +101,22 @@ export class Ability implements AbilityBase {
     readonly id: number;
     readonly type: Type;
 
-    protected _castingPeriod(){
+    private _castingPeriod(){
         this.type.casting.casting(this)
         this._actions.get('CASTING')?.run(this, 'CASTING')
     }
 
-    protected _castingFinish(){
+    private _castingFinish(){
         this.type.casting.finish(this)
         this._actions.get('FINISH')?.run(this, 'FINISH')
         this._targets = undefined
     }
 
-    protected _targets: Targets | undefined;
-    protected _casting: TimerObj;
+    private _updateCharges(){
+        this.charges.cooldown = this.type.data.chargeCooldown(this)
+        this.charges.countMax = this.type.data.chargeMax(this)
+    }
+
 
     private _actions = new Map<Event, ActionList<[AbilityBase, Event]>>([
         ['START', new ActionList()],
@@ -125,16 +126,14 @@ export class Ability implements AbilityBase {
         ['FINISH', new ActionList()],
     ])
 
-    readonly charges: Charges;
-
-    private static _updateCharges(abil: Ability){
-        abil.charges.cooldown = abil.type.data.chargeCooldown(abil)
-        abil.charges.countMax = abil.type.data.chargeMax(abil)
-    }
+    readonly charges = new Charges();
+    private _targets: Targets | undefined;
+    private _casting = Ability._timer_list.newTimerObj();
 
     private static _last_id = 0
     private static newId(){
         Ability._last_id += 1
         return Ability._last_id
     }
+    private static _timer_list = new TimerList(0.05, 0.025)
 }

@@ -1,5 +1,5 @@
 import { Action, ActionList } from '../Utils'
-import { TimerObj } from '../Handle'
+import { TimerList } from '../Handle'
 
 export class Charges {
     constructor(){
@@ -11,7 +11,7 @@ export class Charges {
         })
     }
     
-    get count(){return this._count}
+    get count(){return this._count} 
     set count(count: number){
         count = count < 0 ? 0 : count > this._count_max ? this._count_max : count
         let prev = this._count
@@ -37,7 +37,7 @@ export class Charges {
     }
 
     get pause(){return this._pause}
-    set pause(flag: boolean){this._timer.pause(flag)}
+    set pause(flag: boolean){this._timer.pause = flag}
 
     get timeLeft(){return this._timer.timeLeft}
     set timeLeft(left: number){this._timer.timeLeft = left}
@@ -62,18 +62,20 @@ export class Charges {
     }
 
     destroy(){
-        this._timer.destroy()
+        Charges._timer_list.removeTimerObj(this._timer)
     }
 
     private _count = 1;
     private _count_max = 1;
     private _cooldown = 1;
     private _pause = false;
-    private _timer = new TimerObj();
+    private _timer = Charges._timer_list.newTimerObj();
     private readonly _actions = new Map<Charges.Event, ActionList<[Charges, Charges.Event]>>([
         ['COOLDOWN_LOOP', new ActionList()],
         ['COUNT_CHANGED', new ActionList()],
     ])
+
+    private static _timer_list = new TimerList(0.05)
 }
 
 export namespace Charges {

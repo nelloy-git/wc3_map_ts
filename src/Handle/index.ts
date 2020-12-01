@@ -9,23 +9,25 @@ import {Pixel} from './Image/Pixel'
 import {Projectile} from './Effect/Projectile'
 import {TextTag} from './TextTag'
 import {Timer} from './Timer'
-import {TimerObj} from './Timer/TimerObj'
+import {TimerList} from './Timer/TimerList'
 import {Trigger} from './Trigger'
 import {TriggerEvent} from './TriggerEvent'
 import {Unit} from './Unit'
 
-export {Ability}
-export {Effect}
-export {Frame}
-export {Handle}
-export {Image}
-export {Arc as ImageArc}
-export {Line as ImageLine}
-export {Pixel as ImagePixel}
-export {Projectile as EffectProjectile}
-export {TextTag}
-export {Timer}
-export {TimerObj}
-export {Trigger}
-export {TriggerEvent}
-export {Unit}
+export {
+    Ability,
+    Effect,
+    Frame,
+    Handle,
+    Image,
+    Arc as ImageArc,
+    Line as ImageLine,
+    Pixel as ImagePixel,
+    Projectile as EffectProjectile,
+    TextTag,
+    Timer,
+    TimerList,
+    Trigger,
+    TriggerEvent,
+    Unit,
+}
