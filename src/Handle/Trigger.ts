@@ -30,8 +30,8 @@ export class Trigger extends Handle<jtrigger> {
     }
 
     destroy(){
-        super.destroy
         DestroyTrigger(this.handle)
+        super.destroy()
     }
 
     private _actions = new ActionList<[Trigger]>()

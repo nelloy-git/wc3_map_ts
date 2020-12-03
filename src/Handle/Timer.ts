@@ -39,9 +39,9 @@ export class Timer extends Handle<jtimer> {
     }
 
     destroy(){
-        super.destroy()
         PauseTimer(this.handle)
         DestroyTimer(this.handle)
+        super.destroy()
     }
 
     private _timeout = -1;

@@ -51,11 +51,11 @@ export class Ability extends Handle<jability> {
     }
 
     destroy(){
-        super.destroy()
         if (!this._owner || ! this._abil_id){ return }
         UnitRemoveAbility(this._owner.handle, this._abil_id)
         this._owner = undefined
         this._abil_id = undefined
+        super.destroy()
     }
 
     private _owner: Unit | undefined;

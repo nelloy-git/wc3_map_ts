@@ -1,6 +1,7 @@
 /** @noSelfInFile */
 
-import { Log } from "."
+import { Logger } from "./Logger"
+let Log = Logger.Default
 
 declare namespace string {
     function pack(fmt: string, s:number): string;
@@ -28,12 +29,13 @@ export function float2str(val: number, after_decimal: number){
     }
 
     after_decimal = Math.floor(after_decimal)
-    let pow = 10^after_decimal
+    let pow = 10^(after_decimal)
     let int = Math.floor(val * pow)
     let s_int = int.toString()
 
     while (s_int.length <= after_decimal){
         s_int = '0' + s_int
     }
-    return s_int.slice(0, s_int.length - pow) + '.' + s_int.slice(s_int.length - pow)
+    return s_int.slice(0, s_int.length - after_decimal) + '.' +
+           s_int.slice(s_int.length - after_decimal)
 }

@@ -131,9 +131,7 @@ export class Frame extends Handle<jframehandle> {
         return found
     }
 
-    destroy(){
-        super.destroy()
-
+    destroy(){ 
         if (this._parent){
             let i = this._parent._children.indexOf(this)
             this._parent._children.splice(i, 1)
@@ -150,6 +148,7 @@ export class Frame extends Handle<jframehandle> {
         Frame._updateTrigger()
 
         BlzDestroyFrame(this.handle)
+        super.destroy()
     }
 
     protected get _get_pos(){return (): [x: number, y: number] => {

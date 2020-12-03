@@ -50,9 +50,9 @@ export class Effect extends Handle<jeffect> {
     }
 
     destroy(){
-        super.destroy()
         BlzSetSpecialEffectScale(this.handle, 0.001)
         DestroyEffect(this.handle)
+        super.destroy()
     }
 
     private _yaw: number = 0;

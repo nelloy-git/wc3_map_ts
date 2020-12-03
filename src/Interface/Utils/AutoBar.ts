@@ -3,7 +3,7 @@ import { TimerList } from "../../Handle";
 import { Action, float2str } from "../../Utils";
 
 export class InterfaceAutoBar extends SimpleStatusBar {
-    constructor(cur_getter: ()=>number, max_getter: ()=>number){
+    constructor(cur_getter: (this: void)=>number, max_getter: (this: void)=>number){
         super()
 
         this._cur_getter = new Action(cur_getter)

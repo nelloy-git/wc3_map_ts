@@ -101,8 +101,8 @@ export class Unit extends Handle<junit>{
     public getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}
 
     destroy(){
-        super.destroy()
         RemoveUnit(this.handle)
+        super.destroy()
     }
     
     private _type_id: number;
