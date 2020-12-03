@@ -88,7 +88,9 @@ export class Ability implements AbilityBase {
         return this._actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[AbilityBase, Event], void>){
+    removeAction(action: Action<[AbilityBase, Event], void> | undefined){
+        if (!action){return false}
+
         let found = false
         for (let [event, list] of this._actions){
             found = list.remove(action)

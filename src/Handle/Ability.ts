@@ -50,7 +50,8 @@ export class Ability extends Handle<jability> {
         abil?._actions.get(event)?.run(abil, event)
     }
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         if (!this._owner || ! this._abil_id){ return }
         UnitRemoveAbility(this._owner.handle, this._abil_id)
         this._owner = undefined

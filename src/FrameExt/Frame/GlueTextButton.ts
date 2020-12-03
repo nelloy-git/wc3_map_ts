@@ -43,6 +43,12 @@ export class GlueTextButton extends Frame {
         if (text){this._elements.set('TEXT', text)}
     }
 
+    public getElement(elem: 'NORMAL'): Backdrop | undefined
+    public getElement(elem: 'PUSHED'): Backdrop | undefined
+    public getElement(elem: 'DISABLED'): Backdrop | undefined
+    public getElement(elem: 'MOUSE'): Highlight | undefined
+    public getElement(elem: 'FOCUS'): Highlight | undefined
+    public getElement(elem: 'TEXT'): Text | undefined
     public getElement(elem: GlueTextButton.Element){
         return this._elements.get(elem)
     }

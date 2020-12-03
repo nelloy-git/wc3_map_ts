@@ -71,7 +71,8 @@ export class Frame extends Handle<jframehandle> {
     public setPointAll(relative: Frame){BlzFrameSetAllPoints(this.handle, relative.handle)}
     public freePointAll(){BlzFrameClearAllPoints(this.handle)}
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         BlzDestroyFrame(this.handle)
     }
 

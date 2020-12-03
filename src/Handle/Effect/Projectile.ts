@@ -55,9 +55,9 @@ export class Projectile extends Effect {
         return found
     }
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         Projectile._timer?.removeAction(this._timer_action)
-        super._destroy()
     }
 
     private loop(){

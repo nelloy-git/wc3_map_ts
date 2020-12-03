@@ -47,7 +47,8 @@ export class TextTag extends Handle<jtexttag> {
     public get fadepoint(){return this._fadepoint}
     public set fadepoint(val: number){this._fadepoint = val; SetTextTagFadepoint(this.handle, val)}
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         DestroyTextTag(this.handle)
     }
 

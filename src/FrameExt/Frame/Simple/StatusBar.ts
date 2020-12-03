@@ -8,8 +8,6 @@ import { FdfSimpleFrame } from '../../Fdf/Simple/Frame';
 import { FdfSimpleString } from '../../Fdf/Simple/String';
 import { SimpleString } from './String';
 
-export type Element = 'BACKGROUND' | 'BORDER' | 'TEXT'
-
 export class SimpleStatusBar extends Frame {
     constructor()
     constructor(handle: jframehandle, background: SimpleTexture,
@@ -34,6 +32,7 @@ export class SimpleStatusBar extends Frame {
             this._texture = ''
         }
 
+        this._scale = 0
         this._texture_flags = 0
         this._texture_blend = true
         this._elements = new Map()
@@ -42,29 +41,42 @@ export class SimpleStatusBar extends Frame {
         if (text){this._elements.set('TEXT', text)}
     }
 
-    public get texture(){return this._texture}
-    public set texture(path: string){
+    get texture(){return this._texture}
+    set texture(path: string){
         this._texture = path
         BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public get textureFlags(){return this._texture_flags}
-    public set textureFlags(flags: number){
+    get textureFlags(){return this._texture_flags}
+    set textureFlags(flags: number){
         this._texture_flags = flags
         BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public get textureBlend(){return this._texture_blend}
-    public set textureBlend(flag: boolean){
+    get textureBlend(){return this._texture_blend}
+    set textureBlend(flag: boolean){
         this._texture_blend = flag
         BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public addAction(){
+    get scale(){return this._scale}
+    set scale(scale: number){
+        this._scale = scale < 0 ? 0 : scale > 1 ? 1 : scale
+        BlzFrameSetValue(this.handle, 100 * this._scale)
+    }
+
+    getElement(elem: 'BACKGROUND'): SimpleTexture | undefined
+    getElement(elem: 'BORDER'): SimpleTexture | undefined
+    getElement(elem: 'TEXT'): SimpleTexture | undefined
+    getElement(elem: SimpleStatusBar.Element){
+        return this._elements.get(elem)
+    }
+
+    addAction(){
         return Log.err(SimpleStatusBar.name + 
                        ': events are not available.')
     }
-    public removeAction(){
+    removeAction(){
         return Log.err(SimpleStatusBar.name + 
                        ': events are not available.')
     }
@@ -72,7 +84,8 @@ export class SimpleStatusBar extends Frame {
     private _texture: string;
     private _texture_flags: number;
     private _texture_blend: boolean;
-    private _elements: Map<Element, SimpleTexture | SimpleString>;
+    private _scale: number;
+    private _elements: Map<SimpleStatusBar.Element, SimpleTexture | SimpleString>;
 
     private static _default_fdf = (()=>{
         let name = SimpleStatusBar.name + 'DefaultFdf'
@@ -104,4 +117,8 @@ export class SimpleStatusBar extends Frame {
 
         return fdf
     })()
+}
+
+export namespace SimpleStatusBar {
+    export type Element = 'BACKGROUND' | 'BORDER' | 'TEXT'
 }

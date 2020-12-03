@@ -7,7 +7,7 @@ export abstract class Handle<T extends jhandle> {
         Handle.id2instance.set(this._id, this)
     }
 
-    public static get(id: jhandle | number): Handle<jhandle> | undefined{
+    static get(id: jhandle | number): Handle<jhandle> | undefined{
         if (typeof id !== 'number'){
             id = GetHandleId(id)
         }
@@ -16,7 +16,7 @@ export abstract class Handle<T extends jhandle> {
 
     isValid(): boolean{return typeof this._handle !== undefined}
 
-    public get id(){
+    get id(){
         if (!this._id){
             return Log.err(Handle.name +
                            ': can not get id from destroyed instance.', 2)
@@ -24,7 +24,7 @@ export abstract class Handle<T extends jhandle> {
         return this._id
     }
     
-    public get handle(){
+    get handle(){
         if (!this._handle){
             return Log.err(Handle.name +
                            ': can not get handle from destroyed instance.', 2)
@@ -32,19 +32,17 @@ export abstract class Handle<T extends jhandle> {
         return this._handle
     }
 
-    public readonly destroy = (): void => {
+    destroy(){
         if (!this._handle || !this._id){
-            return Log.err(Handle.name +
-                           ': can not destroy instance. Already destroyed.', 2)
+            Log.err(Handle.name +
+                    ': can not destroy instance. Already destroyed.', 2)
+            return
         }
         
-        this._destroy()
         Handle.id2instance.delete(this._id)
         this._id = undefined
         this._handle = undefined
     }
-
-    protected abstract _destroy(): void;
     
     private static id2instance = new Map<number, Handle<any>>();
 

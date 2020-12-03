@@ -2,7 +2,7 @@ import { TimerObj } from "./TimerObj";
 
 export class TimerList {
     constructor(period: number, offset?: number){
-        if (!offset){offset = 0}
+        if (!offset){offset = period * math.random()}
         this._period = period
 
         if (!IsGame()){return}

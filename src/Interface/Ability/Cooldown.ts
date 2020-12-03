@@ -1,6 +1,7 @@
 import { Action } from '../../Utils'
 import { Ability, AbilityCharges} from "../../AbilityExt";
 import { SimpleImage, SimpleText } from "../../FrameExt";
+import { float2str } from '../../Utils';
 
 export class InterfaceAbilityCooldown extends SimpleImage {
     constructor(){
@@ -56,14 +57,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         this._cd_part = left / full
 
         this._set_size([this._cd_part * this._size[0], this._size[1]])
-
-        let time = math.floor(left / 0.1)
-        let s_time = time.toString()
-        s_time = time >= 10 ? 
-                    s_time.slice(0, s_time.length - 1) + '.' + s_time.slice(s_time.length - 1)
-                    : '0.' + time.toString()
-
-        this._text.text = s_time
+        this._text.text = float2str(left, 1)
     }
 
     private _size: [number, number] = this._get_size();

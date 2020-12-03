@@ -131,7 +131,9 @@ export class Frame extends Handle<jframehandle> {
         return found
     }
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
+
         if (this._parent){
             let i = this._parent._children.indexOf(this)
             this._parent._children.splice(i, 1)

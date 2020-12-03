@@ -49,7 +49,8 @@ export class Effect extends Handle<jeffect> {
         BlzSetSpecialEffectAlpha(this.handle, 255 * color.a)
     }
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         BlzSetSpecialEffectScale(this.handle, 0.001)
         DestroyEffect(this.handle)
     }

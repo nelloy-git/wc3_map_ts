@@ -38,7 +38,8 @@ export class Timer extends Handle<jtimer> {
         timer?._actions.run(timer)
     }
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         PauseTimer(this.handle)
         DestroyTimer(this.handle)
     }

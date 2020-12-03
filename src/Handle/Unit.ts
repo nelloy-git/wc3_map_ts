@@ -100,7 +100,8 @@ export class Unit extends Handle<junit>{
     public setAnimation(index: number){SetUnitAnimationByIndex(this.handle, index)}
     public getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         RemoveUnit(this.handle)
     }
     

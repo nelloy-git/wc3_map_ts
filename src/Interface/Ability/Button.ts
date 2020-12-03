@@ -1,6 +1,9 @@
 import { Ability, AbilityTypeTargeting } from "../../AbilityExt";
+import { Event } from "../../AbilityExt/Ability/Base";
+import { Charges } from "../../AbilityExt/Charges";
 import { Backdrop, GlueTextButton } from '../../FrameExt'
 import { Frame } from "../../FrameExt";
+import { Action } from "../../Utils";
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
 
@@ -34,14 +37,39 @@ export class InterfaceAbilityButton extends GlueTextButton {
 
     get ability(){return this._abil}
     set ability(abil: Ability | undefined){
-        this._abil = abil
+        this._clearAbility()
+        this._applyAbility(abil)
+    }
 
+    private _clearAbility(){
+        if (!this._abil){return}
+
+        this._abil.charges.removeAction(this._charges_changed_action)
+
+        this._abil = undefined
+        this.visible = false
+    }
+
+    private _applyAbility(abil: Ability | undefined){
+        this._abil = abil
         this._charges.ability = abil
         this._cooldown.ability = abil
-
         this.visible = abil != undefined
-        let icon = this.getElement('NORMAL') as Backdrop | undefined
-        if (icon){icon.texture = abil?.type.data.iconNormal(abil)}
+
+        if (!abil){return}
+
+        let normal = this.getElement('NORMAL')
+        if (normal){normal.texture = abil.type.data.iconNormal(abil)}
+
+        let pushed = this.getElement('PUSHED')
+        if (pushed){pushed.texture = abil.type.data.iconNormal(abil)}
+
+        let disabled = this.getElement('DISABLED')
+        if (disabled){disabled.texture = abil.type.data.iconDisabled(abil)}
+
+        this._charges_changed_action = abil.charges.addAction('COUNT_CHANGED', (charges) => {
+            this.enable = charges.count > 0
+        })
     }
 
     private _clicked(pl: jplayer){
@@ -59,4 +87,5 @@ export class InterfaceAbilityButton extends GlueTextButton {
 
     private _charges = new InterfaceAbilityCharges()
     private _cooldown = new InterfaceAbilityCooldown()
+    private _charges_changed_action: Action<[Charges, Charges.Event], void> | undefined;
 }

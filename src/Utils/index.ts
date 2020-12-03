@@ -1,4 +1,4 @@
-import { int2id, id2int, wcType } from'./Funcs'
+import { int2id, id2int, wcType, float2str } from'./Funcs'
 import { Action } from './Action'
 import { ActionList } from './ActionList'
 import { Color } from './Color'
@@ -7,9 +7,15 @@ import { Logger } from './Logger'
 
 let Log = Logger.Default
 
-export { int2id, id2int, wcType }
-export { Action }
-export { ActionList }
-export { Color }
-export { Import }
-export { Log }
+export {
+    Action,
+    ActionList,
+    Color,
+    Import,
+    Log,
+    
+    int2id,
+    id2int,
+    wcType,
+    float2str
+}

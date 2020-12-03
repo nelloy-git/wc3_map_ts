@@ -29,7 +29,8 @@ export class Trigger extends Handle<jtrigger> {
         trig?._actions.run(trig)
     }
 
-    protected _destroy(){
+    destroy(){
+        super.destroy
         DestroyTrigger(this.handle)
     }
 

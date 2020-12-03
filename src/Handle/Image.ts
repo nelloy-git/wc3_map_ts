@@ -41,7 +41,8 @@ export class Image extends Handle<jimage> {
     public get visible(){return this._visible}
     public set visible(flag: boolean){this._visible = flag; ShowImage(this.handle, flag)}
 
-    protected _destroy(){
+    destroy(){
+        super.destroy()
         DestroyImage(this.handle)
     }
 
