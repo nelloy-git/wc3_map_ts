@@ -1,6 +1,6 @@
 import { Action, ActionList, Log } from '../../Utils/index'
 import { SyncData } from '../../Input/index'
-import { Unit } from '../../Handle/index'
+import { hUnit } from '../../Handle/index'
 
 import { Point } from '../Point'
 import { AbilityBase, Targets } from '../Ability/Base'
@@ -16,7 +16,7 @@ export class SyncTargets extends SyncData<SyncTargetData> {
         let raw = abil.id.toString()
 
         for (let targ of targets){
-             if (targ instanceof Unit){
+             if (targ instanceof hUnit){
                 raw += SyncTargets._sep + 
                        SyncTargets._prefUnit + SyncTargets._prefSep + 
                        targ.id.toString()
@@ -39,7 +39,7 @@ export class SyncTargets extends SyncData<SyncTargetData> {
             let targ
             let [pref, val] = vals[i].split(SyncTargets._prefSep)
             if (pref == SyncTargets._prefUnit){
-                targ = Unit.get(parseInt(val))
+                targ = hUnit.get(parseInt(val))
             } else if (pref == SyncTargets._prefPoint){
                 targ = new Point(val)
             }

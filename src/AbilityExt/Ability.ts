@@ -1,4 +1,4 @@
-import { TimerList, Unit } from '../Handle'
+import { hTimerList, hUnit } from '../Handle'
 import { Action, ActionList, Log } from "../Utils";
 
 import { AbilityBase, Targets, Event } from './Ability/Base'
@@ -6,7 +6,7 @@ import { Charges } from './Charges'
 import { Type } from './Type'
 
 export class Ability implements AbilityBase {
-    constructor(owner: Unit, type: Type){
+    constructor(owner: hUnit, type: Type){
         this.owner = owner
         this.type = type
         this.id = AbilityBase.register(this)
@@ -14,10 +14,19 @@ export class Ability implements AbilityBase {
         this.charges.addAction('COUNT_CHANGED', ()=>{this._updateCharges()})
         this._updateCharges()
 
-        this._casting.addAction('PERIOD', ():void => {this._castingPeriod()})
+        let dt = Ability._timer_list.period
+        this._casting.addAction('PERIOD', ():void => {this._castingPeriod(dt)})
         this._casting.addAction('FINISH', ():void => {this._castingFinish()})
     }
-    static get = AbilityBase.get
+    static getUnitCasts(u: hUnit){
+        let cur = Ability._active_castings.get(u)
+        if (!cur){cur = []}
+        return cur
+    }
+
+    readonly owner: hUnit;
+    readonly id: number;
+    readonly type: Type;
 
     targetingStart(pl: jplayer){
         if (this.type.data.isAvailable(this)){
@@ -36,6 +45,9 @@ export class Ability implements AbilityBase {
     }
 
     getTargets(){return this._targets}
+    static getActiveCasting(owner: hUnit){
+
+    }
 
     castingStart(targets: Targets){
         if (this.type.data.isAvailable(this) &&
@@ -54,6 +66,7 @@ export class Ability implements AbilityBase {
             this._casting.start(this.type.data.castingTime(this))
             this._actions.get('START')?.run(this, 'START')
 
+            Ability._regCasting(this.owner, this)
             return true
         }
         return false
@@ -68,6 +81,7 @@ export class Ability implements AbilityBase {
         this.type.casting.cancel(this)
         this._actions.get('CANCEL')?.run(this, 'CANCEL')
         this._targets = undefined
+        Ability._delCasting(this.owner, this)
     }
 
     castingInterrupt(){
@@ -75,10 +89,12 @@ export class Ability implements AbilityBase {
         this.type.casting.interrupt(this)
         this._actions.get('INTERRUPT')?.run(this, 'INTERRUPT')
         this._targets = undefined
+        Ability._delCasting(this.owner, this)
     }
 
     castingFinish(){
         this._casting.finish()
+        Ability._delCasting(this.owner, this)
     }
 
     addAction(event: Event,
@@ -99,12 +115,8 @@ export class Ability implements AbilityBase {
         return found
     }
 
-    readonly owner: Unit;
-    readonly id: number;
-    readonly type: Type;
-
-    private _castingPeriod(){
-        this.type.casting.casting(this)
+    private _castingPeriod(dt: number){
+        this.type.casting.casting(this, dt)
         this._actions.get('CASTING')?.run(this, 'CASTING')
     }
 
@@ -137,5 +149,24 @@ export class Ability implements AbilityBase {
         Ability._last_id += 1
         return Ability._last_id
     }
-    private static _timer_list = new TimerList(0.05, 0.025)
+    private static _timer_list = new hTimerList(0.05)
+
+    private static _active_castings = new Map<hUnit, Ability[]>()
+    private static _regCasting(caster: hUnit, abil:Ability){
+        let cur = Ability._active_castings.get(caster)
+        if (!cur){cur = []}
+        cur.push(abil)
+        Ability._active_castings.set(caster, cur)
+    }
+
+    private static _delCasting(caster: hUnit, abil:Ability){
+        let cur = Ability._active_castings.get(caster)
+        if (!cur){return false}
+
+        let pos = cur.indexOf(abil)
+        if (pos < 0){return false}
+        cur.splice(pos, 1)
+        Ability._active_castings.set(caster, cur)
+        return true
+    }
 }

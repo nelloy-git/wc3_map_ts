@@ -1,4 +1,4 @@
-import { Timer } from "../../Handle";
+import { hTimer } from "../../Handle";
 import { Log } from "../../Utils";
 import { OriginFrame } from './OriginFrame'
 
@@ -8,7 +8,7 @@ export class OriginChatBox extends OriginFrame {
 
     private static _instance: OriginFrame | undefined;
     private static _init_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(() => {
             let handle = BlzGetOriginFrame(ORIGIN_FRAME_CHAT_MSG, 0)
             if (!handle){Log.err(OriginChatBox.name + 

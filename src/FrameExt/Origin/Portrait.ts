@@ -1,5 +1,5 @@
 import { Screen } from "../Screen";
-import { Timer } from "../../Handle";
+import { hTimer } from "../../Handle";
 import { Log } from "../../Utils";
 import { OriginFrame } from './OriginFrame'
 
@@ -50,7 +50,7 @@ export class OriginPortrait extends OriginFrame {
 
     private static _instance: OriginFrame | undefined;
     private static _init_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(() => {
             let handle = BlzGetOriginFrame(ORIGIN_FRAME_PORTRAIT, 0)
             let is_simple = false

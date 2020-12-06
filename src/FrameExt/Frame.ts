@@ -1,8 +1,8 @@
-import { Handle, Trigger, TriggerEvent } from "../Handle";
+import { hHandle, hTrigger, hTriggerEvent } from "../Handle";
 import { Action, ActionList, Color, Log, wcType } from "../Utils";
 import { Fdf } from "./Fdf";
 
-export class Frame extends Handle<jframehandle> {
+export class Frame extends hHandle<jframehandle> {
     constructor(fdf: Fdf)
     constructor(handle: jframehandle, is_simple: boolean)
     constructor(handle: jframehandle | Fdf, is_simple?: boolean){
@@ -11,36 +11,36 @@ export class Frame extends Handle<jframehandle> {
 
         if (!Frame._wc2event){return}
         for (let [wc_event, _] of Frame._wc2event){
-            let trig_event = TriggerEvent.newFrameEvent(this.handle, wc_event)
+            let trig_event = hTriggerEvent.newFrameEvent(this.handle, wc_event)
             Frame._trigger_events.push(trig_event)
             this._events.push(trig_event)
             if(Frame._trigger){trig_event.applyToTrigger(Frame._trigger)}
         }
     }
     
-    public static get(id: jframehandle | number){
-        let instance = Handle.get(id)
+    static get(id: jframehandle | number){
+        let instance = hHandle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'framehandle'){
             Log.err('Frame: got wrong type of handle.', 2)
         }
         return <Frame>instance
     }
-    public static getTriggered(){return Frame.get(BlzGetTriggerFrame())}
+    static getTriggered(){return Frame.get(BlzGetTriggerFrame())}
 
-    public get pos(){return this._get_pos()}
-    public set pos(pos: [x: number, y: number]){this._set_pos(pos)}
+    get pos(){return this._get_pos()}
+    set pos(pos: [x: number, y: number]){this._set_pos(pos)}
 
-    public get absPos(): [number, number]{
+    get absPos(): [number, number]{
         let [parent_absX, parent_absY] = this._parent ? this._parent.absPos : [0, 0]
         return [parent_absX + this._x, parent_absY + this._y]
     }
 
-    public get size():[w: number, h: number]{return this._get_size()}
-    public set size(size: [w: number, h: number]){this._set_size(size)}
+    get size():[w: number, h: number]{return this._get_size()}
+    set size(size: [w: number, h: number]){this._set_size(size)}
 
-    public get parent(){return this._parent}
-    public set parent(parent: Frame | null){
+    get parent(){return this._parent}
+    set parent(parent: Frame | null){
         if (this._parent){
             let i = this._parent._children.indexOf(this)
             this._parent._children.splice(i, 1)
@@ -55,8 +55,8 @@ export class Frame extends Handle<jframehandle> {
         this.visible = this.visible
     }
 
-    public get visible(){return this._visible}
-    public set visible(flag: boolean){
+    get visible(){return this._visible}
+    set visible(flag: boolean){
         this._visible = flag
         BlzFrameSetVisible(this.handle, flag)
         for (let i = 0; i < this._children.length; i++){
@@ -66,8 +66,8 @@ export class Frame extends Handle<jframehandle> {
         }
     }
 
-    public get tooltip(){return this._tooltip}
-    public set tooltip(tooltip: Frame | null){
+    get tooltip(){return this._tooltip}
+    set tooltip(tooltip: Frame | null){
         if (this._tooltip){
             this._is_tooltip -= 1
 
@@ -88,33 +88,37 @@ export class Frame extends Handle<jframehandle> {
             tooltip.visible = false
         }
     }
-    public get isTooltip(){return this._is_tooltip > 0}
+    get isTooltip(){return this._is_tooltip > 0}
 
-    public get level(){return this._level}
-    public set level(lvl: number){
+    get level(){return this._level}
+    set level(lvl: number){
         this._level = lvl
         BlzFrameSetLevel(this.handle, lvl)
     }
 
-    public get color(){return new Color(this._color)}
-    public set color(c: Color){
+    get color(){return new Color(this._color)}
+    set color(c: Color){
         this._color = new Color(c)
         BlzFrameSetVertexColor(this.handle, c.getWcCode())
     }
 
-    public get alpha(){return this._color.a}
-    public set alpha(a: number){
+    get alpha(){return this._color.a}
+    set alpha(a: number){
         this._color.a = a
         BlzFrameSetAlpha(this.handle, Math.floor(255 * a))
     }
 
-    public get enable(){return this._enable}
-    public set enable(flag: boolean){
+    get enable(){return this._enable}
+    set enable(flag: boolean){
         this._enable = flag
         BlzFrameSetEnable(this.handle, flag)
     }
 
-    public addAction(event: Frame.Event,
+    click(){
+        BlzFrameClick(this.handle)
+    }
+
+    addAction(event: Frame.Event,
                      callback: (this: void,
                                 frame: Frame,
                                 event: Frame.Event,
@@ -122,7 +126,7 @@ export class Frame extends Handle<jframehandle> {
         return this._actions.get(event)?.add(callback)
     }
 
-    public removeAction(action: Action<[Frame, Frame.Event, jplayer], void>){
+    removeAction(action: Action<[Frame, Frame.Event, jplayer], void>){
         let found = false
         for (let [event, list] of this._actions){
             found = list.remove(action)
@@ -191,7 +195,7 @@ export class Frame extends Handle<jframehandle> {
     private _color: Color = new Color(1, 1, 1, 1)
     private _enable: boolean = true;
 
-    private _events: TriggerEvent[] = []
+    private _events: hTriggerEvent[] = []
     private _actions = new Map<Frame.Event, ActionList<[Frame, Frame.Event, jplayer]>>([
         ['CLICK',      new ActionList()],
         ['DOUBLECLICK',new ActionList()],
@@ -271,7 +275,7 @@ export class Frame extends Handle<jframehandle> {
     private static _updateTrigger(){
         Frame._trigger?.destroy()
 
-        let t = new Trigger()
+        let t = new hTrigger()
         t.addAction(Frame._runActions)
         for (let i = 0; i < Frame._trigger_events.length; i++){
             Frame._trigger_events[i].applyToTrigger(t)
@@ -280,12 +284,12 @@ export class Frame extends Handle<jframehandle> {
         Frame._trigger = t
     }
 
-    private static _trigger: Trigger | undefined = IsGame() ? (()=>{
-        let t = new Trigger()
+    private static _trigger: hTrigger | undefined = IsGame() ? (()=>{
+        let t = new hTrigger()
         t.addAction(Frame._runActions)
         return t
     })() : undefined;
-    private static _trigger_events: TriggerEvent[] = []
+    private static _trigger_events: hTriggerEvent[] = []
 }
 
 export namespace Frame {

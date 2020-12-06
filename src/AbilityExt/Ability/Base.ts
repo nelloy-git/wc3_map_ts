@@ -1,14 +1,14 @@
 import { Action } from "../../Utils";
-import { Unit } from '../../Handle'
+import { hUnit } from '../../Handle'
 import { Point } from '../Point'
 import { Type } from "../Type";
 
-export type Targets = (Unit | Point)[]
+export type Targets = (hUnit | Point)[]
 export type Event = 'START' | 'CASTING' | 'CANCEL' | 'INTERRUPT' | 'FINISH'
 
 export interface AbilityBase {
     readonly id: number;
-    readonly owner: Unit;
+    readonly owner: hUnit;
     readonly type: Type;
   
     targetingStart(pl: jplayer): void;

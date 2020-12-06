@@ -1,4 +1,4 @@
-import { Timer } from "../../Handle";
+import { hTimer } from "../../Handle";
 import { Log } from "../../Utils";
 import { OriginFrame } from './OriginFrame'
 
@@ -42,7 +42,7 @@ export class OriginCommandButton extends OriginFrame {
 
     private static _instance: (OriginFrame | undefined)[] = [];
     private static _init_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(() => {
             for (let i = 0; i < 12; i++){
                 let handle = BlzGetFrameByName("MiniMapFrame", 0)

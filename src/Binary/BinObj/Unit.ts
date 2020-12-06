@@ -1,9 +1,13 @@
 import { BinFile } from "../BinFile";
 import { BinObj } from "../BinObj";
 import { BinUnitField } from "../ObjField/Unit";
+import { byte2id } from "../Utils";
 
 export class BinUnit extends BinObj {
-    constructor(id: number, base: number){
+    constructor(id: number, base: number | string){
+        if (typeof id === 'string'){id = byte2id(id)}
+        if (typeof base === 'string'){base = byte2id(base)}
+
         super(id, base)
 
         BinUnit._file.add(this)

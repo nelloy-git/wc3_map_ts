@@ -1,4 +1,4 @@
-import { Timer } from "../Handle";
+import { hTimer } from "../Handle";
 import { Action, ActionList } from "../Utils";
 
 export class Screen {
@@ -47,13 +47,13 @@ export class Screen {
     }
 
     private static _init_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(() => {Screen._update(); t.destroy()})
-        t.start(0.01, false)
+        t.start(0.05, false)
     })() : undefined
 
     private static _update_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(Screen._update)
         t.start(1, true)
         return t

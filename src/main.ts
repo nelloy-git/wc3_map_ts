@@ -16,8 +16,8 @@ if (!IsGame()){
 }
 
 import { BinUnit, BinUnitField } from './Binary'
-import { Timer, Unit } from './Handle'
-import { id2int, Log } from './Utils'
+import { hTimer, hUnit } from './Handle'
+import { id2int, Log, Mat } from './Utils'
 import * as Utils from "./Utils"
 import { SimpleStatusBar, SimpleText } from './FrameExt'
 import { InterfaceAbilityPanel } from './Interface/Ability/Panel'
@@ -27,12 +27,26 @@ import { Ability, AbilityContainer } from './AbilityExt'
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
 
+
+let m1 = new Mat(3, 2, [
+    [1, 2, 4],
+    [2, 0, 3]
+])
+
+let m2 = new Mat(2, 3, [
+    [2, 5],
+    [1, 3],
+    [1, 1]
+])
+
+print(Mat.mult(m1, m2).data[0][1])
+
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()
 
-    let u = new Unit(bin_unit.id, 0, 0, Player(0))
+    let u = new hUnit(bin_unit.id, 0, 0, Player(0))
     let container = new AbilityContainer(u)
 
     let panel = new InterfaceAbilityPanel(5, 2)
@@ -41,4 +55,5 @@ if (IsGame()){
     
     let test_abil = new Ability(u, TestType)
     panel.setAbility(0, 0, test_abil)
+    panel.setKey(0, 0, OSKEY_Q)
 }

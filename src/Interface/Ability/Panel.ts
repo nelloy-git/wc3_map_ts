@@ -44,8 +44,12 @@ export class InterfaceAbilityPanel extends Backdrop {
         }
     }
 
-    setAbility(x: number, y: number, abil: Ability){
+    setAbility(x: number, y: number, abil: Ability | undefined){
         this._buttons[y][x].ability = abil
+    }
+
+    setKey(x: number, y: number, key: joskeytype | undefined){
+        this._buttons[y][x].key = key
     }
 
     private _cols

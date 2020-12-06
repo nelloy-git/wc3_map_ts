@@ -4,6 +4,7 @@ import { ActionList } from './ActionList'
 import { Color } from './Color'
 import { Import } from './Import'
 import { Logger } from './Logger'
+import { Mat } from './Mat'
 
 let Log = Logger.Default
 
@@ -13,6 +14,7 @@ export {
     Color,
     Import,
     Log,
+    Mat,
     
     int2id,
     id2int,

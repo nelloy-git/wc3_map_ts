@@ -2,7 +2,7 @@ import { BinObjField } from "../BinObjData"
 
 export class BinUnitField extends BinObjField {}
 
-export namespace UnitField {
+export namespace BinUnitField {
     export let AIPlacementRadius = new BinUnitField('uabr', 'real')
     export let AIPlacementType = new BinUnitField("uabt", 'string')
     export let AllowCustomTeamColor = new BinUnitField("utcc", 'bool')

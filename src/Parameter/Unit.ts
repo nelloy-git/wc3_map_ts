@@ -2,10 +2,10 @@ import { ParamContainer } from "./Container"
 import { ActionList, Log } from "../Utils";
 import { ParamType } from "./Type";
 import { ParamValueType } from "./Value";
-import { Unit } from "../Handle";
+import { hUnit } from "../Handle";
 
 export class ParamUnit extends ParamContainer {
-    constructor(owner: Unit){
+    constructor(owner: hUnit){
         super()
         this.owner = owner
         
@@ -16,7 +16,7 @@ export class ParamUnit extends ParamContainer {
         ParamUnit._owner2container.set(owner, this)
     }
 
-    static get (owner: Unit){
+    static get (owner: hUnit){
         return ParamUnit._owner2container.get(owner)
     }
 
@@ -54,8 +54,8 @@ export class ParamUnit extends ParamContainer {
         }
     }
 
-    readonly owner: Unit;
+    readonly owner: hUnit;
     protected _actions = new ActionList()
     
-    private static _owner2container = new Map<Unit, ParamUnit>()
+    private static _owner2container = new Map<hUnit, ParamUnit>()
 }

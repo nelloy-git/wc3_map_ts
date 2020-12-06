@@ -1,14 +1,14 @@
-import { Timer } from "../../Handle";
+import { hTimer } from "../../Handle";
 import { Log } from "../../Utils";
 import { OriginFrame } from './OriginFrame'
 
 /** Unique properties. */
 export class OriginMinimap extends OriginFrame {
-    public static instance(){return OriginMinimap._instance} 
+    static instance(){return OriginMinimap._instance} 
 
     private static _instance: OriginFrame | undefined;
     private static _init_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(() => {
             let handle = BlzGetFrameByName("MiniMapFrame", 0)
             if (!handle){return Log.err(OriginMinimap.name + 

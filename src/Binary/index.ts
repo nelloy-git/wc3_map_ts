@@ -1,7 +1,10 @@
 import { BinUnit } from './BinObj/Unit'
-import { UnitField } from './ObjField/Unit'
+import { BinUnitField } from './ObjField/Unit'
+import { getFreeId } from './Utils'
 
 export {
     BinUnit,
-    UnitField as BinUnitField
+    BinUnitField,
+
+    getFreeId
 }

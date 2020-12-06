@@ -1,3 +1,5 @@
+import { Log } from "../Utils";
+
 export type bytes = string;
 
 declare namespace string {
@@ -56,6 +58,10 @@ export function float2byte(float: number): bytes{
     return res
 }
 
+export function byte2id(data: bytes): number{
+    return string.unpack('>I4', data)
+}
+
 export function byte2int(data: bytes): number{
     return string.unpack('<I4', data)
 }
@@ -77,4 +83,50 @@ export function byte2float(data: bytes): number{
 
 function grab_byte(v: number): [number, string]{
     return [math.floor(v / 256), string.char(math.floor(v) % 256)]
+}
+
+declare namespace string {
+    function byte(str: string, i?: number): number
+}
+
+function nextId(cur_id: string){
+    let p4 = string.byte(cur_id, 1)
+    let p3 = string.byte(cur_id, 2)
+    let p2 = string.byte(cur_id, 3)
+    let p1 = string.byte(cur_id, 4)
+
+    if (p1 < 96){
+        p1++
+        while (p1 >= 48 && p1 <= 57){p1++}
+    } else if (p2 < 96) {
+        p1 = string.byte('!')
+        p2++
+        while (p2 >= 48 && p2 <= 57){p2++}
+    } else if (p3 < 96) {
+        p1 = string.byte('!')
+        p2 = string.byte('!')
+        p3++
+        while (p3 >= 48 && p3 <= 57){p3++}
+    } else {
+        Log.err('No valid ids left.', 2)
+    }
+    return string.char(p4) + string.char(p3) + string.char(p2) + string.char(p1)
+}
+
+type IdType = 'UNIT'|'HERO'|'ABIL'|'BUFF'|'ITEM'|'UPGR'
+let ID = new Map<IdType, string>([
+    ['UNIT', 'x###'],
+    ['HERO', 'HM##'],
+    ['ABIL', 'AM##'],
+    ['BUFF', 'BM##'],
+    ['ITEM', 'IM##'],
+    ['UPGR', 'RM##'],
+
+])
+
+export function getFreeId(type: IdType){
+    let CUR = ID.get(type) as string
+    CUR = nextId(CUR)
+    ID.set(type, CUR)
+    return byte2id(CUR)
 }

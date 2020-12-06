@@ -2,7 +2,7 @@ import { Ability, AbilityTargets, AbilityType, AbilityTypeCasting, AbilityTypeDa
 
 class TestCasting extends AbilityTypeCasting {
     start(abil: Ability): void {print('TestType: casting start')};
-    casting(abil: Ability): void {};
+    casting(abil: Ability, dt: number): void {};
     cancel(abil: Ability): void {print('TestType: casting cancel')};
     interrupt(abil: Ability): void {print('TestType: casting interrupt')};
     finish(abil: Ability): void {print('TestType: casting finish')};
@@ -19,7 +19,7 @@ class TestData extends AbilityTypeData {
     chargeMax(abil: Ability) {return 1}
     chargeCooldown(abil: Ability) {return 3}
     castingTime(abil: Ability) {return 1}
-    isAvailable(abil: Ability) {return true}
+    isAvailable(abil: Ability) {return abil.charges.count > 0}
     consume(abil: Ability) {abil.charges.count -= 1; return true}
     areTargetsValid(abil: Ability, targets: AbilityTargets): boolean {return true}
 }

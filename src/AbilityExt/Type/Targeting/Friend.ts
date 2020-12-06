@@ -1,5 +1,5 @@
 import { Mouse, Selection } from '../../../Input'
-import { ImageArc, Timer, Unit } from '../../../Handle'
+import { hImageArc, hTimer, hUnit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
 
 import { Targets } from '../../Ability/Base'
@@ -18,7 +18,7 @@ export class TargetingFriend extends Targeting {
         TargetingFriend.enable = false
         
         if (!targets){
-            let hovered = Unit.getMouseFocus()
+            let hovered = hUnit.getMouseFocus()
             if (!hovered){
                 this.cancel(GetLocalPlayer())
                 return
@@ -33,7 +33,7 @@ export class TargetingFriend extends Targeting {
         }
 
         if (targets.length != 1 || 
-            !(targets[0] instanceof Unit) ||
+            !(targets[0] instanceof hUnit) ||
             targets[0].isEnemy(abil.owner)){
 
             return Log.err(TargetingFriend.name + 
@@ -59,13 +59,13 @@ export class TargetingFriend extends Targeting {
     }
 
     private static _enabled = false
-    private static _circle = IsGame() ? new ImageArc(72) : undefined
+    private static _circle = IsGame() ? new hImageArc(72) : undefined
 
     // Mouse track
     private static _mouseTrack(this: void){
         if (!TargetingFriend._enabled){return}
 
-        let hovered = Unit.getMouseFocus()
+        let hovered = hUnit.getMouseFocus()
         let owner = Targeting.getActiveAbility(GetLocalPlayer())?.owner
 
         // Restore color if highlight color has not been changed.
@@ -113,8 +113,8 @@ export class TargetingFriend extends Targeting {
         }
     }
 
-    private static _mouseTimer = IsGame() ? (():Timer=>{
-        let t = new Timer()
+    private static _mouseTimer = IsGame() ? (():hTimer=>{
+        let t = new hTimer()
         t.addAction(TargetingFriend._mouseTrack)
         t.start(0.02, true)
         return t
@@ -122,7 +122,7 @@ export class TargetingFriend extends Targeting {
 
     private static _mouseAction = Mouse.addAction('UP', TargetingFriend._mouseClick)
 
-    private static _previous: Unit | undefined;
+    private static _previous: hUnit | undefined;
     private static _highlight: Color = new Color(0.3, 1, 0.3, 1);
     private static _prev_color: Color = new Color(1, 1, 1, 1);
 }

@@ -5,6 +5,8 @@ export class TimerObj {
     constructor(timer_list: TimerList){
         this._timer_list = timer_list
     }
+    
+    pause: boolean = false
 
     get timeLeft(){return this._end - this._timer_list.time}
     set timeLeft(left: number){
@@ -14,7 +16,8 @@ export class TimerObj {
             this._end = this._timer_list.time + left
         }
     }
-    pause: boolean = false
+
+    get fullTime(){return this._end - this._start}
 
     start(timeout: number){
         this._start = this._timer_list.time

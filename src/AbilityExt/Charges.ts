@@ -1,5 +1,5 @@
 import { Action, ActionList } from '../Utils'
-import { TimerList } from '../Handle'
+import { hTimerList } from '../Handle'
 
 export class Charges {
     constructor(){
@@ -75,7 +75,7 @@ export class Charges {
         ['COUNT_CHANGED', new ActionList()],
     ])
 
-    private static _timer_list = new TimerList(0.05)
+    private static _timer_list = new hTimerList(0.05)
 }
 
 export namespace Charges {

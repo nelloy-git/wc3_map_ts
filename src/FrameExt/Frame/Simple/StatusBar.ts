@@ -32,7 +32,7 @@ export class SimpleStatusBar extends Frame {
             this._texture = ''
         }
 
-        this._scale = 0
+        this._fullness = 0
         this._texture_flags = 0
         this._texture_blend = true
         this._elements = new Map()
@@ -59,10 +59,10 @@ export class SimpleStatusBar extends Frame {
         BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    get scale(){return this._scale}
-    set scale(scale: number){
-        this._scale = scale < 0 ? 0 : scale > 1 ? 1 : scale
-        BlzFrameSetValue(this.handle, 100 * this._scale)
+    get fullness(){return this._fullness}
+    set fullness(fullness: number){
+        this._fullness = fullness < 0 ? 0 : fullness > 1 ? 1 : fullness
+        BlzFrameSetValue(this.handle, 100 * this._fullness)
     }
 
     getElement(elem: 'BACKGROUND'): SimpleTexture | undefined
@@ -84,7 +84,7 @@ export class SimpleStatusBar extends Frame {
     private _texture: string;
     private _texture_flags: number;
     private _texture_blend: boolean;
-    private _scale: number;
+    private _fullness: number;
     private _elements: Map<SimpleStatusBar.Element, SimpleTexture | SimpleString>;
 
     private static _default_fdf = (()=>{

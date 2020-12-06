@@ -1,11 +1,11 @@
 import { Ability, AbilityTypeTargeting } from "../../AbilityExt";
-import { Event } from "../../AbilityExt/Ability/Base";
 import { Charges } from "../../AbilityExt/Charges";
-import { Backdrop, GlueTextButton } from '../../FrameExt'
+import { GlueTextButton } from '../../FrameExt'
 import { Frame } from "../../FrameExt";
 import { Action } from "../../Utils";
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
+import { InterfaceHotkey } from '../Utils/Hotkey'
 
 export class InterfaceAbilityButton extends GlueTextButton {
     constructor(){
@@ -13,12 +13,18 @@ export class InterfaceAbilityButton extends GlueTextButton {
 
         this._charges.parent = this
         this._charges.visible = false
-        this._charges.pos = [0, 0]
+        this._charges.pos = [0, 0.75 * this.size[1]]
         this._charges.level = this.level + 1
 
         this._cooldown.parent = this
         this._cooldown.visible = false
         this._cooldown.pos = [0, 0]
+
+        this._hotkey.parent = this
+        this._hotkey.visible = true
+        this._hotkey.pos = [0, 0]
+        this._hotkey.size = [0.3 * this.size[0], 0.25 * this.size[1]]
+        this._hotkey.action = (pl, meta, is_down)=>{this._hotkeyUsed(pl, meta, is_down)}
 
         this.size = this.size
         this.visible = false
@@ -32,6 +38,8 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this._charges.size = [0.3 * size[0], 0.25 * size[1]]
         this._charges.pos = [0, 0.75 * size[1]]
 
+        this._hotkey.size = [0.3 * size[0], 0.25 * size[1]]
+
         this._cooldown.size = size
     }
 
@@ -40,6 +48,11 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this._clearAbility()
         this._applyAbility(abil)
     }
+
+    get key(){return this._hotkey.key}
+    set key(key: joskeytype | undefined){this._hotkey.key = key}
+
+    smartCast: boolean = true
 
     private _clearAbility(){
         if (!this._abil){return}
@@ -77,9 +90,26 @@ export class InterfaceAbilityButton extends GlueTextButton {
 
         let active = AbilityTypeTargeting.getActiveAbility(pl)
         if (this._abil == active){
-            this._abil.targetingCancel(pl)
+            this._abil.targetingFinish(pl)
         } else {
             this._abil.targetingStart(pl)
+        }
+    }
+
+    private _hotkeyUsed(pl: jplayer, meta: number, is_down: boolean){
+        if (!this._abil){return}
+        let active = AbilityTypeTargeting.getActiveAbility(pl)
+
+        if (this.smartCast){
+            if (is_down && this._abil != active){
+                this._abil.targetingStart(pl)
+                return
+            } else if (!is_down && this._abil == active){
+                this._abil.targetingFinish(pl)
+                return
+            }
+        } else {
+            // TODO
         }
     }
 
@@ -87,5 +117,6 @@ export class InterfaceAbilityButton extends GlueTextButton {
 
     private _charges = new InterfaceAbilityCharges()
     private _cooldown = new InterfaceAbilityCooldown()
+    private _hotkey = new InterfaceHotkey()
     private _charges_changed_action: Action<[Charges, Charges.Event], void> | undefined;
 }

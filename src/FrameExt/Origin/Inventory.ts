@@ -1,4 +1,4 @@
-import { Timer } from "../../Handle";
+import { hTimer } from "../../Handle";
 import { Log } from "../../Utils";
 import { OriginFrame } from './OriginFrame'
 
@@ -8,7 +8,7 @@ export class OriginInventory extends OriginFrame {
 
     private static _instance: OriginFrame | undefined;
     private static _init_timer = IsGame() ? (() => {
-        let t = new Timer()
+        let t = new hTimer()
         t.addAction(() => {
             let item_btn = BlzGetOriginFrame(ORIGIN_FRAME_ITEM_BUTTON, 0)
             if (!item_btn){return Log.err(OriginInventory.name + 

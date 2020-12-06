@@ -1,5 +1,5 @@
 import { SimpleStatusBar } from "../../FrameExt";
-import { TimerList } from "../../Handle";
+import { hTimerList } from "../../Handle";
 import { Action, float2str } from "../../Utils";
 
 export class InterfaceAutoBar extends SimpleStatusBar {
@@ -41,12 +41,12 @@ export class InterfaceAutoBar extends SimpleStatusBar {
             text += '(' + float2str(100 * part, 1) + '%) '
         }
 
-        this.scale = part
+        this.fullness = part
     }
 
     private _cur_getter: Action<[], number>;
     private _max_getter: Action<[], number>;
     private _timer_obj;
 
-    private static _timer_list: TimerList = new TimerList(0.025);
+    private static _timer_list: hTimerList = new hTimerList(0.025);
 }

@@ -14,7 +14,7 @@ export class Unit extends Handle<junit>{
         this._attack_cooldown_default = BlzGetUnitAttackCooldown(this.handle, 0)
     }
 
-    public static get(id: junit | number){
+    static get(id: junit | number){
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'unit'){
@@ -23,9 +23,19 @@ export class Unit extends Handle<junit>{
         return <Unit> instance
     }
 
-    public static getMouseFocus(){
-        let focus = BlzGetMouseFocusUnit()
-        return focus ? Unit.get(focus) : undefined
+    static getMouseFocus(){
+        let u = BlzGetMouseFocusUnit()
+        return u ? Unit.get(u) : undefined
+    }
+
+    static getDamageSource(){
+        let u = GetEventDamageSource()
+        return u ? Unit.get(u) : undefined
+    }
+
+    static getDamageTarget(){
+        let u = BlzGetEventDamageTarget()
+        return u ? Unit.get(u) : undefined
     }
 
     get x(){return GetUnitX(this.handle)}
@@ -80,8 +90,8 @@ export class Unit extends Handle<junit>{
     get moveSpeed(){return GetUnitMoveSpeed(this.handle)}
     set moveSpeed(val: number){SetUnitMoveSpeed(this.handle, val)}
 
-    public get color(){return new Color(this._color)}
-    public set color(color: Color){
+    get color(){return new Color(this._color)}
+    set color(color: Color){
         this._color = new Color(color)
         SetUnitVertexColor(this.handle, math.floor(255 * color.r),
                                         math.floor(255 * color.g),
@@ -89,16 +99,24 @@ export class Unit extends Handle<junit>{
                                         math.floor(255 * color.a))
     }
 
-    public get owner(){return GetOwningPlayer(this.handle)}
-    public set owner(player: jplayer){SetUnitOwner(this.handle, player, true)}
 
-    public get typeId(){return this._type_id}
 
-    public isEnemy(other: Unit){return IsUnitEnemy(this.handle, other.owner)}
-    public isAlly(other: Unit){return IsUnitAlly(this.handle, other.owner)}
+    get owner(){return GetOwningPlayer(this.handle)}
+    set owner(player: jplayer){SetUnitOwner(this.handle, player, true)}
 
-    public setAnimation(index: number){SetUnitAnimationByIndex(this.handle, index)}
-    public getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}
+    get modelScale(){return this._modelScale}
+    set modelScale(scale: number){
+        this._modelScale = scale
+        SetUnitScale(this.handle, scale, scale, scale)
+    }
+
+    get typeId(){return this._type_id}
+
+    isEnemy(other: Unit){return IsUnitEnemy(this.handle, other.owner)}
+    isAlly(other: Unit){return IsUnitAlly(this.handle, other.owner)}
+
+    setAnimation(index: number){SetUnitAnimationByIndex(this.handle, index)}
+    getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}
 
     destroy(){
         RemoveUnit(this.handle)
@@ -109,4 +127,5 @@ export class Unit extends Handle<junit>{
     private _color: Color = new Color(1, 1, 1, 1);
     private _dispersion_damage: number = 0.3;
     private _attack_cooldown_default: number;
+    private _modelScale: number = 1;
 }
