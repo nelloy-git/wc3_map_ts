@@ -1,4 +1,4 @@
-import { Ability, AbilityTargets, AbilityTypeCasting, AbilityTypeData } from "../AbilityExt";
+import { Ability, AbilityType, AbilityTypeCasting, AbilityTypeData, AbilityTypeTargetingFriend } from "../AbilityExt";
 import { Buff, BuffContainer, BuffType } from "../Buff";
 import { hUnit } from "../Handle";
 import { ParamsUnit, Shield } from "../Parameter";
@@ -21,18 +21,14 @@ class AbilBuff extends BuffType<Shield> {
     tooltip(buff: Buff<Shield>){return ''}
 }
 
-class Casting extends AbilityTypeCasting<hUnit> {
-    start(abil: Ability<hUnit>): void {};
-    casting(abil: Ability<hUnit>, dt: number): void {};
-    cancel(abil: Ability<hUnit>): void {};
-    interrupt(abil: Ability<hUnit>): void {};
-    finish(abil: Ability<hUnit>): void {
-        let targ_list = abil.getTargets()
-        if (!targ_list ||
-            targ_list.length != 1 ||
-            !(targ_list[0] instanceof hUnit)){return}
+class Casting extends AbilityTypeCasting<[hUnit]> {
+    start(abil: Ability<[hUnit]>): void {};
+    casting(abil: Ability<[hUnit]>, dt: number): void {};
+    cancel(abil: Ability<[hUnit]>): void {};
+    interrupt(abil: Ability<[hUnit]>): void {};
+    finish(abil: Ability<[hUnit]>): void {
+        let targ = abil.getTarget()[0]
 
-        let targ = targ_list[0]
         let params = ParamsUnit.get(targ)
         let buffs = BuffContainer.get(targ)
         if (!params || !buffs){return}
@@ -46,20 +42,23 @@ class Casting extends AbilityTypeCasting<hUnit> {
 
         buffs.add<Shield>(abil.owner, time, AbilBuff.instance, shield)
     };
+    isTargetValid(abil: Ability<[hUnit]>, target: [hUnit]): boolean {return true}
 }
 
 class Data extends AbilityTypeData {
-    name(abil: Ability): string {return ''}
-    iconNormal(abil: Ability): string {return ''}
-    iconDisabled(abil: Ability): string {return ''}
-    tooltip(abil: Ability): string {return ''}
-    lifeCost(abil: Ability): number {return 0}
-    manaCost(abil: Ability): number {return 0}
-    chargeUsed(abil: Ability): number {return 0}
-    chargeMax(abil: Ability): number {return 0}
-    chargeCooldown(abil: Ability): number {return 0}
-    castingTime(abil: Ability): number {return 0}
-    isAvailable(abil: Ability): boolean {return true}
-    consume(abil: Ability): boolean {return true}
-    areTargetsValid(abil: Ability, targets: AbilityTargets): boolean {return true}
+    name(abil: Ability<[hUnit]>): string {return ''}
+    iconNormal(abil: Ability<[hUnit]>): string {return ''}
+    iconDisabled(abil: Ability<[hUnit]>): string {return ''}
+    tooltip(abil: Ability<[hUnit]>): string {return ''}
+    lifeCost(abil: Ability<[hUnit]>): number {return 0}
+    manaCost(abil: Ability<[hUnit]>): number {return 0}
+    chargeUsed(abil: Ability<[hUnit]>): number {return 0}
+    chargeMax(abil: Ability<[hUnit]>): number {return 0}
+    chargeCooldown(abil: Ability<[hUnit]>): number {return 0}
+    castingTime(abil: Ability<[hUnit]>): number {return 0}
+    isAvailable(abil: Ability<[hUnit]>): boolean {return true}
+    consume(abil: Ability<[hUnit]>): boolean {return true}
 }
+
+let Type = new AbilityType(new Casting(), new Data(), new AbilityTypeTargetingFriend())
+export {Type}

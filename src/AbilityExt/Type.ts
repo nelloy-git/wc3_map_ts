@@ -1,16 +1,16 @@
-import { AbilityBase } from './Ability/Base'
+import { AbilityIFace, TargetType } from './Ability/IFace'
 import { Casting } from './Type/Casting'
 import { Data } from './Type/Data'
 import { Targeting } from './Type/Targeting'
 
-export class Type<TargType extends AbilityBase.TargType> {
-    constructor(casting: Casting<TargType>, data: Data<TargType>, targeting: Targeting<TargType>){
+export class Type<T extends TargetType> {
+    constructor(casting: Casting<T>, data: Data, targeting: Targeting<T>){
         this.casting = casting
         this.data = data
         this.targeting = targeting
     }
 
-    readonly casting: Casting<TargType>;
-    readonly data: Data<TargType>;
-    readonly targeting: Targeting<TargType>;
+    readonly casting: Casting<T>;
+    readonly data: Data;
+    readonly targeting: Targeting<T>;
 }

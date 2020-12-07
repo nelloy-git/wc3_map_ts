@@ -1,9 +1,10 @@
-import { AbilityBase } from '../Ability/Base'
+import { AbilityIFace, TargetType } from '../Ability/IFace'
 
-export abstract class Casting<TargType extends AbilityBase.TargType> {
-    abstract start(abil: AbilityBase<TargType>): void;
-    abstract casting(abil: AbilityBase<TargType>, dt: number): void;
-    abstract cancel(abil: AbilityBase<TargType>): void;
-    abstract interrupt(abil: AbilityBase<TargType>): void;
-    abstract finish(abil: AbilityBase<TargType>): void;
+export abstract class Casting<T extends TargetType> {
+    abstract start(abil: AbilityIFace): void;
+    abstract casting(abil: AbilityIFace, dt: number): void;
+    abstract cancel(abil: AbilityIFace): void;
+    abstract interrupt(abil: AbilityIFace): void;
+    abstract finish(abil: AbilityIFace): void;
+    abstract isTargetValid(abil: AbilityIFace, target: T): boolean
 }

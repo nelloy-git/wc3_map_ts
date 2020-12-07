@@ -1,4 +1,4 @@
-import { Ability } from "../../AbilityExt";
+import { AbilityIFace } from "../../AbilityExt";
 import { Backdrop, FdfBackdrop } from "../../FrameExt";
 import { InterfaceAbilityButton } from "./Button";
 
@@ -44,7 +44,7 @@ export class InterfaceAbilityPanel extends Backdrop {
         }
     }
 
-    setAbility(x: number, y: number, abil: Ability | undefined){
+    setAbility(x: number, y: number, abil: AbilityIFace | undefined){
         this._buttons[y][x].ability = abil
     }
 

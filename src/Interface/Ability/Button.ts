@@ -1,4 +1,4 @@
-import { Ability, AbilityTypeTargeting } from "../../AbilityExt";
+import { AbilityIFace, AbilityTypeTargeting } from "../../AbilityExt";
 import { Charges } from "../../AbilityExt/Charges";
 import { GlueTextButton } from '../../FrameExt'
 import { Frame } from "../../FrameExt";
@@ -44,7 +44,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     get ability(){return this._abil}
-    set ability(abil: Ability | undefined){
+    set ability(abil: AbilityIFace | undefined){
         this._clearAbility()
         this._applyAbility(abil)
     }
@@ -63,7 +63,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this.visible = false
     }
 
-    private _applyAbility(abil: Ability | undefined){
+    private _applyAbility(abil: AbilityIFace | undefined){
         this._abil = abil
         this._charges.ability = abil
         this._cooldown.ability = abil
@@ -113,7 +113,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
         }
     }
 
-    private _abil: Ability | undefined
+    private _abil: AbilityIFace | undefined
 
     private _charges = new InterfaceAbilityCharges()
     private _cooldown = new InterfaceAbilityCooldown()

@@ -16,7 +16,7 @@ export class OriginMinimap extends OriginFrame {
 
             let is_simple = false
             BlzFrameClearAllPoints(handle)
-            BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+            BlzFrameSetParent(handle, undefined)
 
             OriginMinimap._instance = new OriginMinimap(handle, is_simple)
             t.destroy()

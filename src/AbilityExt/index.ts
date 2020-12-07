@@ -1,5 +1,5 @@
 import { Ability } from './Ability'
-import { Targets as AbilityTargets } from './Ability/Base'
+import { AbilityIFace } from './Ability/IFace'
 import { Charges as AbilityCharges } from './Charges'
 import { Container as AbilityContainer } from './Container'
 
@@ -13,7 +13,7 @@ export {
     Ability,
     AbilityCharges,
     AbilityContainer,
-    AbilityTargets,
+    AbilityIFace,
 
     AbilityType,
     AbilityTypeCasting,

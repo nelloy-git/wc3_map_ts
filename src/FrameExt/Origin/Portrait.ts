@@ -2,13 +2,14 @@ import { Screen } from "../Screen";
 import { hTimer } from "../../Handle";
 import { Log } from "../../Utils";
 import { OriginFrame } from './OriginFrame'
+import { Frame } from "..";
 
 /** Unique properties. */
 export class OriginPortrait extends OriginFrame {
-    public static instance(){return OriginPortrait._instance} 
+    static instance(){return OriginPortrait._instance} 
 
-    public get pos(){return [this.__x, this.__y]}
-    public set pos(pos: [x: number, y: number]){
+    get pos(){return [this.__x, this.__y]}
+    set pos(pos: [x: number, y: number]){
         [this.__x, this.__y] = pos
         let [px, py] = this.parent ? this.parent.absPos : [0, 0]
 
@@ -27,8 +28,8 @@ export class OriginPortrait extends OriginFrame {
         this._set_size([real_w, real_h])
     }
 
-    public get size(){return [this.__w, this.__h]}
-    public set size(size: [w: number, h: number]){
+    get size(){return [this.__w, this.__h]}
+    set size(size: [w: number, h: number]){
         [this.__w, this.__h] = size
 
         let [real_x, real_y] = this._get_pos()
@@ -43,6 +44,12 @@ export class OriginPortrait extends OriginFrame {
         this._set_size([real_w, real_h])
     }
 
+    get parent(){return null}
+    set parent(parent: Frame | null){
+        Log.err(OriginPortrait.name + 
+                ': parentness disabled.')
+    }
+    
     private __x: number = 0
     private __y: number = 0
     private __w: number = 0
@@ -58,7 +65,7 @@ export class OriginPortrait extends OriginFrame {
                                         ': static instance has not been crated')}
             
             BlzFrameClearAllPoints(handle)
-            BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+            BlzFrameSetParent(handle, undefined)
 
             OriginPortrait._instance = new OriginPortrait(handle, is_simple)
             OriginPortrait._instance.pos = [0, 0]

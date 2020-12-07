@@ -1,8 +1,8 @@
 import { Log } from '../../Utils'
-import { AbilityBase } from '../Ability/Base'
+import { AbilityIFace, TargetType } from '../Ability/IFace'
 import { SyncTargets } from './SyncTargets'
 
-export abstract class Targeting<TargType extends AbilityBase.TargType> {
+export abstract class Targeting<T extends TargetType> {
 
     static cancelActive(pl: jplayer){
         let cur = Targeting._current[GetPlayerId(pl)]
@@ -18,7 +18,7 @@ export abstract class Targeting<TargType extends AbilityBase.TargType> {
     }
 
     /* Final function */
-    readonly start = (pl: jplayer, abil: AbilityBase<TargType>) => {
+    readonly start = (pl: jplayer, abil: AbilityIFace) => {
         let pl_id = GetPlayerId(pl)
 
         Targeting.cancelActive(pl)
@@ -49,7 +49,7 @@ export abstract class Targeting<TargType extends AbilityBase.TargType> {
 
     /** Final function.
         Use 'targets == Unit[]' to force targets. */
-    readonly finish = (pl: jplayer, targets?: TargType): void => {
+    readonly finish = (pl: jplayer, targets?: T): void => {
         let pl_id = GetPlayerId(pl)
         if (Targeting._current[pl_id] != this){
             return Log.err(Targeting.name + 
@@ -76,14 +76,14 @@ export abstract class Targeting<TargType extends AbilityBase.TargType> {
     protected abstract _start(): void
     protected abstract _cancel(): void
     /** 'targets = undefined' should capture targets by itself. */
-    protected abstract _finish(targets?: TargType): TargType | undefined
+    protected abstract _finish(targets?: T): T | undefined
 
     private static _current: (Targeting<any> | undefined)[] = [];
-    private static _abil: (AbilityBase<any> | undefined)[] = [];
+    private static _abil: (AbilityIFace | undefined)[] = [];
 
     private static _syncer = IsGame() ? (():SyncTargets => {
         let sync = new SyncTargets()
-        sync.addAction((pl: jplayer, abil: AbilityBase<any>, targets: AbilityBase.TargType) => {
+        sync.addAction((pl: jplayer, abil: AbilityIFace, targets: TargetType) => {
             abil.castingStart(targets)
         })
         return sync

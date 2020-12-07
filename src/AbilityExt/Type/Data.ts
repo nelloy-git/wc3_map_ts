@@ -1,17 +1,16 @@
-import { AbilityBase } from '../Ability/Base'
+import { AbilityIFace, TargetType } from '../Ability/IFace'
 
-export abstract class Data<TargType extends AbilityBase.TargType> {
-    abstract name(abil: AbilityBase<TargType>): string
-    abstract iconNormal(abil: AbilityBase<TargType>): string
-    abstract iconDisabled(abil: AbilityBase<TargType>): string
-    abstract tooltip(abil: AbilityBase<TargType>): string
-    abstract lifeCost(abil: AbilityBase<TargType>): number
-    abstract manaCost(abil: AbilityBase<TargType>): number
-    abstract chargeUsed(abil: AbilityBase<TargType>): number
-    abstract chargeMax(abil: AbilityBase<TargType>): number
-    abstract chargeCooldown(abil: AbilityBase<TargType>): number
-    abstract castingTime(abil: AbilityBase<TargType>): number
-    abstract isAvailable(abil: AbilityBase<TargType>): boolean
-    abstract consume(abil: AbilityBase<TargType>): boolean
-    abstract areTargetsValid(abil: AbilityBase<TargType>, targets: TargType): boolean
+export abstract class Data {
+    abstract name(abil: AbilityIFace): string
+    abstract iconNormal(abil: AbilityIFace): string
+    abstract iconDisabled(abil: AbilityIFace): string
+    abstract tooltip(abil: AbilityIFace): string
+    abstract lifeCost(abil: AbilityIFace): number
+    abstract manaCost(abil: AbilityIFace): number
+    abstract chargeUsed(abil: AbilityIFace): number
+    abstract chargeMax(abil: AbilityIFace): number
+    abstract chargeCooldown(abil: AbilityIFace): number
+    abstract castingTime(abil: AbilityIFace): number
+    abstract isAvailable(abil: AbilityIFace): boolean
+    abstract consume(abil: AbilityIFace): boolean
 }

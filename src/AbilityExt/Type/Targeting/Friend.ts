@@ -3,7 +3,7 @@ import { hImageArc, hTimer, hUnit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
 import { Targeting } from '../Targeting'
 
-export class TargetingFriend extends Targeting<hUnit> {
+export class TargetingFriend extends Targeting<[hUnit]> {
     protected _start(){
         TargetingFriend.enable = true
     }
@@ -12,7 +12,7 @@ export class TargetingFriend extends Targeting<hUnit> {
         TargetingFriend.enable = false
     }
 
-    protected _finish(target?: hUnit){
+    protected _finish(target?: [hUnit]){
         TargetingFriend.enable = false
 
         let abil = Targeting.getActiveAbility(GetLocalPlayer())
@@ -27,7 +27,7 @@ export class TargetingFriend extends Targeting<hUnit> {
                 this.cancel(GetLocalPlayer())
                 return
             }
-            target = hovered
+            target = [hovered]
         }
 
         return target

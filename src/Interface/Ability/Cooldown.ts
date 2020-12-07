@@ -1,5 +1,5 @@
 import { Action } from '../../Utils'
-import { Ability, AbilityCharges} from "../../AbilityExt";
+import { AbilityIFace, AbilityCharges} from "../../AbilityExt";
 import { SimpleImage, SimpleText } from "../../FrameExt";
 import { float2str } from '../../Utils';
 
@@ -26,7 +26,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     }
 
     get ability(){return this._abil}
-    set ability(abil: Ability | undefined){
+    set ability(abil: AbilityIFace | undefined){
         if (this._charges){
             this._charges?.removeAction(this._changed_action)
             this._charges?.removeAction(this._cooldown_action)
@@ -63,7 +63,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     private _size: [number, number] = this._get_size();
 
     private _cd_part: number = 0;
-    private _abil: Ability | undefined;
+    private _abil: AbilityIFace | undefined;
     private _charges: AbilityCharges | undefined;
     private _changed_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined;
     private _cooldown_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined

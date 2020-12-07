@@ -1,5 +1,5 @@
 import { Action } from '../../Utils'
-import { Ability, AbilityCharges} from "../../AbilityExt";
+import { AbilityIFace, AbilityCharges} from "../../AbilityExt";
 import { Backdrop, SimpleText } from "../../FrameExt";
 
 export class InterfaceAbilityCharges extends Backdrop {
@@ -23,7 +23,7 @@ export class InterfaceAbilityCharges extends Backdrop {
     }
 
     get ability(){return this._abil}
-    set ability(abil: Ability | undefined){
+    set ability(abil: AbilityIFace | undefined){
         if (this._charges){
             this._charges.removeAction(this._charges_action)
         }
@@ -48,7 +48,7 @@ export class InterfaceAbilityCharges extends Backdrop {
         }
     }
 
-    private _abil: Ability | undefined;
+    private _abil: AbilityIFace | undefined;
     private _charges: AbilityCharges | undefined;
     private _charges_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined;
 

@@ -16,13 +16,11 @@ if (!IsGame()){
 }
 
 import { BinUnit, BinUnitField } from './Binary'
-import { hTimer, hUnit } from './Handle'
-import { id2int, Log, Mat } from './Utils'
+import { hUnit } from './Handle'
+import { id2int} from './Utils'
 import * as Utils from "./Utils"
-import { SimpleStatusBar, SimpleText } from './FrameExt'
-import { InterfaceAbilityPanel } from './Interface/Ability/Panel'
-import { TestType } from './AbilityExt/TestType'
-import { Ability, AbilityContainer } from './AbilityExt'
+import { AbilityContainer } from './AbilityExt'
+import { Init } from './Interface/Init'
 
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
@@ -35,11 +33,5 @@ if (IsGame()){
     let u = new hUnit(bin_unit.id, 0, 0, Player(0))
     let container = new AbilityContainer(u)
 
-    let panel = new InterfaceAbilityPanel(5, 2)
-    panel.pos = [0, 0.52]
-    panel.size = [0.2, 0.08]
-    
-    let test_abil = new Ability(u, TestType)
-    panel.setAbility(0, 0, test_abil)
-    panel.setKey(0, 0, OSKEY_Q)
+    Init()
 }

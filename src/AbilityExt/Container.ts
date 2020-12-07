@@ -15,7 +15,7 @@ export class Container {
     public get list(){return this._list}
 
     readonly owner: hUnit;
-    private _list = new Map<number, Ability>()
+    private _list = new Map<number, Ability<Ability.Target>>()
 
     private static _owner2container = new Map<hUnit, Container>()
 }
