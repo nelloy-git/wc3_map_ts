@@ -1,11 +1,9 @@
 import { Mouse, Selection } from '../../../Input'
 import { hImageArc, hTimer, hUnit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
-
-import { Targets } from '../../Ability/Base'
 import { Targeting } from '../Targeting'
 
-export class TargetingFriend extends Targeting {
+export class TargetingFriend extends Targeting<hUnit> {
     protected _start(){
         TargetingFriend.enable = true
     }
@@ -14,33 +12,25 @@ export class TargetingFriend extends Targeting {
         TargetingFriend.enable = false
     }
 
-    protected _finish(targets?: Targets){
+    protected _finish(target?: hUnit){
         TargetingFriend.enable = false
-        
-        if (!targets){
-            let hovered = hUnit.getMouseFocus()
-            if (!hovered){
-                this.cancel(GetLocalPlayer())
-                return
-            }
-            targets = hovered ? [hovered] : []
-        }
 
         let abil = Targeting.getActiveAbility(GetLocalPlayer())
         if (!abil){
             return Log.err(TargetingFriend.name + 
                            ': to finish targeting start it first.', 2)
         }
-
-        if (targets.length != 1 || 
-            !(targets[0] instanceof hUnit) ||
-            targets[0].isEnemy(abil.owner)){
-
-            return Log.err(TargetingFriend.name + 
-                           ': can apply only 1 friendly Unit.', 3)
+        
+        if (!target){
+            let hovered = hUnit.getMouseFocus()
+            if (!hovered || hovered.isEnemy(abil.owner)){
+                this.cancel(GetLocalPlayer())
+                return
+            }
+            target = hovered
         }
 
-        return targets
+        return target
     }
 
     private static get enable(){return TargetingFriend._enabled}

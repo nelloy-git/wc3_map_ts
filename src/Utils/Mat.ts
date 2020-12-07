@@ -59,6 +59,19 @@ export class Mat {
         return new Mat(m2.cols, m1.rows, data)
     }
 
+    toString(){
+        let res = 'Mat: [\n'
+        for (let i = 0; i < this.rows; i++){
+            res += '[' +  this.data[i][0].toString()
+            for (let j = 1; j < this.cols; j++){
+                res += ', ' + this.data[i][j].toString()
+            }
+            res += ']\n'
+        }
+
+        return res + ']'
+    }
+
     data: number[][]
     readonly cols: number
     readonly rows: number

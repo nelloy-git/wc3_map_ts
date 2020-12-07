@@ -1,34 +1,34 @@
-import { ParamType } from "./Type";
+import { Parameter } from "./Parameter";
 import { ParamValue, ParamValueType } from "./Value";
 
 export class ParamContainer{
 
-    get (param: ParamType, type: ParamValueType){
+    get(param: Parameter.Type, type: ParamValueType){
         return this._values.get(param)?.get(type) as number
     }
 
-    set (param: ParamType, type: ParamValueType, val: number){
+    set(param: Parameter.Type, type: ParamValueType, val: number){
         return this._values.get(param)?.set(type, val) as number
     }
 
-    add (param: ParamType, type: ParamValueType, val: number){
+    add(param: Parameter.Type, type: ParamValueType, val: number){
         return this._values.get(param)?.add(type, val) as number
     }
 
-    protected _values = new Map<ParamType, ParamValue>([
-        [ParamType.PATK, new ParamValue()],
-        [ParamType.PSPD, new ParamValue()],
-        [ParamType.PDEF, new ParamValue()],
-        [ParamType.PRES, new ParamValue()],
-        [ParamType.MATK, new ParamValue()],
-        [ParamType.MSPD, new ParamValue()],
-        [ParamType.MDEF, new ParamValue()],
-        [ParamType.MRES, new ParamValue()],
-        [ParamType.CRIT, new ParamValue()],
-        [ParamType.LIFE, new ParamValue()],
-        [ParamType.REGE, new ParamValue()],
-        [ParamType.MANA, new ParamValue()],
-        [ParamType.RECO, new ParamValue()],
-        [ParamType.MOVE, new ParamValue()],
+    protected _values = new Map<Parameter.Type, ParamValue>([
+        ['PATK', new ParamValue()],
+        ['PSPD', new ParamValue()],
+        ['PDEF', new ParamValue()],
+        ['PRES', new ParamValue()],
+        ['MATK', new ParamValue()],
+        ['MSPD', new ParamValue()],
+        ['MDEF', new ParamValue()],
+        ['MRES', new ParamValue()],
+        ['CRIT', new ParamValue()],
+        ['LIFE', new ParamValue()],
+        ['REGE', new ParamValue()],
+        ['MANA', new ParamValue()],
+        ['RECO', new ParamValue()],
+        ['MOVE', new ParamValue()],
     ])
 }

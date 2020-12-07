@@ -3,7 +3,9 @@ import {Mouse} from './Mouse'
 import {Selection} from './Selection'
 import {SyncData} from './SyncData'
 
-export {Keyboard}
-export {Mouse}
-export {Selection}
-export {SyncData}
+export {
+    Keyboard,
+    Mouse,
+    Selection,
+    SyncData
+}

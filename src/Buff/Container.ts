@@ -1,11 +1,14 @@
 import { hUnit } from "../Handle";
-import { Unit } from "../Handle/Unit";
 import { Buff } from './Buff'
 import { Type } from "./Type";
 
 export class Container {
     constructor(owner: hUnit){
         this._owner = owner
+        Container._owner2container.set(owner, this)
+    }
+    static get(owner: hUnit){
+        return Container._owner2container.get(owner)
     }
 
     get owner(){return this._owner}
@@ -16,7 +19,7 @@ export class Container {
         return copy
     }
 
-    add<T>(src: Unit, dur: number, type: Type<T>, data: T){
+    add<T>(src: hUnit, dur: number, type: Type<T>, data: T){
         let buff = new Buff<T>(src, this._owner, type, data)
         buff.addAction('CANCEL', ()=>{this.remove(buff)})
         buff.addAction('FINISH', ()=>{this.remove(buff)})
@@ -37,7 +40,8 @@ export class Container {
         return true
     }
 
-    private _owner: Unit
-    
+    private _owner: hUnit
     private _list: Buff<any>[] = []
+
+    private static _owner2container = new Map<hUnit, Container>()
 }

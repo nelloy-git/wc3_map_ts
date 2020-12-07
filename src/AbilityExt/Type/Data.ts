@@ -1,17 +1,17 @@
-import { AbilityBase, Targets } from '../Ability/Base'
+import { AbilityBase } from '../Ability/Base'
 
-export abstract class Data {
-    public abstract name(abil: AbilityBase): string
-    public abstract iconNormal(abil: AbilityBase): string
-    public abstract iconDisabled(abil: AbilityBase): string
-    public abstract tooltip(abil: AbilityBase): string;
-    public abstract lifeCost(abil: AbilityBase): number;
-    public abstract manaCost(abil: AbilityBase): number;
-    public abstract chargeUsed(abil: AbilityBase): number;
-    public abstract chargeMax(abil: AbilityBase): number;
-    public abstract chargeCooldown(abil: AbilityBase): number;
-    public abstract castingTime(abil: AbilityBase): number;
-    public abstract isAvailable(abil: AbilityBase): boolean;
-    public abstract consume(abil: AbilityBase): boolean;
-    public abstract areTargetsValid(abil: AbilityBase, targets: Targets): boolean;
+export abstract class Data<TargType extends AbilityBase.TargType> {
+    abstract name(abil: AbilityBase<TargType>): string
+    abstract iconNormal(abil: AbilityBase<TargType>): string
+    abstract iconDisabled(abil: AbilityBase<TargType>): string
+    abstract tooltip(abil: AbilityBase<TargType>): string
+    abstract lifeCost(abil: AbilityBase<TargType>): number
+    abstract manaCost(abil: AbilityBase<TargType>): number
+    abstract chargeUsed(abil: AbilityBase<TargType>): number
+    abstract chargeMax(abil: AbilityBase<TargType>): number
+    abstract chargeCooldown(abil: AbilityBase<TargType>): number
+    abstract castingTime(abil: AbilityBase<TargType>): number
+    abstract isAvailable(abil: AbilityBase<TargType>): boolean
+    abstract consume(abil: AbilityBase<TargType>): boolean
+    abstract areTargetsValid(abil: AbilityBase<TargType>, targets: TargType): boolean
 }

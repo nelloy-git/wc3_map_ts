@@ -1,12 +1,13 @@
 import { hTimerList, hUnit } from '../Handle'
 import { Action, ActionList, Log } from "../Utils";
 
-import { AbilityBase, Targets, Event } from './Ability/Base'
+import { AbilityBase } from './Ability/Base'
 import { Charges } from './Charges'
+import { Point } from './Point';
 import { Type } from './Type'
 
-export class Ability implements AbilityBase {
-    constructor(owner: hUnit, type: Type){
+export class Ability<TargType extends AbilityBase.TargType> implements AbilityBase<TargType> {
+    constructor(owner: hUnit, type: Type<TargType>){
         this.owner = owner
         this.type = type
         this.id = AbilityBase.register(this)
@@ -26,7 +27,7 @@ export class Ability implements AbilityBase {
 
     readonly owner: hUnit;
     readonly id: number;
-    readonly type: Type;
+    readonly type: Type<TargType>;
 
     targetingStart(pl: jplayer){
         if (this.type.data.isAvailable(this)){
@@ -40,7 +41,7 @@ export class Ability implements AbilityBase {
         this.type.targeting.cancel(pl)
     }
 
-    targetingFinish(pl: jplayer, targets?: Targets){
+    targetingFinish(pl: jplayer, targets?: TargType){
         this.type.targeting.finish(pl, targets)
     }
 
@@ -49,7 +50,7 @@ export class Ability implements AbilityBase {
 
     }
 
-    castingStart(targets: Targets){
+    castingStart(targets: TargType){
         if (this.type.data.isAvailable(this) &&
             this.type.data.areTargetsValid(this, targets)){
 
@@ -97,14 +98,14 @@ export class Ability implements AbilityBase {
         Ability._delCasting(this.owner, this)
     }
 
-    addAction(event: Event,
+    addAction(event: Ability.Event,
               callback: (this: void,
-                         abil: AbilityBase,
-                         event: Event)=>void) {
+                         abil: AbilityBase<TargType>,
+                         event: Ability.Event)=>void) {
         return this._actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[AbilityBase, Event], void> | undefined){
+    removeAction(action: Action<[AbilityBase<TargType>, Ability.Event], void> | undefined){
         if (!action){return false}
 
         let found = false
@@ -131,8 +132,7 @@ export class Ability implements AbilityBase {
         this.charges.countMax = this.type.data.chargeMax(this)
     }
 
-
-    private _actions = new Map<Event, ActionList<[AbilityBase, Event]>>([
+    private _actions = new Map<Ability.Event, ActionList<[AbilityBase<TargType>, Ability.Event]>>([
         ['START', new ActionList()],
         ['CASTING', new ActionList()],
         ['CANCEL', new ActionList()],
@@ -141,7 +141,7 @@ export class Ability implements AbilityBase {
     ])
 
     readonly charges = new Charges();
-    private _targets: Targets | undefined;
+    private _targets: TargType | undefined;
     private _casting = Ability._timer_list.newTimerObj();
 
     private static _last_id = 0
@@ -151,15 +151,15 @@ export class Ability implements AbilityBase {
     }
     private static _timer_list = new hTimerList(0.05)
 
-    private static _active_castings = new Map<hUnit, Ability[]>()
-    private static _regCasting(caster: hUnit, abil:Ability){
+    private static _active_castings = new Map<hUnit, Ability<any>[]>()
+    private static _regCasting(caster: hUnit, abil:Ability<any>){
         let cur = Ability._active_castings.get(caster)
         if (!cur){cur = []}
         cur.push(abil)
         Ability._active_castings.set(caster, cur)
     }
 
-    private static _delCasting(caster: hUnit, abil:Ability){
+    private static _delCasting(caster: hUnit, abil:Ability<any>){
         let cur = Ability._active_castings.get(caster)
         if (!cur){return false}
 
@@ -170,3 +170,12 @@ export class Ability implements AbilityBase {
         return true
     }
 }
+
+export namespace Ability {
+    export type Event = AbilityBase.Event
+}
+
+let u = (null as unknown) as hUnit
+let type = (null as unknown) as Type<Point>
+
+let abil = new Ability<Point>(u, type)

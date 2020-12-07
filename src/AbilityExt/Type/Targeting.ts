@@ -1,8 +1,9 @@
 import { Log } from '../../Utils'
-import { AbilityBase, Targets } from '../Ability/Base'
+import { AbilityBase } from '../Ability/Base'
 import { SyncTargets } from './SyncTargets'
 
-export abstract class Targeting {
+export abstract class Targeting<TargType extends AbilityBase.TargType> {
+
     static cancelActive(pl: jplayer){
         let cur = Targeting._current[GetPlayerId(pl)]
         if (cur){cur.cancel(pl)}
@@ -17,7 +18,7 @@ export abstract class Targeting {
     }
 
     /* Final function */
-    readonly start = (pl: jplayer, abil: AbilityBase) => {
+    readonly start = (pl: jplayer, abil: AbilityBase<TargType>) => {
         let pl_id = GetPlayerId(pl)
 
         Targeting.cancelActive(pl)
@@ -48,7 +49,7 @@ export abstract class Targeting {
 
     /** Final function.
         Use 'targets == Unit[]' to force targets. */
-    readonly finish = (pl: jplayer, targets?: Targets): void => {
+    readonly finish = (pl: jplayer, targets?: TargType): void => {
         let pl_id = GetPlayerId(pl)
         if (Targeting._current[pl_id] != this){
             return Log.err(Targeting.name + 
@@ -75,14 +76,14 @@ export abstract class Targeting {
     protected abstract _start(): void
     protected abstract _cancel(): void
     /** 'targets = undefined' should capture targets by itself. */
-    protected abstract _finish(targets?: Targets): Targets | undefined
+    protected abstract _finish(targets?: TargType): TargType | undefined
 
-    private static _current: (Targeting | undefined)[] = [];
-    private static _abil: (AbilityBase | undefined)[] = [];
+    private static _current: (Targeting<any> | undefined)[] = [];
+    private static _abil: (AbilityBase<any> | undefined)[] = [];
 
     private static _syncer = IsGame() ? (():SyncTargets => {
         let sync = new SyncTargets()
-        sync.addAction((pl: jplayer, abil: AbilityBase, targets: Targets) => {
+        sync.addAction((pl: jplayer, abil: AbilityBase<any>, targets: AbilityBase.TargType) => {
             abil.castingStart(targets)
         })
         return sync

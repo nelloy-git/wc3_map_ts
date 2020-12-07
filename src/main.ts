@@ -27,20 +27,6 @@ import { Ability, AbilityContainer } from './AbilityExt'
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
 
-
-let m1 = new Mat(3, 2, [
-    [1, 2, 4],
-    [2, 0, 3]
-])
-
-let m2 = new Mat(2, 3, [
-    [2, 5],
-    [1, 3],
-    [1, 1]
-])
-
-print(Mat.mult(m1, m2).data[0][1])
-
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
