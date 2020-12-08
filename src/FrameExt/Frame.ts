@@ -144,7 +144,6 @@ export class Frame extends hHandle<jframehandle> {
             let i = this._parent._children.indexOf(this)
             this._parent._children.splice(i, 1)
         }
-
         for (let i = 0; i < this._children.length; i++){
             this._children[i].parent = null
         }
