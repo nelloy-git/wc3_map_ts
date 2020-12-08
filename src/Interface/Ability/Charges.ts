@@ -15,9 +15,8 @@ export class InterfaceAbilityCharges extends Backdrop {
         this._text.font = 'fonts\\nim_____.ttf'
     }
 
-    get size(){return this._get_size()}
-    set size(size: [w: number, h: number]){
-        this._set_size(size)
+    protected _set_size(size: [w: number, h: number]){
+        super._set_size(size)
         this._text.size = size
         this._text.fontSize = 0.8 * size[1]
     }

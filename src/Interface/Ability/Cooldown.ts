@@ -16,10 +16,9 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         this._text.fontSize = 0.35 * this.size[1]
     }
 
-    get size(){return this._size}
-    set size(size: [number, number]){
+    protected _set_size(size: [number, number]){
         this._size = size
-        this._set_size([size[0], this._cd_part * size[1]])
+        super._set_size([size[0], this._cd_part * size[1]])
 
         this._text.size = size
         this._text.fontSize = 0.35 * size[1]

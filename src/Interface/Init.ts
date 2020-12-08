@@ -2,7 +2,7 @@ import { Screen } from "../FrameExt";
 import { InterfaceAbilityPanel } from "./Ability/Panel";
 import { InterfaceDamage } from "./Damage";
 import { Minimap } from "./Minimap";
-import { Portrait } from "./Unit/Portrait";
+import { Portrait } from "./UnitInfo/Portrait";
 
 export function Init(){
     InterfaceDamage.Init()

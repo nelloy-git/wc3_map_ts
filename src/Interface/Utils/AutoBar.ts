@@ -10,12 +10,18 @@ export class InterfaceAutoBar extends SimpleStatusBar {
         this._timer_obj.addAction('PERIOD', ()=>{this._update()})
     }
 
-    set curGetter(f: (()=>number) | undefined){
+    protected _set_size(size: [w: number, h: number]){
+        super._set_size(size)
+        let text = this.getElement('TEXT')
+        if (text){text.fontSize = 0.8 * size[1]}
+    }
+
+    set curGetter(f: ((this: void)=>number) | undefined){
         this._cur_getter = undefined
         if (f){this._cur_getter = new Action(f)}
     }
 
-    set maxGetter(f: (()=>number) | undefined){
+    set maxGetter(f: ((this: void)=>number) | undefined){
         this._max_getter = undefined
         if(f)(this._max_getter = new Action(f))
     }
@@ -35,7 +41,7 @@ export class InterfaceAutoBar extends SimpleStatusBar {
 
         let cur = this._cur_getter.run()
         let max = this._max_getter.run()
-        let part = cur / (max != 0 ? max : 1)
+        let part = cur / (max != 0 ? max : 0.00000001)
 
         let text = ' '
         if (this.printCur){

@@ -1,6 +1,6 @@
 import { Backdrop } from "../../FrameExt";
 import { hUnit } from "../../Handle";
-import { Color } from "../../Utils";
+import { Shield } from "../../Parameter";
 import { InterfaceAutoBar } from "../Utils/AutoBar";
 
 export class InterfaceUnitBars extends Backdrop {
@@ -10,6 +10,29 @@ export class InterfaceUnitBars extends Backdrop {
         this.alpha = 0;
         this._life.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor01.blp'
         this._mana.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor02.blp'
+        this._mag_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor03.blp'
+        this._phys_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor07.blp'
+
+        this.size = this.size
+    }
+    
+    protected _set_size(size: [w: number, h: number]){
+        super._set_size(size)
+
+        let w = size[0]
+        let h = size[1] / 4
+
+        this._life.size = [w, h]
+        this._life.pos = [0, 0]
+
+        this._mana.size = [w, h]
+        this._mana.pos = [0, h]
+
+        this._mag_shield.size = [w, h]
+        this._mag_shield.pos = [0, 2 * h]
+
+        this._phys_shield.size = [w, h]
+        this._phys_shield.pos = [0, 3 * h]
     }
 
     get unit(){return this._unit}
@@ -37,6 +60,12 @@ export class InterfaceUnitBars extends Backdrop {
 
             this._mana.curGetter = ():number => {return u.mana}
             this._mana.maxGetter = ():number => {return u.manaMax}
+
+            this._mag_shield.curGetter = ():number => {return Shield.getCur('MAGIC', u)}
+            this._mag_shield.maxGetter = ():number => {return Shield.getMax('MAGIC', u)}
+
+            this._phys_shield.curGetter = ():number => {return Shield.getCur('PHYS', u)}
+            this._phys_shield.maxGetter = ():number => {return Shield.getMax('PHYS', u)}
         }
 
     }

@@ -21,9 +21,8 @@ export class InterfaceBuffPanel extends Backdrop {
         this.size = this.size
     }
 
-    get size(){return this._get_size()}
-    set size(size: [number, number]){
-        this._set_size(size)
+    protected _set_size(size: [number, number]){
+        super._set_size(size)
 
         let x0 = 0
         let y0 = 0

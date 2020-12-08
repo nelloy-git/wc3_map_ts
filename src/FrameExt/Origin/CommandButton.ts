@@ -4,9 +4,9 @@ import { OriginFrame } from './OriginFrame'
 
 /** Unique properties. */
 export class OriginCommandButton extends OriginFrame {
-    public static instance(i: number){return OriginCommandButton._instance[i]} 
+    static instance(i: number){return OriginCommandButton._instance[i]} 
     
-    public set pos(pos: [x: number, y: number]){
+    protected _set_pos(pos: [x: number, y: number]){
         let parent = this.parent
 
         let p_abs_pos = parent?.absPos
@@ -24,10 +24,10 @@ export class OriginCommandButton extends OriginFrame {
                     ' default zone.')
         }
 
-        super.pos = pos
+        super._set_pos(pos)
     }
 
-    public set size(size: [w: number, h: number]){
+    protected _set_size(size: [w: number, h: number]){
         let [abs_x, abs_y] = this.absPos
         let [w, h] = size
 
@@ -37,7 +37,7 @@ export class OriginCommandButton extends OriginFrame {
                     ' default zone.')
         }
 
-        super.size = size
+        super._set_size(size)
     }
 
     private static _instance: (OriginFrame | undefined)[] = [];

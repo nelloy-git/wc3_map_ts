@@ -31,10 +31,9 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this.addAction('CLICK', (f: Frame, e:Frame.Event, pl:jplayer) => {this._clicked(pl)})
     }
 
-    get size(){return this._get_size()}
-    set size(size: [number, number]){
-        this._set_size(size)
-
+    protected _set_size(size: [number, number]){
+        super._set_size(size)
+        
         this._charges.size = [0.3 * size[0], 0.25 * size[1]]
         this._charges.pos = [0, 0.75 * size[1]]
 

@@ -10,35 +10,37 @@ export class SimpleString extends Frame {
         this._font_flags = 0
     }
 
-    public get text(){return this._text}
-    public set text(text: string){
+    get text(){return this._text}
+    set text(text: string){
         this._text = text
         BlzFrameSetText(this.handle, text)
     }
 
-    public get font(){return this._font}
-    public set font(path: string){
+    get font(){return this._font}
+    set font(path: string){
         this._font = path
         BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
     }
 
-    public get fontSize(){return this._font_size}
-    public set fontSize(size: number){
+    get fontSize(){return this._font_size}
+    set fontSize(size: number){
         this._font_size = size
         BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
     }
 
-    public get fontFlags(){return this._font_flags}
-    public set fontFlags(flags: number){
+    get fontFlags(){return this._font_flags}
+    set fontFlags(flags: number){
         this._font_flags = flags
         BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
     }
 
-    public addAction(){
+    set textAlignment(a: number){BlzFrameSetTextAlignment(this.handle, TEXT_ALI)}
+
+    addAction(){
         return Log.err(SimpleString.name + 
                        ': events are not available.')
     }
-    public removeAction(){
+    removeAction(){
         return Log.err(SimpleString.name + 
                        ': events are not available.')
     }

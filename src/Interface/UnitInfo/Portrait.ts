@@ -6,18 +6,16 @@ export class Portrait extends Backdrop {
     }
     static get instance(){return Portrait._instance as Portrait}
 
-    get pos(){return this._get_pos()}
-    set pos(pos: [x: number, y: number]){
-        this._set_pos(pos)
+    protected _set_pos(pos: [x: number, y: number]){
+        super._set_pos(pos)
         let orig = OriginPortrait.instance()
         if (orig){
             orig.pos = [pos[0] + 0.05 * this.size[0], pos[1] + 0.05 * this.size[1]]
         }
     }
 
-    get size(){return this._get_size()}
-    set size(size: [w: number, h: number]){
-        this._set_size(size)
+    protected _set_size(size: [w: number, h: number]){
+        super._set_size(size)
         let orig = OriginPortrait.instance()
         if (orig){
             orig.size = [0.9 * this.size[0], 0.9 * this.size[1]]

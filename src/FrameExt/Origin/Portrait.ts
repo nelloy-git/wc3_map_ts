@@ -8,8 +8,8 @@ import { Frame } from "..";
 export class OriginPortrait extends OriginFrame {
     static instance(){return OriginPortrait._instance} 
 
-    get pos(){return [this.__x, this.__y]}
-    set pos(pos: [x: number, y: number]){
+    protected _get_pos(): [number, number]{return [this.__x, this.__y]}
+    protected _set_pos(pos: [x: number, y: number]){
         [this.__x, this.__y] = pos
         let [px, py] = this.parent ? this.parent.absPos : [0, 0]
 
@@ -18,21 +18,21 @@ export class OriginPortrait extends OriginFrame {
 
         real_x = 0.8 / Screen.size[0] * (real_x - Screen.pos[0])
         real_y = real_y
-        let [real_w, real_h] = this._get_size()
+        let [real_w, real_h] = super._get_size()
         
         /** Bugged when outside screen. */
         real_x = real_x < 0.001 ? 0.001 : (real_x + real_w) > 0.799 ? 0.799 - real_w : real_x
         real_y = real_y < 0.001 ? 0.001 : (real_y + real_h) > 0.599 ? 0.599 - real_h : real_y
 
-        this._set_pos([real_x, real_y])
-        this._set_size([real_w, real_h])
+        super._set_pos([real_x, real_y])
+        super._set_size([real_w, real_h])
     }
 
-    get size(){return [this.__w, this.__h]}
-    set size(size: [w: number, h: number]){
+    protected _get_size(): [w: number, h: number]{return [this.__w, this.__h]}
+    protected _set_size(size: [w: number, h: number]){
         [this.__w, this.__h] = size
 
-        let [real_x, real_y] = this._get_pos()
+        let [real_x, real_y] = super._get_pos()
         let real_w = 0.8 / Screen.size[0] * this.__w
         let real_h = this.__h
         
@@ -40,8 +40,8 @@ export class OriginPortrait extends OriginFrame {
         real_x = real_x < 0.001 ? 0.001 : (real_x + real_w) > 0.799 ? 0.799 - real_w : real_x
         real_y = real_y < 0.001 ? 0.001 : (real_y + real_h) > 0.599 ? 0.599 - real_h : real_y
 
-        this._set_pos([real_x, real_y])
-        this._set_size([real_w, real_h])
+        super._set_pos([real_x, real_y])
+        super._set_size([real_w, real_h])
     }
 
     get parent(){return null}

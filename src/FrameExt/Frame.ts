@@ -28,7 +28,9 @@ export class Frame extends hHandle<jframehandle> {
     }
     static getTriggered(){return Frame.get(BlzGetTriggerFrame())}
 
-    get pos(){return this._get_pos()}
+    /* _get_pos should be overriden instead. */
+    get pos(): [x: number, y: number]{return this._get_pos()}
+    /* _set_pos should be overriden instead. */
     set pos(pos: [x: number, y: number]){this._set_pos(pos)}
 
     get absPos(): [number, number]{
@@ -36,7 +38,9 @@ export class Frame extends hHandle<jframehandle> {
         return [parent_absX + this._x, parent_absY + this._y]
     }
 
+    /* _get_size should be overriden instead. */
     get size():[w: number, h: number]{return this._get_size()}
+    /* _set_size should be overriden instead. */
     set size(size: [w: number, h: number]){this._set_size(size)}
 
     get parent(){return this._parent}
@@ -155,10 +159,8 @@ export class Frame extends hHandle<jframehandle> {
         super.destroy()
     }
 
-    protected get _get_pos(){return (): [x: number, y: number] => {
-        return [this._x, this._y]
-    }}
-    protected get _set_pos(){return (pos: [x: number, y: number]) => {
+    protected _get_pos(): [x: number, y: number]{return [this._x, this._y]}
+    protected _set_pos(pos: [x: number, y: number]){
         [this._x, this._y] = pos
         if (this._parent){
             BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
@@ -172,14 +174,14 @@ export class Frame extends hHandle<jframehandle> {
         for (let i = 0; i < this._children.length; i++){
             this._children[0].pos = this._children[0].pos
         }
-    }}
+    }
 
-    protected get _get_size(){return (): [x: number, y: number] => {
+    protected _get_size(): [w: number, h: number]{
         return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]
-    }}
-    protected get _set_size(){return (size: [w: number, h: number]) =>{
+    }
+    protected _set_size(size: [w: number, h: number]){
         BlzFrameSetSize(this.handle, size[0], size[1])
-    }}
+    }
 
     readonly isSimple: boolean;
     private _x: number = 0;
