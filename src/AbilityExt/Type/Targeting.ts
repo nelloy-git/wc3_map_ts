@@ -3,6 +3,7 @@ import { AbilityIFace, TargetType } from '../Ability/IFace'
 import { SyncTargets } from './SyncTargets'
 
 export abstract class Targeting<T extends TargetType> {
+    protected constructor(){}
 
     static cancelActive(pl: jplayer){
         let cur = Targeting._current[GetPlayerId(pl)]

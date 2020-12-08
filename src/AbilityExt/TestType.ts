@@ -2,6 +2,7 @@ import { Ability, AbilityType, AbilityTypeCasting, AbilityTypeData, AbilityTypeT
 import { hUnit } from '../Handle'
 
 class TestCasting extends AbilityTypeCasting<[hUnit]> {
+    static readonly instance = new TestCasting()
     start(abil: Ability<[hUnit]>): void {print('TestType: casting start')};
     casting(abil: Ability<[hUnit]>, dt: number): void {};
     cancel(abil: Ability<[hUnit]>): void {print('TestType: casting cancel')};
@@ -11,6 +12,7 @@ class TestCasting extends AbilityTypeCasting<[hUnit]> {
 }
 
 class TestData extends AbilityTypeData {
+    static readonly instance = new TestData()
     name(abil: Ability<[hUnit]>) {return 'TestType'}
     iconNormal(abil: Ability<[hUnit]>) {return 'TestIcon'}
     iconDisabled(abil: Ability<[hUnit]>) {return 'TestIcon'}
@@ -25,6 +27,6 @@ class TestData extends AbilityTypeData {
     consume(abil: Ability<[hUnit]>) {abil.charges.count -= 1; return true}
 }
 
-export let TestType = new AbilityType(new TestCasting(),
-                                      new TestData(),
-                                      new AbilityTypeTargetingFriend())
+export let TestType = new AbilityType(TestCasting.instance,
+                                      TestData.instance,
+                                      AbilityTypeTargetingFriend.instance)

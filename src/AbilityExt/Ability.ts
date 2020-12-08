@@ -53,10 +53,6 @@ export class Ability<T extends TargetType> implements AbilityIFace {
         return this._targets
     }
 
-    static getActiveCasting(owner: hUnit){
-
-    }
-
     castingStart(targets: T){
         if (this.type.data.isAvailable(this) &&
             this.type.casting.isTargetValid(this, targets)){
@@ -82,6 +78,7 @@ export class Ability<T extends TargetType> implements AbilityIFace {
 
     castingPeriod(){
         this._casting.period(true)
+        // Goto this.__castingPeriod
     }
 
     castingCancel(){
@@ -102,6 +99,7 @@ export class Ability<T extends TargetType> implements AbilityIFace {
 
     castingFinish(){
         this._casting.finish()
+        // Goto this.__castingFinish
         Ability._delCasting(this.owner, this)
     }
 

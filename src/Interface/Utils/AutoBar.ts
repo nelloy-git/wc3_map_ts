@@ -3,13 +3,21 @@ import { hTimerList } from "../../Handle";
 import { Action, float2str } from "../../Utils";
 
 export class InterfaceAutoBar extends SimpleStatusBar {
-    constructor(cur_getter: (this: void)=>number, max_getter: (this: void)=>number){
+    constructor(){
         super()
-
-        this._cur_getter = new Action(cur_getter)
-        this._max_getter = new Action(max_getter)
+        
         this._timer_obj = InterfaceAutoBar._timer_list.newTimerObj()
         this._timer_obj.addAction('PERIOD', ()=>{this._update()})
+    }
+
+    set curGetter(f: (()=>number) | undefined){
+        this._cur_getter = undefined
+        if (f){this._cur_getter = new Action(f)}
+    }
+
+    set maxGetter(f: (()=>number) | undefined){
+        this._max_getter = undefined
+        if(f)(this._max_getter = new Action(f))
     }
 
     printCur = true;
@@ -23,6 +31,8 @@ export class InterfaceAutoBar extends SimpleStatusBar {
     }
 
     private _update(){
+        if (!this._cur_getter || !this._max_getter){return}
+
         let cur = this._cur_getter.run()
         let max = this._max_getter.run()
         let part = cur / (max != 0 ? max : 1)
@@ -44,8 +54,8 @@ export class InterfaceAutoBar extends SimpleStatusBar {
         this.fullness = part
     }
 
-    private _cur_getter: Action<[], number>;
-    private _max_getter: Action<[], number>;
+    private _cur_getter: Action<[], number> | undefined;
+    private _max_getter: Action<[], number> | undefined;
     private _timer_obj;
 
     private static _timer_list: hTimerList = new hTimerList(0.025);

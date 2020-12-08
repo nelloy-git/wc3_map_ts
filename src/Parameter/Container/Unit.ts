@@ -27,13 +27,13 @@ export class ParamsUnit extends ParamContainer {
 
     set(param: Parameter.Type, type: ParamValueType, val: number){
         let res = super.set(param, type, val)
-        this._applyParam(param, val)
+        this._applyParam(param, res)
         return res
     }
 
     add(param: Parameter.Type, type: ParamValueType, val: number){
         let res = super.add(param, type, val)
-        this._applyParam(param, val)
+        this._applyParam(param, res)
         return res
     }
 

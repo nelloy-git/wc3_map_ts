@@ -4,6 +4,8 @@ import { Color, Log } from '../../../Utils'
 import { Targeting } from '../Targeting'
 
 export class TargetingFriend extends Targeting<[hUnit]> {
+    static readonly instance = new TargetingFriend()
+
     protected _start(){
         TargetingFriend.enable = true
     }

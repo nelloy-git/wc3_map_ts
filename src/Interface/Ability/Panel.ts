@@ -5,8 +5,8 @@ import { InterfaceAbilityButton } from "./Button";
 export class InterfaceAbilityPanel extends Backdrop {
     constructor(cols: number, rows: number){
         super()
-        this._cols = cols
-        this._rows = rows
+        this.cols = cols
+        this.rows = rows
 
         this.alpha = 0
         for (let y = 0; y < rows; y++){
@@ -30,11 +30,11 @@ export class InterfaceAbilityPanel extends Backdrop {
     set size(size: [number, number]){
         this._set_size(size)
 
-        let w = size[0] / this._cols
-        let h = size[1] / this._rows
+        let w = size[0] / this.cols
+        let h = size[1] / this.rows
 
-        for (let y = 0; y < this._rows; y++){
-            for (let x = 0; x < this._cols; x++){
+        for (let y = 0; y < this.rows; y++){
+            for (let x = 0; x < this.cols; x++){
                 this._backgrounds[y][x].pos = [x * w, y * h]
                 this._backgrounds[y][x].size = [w, h]
 
@@ -52,8 +52,8 @@ export class InterfaceAbilityPanel extends Backdrop {
         this._buttons[y][x].key = key
     }
 
-    private _cols
-    private _rows
+    readonly cols: number
+    readonly rows: number
     private _backgrounds: Backdrop[][] = [];
     private _buttons: InterfaceAbilityButton[][] = []
 

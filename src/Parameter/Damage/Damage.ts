@@ -1,13 +1,23 @@
 import { hUnit } from "../../Handle";
 import { Trigger } from "../../Handle/Trigger";
 import { TriggerEvent } from "../../Handle/TriggerEvent";
-import { Action, Log } from "../../Utils";
+import { Action, Color, Log } from "../../Utils";
 import { Shield } from "./Shield";
 import { DamageType, type2wc, wc2type } from "./Type";
 
 export namespace Damage {
 
     export type Type = DamageType
+    export function getColor(type: Damage.Type){
+        switch (type){
+            case 'PATK': {return new Color(0.9, 0.1, 0.1, 0.8)}
+            case 'PSPL': {return new Color(0.9, 0.1, 0.1, 0.8)}
+            case 'MATK': {return new Color(0.1, 0.1, 0.9, 0.8)}
+            case 'MSPL': {return new Color(0.1, 0.1, 0.9, 0.8)}
+            case 'CATK': {return new Color(0.9, 0.9, 0.9, 0.8)}
+            case 'CSPL': {return new Color(0.9, 0.9, 0.9, 0.8)}
+        }
+    }
 
     export function deal(src: hUnit, dst: hUnit,
                          amount: number, type: Damage.Type, sound: jweapontype){
@@ -29,12 +39,12 @@ export namespace Damage {
         _modifiers.set(priority, list)
 
         // Sort by priority
-        _modifiers = new Map([..._modifiers].sort((d1, d2)=>{return d1[0] > d2[0] ? 1 : -1}))
+        _modifiers = new Map([..._modifiers].sort((d1, d2)=>{return d1[0] < d2[0] ? 1 : -1}))
     }
 
     function _applyModifiers(this: void){
         let src = hUnit.getDamageSource()
-        let dst = hUnit.getDamageSource()
+        let dst = hUnit.getDamageTarget()
         let dmg = GetEventDamage()
         let type = wc2type.get(BlzGetEventDamageType())
 
@@ -51,11 +61,14 @@ export namespace Damage {
     }
 
     let _modifiers = new Map<number, Action<[hUnit, hUnit, number, Damage.Type], number>[]>()
-    let _trigger = new Trigger()
-    _trigger.addAction(_applyModifiers)
-    for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
-        let pl = Player(0)
-        let event = TriggerEvent.newPlayerUnitEvent(pl, EVENT_PLAYER_UNIT_DAMAGING)
-        event.applyToTrigger(_trigger)
+
+    if (IsGame()){
+        let _trigger = new Trigger()
+        _trigger.addAction(_applyModifiers)
+        for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
+            let pl = Player(i)
+            let event = TriggerEvent.newPlayerUnitEvent(pl, EVENT_PLAYER_UNIT_DAMAGING)
+            event.applyToTrigger(_trigger)
+        }
     }
 }

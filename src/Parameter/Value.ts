@@ -26,7 +26,7 @@ export class ParamValue {
 
     private readonly _values = new Map<ParamValueType, number>([
         ['BASE', 0],
-        ['MULT', 0],
+        ['MULT', 1],
         ['ADD', 0],
         ['RES', 0],
     ])

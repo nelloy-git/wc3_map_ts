@@ -1,6 +1,7 @@
 import { AbilityIFace, TargetType } from '../Ability/IFace'
 
 export abstract class Casting<T extends TargetType> {
+    protected constructor(){}
     abstract start(abil: AbilityIFace): void;
     abstract casting(abil: AbilityIFace, dt: number): void;
     abstract cancel(abil: AbilityIFace): void;

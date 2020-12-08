@@ -1,9 +1,12 @@
 import { Screen } from "../FrameExt";
 import { InterfaceAbilityPanel } from "./Ability/Panel";
+import { InterfaceDamage } from "./Damage";
 import { Minimap } from "./Minimap";
-import { Portrait } from "./Portrait";
+import { Portrait } from "./Unit/Portrait";
 
 export function Init(){
+    InterfaceDamage.Init()
+
     let map = Minimap.instance
     Screen.addAction(([x0, y0], [w, h])=>{
         map.size = [0.12, 0.12]

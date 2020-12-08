@@ -1,13 +1,12 @@
-import { Buff } from "./Buff";
+import { Data } from "./Type/Data";
+import { Process } from "./Type/Process";
 
-export abstract class Type<USER_DATA> {
-    protected constructor(){}
+export class Type<T> {
+    constructor(data: Data, process: Process<T>){
+        this.data = data
+        this.process = process
+    }
 
-    abstract start(buff: Buff<USER_DATA>):void
-    abstract period(buff: Buff<USER_DATA>):void
-    abstract cancel(buff: Buff<USER_DATA>):void
-    abstract finish(buff: Buff<USER_DATA>):void
-    abstract name(buff: Buff<USER_DATA>):string
-    abstract icon(buff: Buff<USER_DATA>):string
-    abstract tooltip(buff: Buff<USER_DATA>):string
+    readonly data: Data
+    readonly process: Process<T>
 }

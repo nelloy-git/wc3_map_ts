@@ -1,4 +1,4 @@
-import { Backdrop, FdfBackdrop, OriginPortrait } from "../FrameExt"
+import { Backdrop, FdfBackdrop, OriginPortrait } from "../../FrameExt"
 
 export class Portrait extends Backdrop {
     private constructor(){

@@ -1,34 +1,30 @@
 import { hTimerList, hTimerObj, hUnit } from "../Handle";
+import { BuffIFace } from "./IFace";
 import { Type } from "./Type";
 
-export class Buff<USER_DATA> extends hTimerObj {
-    constructor(src: hUnit, targ: hUnit, type: Type<USER_DATA>, data: USER_DATA){
+export class Buff<T> extends hTimerObj implements BuffIFace {
+    constructor(src: hUnit, targ: hUnit, type: Type<T>, data: T){
         super(Buff._timer_list)
 
-        this._src = src
-        this._targ = targ
-        this._type = type
-        this._data = data
+        this.src = src
+        this.dst = targ
+        this.type = type
+        this.data = data
 
-        this.addAction('START', ()=>{this._type.start(this)})
-        this.addAction('PERIOD', ()=>{this._type.period(this)})
-        this.addAction('CANCEL', ()=>{this._type.cancel(this)})
-        this.addAction('FINISH', ()=>{this._type.finish(this)})
+        this.addAction('START', ()=>{this.type.process.start(this)})
+        this.addAction('PERIOD', ()=>{this.type.process.period(this)})
+        this.addAction('CANCEL', ()=>{this.type.process.cancel(this); this.destroy()})
+        this.addAction('FINISH', ()=>{this.type.process.finish(this); this.destroy()})
     }
 
     destroy(){
         Buff._timer_list.removeTimerObj(this)
     }
 
-    get source(){return this._src}
-    get target(){return this._targ}
-    get type(){return this._type}
-    get data(){return this._data}
-
-    private _src: hUnit
-    private _targ: hUnit
-    private _type: Type<USER_DATA>
-    private _data: USER_DATA
+    readonly src: hUnit
+    readonly dst: hUnit
+    readonly type: Type<T>
+    readonly data: T
 
     private static _timer_list = new hTimerList(0.05)
 }

@@ -36,7 +36,6 @@ export class Container {
         let pos = this._list.indexOf(buff)
         if (pos < 0){return false}
         this._list.splice(pos, 1)
-        buff.destroy()
         return true
     }
 

@@ -1,6 +1,7 @@
 import { AbilityIFace, TargetType } from '../Ability/IFace'
 
 export abstract class Data {
+    protected constructor(){}
     abstract name(abil: AbilityIFace): string
     abstract iconNormal(abil: AbilityIFace): string
     abstract iconDisabled(abil: AbilityIFace): string
