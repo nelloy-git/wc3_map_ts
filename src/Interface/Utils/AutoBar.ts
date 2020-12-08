@@ -5,9 +5,17 @@ import { Action, float2str } from "../../Utils";
 export class InterfaceAutoBar extends SimpleStatusBar {
     constructor(){
         super()
-        
+
         this._timer_obj = InterfaceAutoBar._timer_list.newTimerObj()
         this._timer_obj.addAction('PERIOD', ()=>{this._update()})
+    }
+
+    get size(){return this._get_size()}
+    set size(size: [w: number, h: number]){
+        this._set_size(size)
+
+        let text = this.getElement('TEXT')
+        if (text){text.fontSize = 0.8 * size[1]}
     }
 
     set curGetter(f: (()=>number) | undefined){

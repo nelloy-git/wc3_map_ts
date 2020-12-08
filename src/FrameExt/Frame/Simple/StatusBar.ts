@@ -67,7 +67,7 @@ export class SimpleStatusBar extends Frame {
 
     getElement(elem: 'BACKGROUND'): SimpleTexture | undefined
     getElement(elem: 'BORDER'): SimpleTexture | undefined
-    getElement(elem: 'TEXT'): SimpleTexture | undefined
+    getElement(elem: 'TEXT'): SimpleString | undefined
     getElement(elem: SimpleStatusBar.Element){
         return this._elements.get(elem)
     }

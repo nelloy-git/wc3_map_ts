@@ -10,6 +10,12 @@ export class InterfaceUnitBars extends Backdrop {
         this.alpha = 0;
         this._life.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor01.blp'
         this._mana.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor02.blp'
+        this._mag_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor03.blp'
+        this._phys_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor07.blp'
+    }
+
+    get size(){
+        
     }
 
     get unit(){return this._unit}

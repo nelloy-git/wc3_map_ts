@@ -28,19 +28,33 @@ export class Frame extends hHandle<jframehandle> {
     }
     static getTriggered(){return Frame.get(BlzGetTriggerFrame())}
 
-    get pos(){return this._get_pos()}
-    set pos(pos: [x: number, y: number]){this._set_pos(pos)}
+    getPos(): [number, number]{return [this._x, this._y]}
+    setPos(pos: [x: number, y: number]){
+        [this._x, this._y] = pos
+        if (this._parent){
+            BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
+                             this._parent.handle, FRAMEPOINT_TOPLEFT,
+                             this._x, -this._y)
+        } else {
+            BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
+                                this._x, 0.6 - this._y)
+        }
 
-    get absPos(): [number, number]{
-        let [parent_absX, parent_absY] = this._parent ? this._parent.absPos : [0, 0]
+        for (let i = 0; i < this._children.length; i++){
+            this._children[0].setPos(this._children[0].getPos())
+        }
+    }
+
+    getAbsPos(): [number, number]{
+        let [parent_absX, parent_absY] = this._parent ? this._parent.getAbsPos() : [0, 0]
         return [parent_absX + this._x, parent_absY + this._y]
     }
 
-    get size():[w: number, h: number]{return this._get_size()}
-    set size(size: [w: number, h: number]){this._set_size(size)}
+    getSize():[w: number, h: number]{return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]}
+    setSize(size: [w: number, h: number]){BlzFrameSetSize(this.handle, size[0], size[1])}
 
-    get parent(){return this._parent}
-    set parent(parent: Frame | null){
+    getParent(){return this._parent}
+    setParent(parent: Frame | null){
         if (this._parent){
             let i = this._parent._children.indexOf(this)
             this._parent._children.splice(i, 1)
@@ -51,12 +65,12 @@ export class Frame extends hHandle<jframehandle> {
             parent._children.push(this)
         } 
 
-        this.pos = this.pos
-        this.visible = this.visible
+        this.setPos(this.getPos())
+        this.setVisible(this.getVisible())
     }
 
-    get visible(){return this._visible}
-    set visible(flag: boolean){
+    getVisible(){return this._visible}
+    setVisible(flag: boolean){
         this._visible = flag
         BlzFrameSetVisible(this.handle, flag)
         for (let i = 0; i < this._children.length; i++){
@@ -66,8 +80,8 @@ export class Frame extends hHandle<jframehandle> {
         }
     }
 
-    get tooltip(){return this._tooltip}
-    set tooltip(tooltip: Frame | null){
+    getTooltip(){return this._tooltip}
+    setTooltip(tooltip: Frame | null){
         if (this._tooltip){
             this._is_tooltip -= 1
 
@@ -88,28 +102,28 @@ export class Frame extends hHandle<jframehandle> {
             tooltip.visible = false
         }
     }
-    get isTooltip(){return this._is_tooltip > 0}
+    isTooltip(){return this._is_tooltip > 0}
 
-    get level(){return this._level}
-    set level(lvl: number){
+    getLevel(){return this._level}
+    setLevel(lvl: number){
         this._level = lvl
         BlzFrameSetLevel(this.handle, lvl)
     }
 
-    get color(){return new Color(this._color)}
-    set color(c: Color){
+    getColor(){return new Color(this._color)}
+    setColor(c: Color){
         this._color = new Color(c)
         BlzFrameSetVertexColor(this.handle, c.getWcCode())
     }
 
-    get alpha(){return this._color.a}
-    set alpha(a: number){
+    getAlpha(){return this._color.a}
+    setAlpha(a: number){
         this._color.a = a
         BlzFrameSetAlpha(this.handle, Math.floor(255 * a))
     }
 
-    get enable(){return this._enable}
-    set enable(flag: boolean){
+    getEnable(){return this._enable}
+    setEnable(flag: boolean){
         this._enable = flag
         BlzFrameSetEnable(this.handle, flag)
     }
@@ -142,7 +156,7 @@ export class Frame extends hHandle<jframehandle> {
         }
 
         for (let i = 0; i < this._children.length; i++){
-            this._children[i].parent = null
+            this._children[i].setParent(null)
         }
 
         for (let i = 0; i < this._events.length; i++){
@@ -154,32 +168,6 @@ export class Frame extends hHandle<jframehandle> {
         BlzDestroyFrame(this.handle)
         super.destroy()
     }
-
-    protected get _get_pos(){return (): [x: number, y: number] => {
-        return [this._x, this._y]
-    }}
-    protected get _set_pos(){return (pos: [x: number, y: number]) => {
-        [this._x, this._y] = pos
-        if (this._parent){
-            BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
-                             this._parent.handle, FRAMEPOINT_TOPLEFT,
-                             this._x, -this._y)
-        } else {
-            BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
-                                this._x, 0.6 - this._y)
-        }
-
-        for (let i = 0; i < this._children.length; i++){
-            this._children[0].pos = this._children[0].pos
-        }
-    }}
-
-    protected get _get_size(){return (): [x: number, y: number] => {
-        return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]
-    }}
-    protected get _set_size(){return (size: [w: number, h: number]) =>{
-        BlzFrameSetSize(this.handle, size[0], size[1])
-    }}
 
     readonly isSimple: boolean;
     private _x: number = 0;
