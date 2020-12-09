@@ -2,7 +2,7 @@ import { Log } from '../../../Utils'
 import { FdfSimpleFrame } from '../../Fdf/Simple/Frame';
 import { FdfSimpleString } from '../../Fdf/Simple/String';
 import { Frame } from "../../Frame";
-import { SimpleString } from './String';
+import { SimpleString, VertAlignment, HorzAlignment } from './String';
 
 export class SimpleText extends Frame {
     constructor()
@@ -29,6 +29,20 @@ export class SimpleText extends Frame {
     public get fontFlags(){return this._string.fontFlags}
     public set fontFlags(flags: number){this._string.fontFlags = flags}
 
+    get textVertAlignment(): VertAlignment{
+        return this._string.textVertAlignment
+    }
+    set textVertAlignment(align: VertAlignment){
+        this._string.textVertAlignment = align
+    }
+
+    get textHorzAlignment(): HorzAlignment{
+        return this._string.textHorzAlignment
+    }
+    set textHorzAlignment(align: HorzAlignment){
+        this._string.textHorzAlignment = align
+    }
+
     public addAction(){
         return Log.err(SimpleText.name + 
                        ': events are not available.')
@@ -47,7 +61,7 @@ export class SimpleText extends Frame {
         let text = new FdfSimpleString(SimpleText.name + 'DefaultFdfString')
             text.text = ''
             text.font = 'fonts\\nim_____.ttf'
-            text.fontSize = 0.008
+            text.fontSize = 0.08
         fdf.addSubframe(text)
         return fdf
     })()

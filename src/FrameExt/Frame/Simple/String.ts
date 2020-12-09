@@ -1,8 +1,8 @@
 import { Log } from '../../../Utils'
 import { Frame } from "../../Frame";
 
-type VertAlignment = 'TOP'|'MID'|'BOT'
-type HorzAlignment = 'LEFT'|'CENTER'|'RIGHT'
+export type VertAlignment = 'TOP'|'MID'|'BOT'
+export type HorzAlignment = 'LEFT'|'CENTER'|'RIGHT'
 
 export class SimpleString extends Frame {
     constructor(handle: jframehandle){
@@ -82,7 +82,7 @@ export class SimpleString extends Frame {
 
     private _text: string = '';
     private _font: string = '';
-    private _font_size: number = 10;
+    private _font_size: number = 0.08;
     private _font_flags: number = 0;
     private _ver_align: jtextaligntype = TEXT_JUSTIFY_MIDDLE;
     private _hor_align: jtextaligntype = TEXT_JUSTIFY_CENTER;

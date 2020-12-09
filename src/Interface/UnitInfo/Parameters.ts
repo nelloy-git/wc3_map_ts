@@ -9,9 +9,10 @@ export class InterfaceUnitParameters extends Backdrop {
 
         for (let [param, [name, val]] of this._params){
             name.parent = this
-            name.al
+            name.textHorzAlignment = 'LEFT'
 
             val.parent = this
+            
         }
     }
 
@@ -25,8 +26,8 @@ export class InterfaceUnitParameters extends Backdrop {
         if (!u){return}
 
         let params = ParamsUnit.get(u)
-        for (let [param, frame] of this._params){
-            frame.parent = this
+        for (let [param, [name, val]] of this._params){
+            
         }
     }
 
