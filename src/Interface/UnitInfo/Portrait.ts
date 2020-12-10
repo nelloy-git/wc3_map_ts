@@ -1,10 +1,11 @@
 import { Backdrop, FdfBackdrop, OriginPortrait } from "../../FrameExt"
 
-export class Portrait extends Backdrop {
+export class InterfacePortrait extends Backdrop {
     private constructor(){
-        super(Portrait._fdf)
+        super(InterfacePortrait._fdf)
+        this.visible = false
     }
-    static get instance(){return Portrait._instance as Portrait}
+    static get instance(){return InterfacePortrait._instance as InterfacePortrait}
 
     protected _set_pos(pos: [x: number, y: number]){
         super._set_pos(pos)
@@ -20,10 +21,19 @@ export class Portrait extends Backdrop {
         if (orig){
             orig.size = [0.9 * this.size[0], 0.9 * this.size[1]]
         }
+        this.pos = this.pos
+    }
+
+    protected _set_visible(flag: boolean){
+        super._set_visible(flag)
+        let orig = OriginPortrait.instance()
+        if (orig){
+            orig.visible = flag
+        }
     }
 
     private static _fdf = (()=>{
-        let fdf = new FdfBackdrop('InterfacePortraitBackground')
+        let fdf = new FdfBackdrop(InterfacePortrait.name)
         fdf.width = 0.04
         fdf.height = 0.04
         fdf.backgroundTileMode = true
@@ -36,5 +46,5 @@ export class Portrait extends Backdrop {
         fdf.edgeFile = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-border'
         return fdf
     })()
-    private static _instance = IsGame() ? new Portrait() : undefined
+    private static _instance = IsGame() ? new InterfacePortrait() : undefined
 }

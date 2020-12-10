@@ -8,11 +8,20 @@ export class InterfaceUnitBars extends Backdrop {
         super()
 
         this.alpha = 0;
-        this._life.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor01.blp'
-        this._mana.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor02.blp'
-        this._mag_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor03.blp'
-        this._phys_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor07.blp'
+        this.visible = false
 
+        this._mag_shield.parent = this
+        this._mag_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor02.blp'
+        
+        this._phys_shield.parent = this
+        this._phys_shield.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor07.blp'
+        
+        this._life.parent = this
+        this._life.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor00.blp'
+        
+        this._mana.parent = this
+        this._mana.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor01.blp'
+        
         this.size = this.size
     }
     
@@ -22,17 +31,17 @@ export class InterfaceUnitBars extends Backdrop {
         let w = size[0]
         let h = size[1] / 4
 
-        this._life.size = [w, h]
-        this._life.pos = [0, 0]
-
-        this._mana.size = [w, h]
-        this._mana.pos = [0, h]
-
         this._mag_shield.size = [w, h]
-        this._mag_shield.pos = [0, 2 * h]
+        this._mag_shield.pos = [0, 0]
 
         this._phys_shield.size = [w, h]
-        this._phys_shield.pos = [0, 3 * h]
+        this._phys_shield.pos = [0, h]
+
+        this._life.size = [w, h]
+        this._life.pos = [0, 2 * h]
+
+        this._mana.size = [w, h]
+        this._mana.pos = [0, 3 * h]
     }
 
     get unit(){return this._unit}

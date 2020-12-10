@@ -22,6 +22,7 @@ import * as Utils from "./Utils"
 import { AbilityContainer } from './AbilityExt'
 import { Init } from './Interface/Init'
 import { ParamsUnit } from './Parameter'
+import { LifeForceShield } from './Abilities/LifeForceShield'
 
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
@@ -33,9 +34,12 @@ if (IsGame()){
 
     let u = new hUnit(bin_unit.id, 0, 0, Player(0))
     let params = new ParamsUnit(u)
-    params.set('LIFE', 'BASE', 600)
+    params.set('LIFE', 'BASE', 1000)
     params.set('PATK', 'BASE', 10)
     params.set('PDEF', 'BASE', 5)
+
+    let abils = new AbilityContainer(u)
+    abils.set(2, LifeForceShield)
 
     let u2 = new hUnit(bin_unit.id, 0, 0, Player(0))
     let params2 = new ParamsUnit(u2)

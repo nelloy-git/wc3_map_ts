@@ -1,10 +1,10 @@
 import { Backdrop, FdfBackdrop, OriginMinimap } from "../FrameExt"
 
-export class Minimap extends Backdrop {
+export class InterfaceMinimap extends Backdrop {
     private constructor(){
-        super(Minimap._fdf)
+        super(InterfaceMinimap._fdf)
     }
-    static get instance(){return Minimap._instance as Minimap}
+    static get instance(){return InterfaceMinimap._instance as InterfaceMinimap}
 
     protected _set_pos(pos: [x: number, y: number]){
         super._set_pos(pos)
@@ -38,5 +38,5 @@ export class Minimap extends Backdrop {
         fdf.edgeFile = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-border'
         return fdf
     })()
-    private static _instance = IsGame() ? new Minimap() : undefined
+    private static _instance = IsGame() ? new InterfaceMinimap() : undefined
 }

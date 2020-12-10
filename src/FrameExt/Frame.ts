@@ -43,6 +43,11 @@ export class Frame extends hHandle<jframehandle> {
     /* _set_size should be overriden instead. */
     set size(size: [w: number, h: number]){this._set_size(size)}
 
+    /* _get_visible should be overriden instead. */
+    get visible(){return this._get_visible()}
+    /* _set_visible should be overriden instead. */
+    set visible(flag: boolean){this._set_visible(flag)}
+
     get parent(){return this._parent}
     set parent(parent: Frame | null){
         if (this._parent){
@@ -57,17 +62,6 @@ export class Frame extends hHandle<jframehandle> {
 
         this.pos = this.pos
         this.visible = this.visible
-    }
-
-    get visible(){return this._visible}
-    set visible(flag: boolean){
-        this._visible = flag
-        BlzFrameSetVisible(this.handle, flag)
-        for (let i = 0; i < this._children.length; i++){
-            if (!this._children[i].isTooltip){
-                this._children[i].visible = flag
-            }
-        }
     }
 
     get tooltip(){return this._tooltip}
@@ -180,6 +174,18 @@ export class Frame extends hHandle<jframehandle> {
     }
     protected _set_size(size: [w: number, h: number]){
         BlzFrameSetSize(this.handle, size[0], size[1])
+    }
+    
+
+    protected _get_visible(){return this._visible}
+    protected _set_visible(flag: boolean){
+        this._visible = flag
+        BlzFrameSetVisible(this.handle, flag)
+        for (let i = 0; i < this._children.length; i++){
+            if (!this._children[i].isTooltip){
+                this._children[i].visible = flag
+            }
+        }
     }
 
     readonly isSimple: boolean;

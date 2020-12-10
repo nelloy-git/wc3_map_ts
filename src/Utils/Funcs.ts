@@ -26,16 +26,22 @@ export function wcType(handle: any){
 export function float2str(val: number, after_decimal: number){
     if (after_decimal < 0){
         Log.err('after_decimal must be more than 0.')
+    } else if (after_decimal == 0){
+        return Math.floor(val).toString()
     }
 
     after_decimal = Math.floor(after_decimal)
-    let pow = 10^(after_decimal)
+    let pow = 1
+    for (let i = 0; i < after_decimal; i++){
+        pow *= 10
+    }
     let int = Math.floor(val * pow)
     let s_int = int.toString()
 
     while (s_int.length <= after_decimal){
         s_int = '0' + s_int
     }
+
     return s_int.slice(0, s_int.length - after_decimal) + '.' +
            s_int.slice(s_int.length - after_decimal)
 }

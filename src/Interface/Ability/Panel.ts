@@ -1,5 +1,7 @@
-import { AbilityIFace } from "../../AbilityExt";
+import { AbilityContainer, AbilityIFace } from "../../AbilityExt";
 import { Backdrop, FdfBackdrop } from "../../FrameExt";
+import { hUnit } from "../../Handle";
+import { Action } from "../../Utils";
 import { InterfaceAbilityButton } from "./Button";
 
 export class InterfaceAbilityPanel extends Backdrop {
@@ -24,6 +26,8 @@ export class InterfaceAbilityPanel extends Backdrop {
             }
         }
         this.size = this.size
+
+        this.setKey(2, 0, OSKEY_E)
     }
 
     protected _set_size(size: [number, number]){
@@ -43,16 +47,42 @@ export class InterfaceAbilityPanel extends Backdrop {
         }
     }
 
-    setAbility(x: number, y: number, abil: AbilityIFace | undefined){
-        this._buttons[y][x].ability = abil
+    get unit(){return this._unit}
+    set unit(u: hUnit | undefined){
+        if (this._abils){
+            this._abils.removeAction(this._abils_changed)
+        }
+
+        this._abils = AbilityContainer.get(u)
+        if (this._abils){
+            this._abils_changed = this._abils.addAction(()=>{this._update()})    
+        }
+        this._update()
     }
 
     setKey(x: number, y: number, key: joskeytype | undefined){
         this._buttons[y][x].key = key
     }
 
+    protected _update(){
+        let list = this._abils ? this._abils.getList(this.rows * this.cols) : []
+
+        let i = 0
+        for (let y = 0; y < this.rows; y++){
+            for (let x = 0; x < this.cols; x++){
+                this._buttons[y][x].ability = list[i]
+                i++
+            }
+        }
+    }
+
     readonly cols: number
     readonly rows: number
+
+    private _unit: hUnit | undefined
+    private _abils: AbilityContainer | undefined
+    private _abils_changed: Action<[AbilityContainer], void> | undefined
+
     private _backgrounds: Backdrop[][] = [];
     private _buttons: InterfaceAbilityButton[][] = []
 

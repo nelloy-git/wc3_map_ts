@@ -50,7 +50,6 @@ export class ParamsUnit extends ParamContainer {
     }
 
     readonly owner: hUnit;
-    protected _actions = new ActionList()
     
     private static _owner2container = new Map<hUnit, ParamsUnit>()
 }

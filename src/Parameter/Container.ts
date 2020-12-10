@@ -1,3 +1,4 @@
+import { Action, ActionList } from "../Utils";
 import { Parameter } from "./Parameter";
 import { ParamValue, ParamValueType } from "./Value";
 
@@ -8,14 +9,29 @@ export class ParamContainer{
     }
 
     set(param: Parameter.Type, type: ParamValueType, val: number){
-        return this._values.get(param)?.set(type, val) as number
+        let res =  this._values.get(param)?.set(type, val) as number
+        this._actions.run(this, param)
+        return res
     }
 
     add(param: Parameter.Type, type: ParamValueType, val: number){
-        return this._values.get(param)?.add(type, val) as number
+        let res =  this._values.get(param)?.add(type, val) as number
+        this._actions.run(this, param)
+        return res
     }
 
-    protected _values = new Map<Parameter.Type, ParamValue>([
+    addAction(callback: (this: void,
+                         cont: ParamContainer,
+                         param: Parameter.Type)=>void){
+        return this._actions.add(callback)
+    }
+
+    removeAction(action: Action<[ParamContainer, Parameter.Type], void> | undefined){
+        return this._actions.remove(action)
+    }
+
+    private _actions = new ActionList<[ParamContainer, Parameter.Type]>()
+    private _values = new Map<Parameter.Type, ParamValue>([
         ['PATK', new ParamValue()],
         ['PSPD', new ParamValue()],
         ['PDEF', new ParamValue()],

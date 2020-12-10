@@ -18,7 +18,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
 
     protected _set_size(size: [number, number]){
         this._size = size
-        super._set_size([size[0], this._cd_part * size[1]])
+        super._set_size([this._cd_part * size[0], size[1]])
 
         this._text.size = size
         this._text.fontSize = 0.35 * size[1]
@@ -55,7 +55,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         let full = charges.cooldown
         this._cd_part = left / full
 
-        this._set_size([this._cd_part * this._size[0], this._size[1]])
+        super._set_size([this._cd_part * this._size[0], this._size[1]])
         this._text.text = float2str(left, 1)
     }
 

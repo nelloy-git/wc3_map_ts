@@ -15,8 +15,9 @@ export class SimpleStatusBar extends Frame {
     constructor(handle?: jframehandle, background?: SimpleTexture,
                 border?: SimpleTexture, text?: SimpleString){
         if (!handle){
+            super(SimpleStatusBar._default_fdf)
+
             let fdf = SimpleStatusBar._default_fdf
-            super(fdf)
             this._texture = fdf.barTexture
 
             let h_background = BlzGetFrameByName(fdf.name + 'Background', 0)
@@ -104,7 +105,7 @@ export class SimpleStatusBar extends Frame {
             forw_frame.setAllPoints = true
                 let forw_layer = new FdfSimpleLayer('ARTWORK')
                     let forw_string = new FdfSimpleString(name + 'Text')
-                    forw_string.text = ''
+                    forw_string.text = 'SomeText'
                     forw_string.font = 'fonts\\nim_____.ttf'
                     forw_string.fontSize = 0.008
                     forw_string.color = new Color(1, 1, 1, 1)

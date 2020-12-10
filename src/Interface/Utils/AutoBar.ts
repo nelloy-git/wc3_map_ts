@@ -8,6 +8,8 @@ export class InterfaceAutoBar extends SimpleStatusBar {
         
         this._timer_obj = InterfaceAutoBar._timer_list.newTimerObj()
         this._timer_obj.addAction('PERIOD', ()=>{this._update()})
+        this._timer_obj.addAction('FINISH', ()=>{this._timer_obj.start(3600)})
+        this._timer_obj.start(3600)
     }
 
     protected _set_size(size: [w: number, h: number]){
@@ -45,19 +47,21 @@ export class InterfaceAutoBar extends SimpleStatusBar {
 
         let text = ' '
         if (this.printCur){
-            text += float2str(cur, this.precision) + ' '
+            text += float2str(cur, 0) + ' '
             if (this.printMax){text += '/ '}
         }
 
         if (this.printMax){
-            text += float2str(max, this.precision) + ' '
+            text += float2str(max, 0) + ' '
         }
 
         if (this.printPerc){
-            text += '(' + float2str(100 * part, 1) + '%) '
+            text += '(' + float2str(100 * part, 0) + '%) '
         }
 
         this.fullness = part
+        let text_elem = this.getElement('TEXT')
+        if (text_elem){text_elem.text = text}
     }
 
     private _cur_getter: Action<[], number> | undefined;
