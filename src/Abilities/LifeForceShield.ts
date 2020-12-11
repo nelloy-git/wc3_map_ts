@@ -60,7 +60,7 @@ class Data extends AbilityTypeData {
     static readonly instance = new Data()
     name(abil: AbilityIFace): string {return ''}
     iconNormal(abil: AbilityIFace): string {return 'ReplaceableTextures\\CommandButtons\\BTNOrbOfCorruption.blp'}
-    iconDisabled(abil: AbilityIFace): string {return 'ReplaceableTextures\\CommandButtonsDisabled\\BTNOrbOfCorruption.blp'}
+    iconDisabled(abil: AbilityIFace): string {return 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNOrbOfCorruption.blp'}
     tooltip(abil: AbilityIFace): string {return ''}
     lifeCost(abil: AbilityIFace): number {return 0}
     manaCost(abil: AbilityIFace): number {return 0}

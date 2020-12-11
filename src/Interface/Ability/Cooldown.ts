@@ -39,19 +39,25 @@ export class InterfaceAbilityCooldown extends SimpleImage {
         this._changed_action = this._charges.addAction('COUNT_CHANGED',
                                                         (charges: AbilityCharges): void => 
                                                             {this._chargesChanged(charges)})
+        this._chargesChanged(this._charges)
+
         this._cooldown_action = this._charges.addAction('COOLDOWN_LOOP',
                                                         (charges: AbilityCharges): void =>
                                                             {this._cooldownLoop(charges)})
+        this._cooldownLoop(this._charges)
     }
 
     private _chargesChanged(charges: AbilityCharges){
         let alpha = charges.count < 1 ? 0.85 : 0.35
         this.alpha = alpha
-        this._text.visible = !(charges.count == charges.countMax)
+        print(charges.count, charges.countMax)
+        this._text.visible = charges.count != charges.countMax
     }
 
     private _cooldownLoop(charges: AbilityCharges){
         let left = charges.timeLeft
+        if (left <= 0){return}
+
         let full = charges.cooldown
         this._cd_part = left / full
 
