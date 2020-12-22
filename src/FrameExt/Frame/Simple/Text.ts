@@ -1,6 +1,5 @@
+import * as Fdf from '../../../Fdf'
 import { Log } from '../../../Utils'
-import { FdfSimpleFrame } from '../../Fdf/Simple/Frame';
-import { FdfSimpleString } from '../../Fdf/Simple/String';
 import { Frame } from "../../Frame";
 import { SimpleString } from './String';
 
@@ -41,10 +40,10 @@ export class SimpleText extends Frame {
     private _string: SimpleString;
 
     private static _default_fdf = (()=>{
-        let fdf = new FdfSimpleFrame(SimpleText.name + 'DefaultFdf')
+        let fdf = new Fdf.SimpleFrame(SimpleText.name + 'DefaultFdf')
         fdf.width = 0.04
         fdf.height = 0.04
-        let text = new FdfSimpleString(SimpleText.name + 'DefaultFdfString')
+        let text = new Fdf.SimpleString(SimpleText.name + 'DefaultFdfString')
             text.text = ''
             text.font = 'fonts\\nim_____.ttf'
             text.fontSize = 0.008

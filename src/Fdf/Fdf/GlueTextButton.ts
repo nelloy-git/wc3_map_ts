@@ -1,10 +1,11 @@
+import { Log } from "../../Utils";
 import { Fdf } from "../Fdf";
 
-import { FdfBackdrop } from './Backdrop'
-import { FdfHighlight } from './Highlight'
-import { FdfText } from './Text'
+import { Backdrop } from './Backdrop'
+import { Highlight } from './Highlight'
+import { Text } from './Text'
 
-export class FdfGlueTextButton extends Fdf {
+export class GlueTextButton extends Fdf {
     constructor(name: string){
         super(name, 'GLUETEXTBUTTON', false)
         this._setParam('ControlStyle', '\"AUTOTRACK\"')
@@ -39,34 +40,43 @@ export class FdfGlueTextButton extends Fdf {
         this._text_offset = offset
     }
 
-    public hasElement(elem: FdfGlueTextButton.Element){
-        if (this._elements.get(elem)){return true}
-        return false
+    public hasElement(elem: GlueTextButton.Element){
+        return this._elements.get(elem) != undefined
     }
 
-    public getElement(elem: FdfGlueTextButton.Element){
+    public getElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop | undefined
+    public getElement(elem: 'MOUSE' | 'FOCUS'): Highlight | undefined
+    public getElement(elem: 'TEXT'): Text | undefined
+    public getElement(elem: GlueTextButton.Element): Backdrop | Highlight | Text | undefined
+    public getElement(elem: GlueTextButton.Element){
         let res = this._elements.get(elem)
         if (res){return res}
     }
 
-    /** Create element if it does not exist. */
-    public getOrNewElement(elem: FdfGlueTextButton.Element){
-        let res = this._elements.get(elem)
-        if (res){return res}
+    public newElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop
+    public newElement(elem: 'MOUSE' | 'FOCUS'): Highlight
+    public newElement(elem: 'TEXT'): Text
+    public newElement(elem: GlueTextButton.Element){
+        if (this.hasElement(elem)){
+            Log.err(GlueTextButton.name + 
+                    ': element already exists')
+        }
 
+        let res
         if (elem == 'NORMAL' || elem == 'PUSHED' || elem == 'DISABLED'){
-            res = new FdfBackdrop(this.name + elem)
+            res = new Backdrop(this.name + elem)
         } else if (elem == 'MOUSE' || elem == 'FOCUS') {
-            res = new FdfHighlight(this.name + elem)
+            res = new Highlight(this.name + elem)
         } else {
-            res = new FdfText(this.name + elem)
+            res = new Text(this.name + elem)
         }
         this._applyElement(elem, res)
+
         return res
     }
 
-    private _applyElement(elem: FdfGlueTextButton.Element, sub: FdfBackdrop | FdfHighlight | FdfText){
-        let param = FdfGlueTextButton._elem2param.get(elem) as string
+    private _applyElement(elem: GlueTextButton.Element, sub: Backdrop | Highlight | Text){
+        let param = GlueTextButton._elem2param.get(elem) as string
         this._setParam(param, '\"' + this.name + elem + '\"')
         if (elem == 'MOUSE' && !this._track_mouse){
             this._track_mouse = true
@@ -89,9 +99,9 @@ export class FdfGlueTextButton extends Fdf {
 
     private _track_mouse: boolean = false
     private _track_focus: boolean = false
-    private _elements = new Map<FdfGlueTextButton.Element, FdfBackdrop | FdfHighlight | FdfText>()
+    private _elements = new Map<GlueTextButton.Element, Backdrop | Highlight | Text>()
 
-    private static _elem2param = new Map<FdfGlueTextButton.Element, string>([
+    private static _elem2param = new Map<GlueTextButton.Element, string>([
         ['NORMAL', 'ControlBackdrop'],
         ['PUSHED', 'ControlPushedBackdrop'],
         ['DISABLED', 'ControlDisabledBackdrop'],
@@ -101,6 +111,6 @@ export class FdfGlueTextButton extends Fdf {
     ])
 }
 
-export namespace FdfGlueTextButton {
+export namespace GlueTextButton {
     export type Element = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
 }

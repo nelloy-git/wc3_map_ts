@@ -1,7 +1,6 @@
-import { Backdrop } from "..";
 import { Fdf } from "../Fdf";
 
-export class FdfBackdrop extends Fdf {
+export class Backdrop extends Fdf {
     constructor(name: string){
         super(name, 'BACKDROP', false)
     }

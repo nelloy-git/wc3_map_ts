@@ -1,7 +1,9 @@
-import { Ability, AbilityIFace, AbilityType, AbilityTypeCasting, AbilityTypeData, AbilityTypeTargetingFriend } from "../AbilityExt";
+import * as Abil from "../AbilityExt";
 import * as Buff from "../Buff";
+import * as Param from "../Parameter";
+
 import { hUnit } from "../Handle";
-import { ParamsUnit, Shield } from "../Parameter";
+import { Log } from "../Utils";
 
 let DRAIN_LIFE = 0.15
 let SHIELD_OF_DRAINED = 1
@@ -12,66 +14,70 @@ let SHIELD_TIME_MSPD = 1
 class AbilBuffData extends Buff.TypeData {
     static readonly instance = new AbilBuffData()
 
-    name(buff: Buff.BuffIFace){return ''}
-    icon(buff: Buff.BuffIFace){return ''}
-    tooltip(buff: Buff.BuffIFace){return ''}
+    name(buff: Buff.IFace){return ''}
+    icon(buff: Buff.IFace){return ''}
+    tooltip(buff: Buff.IFace){return ''}
 }
 
-class AbilBuffProcess extends Buff.TypeProcess<Shield> {
+class AbilBuffProcess extends Buff.TypeProcess<Param.Shield> {
     static readonly instance = new AbilBuffProcess()
 
-    start(buff: Buff.Buff<Shield>){}
-    period(buff: Buff.Buff<Shield>){}
-    cancel(buff: Buff.Buff<Shield>){buff.data.destroy()}
-    finish(buff: Buff.Buff<Shield>){buff.data.destroy()}
+    start(buff: Buff.Buff<Param.Shield>){}
+    period(buff: Buff.Buff<Param.Shield>){}
+    cancel(buff: Buff.Buff<Param.Shield>){buff.data.destroy()}
+    finish(buff: Buff.Buff<Param.Shield>){buff.data.destroy()}
 }
 
-let BuffType = new Buff.Type<Shield>(AbilBuffData.instance,
-                                     AbilBuffProcess.instance)
+let AbilBuffType = new Buff.Type<Param.Shield>(AbilBuffData.instance,
+                                        AbilBuffProcess.instance)
 
 
-class Casting extends AbilityTypeCasting<[hUnit]> {
+class Casting extends Abil.TypeCasting<[hUnit]> {
     static readonly instance = new Casting()
 
-    start(abil: Ability<[hUnit]>): void {};
-    casting(abil: Ability<[hUnit]>, dt: number): void {};
-    cancel(abil: Ability<[hUnit]>): void {};
-    interrupt(abil: Ability<[hUnit]>): void {};
-    finish(abil: Ability<[hUnit]>): void {
+    start(abil: Abil.Ability<[hUnit]>): void {};
+    casting(abil: Abil.Ability<[hUnit]>, dt: number): void {};
+    cancel(abil: Abil.Ability<[hUnit]>): void {};
+    interrupt(abil: Abil.Ability<[hUnit]>): void {};
+    finish(abil: Abil.Ability<[hUnit]>): void {
         let targ = abil.getTarget()[0]
 
-        let params = ParamsUnit.get(targ)
+        let params = Param.Unit.get(targ)
         let buffs = Buff.Container.get(targ)
-        if (!params || !buffs){return}
+        if (!params || !buffs){
+            return Log.err(Casting.name + 
+                           ': target does not have parameter or buff containers.')
+        }
 
         let drain = DRAIN_LIFE * targ.lifeMax
         targ.life = targ.life - drain
 
-        let shield = new Shield('PHYS', targ)
+        let shield = new Param.Shield('PHYS', targ)
         shield.value = SHIELD_OF_DRAINED * drain + SHIELD_MATK * params.get('MATK', 'RES')
         let time = SHIELD_TIME_BASE * SHIELD_TIME_MSPD * params.get('MSPD', 'RES')
 
-        buffs.add<Shield>(abil.owner, time, BuffType, shield)
+        print(shield.value, time)
+        buffs.add<Param.Shield>(abil.owner, time, AbilBuffType, shield)
     };
-    isTargetValid(abil: Ability<[hUnit]>, target: [hUnit]): boolean {return true}
+    isTargetValid(abil: Abil.Ability<[hUnit]>, target: [hUnit]): boolean {return true}
 }
 
-class Data extends AbilityTypeData {
+class Data extends Abil.TypeData {
     static readonly instance = new Data()
-    name(abil: AbilityIFace): string {return ''}
-    iconNormal(abil: AbilityIFace): string {return 'ReplaceableTextures\\CommandButtons\\BTNOrbOfCorruption.blp'}
-    iconDisabled(abil: AbilityIFace): string {return 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNOrbOfCorruption.blp'}
-    tooltip(abil: AbilityIFace): string {return ''}
-    lifeCost(abil: AbilityIFace): number {return 0}
-    manaCost(abil: AbilityIFace): number {return 0}
-    chargeUsed(abil: AbilityIFace): number {return 1}
-    chargeMax(abil: AbilityIFace): number {return 1}
-    chargeCooldown(abil: AbilityIFace): number {return 5}
-    castingTime(abil: AbilityIFace): number {return 1}
-    isAvailable(abil: AbilityIFace): boolean {return abil.charges.count > 0}
-    consume(abil: AbilityIFace): boolean {abil.charges.count -= 1; return true}
+    name(abil: Abil.IFace): string {return ''}
+    iconNormal(abil: Abil.IFace): string {return 'ReplaceableTextures\\CommandButtons\\BTNOrbOfCorruption.blp'}
+    iconDisabled(abil: Abil.IFace): string {return 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNOrbOfCorruption.blp'}
+    tooltip(abil: Abil.IFace): string {return ''}
+    lifeCost(abil: Abil.IFace): number {return 0}
+    manaCost(abil: Abil.IFace): number {return 0}
+    chargeUsed(abil: Abil.IFace): number {return 1}
+    chargeMax(abil: Abil.IFace): number {return 1}
+    chargeCooldown(abil: Abil.IFace): number {return 5}
+    castingTime(abil: Abil.IFace): number {return 1}
+    isAvailable(abil: Abil.IFace): boolean {return abil.charges.count > 0}
+    consume(abil: Abil.IFace): boolean {abil.charges.count -= 1; return true}
 }
 
-export let LifeForceShield = new AbilityType(Casting.instance,
-                                             Data.instance,
-                                             AbilityTypeTargetingFriend.instance)
+export let LifeForceShield = new Abil.Type(Casting.instance,
+                                           Data.instance,
+                                           Abil.TypeTargetingFriend.instance)

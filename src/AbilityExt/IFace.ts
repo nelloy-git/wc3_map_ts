@@ -1,13 +1,13 @@
-import { Action } from "../../Utils";
-import { hUnit } from '../../Handle'
-import { Point } from '../Point'
-import { Type } from "../Type";
-import { Charges } from "../Charges";
+import { Action } from "../Utils";
+import { hUnit } from '../Handle'
+import { Point } from './Point'
+import { Type } from "./Type";
+import { Charges } from "./Charges";
 
 export type TargetType = (hUnit | Point)[]
 export type Event = 'START' | 'CASTING' | 'CANCEL' | 'INTERRUPT' | 'FINISH'
 
-export interface AbilityIFace {
+export interface IFace {
     readonly id: number;
     readonly owner: hUnit;
     readonly type: Type<any>;
@@ -26,16 +26,16 @@ export interface AbilityIFace {
     getTarget(): TargetType;
 
     addAction(event: Event,
-              callback: (abil: AbilityIFace,
+              callback: (abil: IFace,
                          event: Event)=>void):
-                           Action<[AbilityIFace, Event], void> | undefined
+                           Action<[IFace, Event], void> | undefined
 
-    removeAction(action: Action<[AbilityIFace, Event], void>): boolean
+    removeAction(action: Action<[IFace, Event], void>): boolean
 }
 
-export namespace AbilityIFace {
+export namespace IFace {
 
-    export function register(abil: AbilityIFace){
+    export function register(abil: IFace){
         let id = newId()
         _id2abil.set(id, abil)
         return id
@@ -50,5 +50,5 @@ export namespace AbilityIFace {
         _last_id += 1
         return _last_id
     }
-    let _id2abil = new Map<number, AbilityIFace>()
+    let _id2abil = new Map<number, IFace>()
 }

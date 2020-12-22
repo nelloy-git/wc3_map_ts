@@ -3,29 +3,29 @@ import { Fdf } from "../../Fdf";
 
 type SimpleLayerType = 'ARTWORK'|'BACKGROUND'
 
-export class FdfSimpleLayer extends Fdf {
+export class SimpleLayer extends Fdf {
     constructor(type: SimpleLayerType){
-        super('Layer' + (FdfSimpleLayer._count++).toString(), 'Layer', true)
+        super('Layer' + (SimpleLayer._count++).toString(), 'Layer', true)
         this.layerType = type
     }
 
     public set inherit(other: Fdf | undefined){
-        Log.err(FdfSimpleLayer.name + 
+        Log.err(SimpleLayer.name + 
                 ': can not inherit.', 2)
     }
 
     protected _setParam(param: string, value?: string){
-        Log.err(FdfSimpleLayer.name + 
+        Log.err(SimpleLayer.name + 
                 ': can not contain params.', 2)
     }
 
     protected _getParam(param: string){
-        return Log.err(FdfSimpleLayer.name + 
+        return Log.err(SimpleLayer.name + 
                        ': can not contain params.', 2)
     }
 
     protected _removeParam(param: string){
-        return Log.err(FdfSimpleLayer.name + 
+        return Log.err(SimpleLayer.name + 
                        ': can not contain params.', 2)
     }
 

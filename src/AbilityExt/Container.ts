@@ -1,3 +1,4 @@
+import { IFace } from './IFace'
 import { Ability } from './Ability'
 import { hUnit } from "../Handle";
 import { Action, ActionList, Log } from "../Utils";
@@ -18,20 +19,19 @@ export class Container {
     }
 
     readonly owner: hUnit;
-    get size(){return this._list.length}
 
     set(i: number, type: Type<any> | undefined){
-        let abil = type ? new Ability<any>(this.owner, type) : undefined
+        let abil = type ? new Ability(this.owner, type) : undefined
         this._list[i] = abil
         this._actions.run(this)
     }
 
-    get (i: number){
+    get(i: number){
         return this._list[i]
     }
     
     getList(size: number){
-        let copy: (Ability<any> | undefined)[] = []
+        let copy: (IFace | undefined)[] = []
         for (let i = 0; i < size; i++){
             copy[i] = this._list[i]
         }
@@ -46,7 +46,7 @@ export class Container {
         return this._actions.remove(action) 
     }
 
-    private _list: (Ability<any> | undefined)[] = []
+    private _list: (IFace | undefined)[] = []
     private _actions: ActionList<[Container]> = new ActionList<[Container]>()
 
     private static _owner2container = new Map<hUnit, Container>()

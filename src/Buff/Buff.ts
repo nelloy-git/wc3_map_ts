@@ -1,8 +1,8 @@
 import { hTimerList, hTimerObj, hUnit } from "../Handle";
-import { BuffIFace } from "./IFace";
+import { IFace } from "./IFace";
 import { Type } from "./Type";
 
-export class Buff<T> extends hTimerObj implements BuffIFace {
+export class Buff<T> extends hTimerObj implements IFace {
     constructor(src: hUnit, targ: hUnit, type: Type<T>, data: T){
         super(Buff._timer_list)
 

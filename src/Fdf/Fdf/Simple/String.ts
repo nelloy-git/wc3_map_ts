@@ -1,7 +1,7 @@
 import { Color, Log } from "../../../Utils";
 import { Fdf } from "../../Fdf";
 
-export class FdfSimpleString extends Fdf {
+export class SimpleString extends Fdf {
     constructor(name: string){
         super(name, 'String', true)
     }
@@ -31,15 +31,15 @@ export class FdfSimpleString extends Fdf {
     }
 
     public addSubframe(){
-        return Log.err(FdfSimpleString.name + 
+        return Log.err(SimpleString.name + 
                        ': can not have subframes.', 2)
     }
     public getSubframe(){
-        return Log.err(FdfSimpleString.name + 
+        return Log.err(SimpleString.name + 
                        ': can not have subframes.', 2)
     }
     public removeSubframe(){
-        return Log.err(FdfSimpleString.name + 
+        return Log.err(SimpleString.name + 
                        ': can not have subframes.', 2)
     }
 

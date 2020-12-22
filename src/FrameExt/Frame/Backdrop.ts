@@ -1,15 +1,15 @@
+import * as Fdf from '../../Fdf'
 import { Log } from "../../Utils";
-import { FdfBackdrop as FdfBackdrop} from '../Fdf/Backdrop'
 import { Frame } from "../Frame";
 
 export class Backdrop extends Frame {
     constructor()
-    constructor(fdf: FdfBackdrop)
+    constructor(fdf: Fdf.Backdrop)
     constructor(handle: jframehandle)
-    constructor(handle?: FdfBackdrop|jframehandle){
+    constructor(handle?: Fdf.Backdrop | jframehandle){
         if (!handle){handle = Backdrop._default_fdf}
 
-        if (handle instanceof FdfBackdrop){
+        if (handle instanceof Fdf.Backdrop){
             super(handle)
             this._texture = handle.background
         } else {
@@ -52,7 +52,7 @@ export class Backdrop extends Frame {
     private _texture_blend: boolean;
 
     private static _default_fdf = (()=>{
-        let fdf = new FdfBackdrop(Backdrop.name + 'DefaultFdf')
+        let fdf = new Fdf.Backdrop(Backdrop.name + 'DefaultFdf')
         fdf.width = 0.04
         fdf.height = 0.04
         fdf.background = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-background'

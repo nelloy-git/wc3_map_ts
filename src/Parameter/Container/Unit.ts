@@ -1,43 +1,40 @@
-import { ParamContainer } from "../Container"
-import { ActionList, Log } from "../../Utils";
-import { Parameter } from "../Parameter";
-import { ParamValueType } from "../Value";
+import { Log } from "../../Utils";
+import { ValueType } from "../Value";
 import { hUnit } from "../../Handle";
-import { Damage } from "../Damage/Damage";
 
-export class ParamsUnit extends ParamContainer {
+import { Container } from "../Container"
+import { Damage } from "../Damage/Damage";
+import { Type } from "../Type";
+
+export class Unit extends Container {
     constructor(owner: hUnit){
         super()
         this.owner = owner
         
-        if (ParamsUnit._owner2container.get(owner)){
-            return Log.err(ParamsUnit.name + 
+        if (Unit._owner2container.get(owner)){
+            return Log.err(Unit.name + 
                            ': already exists.', 2)
         }
-        ParamsUnit._owner2container.set(owner, this)
+        Unit._owner2container.set(owner, this)
     }
 
     static get(owner: hUnit){
-        return ParamsUnit._owner2container.get(owner)
+        return Unit._owner2container.get(owner)
     }
 
-    get(param: Parameter.Type, type: ParamValueType){
-        return super.get(param, type)
-    }
-
-    set(param: Parameter.Type, type: ParamValueType, val: number){
+    set(param: Type, type: ValueType, val: number){
         let res = super.set(param, type, val)
         this._applyParam(param, res)
         return res
     }
 
-    add(param: Parameter.Type, type: ParamValueType, val: number){
+    add(param: Type, type: ValueType, val: number){
         let res = super.add(param, type, val)
         this._applyParam(param, res)
         return res
     }
 
-    protected _applyParam(param: Parameter.Type, val: number){
+    protected _applyParam(param: Type, val: number){
         switch (param){
             case 'PATK':{this.owner.baseDamage = val; break}
             case 'PSPD':{this.owner.attackCooldown = (1 / val) * this.owner.attackCooldownDefault; break}
@@ -51,12 +48,12 @@ export class ParamsUnit extends ParamContainer {
 
     readonly owner: hUnit;
     
-    private static _owner2container = new Map<hUnit, ParamsUnit>()
+    private static _owner2container = new Map<hUnit, Unit>()
 }
 
 function addMagicAttack(this: void, src: hUnit, dst: hUnit, dmg: number, type: Damage.Type){
     if (type == 'PATK'){
-        let params = ParamsUnit.get(src)
+        let params = Unit.get(src)
         if (!params){return dmg}
         
         let m_dmg = params.get('MATK', 'RES') * (1 + Math.random() * src.dispersionDamage)
@@ -67,7 +64,7 @@ function addMagicAttack(this: void, src: hUnit, dst: hUnit, dmg: number, type: D
 
 function applyProtection(this: void, src: hUnit, dst: hUnit, dmg: number, type: Damage.Type){
     if (type == 'PATK' || type == 'PSPL'){
-        let params = ParamsUnit.get(dst)
+        let params = Unit.get(dst)
         if (!params){return dmg}
 
         let pdef = params.get('PDEF', 'RES')
@@ -75,7 +72,7 @@ function applyProtection(this: void, src: hUnit, dst: hUnit, dmg: number, type: 
 
         return (dmg * (1 - pres)) - pdef
     } else if (type == 'MATK' || type == 'MSPL'){
-        let params = ParamsUnit.get(dst)
+        let params = Unit.get(dst)
         if (!params){return dmg}
 
         let mdef = params.get('MDEF', 'RES')
@@ -88,7 +85,7 @@ function applyProtection(this: void, src: hUnit, dst: hUnit, dmg: number, type: 
 }
 
 function applyCrit(this: void, src: hUnit, dst: hUnit, dmg: number, type: Damage.Type){
-    let params = ParamsUnit.get(dst)
+    let params = Unit.get(dst)
     if (!params){return dmg}
 
     if (Math.random() < params.get('CRIT', 'RES')){dmg = dmg * 2}

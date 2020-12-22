@@ -19,13 +19,11 @@ export class InterfaceAutoBar extends SimpleStatusBar {
     }
 
     set curGetter(f: ((this: void)=>number) | undefined){
-        this._cur_getter = undefined
-        if (f){this._cur_getter = new Action(f)}
+        this._cur_getter = f ? new Action(f) : undefined
     }
 
     set maxGetter(f: ((this: void)=>number) | undefined){
-        this._max_getter = undefined
-        if(f)(this._max_getter = new Action(f))
+        this._max_getter = f ? new Action(f) : undefined
     }
 
     printCur = true;

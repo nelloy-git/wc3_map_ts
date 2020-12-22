@@ -15,13 +15,15 @@ if (!IsGame()){
     new Utils.Import(GetSrc() + '\\map_data\\war3mapUnits.doo', 'war3mapUnits.doo')
 }
 
+import * as Abil from './AbilityExt'
+import * as Buff from './Buff'
+import * as Param from './Parameter'
+import * as Utils from "./Utils"
+
 import { BinUnit, BinUnitField } from './Binary'
 import { hUnit } from './Handle'
 import { id2int} from './Utils'
-import * as Utils from "./Utils"
-import { AbilityContainer } from './AbilityExt'
 import { Init } from './Interface/Init'
-import { ParamsUnit } from './Parameter'
 import { LifeForceShield } from './Abilities/LifeForceShield'
 
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
@@ -33,19 +35,23 @@ if (IsGame()){
     InitBlizzard()
 
     let u = new hUnit(bin_unit.id, 0, 0, Player(0))
-    let params = new ParamsUnit(u)
+    let params = new Param.Unit(u)
     params.set('LIFE', 'BASE', 1000)
     params.set('PATK', 'BASE', 10)
     params.set('PDEF', 'BASE', 5)
 
-    let abils = new AbilityContainer(u)
+    let abils = new Abil.Container(u)
     abils.set(2, LifeForceShield)
 
+    let buffs = new Buff.Container(u)
+
     let u2 = new hUnit(bin_unit.id, 0, 0, Player(0))
-    let params2 = new ParamsUnit(u2)
+    let params2 = new Param.Unit(u2)
     params2.set('LIFE', 'BASE', 600)
     params2.set('PATK', 'BASE', 10)
     params2.set('PDEF', 'BASE', 5)
+    
+    let buffs2 = new Buff.Container(u2)
 
     Init()
 }

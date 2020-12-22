@@ -1,7 +1,7 @@
 import { hUnit } from "../Handle";
 import { Type } from "./Type";
 
-export interface BuffIFace {
+export interface IFace {
     src: hUnit
     dst: hUnit
     type: Type<any>

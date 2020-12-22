@@ -1,6 +1,5 @@
+import * as Fdf from '../../../Fdf'
 import { Log } from '../../../Utils'
-import { FdfSimpleFrame } from '../../Fdf/Simple/Frame';
-import { FdfSimpleTexture } from '../../Fdf/Simple/Texture';
 import { Frame } from "../../Frame";
 import { SimpleTexture } from './Texture';
 
@@ -38,10 +37,10 @@ export class SimpleImage extends Frame {
     private _texture: SimpleTexture;
 
     private static _default_fdf = (()=>{
-        let fdf = new FdfSimpleFrame(SimpleImage.name + 'DefaultFdf')
+        let fdf = new Fdf.SimpleFrame(SimpleImage.name + 'DefaultFdf')
         fdf.width = 0.04
         fdf.height = 0.04
-            let texture = new FdfSimpleTexture(SimpleImage.name + 'DefaultFdfTexture')
+            let texture = new Fdf.SimpleTexture(SimpleImage.name + 'DefaultFdfTexture')
             texture.textureFile = ''
         fdf.addSubframe(texture)
         return fdf

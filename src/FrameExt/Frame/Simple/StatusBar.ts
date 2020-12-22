@@ -1,11 +1,7 @@
+import * as Fdf from '../../../Fdf'
 import { Color, Log } from '../../../Utils'
-import { FdfSimpleLayer } from '../../Fdf/Simple/Layer';
-import { FdfSimpleTexture } from '../../Fdf/Simple/Texture';
-import { FdfSimpleStatusBar } from '../../Fdf/Simple/StatusBar';
 import { Frame } from "../../Frame";
 import { SimpleTexture } from './Texture';
-import { FdfSimpleFrame } from '../../Fdf/Simple/Frame';
-import { FdfSimpleString } from '../../Fdf/Simple/String';
 import { SimpleString } from './String';
 
 export class SimpleStatusBar extends Frame {
@@ -20,14 +16,9 @@ export class SimpleStatusBar extends Frame {
             let fdf = SimpleStatusBar._default_fdf
             this._texture = fdf.barTexture
 
-            let h_background = BlzGetFrameByName(fdf.name + 'Background', 0)
-            background = new SimpleTexture(h_background)
-
-            let h_border = BlzGetFrameByName(fdf.name + 'Border', 0)
-            border = new SimpleTexture(h_border)
-
-            let h_text = BlzGetFrameByName(fdf.name + 'Text', 0)
-            text = new SimpleString(h_text)
+            background = SimpleStatusBar._newElement('BACKGROUND')
+            border = SimpleStatusBar._newElement('BORDER')
+            text = SimpleStatusBar._newElement('TEXT')
         } else {
             super(handle, true)
             this._texture = ''
@@ -66,8 +57,7 @@ export class SimpleStatusBar extends Frame {
         BlzFrameSetValue(this.handle, 100 * this._fullness)
     }
 
-    getElement(elem: 'BACKGROUND'): SimpleTexture | undefined
-    getElement(elem: 'BORDER'): SimpleTexture | undefined
+    getElement(elem: 'BACKGROUND' | 'BORDER'): SimpleTexture | undefined
     getElement(elem: 'TEXT'): SimpleString | undefined
     getElement(elem: SimpleStatusBar.Element){
         return this._elements.get(elem)
@@ -88,29 +78,41 @@ export class SimpleStatusBar extends Frame {
     private _fullness: number;
     private _elements: Map<SimpleStatusBar.Element, SimpleTexture | SimpleString>;
 
+    private static _newElement(elem: 'BACKGROUND' | 'BORDER'): SimpleTexture
+    private static _newElement(elem: 'TEXT'): SimpleString
+    private static _newElement(elem: SimpleStatusBar.Element){
+        let name = SimpleStatusBar._default_fdf.name + elem
+        let handle = BlzGetFrameByName(name, 0)
+        if (elem == 'BACKGROUND' || elem == 'BORDER'){
+            return new SimpleTexture(handle)
+        } else if (elem == 'TEXT'){
+            return new SimpleString(handle)
+        }
+    }
+
     private static _default_fdf = (()=>{
         let name = SimpleStatusBar.name + 'DefaultFdf'
 
-        let fdf = new FdfSimpleStatusBar(name)
+        let fdf = new Fdf.SimpleStatusBar(name)
         fdf.width = 0.04
         fdf.height = 0.01
         fdf.barTexture = 'Replaceabletextures\\Teamcolor\\Teamcolor00.blp'
-            let layer_back = new FdfSimpleLayer('BACKGROUND')
-                let background = new FdfSimpleTexture(name + 'Background')
+            let layer_back = new Fdf.SimpleLayer('BACKGROUND')
+                let background = new Fdf.SimpleTexture(name + 'BACKGROUND')
                 background.textureFile = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
             layer_back.addSubframe(background)
         fdf.addSubframe(layer_back)
 
-            let forw_frame = new FdfSimpleFrame(name + 'Forward')
+            let forw_frame = new Fdf.SimpleFrame(name + 'Forward')
             forw_frame.setAllPoints = true
-                let forw_layer = new FdfSimpleLayer('ARTWORK')
-                    let forw_string = new FdfSimpleString(name + 'Text')
+                let forw_layer = new Fdf.SimpleLayer('ARTWORK')
+                    let forw_string = new Fdf.SimpleString(name + 'TEXT')
                     forw_string.text = 'SomeText'
                     forw_string.font = 'fonts\\nim_____.ttf'
                     forw_string.fontSize = 0.008
                     forw_string.color = new Color(1, 1, 1, 1)
                 forw_layer.addSubframe(forw_string)
-                    let forw_border = new FdfSimpleTexture(name + 'Border')
+                    let forw_border = new Fdf.SimpleTexture(name + 'BORDER')
                     forw_border.textureFile = 'UI\\Feedback\\XPBar\\human-xpbar-border.blp'
                 forw_layer.addSubframe(forw_border)
             forw_frame.addSubframe(forw_layer)

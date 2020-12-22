@@ -1,13 +1,7 @@
-import { Damage } from './Damage/Damage'
-import { Parameter } from './Parameter'
-import { ParamContainer } from './Container'
-import { ParamsUnit } from './Container/Unit'
-import { Shield } from './Damage/Shield'
+export { Type } from './Type'
 
-export {
-    Damage,
-    Parameter,
-    ParamContainer as Params,
-    ParamsUnit,
-    Shield,
-}
+export { Container } from './Container'
+export { Unit } from './Container/Unit'
+
+export { Damage } from './Damage/Damage'
+export { Shield } from './Damage/Shield'

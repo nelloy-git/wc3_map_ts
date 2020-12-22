@@ -1,4 +1,4 @@
-export interface FdfIFace {
+export interface IFace {
     serialize(): string
 
     readonly name: string

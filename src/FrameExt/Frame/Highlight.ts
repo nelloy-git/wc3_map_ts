@@ -1,15 +1,15 @@
+import * as Fdf from '../../Fdf'
 import { Log } from "../../Utils";
-import { FdfHighlight as FdfHighlight} from '../Fdf/Highlight'
 import { Frame } from "../Frame";
 
 export class Highlight extends Frame {
     constructor()
-    constructor(fdf: FdfHighlight)
+    constructor(fdf: Fdf.Highlight)
     constructor(handle: jframehandle)
-    constructor(handle?: FdfHighlight|jframehandle){
+    constructor(handle?: Fdf.Highlight | jframehandle){
         if (!handle){handle = Highlight._default_fdf}
 
-        if (handle instanceof FdfHighlight){
+        if (handle instanceof Fdf.Highlight){
             super(handle)
             this._texture = handle.alphaFile
         } else {
@@ -53,7 +53,7 @@ export class Highlight extends Frame {
     private _texture_blend: boolean;
 
     private static _default_fdf = (()=>{
-        let fdf = new FdfHighlight(Highlight.name + 'DefaultFdf')
+        let fdf = new Fdf.Highlight(Highlight.name + 'DefaultFdf')
         fdf.width = 0.04
         fdf.height = 0.04
         fdf.alphaFile = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-background'

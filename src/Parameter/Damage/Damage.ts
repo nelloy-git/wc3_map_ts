@@ -2,6 +2,7 @@ import { hUnit } from "../../Handle";
 import { Trigger } from "../../Handle/Trigger";
 import { TriggerEvent } from "../../Handle/TriggerEvent";
 import { Action, Color, Log } from "../../Utils";
+
 import { Shield } from "./Shield";
 import { DamageType, type2wc, wc2type } from "./Type";
 

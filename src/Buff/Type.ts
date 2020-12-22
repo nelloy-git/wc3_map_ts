@@ -1,12 +1,12 @@
-import { Data } from "./Type/Data";
-import { Process } from "./Type/Process";
+import { TypeData } from "./Type/Data";
+import { TypeProcess } from "./Type/Process";
 
 export class Type<T> {
-    constructor(data: Data, process: Process<T>){
+    constructor(data: TypeData, process: TypeProcess<T>){
         this.data = data
         this.process = process
     }
 
-    readonly data: Data
-    readonly process: Process<T>
+    readonly data: TypeData
+    readonly process: TypeProcess<T>
 }

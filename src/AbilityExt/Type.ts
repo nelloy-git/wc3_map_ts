@@ -1,16 +1,16 @@
-import { AbilityIFace, TargetType } from './Ability/IFace'
-import { Casting } from './Type/Casting'
-import { Data } from './Type/Data'
-import { Targeting } from './Type/Targeting'
+import { IFace, TargetType } from './IFace'
+import { TypeCasting } from './Type/Casting'
+import { TypeData } from './Type/Data'
+import { TypeTargeting } from './Type/Targeting'
 
 export class Type<T extends TargetType> {
-    constructor(casting: Casting<T>, data: Data, targeting: Targeting<T>){
+    constructor(casting: TypeCasting<T>, data: TypeData, targeting: TypeTargeting<T>){
         this.casting = casting
         this.data = data
         this.targeting = targeting
     }
 
-    readonly casting: Casting<T>;
-    readonly data: Data;
-    readonly targeting: Targeting<T>;
+    readonly casting: TypeCasting<T>;
+    readonly data: TypeData;
+    readonly targeting: TypeTargeting<T>;
 }

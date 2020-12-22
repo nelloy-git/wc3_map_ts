@@ -1,12 +1,14 @@
-import { Backdrop, FdfBackdrop, SimpleText } from "../../FrameExt";
-import { hUnit } from "../../Handle";
-import { Parameter, Params, ParamsUnit } from "../../Parameter";
-import { ParamContainer } from "../../Parameter/Container";
-import { Action, float2str } from "../../Utils";
+import * as Frame from "../../FrameExt"
+import * as Param from "../../Parameter";
 
-export class InterfaceUnitParameters extends Backdrop {
+import { hUnit } from "../../Handle";
+import { Action } from "../../Utils";
+
+import { InterfaceBorderFdf } from "../Utils/BorderFdf"
+
+export class InterfaceUnitParameters extends Frame.Backdrop {
     constructor(){
-        super(InterfaceUnitParameters._fdf)
+        super(InterfaceBorderFdf)
 
         for (let [param, [name, val]] of this._frames){
             name.parent = this
@@ -51,7 +53,7 @@ export class InterfaceUnitParameters extends Backdrop {
 
         this.visible = false
         if (!u){return}
-        this._params = ParamsUnit.get(u)
+        this._params = Param.Unit.get(u)
         if (!this._params){return}
 
         this._changed_action = this._params.addAction((params)=>{this._updateValues(params)})
@@ -60,52 +62,33 @@ export class InterfaceUnitParameters extends Backdrop {
         this.visible = true
     }
 
-    private _updateValues(params: Params){
+    private _updateValues(params: Param.Container){
         for (let [param, [name, val]] of this._frames){
             val.text = Math.floor(params.get(param, 'RES')).toString()
         }
     }
 
-    private _frames = new Map<Parameter.Type, [param: SimpleText, val: SimpleText]>([
-        ['PATK', [new SimpleText(), new SimpleText()]],
-        ['PSPD', [new SimpleText(), new SimpleText()]],
-        ['PDEF', [new SimpleText(), new SimpleText()]],
-        ['PRES', [new SimpleText(), new SimpleText()]],
+    private _frames = new Map<Param.Type, [param: Frame.SimpleText, val: Frame.SimpleText]>([
+        ['PATK', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['PSPD', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['PDEF', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['PRES', [new Frame.SimpleText(), new Frame.SimpleText()]],
 
-        ['MATK', [new SimpleText(), new SimpleText()]],
-        ['MSPD', [new SimpleText(), new SimpleText()]],
-        ['MDEF', [new SimpleText(), new SimpleText()]],
-        ['MRES', [new SimpleText(), new SimpleText()]],
+        ['MATK', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['MSPD', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['MDEF', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['MRES', [new Frame.SimpleText(), new Frame.SimpleText()]],
         
-        ['LIFE', [new SimpleText(), new SimpleText()]],
-        ['REGE', [new SimpleText(), new SimpleText()]],
-        ['MANA', [new SimpleText(), new SimpleText()]],
-        ['RECO', [new SimpleText(), new SimpleText()]],
+        ['LIFE', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['REGE', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['MANA', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['RECO', [new Frame.SimpleText(), new Frame.SimpleText()]],
 
-        ['CRIT', [new SimpleText(), new SimpleText()]],
-        ['MOVE', [new SimpleText(), new SimpleText()]],
+        ['CRIT', [new Frame.SimpleText(), new Frame.SimpleText()]],
+        ['MOVE', [new Frame.SimpleText(), new Frame.SimpleText()]],
     ])
 
     private _unit: hUnit | undefined
-    private _params: ParamsUnit | undefined;
-    private _changed_action: Action<[Params, Parameter.Type], void> | undefined
-
-    private static _fdf = (() => {
-        let fdf = new FdfBackdrop(InterfaceUnitParameters.name)
-        fdf.width = 0.1
-        fdf.height = 0.1
-        fdf.backgroundTileMode = true
-        fdf.backgroudTileSize = 0.2
-        fdf.background = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-background'
-        fdf.blendAll = true
-        fdf.insets = [0.001, 0.001, 0.001, 0.001]
-        fdf.cornarFlags = ['UL', 'UR', 'BL', 'BR', 'T', 'L', 'B', 'R']
-        fdf.cornerSize = 0.0125
-        fdf.edgeFile = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-border'
-        return fdf
-    })()
-
-    private static _fdf_text = (()=>{
-
-    })()
+    private _params: Param.Unit | undefined;
+    private _changed_action: Action<[Param.Container, Param.Type], void> | undefined
 }

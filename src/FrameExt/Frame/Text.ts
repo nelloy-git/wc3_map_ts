@@ -1,5 +1,5 @@
+import * as Fdf from '../../Fdf'
 import { Log } from "../../Utils";
-import { FdfText as FdfText} from '../Fdf/Text'
 import { Frame } from "../Frame";
 
 export type VertAlignment = 'TOP'|'MID'|'BOT'
@@ -7,12 +7,12 @@ export type HorzAlignment = 'LEFT'|'CENTER'|'RIGHT'
 
 export class Text extends Frame {
     constructor()
-    constructor(fdf: FdfText)
+    constructor(fdf: Fdf.Text)
     constructor(handle: jframehandle)
-    constructor(handle?: FdfText|jframehandle){
+    constructor(handle?: Fdf.Text | jframehandle){
         if (!handle){handle = Text._default_fdf}
 
-        if (handle instanceof FdfText){
+        if (handle instanceof Fdf.Text){
             super(handle)
             this._text = handle.text
         } else {
@@ -78,7 +78,7 @@ export class Text extends Frame {
     private _hor_align: jtextaligntype;
 
     private static _default_fdf = (()=>{
-        let fdf = new FdfText(Text.name + 'DefaultFdf')
+        let fdf = new Fdf.Text(Text.name + 'DefaultFdf')
         fdf.width = 0.04
         fdf.height = 0.04
         fdf.font = 'fonts\\nim_____.ttf'

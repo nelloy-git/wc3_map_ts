@@ -1,5 +1,6 @@
 import { hUnit } from "../../Handle"
 import { Log } from "../../Utils"
+
 import { DamageType } from "./Type"
 
 export class Shield {

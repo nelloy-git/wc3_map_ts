@@ -1,13 +1,13 @@
+import * as Fdf from "../Fdf";
 import { hHandle, hTrigger, hTriggerEvent } from "../Handle";
 import { Action, ActionList, Color, Log, wcType } from "../Utils";
-import { Fdf } from "./Fdf";
 
 export class Frame extends hHandle<jframehandle> {
-    constructor(fdf: Fdf)
+    constructor(fdf: Fdf.Fdf)
     constructor(handle: jframehandle, is_simple: boolean)
-    constructor(handle: jframehandle | Fdf, is_simple?: boolean){
+    constructor(handle: jframehandle | Fdf.Fdf, is_simple?: boolean){
         super(Frame.createFramehandle(handle, is_simple))
-        this.isSimple = (typeof is_simple === 'boolean') ? is_simple : (handle as Fdf).is_simple
+        this.isSimple = (typeof is_simple === 'boolean') ? is_simple : (handle as Fdf.Fdf).is_simple
 
         if (!Frame._wc2event){return}
         for (let [wc_event, _] of Frame._wc2event){
@@ -63,6 +63,7 @@ export class Frame extends hHandle<jframehandle> {
         this.pos = this.pos
         this.visible = this.visible
     }
+    get children(){return this._children as ReadonlyArray<Frame>}
 
     get tooltip(){return this._tooltip}
     set tooltip(tooltip: Frame | null){
@@ -213,8 +214,8 @@ export class Frame extends hHandle<jframehandle> {
         ['WHEEL',      new ActionList()],
     ])
 
-    private static createFramehandle(handle: jframehandle | Fdf, is_simple?: boolean){
-        if (!(handle instanceof Fdf)){return handle}
+    private static createFramehandle(handle: jframehandle | Fdf.Fdf, is_simple?: boolean){
+        if (!(handle instanceof Fdf.Fdf)){return handle}
 
         let name = handle.name
         is_simple = handle.is_simple

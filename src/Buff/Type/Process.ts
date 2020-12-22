@@ -1,6 +1,6 @@
-import { Buff } from "..";
+import { Buff } from "../Buff";
 
-export abstract class Process<T> {
+export abstract class TypeProcess<T> {
     protected constructor(){}
 
     abstract start(buff: Buff<T>):void

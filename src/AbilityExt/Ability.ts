@@ -1,16 +1,16 @@
 import { hTimerList, hUnit } from '../Handle'
 import { Action, ActionList, Log } from "../Utils";
 
-import { AbilityIFace, Event as BaseEvent, TargetType } from './Ability/IFace'
+import { IFace, Event as BaseEvent, TargetType } from './IFace'
 import { Charges } from './Charges'
 import { Point } from './Point';
 import { Type } from './Type'
 
-export class Ability<T extends TargetType> implements AbilityIFace {
+export class Ability<T extends TargetType> implements IFace {
     constructor(owner: hUnit, type: Type<T>){
         this.owner = owner
         this.type = type
-        this.id = AbilityIFace.register(this)
+        this.id = IFace.register(this)
 
         this.charges.addAction('COUNT_CHANGED', ()=>{this._updateCharges()})
         this._updateCharges()
@@ -105,12 +105,12 @@ export class Ability<T extends TargetType> implements AbilityIFace {
 
     addAction(event: Ability.Event,
               callback: (this: void,
-                         abil: AbilityIFace,
+                         abil: IFace,
                          event: Ability.Event)=>void) {
         return this._actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[AbilityIFace, Ability.Event], void> | undefined){
+    removeAction(action: Action<[IFace, Ability.Event], void> | undefined){
         if (!action){return false}
 
         let found = false
@@ -137,7 +137,7 @@ export class Ability<T extends TargetType> implements AbilityIFace {
         this.charges.countMax = this.type.data.chargeMax(this)
     }
 
-    private _actions = new Map<Ability.Event, ActionList<[AbilityIFace, Ability.Event]>>([
+    private _actions = new Map<Ability.Event, ActionList<[IFace, Ability.Event]>>([
         ['START', new ActionList()],
         ['CASTING', new ActionList()],
         ['CANCEL', new ActionList()],

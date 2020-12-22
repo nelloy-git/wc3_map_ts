@@ -1,9 +1,9 @@
 import { Log } from '../Utils';
-import { FdfFile } from './Fdf/File';
-import { FdfIFace } from './Fdf/IFace'
+import { File } from './File';
+import { IFace } from './IFace'
 
-export abstract class Fdf implements FdfIFace{
-    constructor(name: string, base_type: string, is_simple: boolean, file?: FdfFile) {
+export abstract class Fdf implements IFace{
+    constructor(name: string, base_type: string, is_simple: boolean, file?: File) {
         this.name = name
         this.base_type = base_type
         this.is_simple = is_simple
@@ -80,13 +80,13 @@ export abstract class Fdf implements FdfIFace{
     readonly name: string
     readonly base_type: string;
     readonly is_simple: boolean;
-    readonly file: FdfFile;
+    readonly file: File;
 
     protected _parameters = new Map<string, string>()
     protected _subframes = new Map<string, Fdf>()
     private _inherit: Fdf | undefined;
 
-    private static _file = new FdfFile('FrameExtFdf')
+    private static _file = new File('FrameExtFdf')
     private static _param_null = 'NULL'
     private static _name2fdf = new Map<string, Fdf>()
 }

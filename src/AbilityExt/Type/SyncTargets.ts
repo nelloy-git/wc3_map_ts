@@ -3,11 +3,11 @@ import { SyncData } from '../../Input/index'
 import { hUnit } from '../../Handle/index'
 
 import { Point } from '../Point'
-import { AbilityIFace, TargetType } from '../Ability/IFace'
+import { IFace, TargetType } from '../IFace'
 
-export class SyncTargets extends SyncData<[AbilityIFace, TargetType]> {
+export class SyncTargets extends SyncData<[IFace, TargetType]> {
     
-    protected data2raw(abil: AbilityIFace,
+    protected data2raw(abil: IFace,
                        target: TargetType){
 
         let raw = abil.id.toString()
@@ -18,7 +18,7 @@ export class SyncTargets extends SyncData<[AbilityIFace, TargetType]> {
         return raw
     }
 
-    protected raw2data(raw: string): [AbilityIFace, TargetType]{
+    protected raw2data(raw: string): [IFace, TargetType]{
         let vals = raw.split(SyncTargets._sep)
 
         let abil_id = parseInt(vals[0])
@@ -27,7 +27,7 @@ export class SyncTargets extends SyncData<[AbilityIFace, TargetType]> {
             target.push(this._fromRaw(vals[i]))
         }
 
-        let abil = AbilityIFace.get(abil_id)
+        let abil = IFace.get(abil_id)
         if (!abil){
             return Log.err(SyncTargets.name + 
                            ': got invalid ability id.')

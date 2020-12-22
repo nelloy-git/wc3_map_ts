@@ -1,9 +1,9 @@
+import * as Abil from "../../AbilityExt";
+import * as Frame from "../../FrameExt";
 import { Action } from '../../Utils'
-import { AbilityIFace, AbilityCharges} from "../../AbilityExt";
-import { SimpleImage, SimpleText } from "../../FrameExt";
 import { float2str } from '../../Utils';
 
-export class InterfaceAbilityCooldown extends SimpleImage {
+export class InterfaceAbilityCooldown extends Frame.SimpleImage {
     constructor(){
         super()
 
@@ -25,7 +25,7 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     }
 
     get ability(){return this._abil}
-    set ability(abil: AbilityIFace | undefined){
+    set ability(abil: Abil.IFace | undefined){
         if (this._charges){
             this._charges?.removeAction(this._changed_action)
             this._charges?.removeAction(this._cooldown_action)
@@ -37,26 +37,25 @@ export class InterfaceAbilityCooldown extends SimpleImage {
 
         this.visible = true
         this._changed_action = this._charges.addAction('COUNT_CHANGED',
-                                                        (charges: AbilityCharges): void => 
+                                                        (charges: Abil.Charges): void => 
                                                             {this._chargesChanged(charges)})
         this._chargesChanged(this._charges)
 
         this._cooldown_action = this._charges.addAction('COOLDOWN_LOOP',
-                                                        (charges: AbilityCharges): void =>
+                                                        (charges: Abil.Charges): void =>
                                                             {this._cooldownLoop(charges)})
         this._cooldownLoop(this._charges)
     }
 
-    private _chargesChanged(charges: AbilityCharges){
+    private _chargesChanged(charges: Abil.Charges){
         let alpha = charges.count < 1 ? 0.85 : 0.35
         this.alpha = alpha
-        print(charges.count, charges.countMax)
         this._text.visible = charges.count != charges.countMax
     }
 
-    private _cooldownLoop(charges: AbilityCharges){
+    private _cooldownLoop(charges: Abil.Charges){
         let left = charges.timeLeft
-        if (left <= 0){return}
+        if (left <= 0){this._text.text = ''; return}
 
         let full = charges.cooldown
         this._cd_part = left / full
@@ -68,10 +67,10 @@ export class InterfaceAbilityCooldown extends SimpleImage {
     private _size: [number, number] = this._get_size();
 
     private _cd_part: number = 0;
-    private _abil: AbilityIFace | undefined;
-    private _charges: AbilityCharges | undefined;
-    private _changed_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined;
-    private _cooldown_action: Action<[AbilityCharges, AbilityCharges.Event], void> | undefined
+    private _abil: Abil.IFace | undefined;
+    private _charges: Abil.Charges | undefined;
+    private _changed_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined;
+    private _cooldown_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
 
-    private _text = new SimpleText()
+    private _text = new Frame.SimpleText()
 }

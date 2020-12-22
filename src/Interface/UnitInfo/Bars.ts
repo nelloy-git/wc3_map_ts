@@ -1,13 +1,13 @@
-import { Backdrop } from "../../FrameExt";
+import * as Frame from "../../FrameExt";
+
 import { hUnit } from "../../Handle";
 import { Shield } from "../../Parameter";
 import { InterfaceAutoBar } from "../Utils/AutoBar";
 
-export class InterfaceUnitBars extends Backdrop {
+export class InterfaceUnitBars extends Frame.SimpleEmpty {
     constructor(){
         super()
 
-        this.alpha = 0;
         this.visible = false
 
         this._mag_shield.parent = this

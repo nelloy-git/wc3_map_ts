@@ -1,7 +1,7 @@
 import { Color } from "../../Utils";
 import { Fdf } from "../Fdf";
 
-export class FdfHighlight extends Fdf {
+export class Highlight extends Fdf {
     constructor(name: string){
         super(name, 'HIGHLIGHT', false)
     }

@@ -1,5 +1,5 @@
-import { BuffIFace } from "../../Buff";
-import { GlueTextButton } from "../../FrameExt";
+import * as Buff from "../../../Buff";
+import { GlueTextButton } from "../../../FrameExt";
 
 export class InterfaceBuff extends GlueTextButton {
     constructor(){
@@ -8,7 +8,7 @@ export class InterfaceBuff extends GlueTextButton {
     }
 
     get buff(){return this._buff}
-    set buff(buff: BuffIFace | undefined){
+    set buff(buff: Buff.IFace | undefined){
         this.visible = buff != undefined
         if (buff){
             let normal = this.getElement('NORMAL')
@@ -16,5 +16,5 @@ export class InterfaceBuff extends GlueTextButton {
         }
     }
 
-    private _buff: BuffIFace | undefined
+    private _buff: Buff.IFace | undefined
 }

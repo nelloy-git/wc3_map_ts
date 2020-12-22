@@ -1,22 +1,24 @@
-import { AbilityContainer, AbilityIFace } from "../../AbilityExt";
-import { Backdrop, FdfBackdrop } from "../../FrameExt";
+import * as Abil from "../../AbilityExt";
+import * as Frame from "../../FrameExt";
+
 import { hUnit } from "../../Handle";
 import { Action } from "../../Utils";
+
+import { InterfaceBorderFdf } from "../Utils/BorderFdf"
 import { InterfaceAbilityButton } from "./Button";
 
-export class InterfaceAbilityPanel extends Backdrop {
+export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     constructor(cols: number, rows: number){
         super()
         this.cols = cols
         this.rows = rows
 
-        this.alpha = 0
         for (let y = 0; y < rows; y++){
             this._backgrounds.push([])
             this._buttons.push([])
 
             for (let x = 0; x < cols; x++){
-                let back = new Backdrop(InterfaceAbilityPanel._background_fdf)
+                let back = new Frame.Backdrop(InterfaceBorderFdf)
                 back.parent = this
                 this._backgrounds[y].push(back)
 
@@ -53,7 +55,7 @@ export class InterfaceAbilityPanel extends Backdrop {
             this._abils.removeAction(this._abils_changed)
         }
 
-        this._abils = AbilityContainer.get(u)
+        this._abils = Abil.Container.get(u)
         if (this._abils){
             this._abils_changed = this._abils.addAction(()=>{this._update()})    
         }
@@ -80,24 +82,9 @@ export class InterfaceAbilityPanel extends Backdrop {
     readonly rows: number
 
     private _unit: hUnit | undefined
-    private _abils: AbilityContainer | undefined
-    private _abils_changed: Action<[AbilityContainer], void> | undefined
+    private _abils: Abil.Container | undefined
+    private _abils_changed: Action<[Abil.Container], void> | undefined
 
-    private _backgrounds: Backdrop[][] = [];
+    private _backgrounds: Frame.Backdrop[][] = [];
     private _buttons: InterfaceAbilityButton[][] = []
-
-    private static _background_fdf = (() => {
-        let fdf = new FdfBackdrop('InterfaceAbilityPanelBackground')
-        fdf.width = 0.1
-        fdf.height = 0.1
-        fdf.backgroundTileMode = true
-        fdf.backgroudTileSize = 0.2
-        fdf.background = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-background'
-        fdf.blendAll = true
-        fdf.insets = [0.001, 0.001, 0.001, 0.001]
-        fdf.cornarFlags = ['UL', 'UR', 'BL', 'BR', 'T', 'L', 'B', 'R']
-        fdf.cornerSize = 0.0125
-        fdf.edgeFile = 'UI\\Widgets\\ToolTips\\Human\\human-tooltip-border'
-        return fdf
-    })()
 }
