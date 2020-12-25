@@ -1,7 +1,7 @@
 import { Color, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
-export class Unit extends Handle<junit>{
+export class hUnit extends Handle<junit>{
     constructor(unit_id: number, x: number, y: number, owner: jplayer){
         super(CreateUnit(owner, unit_id, x, y, 0))
         this._type_id = unit_id
@@ -13,29 +13,33 @@ export class Unit extends Handle<junit>{
         // Get default attack cooldown
         this._attack_cooldown_default = BlzGetUnitAttackCooldown(this.handle, 0)
     }
-
     static get(id: junit | number){
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'unit'){
             Log.err('Unit: got wrong type of handle.', 2)
         }
-        return <Unit> instance
+        return <hUnit> instance
     }
 
     static getMouseFocus(){
         let u = BlzGetMouseFocusUnit()
-        return u ? Unit.get(u) : undefined
+        return u ? hUnit.get(u) : undefined
     }
 
     static getDamageSource(){
         let u = GetEventDamageSource()
-        return u ? Unit.get(u) : undefined
+        return u ? hUnit.get(u) : undefined
     }
 
     static getDamageTarget(){
         let u = BlzGetEventDamageTarget()
-        return u ? Unit.get(u) : undefined
+        return u ? hUnit.get(u) : undefined
+    }
+
+    static getEntering(){
+        let u = GetEnteringUnit()
+        return u ? hUnit.get(u) : undefined
     }
 
     get x(){return GetUnitX(this.handle)}
@@ -112,8 +116,9 @@ export class Unit extends Handle<junit>{
 
     get typeId(){return this._type_id}
 
-    isEnemy(other: Unit){return IsUnitEnemy(this.handle, other.owner)}
-    isAlly(other: Unit){return IsUnitAlly(this.handle, other.owner)}
+    isEnemy(other: hUnit){return IsUnitEnemy(this.handle, other.owner)}
+    isAlly(other: hUnit){return IsUnitAlly(this.handle, other.owner)}
+
 
     setAnimation(index: number){SetUnitAnimationByIndex(this.handle, index)}
     getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}

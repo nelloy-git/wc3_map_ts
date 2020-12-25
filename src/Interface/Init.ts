@@ -5,6 +5,7 @@ import { InterfaceAbilityPanel } from "./Ability/Panel";
 import { InterfaceDamage } from "./Damage";
 import { InterfaceMinimap } from "./Minimap";
 import { InterfaceUnitInfoPanel } from './UnitInfo/Panel'
+import { InterfaceUnitWorldInfo } from "./UnitWorldInfo";
 
 namespace pos {
     let map = [0.12, 0.12]
@@ -12,6 +13,7 @@ namespace pos {
 
 export function Init(){
     InterfaceDamage.Init()
+    InterfaceUnitWorldInfo.Init()
 
     let map = InterfaceMinimap.instance
     Screen.addAction(([x0, y0], [w, h])=>{

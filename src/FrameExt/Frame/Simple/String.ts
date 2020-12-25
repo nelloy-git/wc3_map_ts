@@ -32,15 +32,6 @@ export class SimpleString extends Frame {
         BlzFrameSetFont(this.handle, this._font, this._font_size, this._font_flags)
     }
 
-    addAction(){
-        return Log.err(SimpleString.name + 
-                       ': events are not available.')
-    }
-    removeAction(){
-        return Log.err(SimpleString.name + 
-                       ': events are not available.')
-    }
-
     private _text: string = '';
     private _font: string = 'fonts\\nim_____.ttf';
     private _font_size: number = 0.008;

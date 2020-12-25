@@ -6,16 +6,40 @@ export class Frame extends hHandle<jframehandle> {
     constructor(fdf: Fdf.Fdf)
     constructor(handle: jframehandle, is_simple: boolean)
     constructor(handle: jframehandle | Fdf.Fdf, is_simple?: boolean){
-        super(Frame.createFramehandle(handle, is_simple))
-        this.isSimple = (typeof is_simple === 'boolean') ? is_simple : (handle as Fdf.Fdf).is_simple
+        is_simple = is_simple ? true : false
 
-        if (!Frame._wc2event){return}
-        for (let [wc_event, _] of Frame._wc2event){
-            let trig_event = hTriggerEvent.newFrameEvent(this.handle, wc_event)
-            Frame._trigger_events.push(trig_event)
-            this._events.push(trig_event)
-            if(Frame._trigger){trig_event.applyToTrigger(Frame._trigger)}
+        if (handle instanceof Fdf.Fdf){
+            let fdf = handle
+
+            let name = fdf.name
+            is_simple = fdf.is_simple
+        
+            handle = is_simple ? BlzCreateSimpleFrame(name, Frame._origin_game_ui as jframehandle, 0)
+                               : BlzCreateFrame(name, Frame._origin_console_ui as jframehandle, 0, 0)
+            let test_h = is_simple ? BlzCreateSimpleFrame('', Frame._origin_game_ui as jframehandle, 0)
+                                   : BlzCreateFrame('', Frame._origin_console_ui as jframehandle, 0, 0)
+        
+            if (tostring(handle) == tostring(test_h)){
+                Log.err(Frame.name +
+                        ': can not create framehandle with name ' + name)
+            }
+            BlzDestroyFrame(test_h)
         }
+
+        super(handle)
+        this.isSimple = is_simple
+
+        this._x = 0;
+        this._y = 0;
+        this._parent = null;
+        this._children = [];
+        this._visible = true;
+        this._tooltip = null;
+        this._is_tooltip = 0;
+        this._level = 0;
+        this._color = new Color(1, 1, 1, 1)
+        this._enable = true;
+        this._actions = new Map<Frame.Event, ActionList<[Frame, Frame.Event, jplayer]>>()
     }
     
     static get(id: jframehandle | number){
@@ -27,6 +51,40 @@ export class Frame extends hHandle<jframehandle> {
         return <Frame>instance
     }
     static getTriggered(){return Frame.get(BlzGetTriggerFrame())}
+
+    initEvents(events: Frame.Event[]){
+        if (this._trig_events){
+            Log.err(Frame.name + 
+                    ': events are already initialized.')
+        }
+
+        if (!Frame._wc2event){
+            return Log.err(Frame.name + 
+                           ': static event list has not been initialized.')
+        }
+        
+        if (!Frame._trigger){
+            return Log.err(Frame.name + 
+                           ': static event trigger has not been initialized.')
+        }
+        
+        events.forEach(event => {
+            if (this._actions.get(event) != undefined){
+                Log.err(Frame.name + 
+                        ': events in list can be used only once per type.')
+            }
+            this._actions.set(event, new ActionList())
+        })
+
+        this._trig_events = []
+        for (let [wc_event, _] of Frame._wc2event){
+            let trig_event = hTriggerEvent.newFrameEvent(this.handle, wc_event)
+            this._trig_events.push(trig_event)
+            
+            Frame._trigger_events.push(trig_event)
+            trig_event.applyToTrigger(Frame._trigger)
+        }
+    }
 
     /* _get_pos should be overriden instead. */
     get pos(): [x: number, y: number]{return this._get_pos()}
@@ -67,6 +125,11 @@ export class Frame extends hHandle<jframehandle> {
 
     get tooltip(){return this._tooltip}
     set tooltip(tooltip: Frame | null){
+        if (!this._actions.get('ENTER') || this._actions.get('LEAVE')){
+            Log.err(Frame.name + 
+                    ': frame can have tooltip.')
+        }
+
         if (this._tooltip){
             this._is_tooltip -= 1
 
@@ -99,12 +162,7 @@ export class Frame extends hHandle<jframehandle> {
     set color(c: Color){
         this._color = new Color(c)
         BlzFrameSetVertexColor(this.handle, c.getWcCode())
-    }
-
-    get alpha(){return this._color.a}
-    set alpha(a: number){
-        this._color.a = a
-        BlzFrameSetAlpha(this.handle, Math.floor(255 * a))
+        BlzFrameSetAlpha(this.handle, Math.floor(255 * c.a))
     }
 
     get enable(){return this._enable}
@@ -122,7 +180,12 @@ export class Frame extends hHandle<jframehandle> {
                                 frame: Frame,
                                 event: Frame.Event,
                                 pl: jplayer)=>void){
-        return this._actions.get(event)?.add(callback)
+        let list = this._actions.get(event)
+        if (!list){
+            return Log.err(Frame.name + 
+                           ': event \"' + event + '\" is not available for this frame.')
+        }
+        return list.add(callback)
     }
 
     removeAction(action: Action<[Frame, Frame.Event, jplayer], void>){
@@ -143,11 +206,13 @@ export class Frame extends hHandle<jframehandle> {
             this._children[i].parent = null
         }
 
-        for (let i = 0; i < this._events.length; i++){
-            let pos = Frame._trigger_events.indexOf(this._events[i])
-            this._events.splice(pos, 1)
+        if (this._trig_events){
+            for (let i = 0; i < this._trig_events.length; i++){
+                let pos = Frame._trigger_events.indexOf(this._trig_events[i])
+                this._trig_events.splice(pos, 1)
+            }
+            Frame._updateTrigger()
         }
-        Frame._updateTrigger()
 
         BlzDestroyFrame(this.handle)
         super.destroy()
@@ -189,61 +254,25 @@ export class Frame extends hHandle<jframehandle> {
         }
     }
 
-    readonly isSimple: boolean;
-    private _x: number = 0;
-    private _y: number = 0;
-    private _parent: Frame | null = null;
-    private _children: Frame[] = [];
-    private _visible: boolean = true;
-    private _tooltip: Frame | null = null;
-    private _is_tooltip: number = 0;
-    private _tooltip_show_action: Action<[Frame, Frame.Event, jplayer], void> | undefined;
-    private _tooltip_hide_action: Action<[Frame, Frame.Event, jplayer], void> | undefined;
-    private _level: number = 0;
-    private _color: Color = new Color(1, 1, 1, 1)
-    private _enable: boolean = true;
+    readonly isSimple: boolean
+    private _x: number
+    private _y: number
+    private _parent: Frame | null
+    private _children: Frame[]
+    private _visible: boolean
+    private _tooltip: Frame | null
+    private _is_tooltip: number
+    private _tooltip_show_action: Action<[Frame, Frame.Event, jplayer], void> | undefined
+    private _tooltip_hide_action: Action<[Frame, Frame.Event, jplayer], void> | undefined
+    private _level: number
+    private _color: Color
+    private _enable: boolean
 
-    private _events: hTriggerEvent[] = []
-    private _actions = new Map<Frame.Event, ActionList<[Frame, Frame.Event, jplayer]>>([
-        ['CLICK',      new ActionList()],
-        ['DOUBLECLICK',new ActionList()],
-        ['DOWN',       new ActionList()],
-        ['ENTER',      new ActionList()],
-        ['LEAVE',      new ActionList()],
-        ['UP',         new ActionList()],
-        ['WHEEL',      new ActionList()],
-    ])
+    private _trig_events: hTriggerEvent[] | undefined
+    private _actions: Map<Frame.Event, ActionList<[Frame, Frame.Event, jplayer]>>
 
-    private static createFramehandle(handle: jframehandle | Fdf.Fdf, is_simple?: boolean){
-        if (!(handle instanceof Fdf.Fdf)){return handle}
-
-        let name = handle.name
-        is_simple = handle.is_simple
-    
-        handle = is_simple ?
-                    BlzCreateSimpleFrame(name, Frame._origin_game_ui as jframehandle, 0)
-                    : BlzCreateFrame(name, Frame._console_ui_backdrop as jframehandle, 0, 0)
-        let test_h = is_simple ? 
-                        BlzCreateSimpleFrame('', Frame._origin_game_ui as jframehandle, 0)
-                        : BlzCreateFrame('', Frame._console_ui_backdrop as jframehandle, 0, 0)
-    
-        if (tostring(handle) == tostring(test_h)){
-            return Log.err(Frame.name +
-                           ': can not create framehandle with name ' + name)
-        }
-        BlzDestroyFrame(test_h)
-        return handle
-    }
-
-    private static readonly _origin_game_ui = (()=>{
-        if (!IsGame()){return}
-
-        return BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0)
-    })()
-
-    private static readonly _console_ui_backdrop = (()=>{
-        if (!IsGame()){return}
-
+    private static readonly _origin_game_ui = IsGame() ? BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0) : undefined
+    private static readonly _origin_console_ui = IsGame() ? (()=>{
         let h = BlzGetFrameByName("ConsoleUIBackdrop", 0)
         BlzFrameClearAllPoints(h)
         BlzFrameSetAbsPoint(h, FRAMEPOINT_BOTTOMLEFT, 0, 0.6)
@@ -251,7 +280,7 @@ export class Frame extends hHandle<jframehandle> {
         BlzFrameSetAbsPoint(h, FRAMEPOINT_TOPLEFT, 0, 0.6)
         BlzFrameSetAbsPoint(h, FRAMEPOINT_TOPLEFT, 0, 0.6)
         return h
-    })()
+    })() : undefined
 
     private static _wc2event = IsGame() ? (()=>{
         return new Map<jframeeventtype, Frame.Event>([
@@ -277,6 +306,7 @@ export class Frame extends hHandle<jframehandle> {
             frame.enable = false
             frame.enable = true
         }
+
         frame._actions.get(event)?.run(frame, event, pl)
     }
 

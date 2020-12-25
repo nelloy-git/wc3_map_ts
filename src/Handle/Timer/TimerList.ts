@@ -23,6 +23,10 @@ export class TimerList {
         return obj
     }
 
+    addTimerObj(obj: TimerObj){
+        this._objects.push(obj)
+    }
+
     removeTimerObj(obj: TimerObj){
         let found = false
         for (let i = 0; i < this._objects.length; i++){

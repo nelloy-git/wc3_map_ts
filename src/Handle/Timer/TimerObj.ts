@@ -4,6 +4,7 @@ import { TimerList } from './TimerList'
 export class TimerObj {
     constructor(timer_list: TimerList){
         this._timer_list = timer_list
+        timer_list.addTimerObj(this)
     }
     
     pause: boolean = false

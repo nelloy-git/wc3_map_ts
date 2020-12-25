@@ -6,11 +6,9 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
     constructor(){
         super()
         
-        this.alpha = 0
         this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
 
         this._text.parent = this
-        this._text.alpha = 0
         this._text.pos = [0, 0]
         this._text.size = this.size
         this._text.font = 'fonts\\nim_____.ttf'
@@ -42,7 +40,7 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
     private _chargesChanged(charges: Abil.Charges){
         let max = charges.countMax
         this.visible = max > 1
-        print(this.visible)
+        
         if (max > 1){
             let left = Math.floor(charges.count).toString()
             this._text.text = left

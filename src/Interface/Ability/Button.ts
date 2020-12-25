@@ -64,32 +64,30 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     private _clearAbility(){
-        if (!this._abil){return}
-
         this._abil = undefined
         this.visible = false
     }
 
     private _applyAbility(abil: Abil.IFace | undefined){
-        this.visible = abil != undefined
+        if (abil){
+            let normal = this.getElement('NORMAL')
+            if (normal){normal.texture = abil.type.data.iconNormal(abil)}
+
+            let pushed = this.getElement('PUSHED')
+            if (pushed){pushed.texture = abil.type.data.iconNormal(abil)}
+
+            let disabled = this.getElement('DISABLED')
+            if (disabled){disabled.texture = abil.type.data.iconDisabled(abil)}
+        }
+        
         this._abil = abil
         this._charges.ability = abil
         this._cooldown.ability = abil
-
-        if (!abil){return}
-
-        let normal = this.getElement('NORMAL')
-        if (normal){normal.texture = abil.type.data.iconNormal(abil)}
-
-        let pushed = this.getElement('PUSHED')
-        if (pushed){pushed.texture = abil.type.data.iconNormal(abil)}
-
-        let disabled = this.getElement('DISABLED')
-        if (disabled){disabled.texture = abil.type.data.iconDisabled(abil)}
+        this.visible = abil != undefined
     }
 
     private _clicked(pl: jplayer){
-        if (!this._abil){return}
+        if (!this._abil ){return}
 
         let active = Abil.TypeTargeting.getActiveAbility(pl)
         if (this._abil == active){

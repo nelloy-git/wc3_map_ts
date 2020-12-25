@@ -1,8 +1,8 @@
-import { SimpleStatusBar } from "../../FrameExt";
+import { SimpleStatusBarExt } from "../../FrameExt";
 import { hTimerList } from "../../Handle";
 import { Action, float2str } from "../../Utils";
 
-export class InterfaceAutoBar extends SimpleStatusBar {
+export class InterfaceAutoBar extends SimpleStatusBarExt {
     constructor(){
         super()
         

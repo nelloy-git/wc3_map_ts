@@ -28,15 +28,6 @@ export class SimpleText extends Frame {
     public get fontFlags(){return this._string.fontFlags}
     public set fontFlags(flags: number){this._string.fontFlags = flags}
 
-    public addAction(){
-        return Log.err(SimpleText.name + 
-                       ': events are not available.')
-    }
-    public removeAction(){
-        return Log.err(SimpleText.name + 
-                       ': events are not available.')
-    }
-
     private _string: SimpleString;
 
     private static _default_fdf = (()=>{

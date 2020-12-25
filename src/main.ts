@@ -21,18 +21,25 @@ import * as Param from './Parameter'
 import * as Utils from "./Utils"
 
 import { BinUnit, BinUnitField } from './Binary'
-import { hUnit } from './Handle'
+import { hTimer, hUnit } from './Handle'
 import { id2int} from './Utils'
 import { Init } from './Interface/Init'
 import { LifeForceShield } from './Abilities/LifeForceShield'
+import { WorldBar } from './Interface/Utils/WorldBar'
 
 let bin_unit = new BinUnit(id2int('a000'), id2int('hfoo'))
 bin_unit.setValue(BinUnitField.HitPointsMaximumBase, 100)
+bin_unit.setValue(BinUnitField.ManaMaximum, 100)
+
+let _import_bar = new Utils.Import(GetSrc() + '\\Interface\\Utils\\WorldBar\\generic_bar.mdx',
+                                   'war3mapImported\\WorldBar\\generic_bar.mdx')
 
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()
+
+    Init()
 
     let u = new hUnit(bin_unit.id, 0, 0, Player(0))
     let params = new Param.Unit(u)
@@ -53,5 +60,20 @@ if (IsGame()){
     
     let buffs2 = new Buff.Container(u2)
 
-    Init()
+    // let eff = AddSpecialEffectTarget(_import_bar.dst,
+    //                                  u.handle,
+    //                                  'overhead')
+    // BlzSetSpecialEffectHeight(eff, 300) crashes
+
+    // let eff = AddSpecialEffect(_import_bar.dst, 0, 0)
+    // BlzSetSpecialEffectMatrixScale(eff, 1, 2, 1)
+
+    // let bar = new WorldBar()
+    // bar.target = u
+    // bar.offsetZ = 200
+
+    // let t = new hTimer()
+    // t.addAction(()=>{bar.fullness = bar.fullness - 0.05})
+    // t.start(1, true)
+
 }

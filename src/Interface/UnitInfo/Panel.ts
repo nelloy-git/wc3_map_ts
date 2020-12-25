@@ -21,6 +21,8 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
 
         this._portrait.parent = this
         this._portrait.visible = false
+
+        this.size = this.size
     }
     static get instance(){return InterfaceUnitInfoPanel._instance as InterfaceUnitInfoPanel}
 
@@ -51,7 +53,10 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
         this._portrait.size = [p_s, p_s]
 
         this._bars.pos = [p_s, 0]
-        this._bars.size = [w - p_s, p_s / 2]
+        this._bars.size = [w - p_s, p_s / 3]
+
+        this._buffs.pos = [p_s, 1.05 * p_s / 3]
+        this._buffs.size = [(p_s / 2) / this._buffs.rows * this._buffs.cols, p_s / 2]
 
         this._params.pos = [0, p_s]
         this._params.size = [p_s, h - p_s]
@@ -60,7 +65,7 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
     private _unit: hUnit | undefined
 
     private _bars = new InterfaceUnitBars()
-    private _buffs = new InterfaceBuffPanel(10, 2)
+    private _buffs = new InterfaceBuffPanel(10, 3)
     private _params = new InterfaceUnitParameters()
     private _portrait = InterfacePortrait.instance
     private _portrait_proportion = 0.35

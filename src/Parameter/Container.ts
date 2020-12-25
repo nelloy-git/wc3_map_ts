@@ -26,7 +26,6 @@ export class Container{
         res = res < Type.min(param) ? Type.min(param)
                                     : res > Type.max(param) ? Type.max(param)
                                                             : res
-        print(param, res, Type.min(param), Type.max(param))
         this._actions.run(this, param)
         return res
     }

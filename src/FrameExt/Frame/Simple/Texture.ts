@@ -28,15 +28,6 @@ export class SimpleTexture extends Frame {
         BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
     }
 
-    public addAction(){
-        return Log.err(SimpleTexture.name + 
-                       ': events are not available.')
-    }
-    public removeAction(){
-        return Log.err(SimpleTexture.name + 
-                       ': events are not available.')
-    }
-
     private _texture: string;
     private _texture_flags: number;
     private _texture_blend: boolean;

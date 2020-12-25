@@ -48,8 +48,9 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
     }
 
     private _chargesChanged(charges: Abil.Charges){
-        let alpha = charges.count < 1 ? 0.85 : 0.35
-        this.alpha = alpha
+        let color = this.color
+        color.a = charges.count < 1 ? 0.85 : 0.35
+        this.color = color
         this._text.visible = charges.count != charges.countMax
     }
 

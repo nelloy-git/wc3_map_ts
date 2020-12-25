@@ -30,6 +30,7 @@ export class GlueTextButton extends Frame {
         } else {
             super(handle, false)
         }
+        this.initEvents(['CLICK', 'DOUBLECLICK', 'DOWN', 'ENTER', 'LEAVE', 'UP', 'WHEEL'])
 
         this._elements = new Map()
         if (normal){this._elements.set('NORMAL', normal)}

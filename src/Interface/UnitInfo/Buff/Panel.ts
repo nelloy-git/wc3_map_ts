@@ -1,16 +1,16 @@
 import * as Buff from "../../../Buff";
 import * as Frame from "../../../FrameExt";
+
 import { hUnit } from "../../../Handle";
 import { Action } from "../../../Utils";
 import { InterfaceBuff } from "./Buff";
 
-export class InterfaceBuffPanel extends Frame.Backdrop {
+export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     constructor(cols: number, rows: number){
         super()
         this.cols = cols
         this.rows = rows
 
-        this.alpha = 0
         for (let y = 0; y < rows; y++){
             this._buttons.push([])
 
@@ -20,10 +20,11 @@ export class InterfaceBuffPanel extends Frame.Backdrop {
                 this._buttons[y].push(btn)
             }
         }
+
         this.size = this.size
     }
 
-    protected _set_size(size: [number, number]){
+    protected _set_size(size: [w: number, h: number]){
         super._set_size(size)
 
         let x0 = 0
@@ -32,12 +33,12 @@ export class InterfaceBuffPanel extends Frame.Backdrop {
         let h = size[1] / this.rows
 
         for (let y = 0; y < this.rows; y++){
+            x0 = 0
             for (let x = 0; x < this.cols; x++){
                 this._buttons[y][x].pos = [x0, y0]
                 this._buttons[y][x].size = [w, h]
                 x0 += w
             }
-            x0 = 0
             y0 += h
         }
     }

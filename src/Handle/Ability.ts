@@ -2,12 +2,12 @@ import { Action, ActionList, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 import { Trigger } from './Trigger'
 import { TriggerEvent } from './TriggerEvent'
-import { Unit } from './Unit'
+import { hUnit } from './Unit'
 
 type AbilityEvent = 'CAST'|'CHANNEL'|'EFFECT'|'FINISH'|'ENDCAST'
 
 export class Ability extends Handle<jability> {
-    constructor(abil_id: number, owner: Unit){
+    constructor(abil_id: number, owner: hUnit){
         super(((): jability=>{
             UnitAddAbility(owner.handle, abil_id)
             return BlzGetUnitAbility(owner.handle, abil_id)
@@ -58,7 +58,7 @@ export class Ability extends Handle<jability> {
         super.destroy()
     }
 
-    private _owner: Unit | undefined;
+    private _owner: hUnit | undefined;
     private _abil_id: number | undefined;
     private _actions = new Map<AbilityEvent, ActionList<[Ability, AbilityEvent]>>([
         ['CAST', new ActionList()],

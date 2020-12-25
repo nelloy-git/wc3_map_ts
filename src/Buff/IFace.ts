@@ -8,10 +8,10 @@ export interface IFace {
     data: any
 
     timeLeft: number
-    fullTime: number
+    readonly fullTime: number
 
     start(dur: number): void
-    period(reduce_timeleft: boolean): void
+    period(): void
     cancel(): void
     finish(): void
 }

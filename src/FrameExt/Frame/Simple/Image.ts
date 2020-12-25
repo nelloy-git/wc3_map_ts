@@ -25,15 +25,6 @@ export class SimpleImage extends Frame {
     public get textureBlend(){return this._texture.textureBlend}
     public set textureBlend(flag: boolean){this._texture.textureBlend = flag}
 
-    public addAction(){
-        return Log.err(SimpleImage.name + 
-                       ': events are not available.')
-    }
-    public removeAction(){
-        return Log.err(SimpleImage.name + 
-                       ': events are not available.')
-    }
-
     private _texture: SimpleTexture;
 
     private static _default_fdf = (()=>{

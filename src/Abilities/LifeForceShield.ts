@@ -5,6 +5,11 @@ import * as Param from "../Parameter";
 import { hUnit } from "../Handle";
 import { Log } from "../Utils";
 
+let NAME = 'Life Force Shield'
+let ICON = 'ReplaceableTextures\\CommandButtons\\BTNOrbOfCorruption.blp'
+let DIS_ICON = 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNOrbOfCorruption.blp'
+let TOOLTIP = 'T\no\no\nl\nt\ni\np'
+
 let DRAIN_LIFE = 0.15
 let SHIELD_OF_DRAINED = 1
 let SHIELD_MATK = 2
@@ -14,9 +19,9 @@ let SHIELD_TIME_MSPD = 1
 class AbilBuffData extends Buff.TypeData {
     static readonly instance = new AbilBuffData()
 
-    name(buff: Buff.IFace){return ''}
-    icon(buff: Buff.IFace){return ''}
-    tooltip(buff: Buff.IFace){return ''}
+    name(buff: Buff.IFace){return NAME}
+    icon(buff: Buff.IFace){return ICON}
+    tooltip(buff: Buff.IFace){return TOOLTIP}
 }
 
 class AbilBuffProcess extends Buff.TypeProcess<Param.Shield> {
@@ -52,11 +57,10 @@ class Casting extends Abil.TypeCasting<[hUnit]> {
         let drain = DRAIN_LIFE * targ.lifeMax
         targ.life = targ.life - drain
 
-        let shield = new Param.Shield('PHYS', targ)
+        let shield = new Param.Shield(['PHYS'], targ)
         shield.value = SHIELD_OF_DRAINED * drain + SHIELD_MATK * params.get('MATK', 'RES')
-        let time = SHIELD_TIME_BASE * SHIELD_TIME_MSPD * params.get('MSPD', 'RES')
+        let time = SHIELD_TIME_BASE * SHIELD_TIME_MSPD * (1 + params.get('MSPD', 'RES'))
 
-        print(shield.value, time)
         buffs.add<Param.Shield>(abil.owner, time, AbilBuffType, shield)
     };
     isTargetValid(abil: Abil.Ability<[hUnit]>, target: [hUnit]): boolean {return true}
@@ -64,10 +68,10 @@ class Casting extends Abil.TypeCasting<[hUnit]> {
 
 class Data extends Abil.TypeData {
     static readonly instance = new Data()
-    name(abil: Abil.IFace): string {return ''}
-    iconNormal(abil: Abil.IFace): string {return 'ReplaceableTextures\\CommandButtons\\BTNOrbOfCorruption.blp'}
-    iconDisabled(abil: Abil.IFace): string {return 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNOrbOfCorruption.blp'}
-    tooltip(abil: Abil.IFace): string {return ''}
+    name(abil: Abil.IFace): string {return NAME}
+    iconNormal(abil: Abil.IFace): string {return ICON}
+    iconDisabled(abil: Abil.IFace): string {return DIS_ICON}
+    tooltip(abil: Abil.IFace): string {return TOOLTIP}
     lifeCost(abil: Abil.IFace): number {return 0}
     manaCost(abil: Abil.IFace): number {return 0}
     chargeUsed(abil: Abil.IFace): number {return 1}

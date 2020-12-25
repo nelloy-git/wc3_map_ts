@@ -1,60 +1,76 @@
 // https://www.hiveworkshop.com/threads/genericbar.277605/#resource-37792
 // https://www.hiveworkshop.com/threads/hero-glow.326680/#resource-91186
 
-import { BinUnit, getFreeId } from "../../Binary";
-import { BinUnitField } from "../../Binary/ObjField/Unit";
-import { TimerList } from "../../Handle/Timer/TimerList";
-import { Unit } from "../../Handle/Unit";
-import { Import } from "../../Utils";
+import { hTimerList, hTimerObj, hUnit } from '../../Handle'
+import { hEffect } from '../../Handle'
+import { Import } from '../../Utils'
 
-export class WorldBar extends Unit {
-    constructor(target: Unit, height: number){
-        super(WorldBar._dummy_type.id, target.x, target.y, target.owner)
-        this._target = target
-        this._height = height
-        this.fullness = 1
-
-        this._timer.addAction('PERIOD', () => {this._update()})
-        this._timer.start(10^10)
+export class WorldBar extends hEffect {
+    constructor(){
+        super(WorldBar._import_bar.dst, 0, 0, 1000)
     }
 
+    get offsetX(){return this._x}
+    set offsetX(x: number){this._x = x; this._update()}
+
+    get offsetY(){return this._y}
+    set offsetY(y: number){this._y = y; this._update()}
+
+    get offsetZ(){return this._z}
+    set offsetZ(z: number){this._z = z; this._update()}
+
     get target(){return this._target}
-    set target(targ: Unit){this._target = targ; this._update()}
+    set target(targ: hUnit | undefined){
+        if (targ && !this._timer){
+            let t = WorldBar._timer_list.newTimerObj()
+            t.addAction('PERIOD', ()=>{this._update()})
+            t.addAction('FINISH', ()=>{t.start(3600)})
+            t.start(3600)
+            this._timer = t
+        }
+        if (!targ && this._timer){
+            WorldBar._timer_list.removeTimerObj(this._timer)
+        }
+        this._target = targ;
+        this._update()
+    }
 
     get fullness(){return this._fullness}
     set fullness(val: number){
+        let prev = this._fullness
         this._fullness = val > 1 ? 1 : val < 0 ? 0 : val
-        this.setAnimation(Math.floor(100 * this._fullness))
-    }
 
-    get height(){return this._height}
-    set height(h: number){this._height = h; this._update()}
+        this.scaleX = this._fullness / prev
+    }
 
     destroy(){
         super.destroy()
-        WorldBar._timer_list.removeTimerObj(this._timer)
+
+        if (this._timer){
+            WorldBar._timer_list.removeTimerObj(this._timer)
+        }
     }
 
     private _update(){
-        this.x = this._target.x
-        this.y = this._target.y
-        this.z = this._target.z + this._height
+        if (this._target){
+            this.x = this._target.x - 16 + this._x  // TODO default offset
+            this.y = this._target.y - 16 + this._y  // TODO default offset
+            this.z = this._target.z + this._z
+        } else {
+            this.x = this.x + this._x
+            this.y = this.y + this._y
+            this.z = this.z + this._z
+        }
     }
     
-    private _target: Unit
-    private _height: number
+    private _x: number = 0
+    private _y: number = 0
+    private _z: number = 0
+    private _target: hUnit | undefined
     private _fullness: number = 1
-    private _timer = WorldBar._timer_list.newTimerObj()
+    private _timer: hTimerObj | undefined
 
-    private static _dummy_type = (() => {
-        let dummy = new BinUnit(getFreeId('UNIT'), 'Hpal')
-        dummy.setValue(BinUnitField.NormalAbilities, 'Aloc,Abun')
-        dummy.setValue(BinUnitField.MovementSpeedBase, 1)
-        dummy.setValue(BinUnitField.ModelFile, WorldBar._import_bar.dst)
-        return dummy
-    })()
-
-    private static _timer_list = new TimerList(0.02)
+    private static _timer_list = new hTimerList(0.02)
 
     private static _import_bar = new Import(GetSrc() + '\\Interface\\Utils\\WorldBar\\generic_bar.mdx',
                                             'war3mapImported\\WorldBar\\generic_bar.mdx')

@@ -13,7 +13,7 @@ import {TimerList} from './Timer/TimerList'
 import {TimerObj} from './Timer/TimerObj'
 import {Trigger} from './Trigger'
 import {TriggerEvent} from './TriggerEvent'
-import {Unit} from './Unit'
+import {hUnit} from './Unit'
 
 export {
     Ability as hAbility,
@@ -31,5 +31,5 @@ export {
     TimerObj as hTimerObj,
     Trigger as hTrigger,
     TriggerEvent as hTriggerEvent,
-    Unit as hUnit,
+    hUnit as hUnit,
 }

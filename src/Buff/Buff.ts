@@ -17,6 +17,8 @@ export class Buff<T> extends hTimerObj implements IFace {
         this.addAction('FINISH', ()=>{this.type.process.finish(this); this.destroy()})
     }
 
+    period(){super.period(false)}
+
     destroy(){
         Buff._timer_list.removeTimerObj(this)
     }
