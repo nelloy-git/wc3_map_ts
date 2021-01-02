@@ -6,11 +6,9 @@ export class Effect extends Handle<jeffect> {
         super(AddSpecialEffect(model, x, y))
         BlzSetSpecialEffectHeight(this.handle, z)
         
-        // if (targ && attach){
-        //     super(AddSpecialEffectTarget(model, targ.handle, attach))
-        // } else {
-        //     super(AddSpecialEffect(model, 0, 0)) 
-        // }
+        this._x = x
+        this._y = y
+        this._z = z
     }
     static get(id: jeffect | number){
         let instance = Handle.get(id)
@@ -21,14 +19,14 @@ export class Effect extends Handle<jeffect> {
         return instance as Effect
     }
 
-    get x(){return BlzGetLocalSpecialEffectX(this.handle)}
-    set x(x: number){BlzSetSpecialEffectX(this.handle, x)}
+    get x(){return this._x}
+    set x(x: number){this._x = x; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
     
-    get y(){return BlzGetLocalSpecialEffectY(this.handle)}
-    set y(y: number){BlzSetSpecialEffectY(this.handle, y)}
+    get y(){return this._y}
+    set y(y: number){this._y = y; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
     
-    get z(){return BlzGetLocalSpecialEffectZ(this.handle)}
-    set z(z: number){BlzSetSpecialEffectZ(this.handle, z)}
+    get z(){return this._z}
+    set z(z: number){this._z = z; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
 
     get yaw(){return this._yaw}
     set yaw(yaw: number){
@@ -48,29 +46,36 @@ export class Effect extends Handle<jeffect> {
         BlzSetSpecialEffectRoll(this.handle, this._roll)
     }
 
+    
+
     get scaleX(){return this._scale_x}
     set scaleX(scale: number){
-        this._scale_x = scale < 0 ? 0 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, this._scale_x, this._scale_y, this._scale_z)
+        scale = scale < 0 ? 0 : scale
+        BlzSetSpecialEffectMatrixScale(this.handle, scale / this._scale_x, 1, 1)
+        this._scale_x = scale
     }
 
     get scaleY(){return this._scale_y}
     set scaleY(scale: number){
-        this._scale_y = scale < 0 ? 0 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, this._scale_x, this._scale_y, this._scale_z)
+        scale = scale < 0 ? 0 : scale
+        BlzSetSpecialEffectMatrixScale(this.handle, 1, scale / this._scale_y, 1)
+        this._scale_y = scale
     }
 
     get scaleZ(){return this._scale_z}
     set scaleZ(scale: number){
-        this._scale_z = scale < 0 ? 0 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, this._scale_x, this._scale_y, this._scale_z)
+        scale = scale < 0 ? 0 : scale
+        BlzSetSpecialEffectMatrixScale(this.handle, 1, 1, scale / this._scale_z)
+        this._scale_z = scale
     }
 
     get color(){return new Color(this._color)}
     set color(color: Color){
         this._color = new Color(color)
-        BlzSetSpecialEffectColor(this.handle, 255 * color.r, 255 *  color.g, 255 * color.b)
-        BlzSetSpecialEffectAlpha(this.handle, 255 * color.a)
+        BlzSetSpecialEffectColor(this.handle, Math.floor(255 * color.r),
+                                              Math.floor(255 * color.g),
+                                              Math.floor(255 * color.b))
+        BlzSetSpecialEffectAlpha(this.handle, Math.floor(255 * color.a))
     }
 
     destroy(){
@@ -79,6 +84,9 @@ export class Effect extends Handle<jeffect> {
         super.destroy()
     }
 
+    private _x: number
+    private _y: number
+    private _z: number
     private _yaw: number = 0;
     private _pitch: number = 0;
     private _roll: number = 0;

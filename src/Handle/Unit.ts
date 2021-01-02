@@ -42,6 +42,23 @@ export class hUnit extends Handle<junit>{
         return u ? hUnit.get(u) : undefined
     }
 
+    static getInRect(r: jrect){
+        let gr = CreateGroup()
+        GroupEnumUnitsInRect(gr, r)
+
+        let list: hUnit[] = []
+        let u = FirstOfGroup(gr)
+        while (u != undefined){
+            let hu = hUnit.get(u)
+            if (hu != undefined){list.push(hu)}
+            GroupRemoveUnit(gr, u)
+            u = FirstOfGroup(gr)
+        }
+        DestroyGroup(gr)
+
+        return list
+    }
+
     get x(){return GetUnitX(this.handle)}
     set x(x: number){SetUnitX(this.handle, x)}
 

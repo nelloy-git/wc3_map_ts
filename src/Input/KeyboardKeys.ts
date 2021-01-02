@@ -191,194 +191,196 @@ export let KeyboardKeys = [
 ]
 
 export function keyToString(this: void, key: joskeytype): string{
-    if (key == OSKEY_BACKSPACE){return 'BACKSPACE'}
-    else if (key == OSKEY_TAB){return 'TAB'}
-    else if (key == OSKEY_CLEAR){return 'CLEAR'}
-    else if (key == OSKEY_RETURN){return 'RETURN'}
-    else if (key == OSKEY_SHIFT){return 'SHIFT'}
-    else if (key == OSKEY_CONTROL){return 'CONTROL'}
-    else if (key == OSKEY_ALT){return 'ALT'}
-    else if (key == OSKEY_PAUSE){return 'PAUSE'}
-    else if (key == OSKEY_CAPSLOCK){return 'CAPSLOCK'}
-    else if (key == OSKEY_KANA){return 'KANA'}
-    else if (key == OSKEY_HANGUL){return 'HANGUL'}
-    else if (key == OSKEY_JUNJA){return 'JUNJA'}
-    else if (key == OSKEY_FINAL){return 'FINAL'}
-    else if (key == OSKEY_HANJA){return 'HANJA'}
-    else if (key == OSKEY_KANJI){return 'KANJI'}
-    else if (key == OSKEY_ESCAPE){return 'ESCAPE'}
-    else if (key == OSKEY_CONVERT){return 'CONVERT'}
-    else if (key == OSKEY_NONCONVERT){return 'NONCONVERT'}
-    else if (key == OSKEY_ACCEPT){return 'ACCEPT'}
-    else if (key == OSKEY_MODECHANGE){return 'MODECHANGE'}
-    else if (key == OSKEY_SPACE){return 'SPACE'}
-    else if (key == OSKEY_PAGEUP){return 'PAGEUP'}
-    else if (key == OSKEY_PAGEDOWN){return 'PAGEDOWN'}
-    else if (key == OSKEY_END){return 'END'}
-    else if (key == OSKEY_HOME){return 'HOME'}
-    else if (key == OSKEY_LEFT){return 'LEFT'}
-    else if (key == OSKEY_UP){return 'UP'}
-    else if (key == OSKEY_RIGHT){return 'RIGHT'}
-    else if (key == OSKEY_DOWN){return 'DOWN'}
-    else if (key == OSKEY_SELECT){return 'SELECT'}
-    else if (key == OSKEY_PRINT){return 'PRINT'}
-    else if (key == OSKEY_EXECUTE){return 'EXECUTE'}
-    else if (key == OSKEY_PRINTSCREEN){return 'PRINTSCREEN'}
-    else if (key == OSKEY_INSERT){return 'INSERT'}
-    else if (key == OSKEY_DELETE){return 'DELETE'}
-    else if (key == OSKEY_HELP){return 'HELP'}
-    else if (key == OSKEY_0){return '0'}
-    else if (key == OSKEY_1){return '1'}
-    else if (key == OSKEY_2){return '2'}
-    else if (key == OSKEY_3){return '3'}
-    else if (key == OSKEY_4){return '4'}
-    else if (key == OSKEY_5){return '5'}
-    else if (key == OSKEY_6){return '6'}
-    else if (key == OSKEY_7){return '7'}
-    else if (key == OSKEY_8){return '8'}
-    else if (key == OSKEY_9){return '9'}
-    else if (key == OSKEY_A){return 'A'}
-    else if (key == OSKEY_B){return 'B'}
-    else if (key == OSKEY_C){return 'C'}
-    else if (key == OSKEY_D){return 'D'}
-    else if (key == OSKEY_E){return 'E'}
-    else if (key == OSKEY_F){return 'F'}
-    else if (key == OSKEY_G){return 'G'}
-    else if (key == OSKEY_H){return 'H'}
-    else if (key == OSKEY_I){return 'I'}
-    else if (key == OSKEY_J){return 'J'}
-    else if (key == OSKEY_K){return 'K'}
-    else if (key == OSKEY_L){return 'L'}
-    else if (key == OSKEY_M){return 'M'}
-    else if (key == OSKEY_N){return 'N'}
-    else if (key == OSKEY_O){return 'O'}
-    else if (key == OSKEY_P){return 'P'}
-    else if (key == OSKEY_Q){return 'Q'}
-    else if (key == OSKEY_R){return 'R'}
-    else if (key == OSKEY_S){return 'S'}
-    else if (key == OSKEY_T){return 'T'}
-    else if (key == OSKEY_U){return 'U'}
-    else if (key == OSKEY_V){return 'V'}
-    else if (key == OSKEY_W){return 'W'}
-    else if (key == OSKEY_X){return 'X'}
-    else if (key == OSKEY_Y){return 'Y'}
-    else if (key == OSKEY_Z){return 'Z'}
-    else if (key == OSKEY_LMETA){return 'LMETA'}
-    else if (key == OSKEY_RMETA){return 'RMETA'}
-    else if (key == OSKEY_APPS){return 'APPS'}
-    else if (key == OSKEY_SLEEP){return 'SLEEP'}
-    else if (key == OSKEY_NUMPAD0){return 'NUMPAD0'}
-    else if (key == OSKEY_NUMPAD1){return 'NUMPAD1'}
-    else if (key == OSKEY_NUMPAD2){return 'NUMPAD2'}
-    else if (key == OSKEY_NUMPAD3){return 'NUMPAD3'}
-    else if (key == OSKEY_NUMPAD4){return 'NUMPAD4'}
-    else if (key == OSKEY_NUMPAD5){return 'NUMPAD5'}
-    else if (key == OSKEY_NUMPAD6){return 'NUMPAD6'}
-    else if (key == OSKEY_NUMPAD7){return 'NUMPAD7'}
-    else if (key == OSKEY_NUMPAD8){return 'NUMPAD8'}
-    else if (key == OSKEY_NUMPAD9){return 'NUMPAD9'}
-    else if (key == OSKEY_MULTIPLY){return 'MULTIPLY'}
-    else if (key == OSKEY_ADD){return 'ADD'}
-    else if (key == OSKEY_SEPARATOR){return 'SEPARATOR'}
-    else if (key == OSKEY_SUBTRACT){return 'SUBTRACT'}
-    else if (key == OSKEY_DECIMAL){return 'DECIMAL'}
-    else if (key == OSKEY_DIVIDE){return 'DIVIDE'}
-    else if (key == OSKEY_F1){return 'F1'}
-    else if (key == OSKEY_F2){return 'F2'}
-    else if (key == OSKEY_F3){return 'F3'}
-    else if (key == OSKEY_F4){return 'F4'}
-    else if (key == OSKEY_F5){return 'F5'}
-    else if (key == OSKEY_F6){return 'F6'}
-    else if (key == OSKEY_F7){return 'F7'}
-    else if (key == OSKEY_F8){return 'F8'}
-    else if (key == OSKEY_F9){return 'F9'}
-    else if (key == OSKEY_F10){return 'F10'}
-    else if (key == OSKEY_F11){return 'F11'}
-    else if (key == OSKEY_F12){return 'F12'}
-    else if (key == OSKEY_F13){return 'F13'}
-    else if (key == OSKEY_F14){return 'F14'}
-    else if (key == OSKEY_F15){return 'F15'}
-    else if (key == OSKEY_F16){return 'F16'}
-    else if (key == OSKEY_F17){return 'F17'}
-    else if (key == OSKEY_F18){return 'F18'}
-    else if (key == OSKEY_F19){return 'F19'}
-    else if (key == OSKEY_F20){return 'F20'}
-    else if (key == OSKEY_F21){return 'F21'}
-    else if (key == OSKEY_F22){return 'F22'}
-    else if (key == OSKEY_F23){return 'F23'}
-    else if (key == OSKEY_F24){return 'F24'}
-    else if (key == OSKEY_NUMLOCK){return 'NUMLOCK'}
-    else if (key == OSKEY_SCROLLLOCK){return 'SCROLLLOCK'}
-    else if (key == OSKEY_OEM_NEC_EQUAL){return 'OEM_NEC_EQUAL'}
-    else if (key == OSKEY_OEM_FJ_JISHO){return 'OEM_FJ_JISHO'}
-    else if (key == OSKEY_OEM_FJ_MASSHOU){return 'OEM_FJ_MASSHOU'}
-    else if (key == OSKEY_OEM_FJ_TOUROKU){return 'OEM_FJ_TOUROKU'}
-    else if (key == OSKEY_OEM_FJ_LOYA){return 'OEM_FJ_LOYA'}
-    else if (key == OSKEY_OEM_FJ_ROYA){return 'OEM_FJ_ROYA'}
-    else if (key == OSKEY_LSHIFT){return 'LSHIFT'}
-    else if (key == OSKEY_RSHIFT){return 'RSHIFT'}
-    else if (key == OSKEY_LCONTROL){return 'LCONTROL'}
-    else if (key == OSKEY_RCONTROL){return 'RCONTROL'}
-    else if (key == OSKEY_LALT){return 'LALT'}
-    else if (key == OSKEY_RALT){return 'RALT'}
-    else if (key == OSKEY_BROWSER_BACK){return 'BROWSER_BACK'}
-    else if (key == OSKEY_BROWSER_FORWARD){return 'BROWSER_FORWARD'}
-    else if (key == OSKEY_BROWSER_REFRESH){return 'BROWSER_REFRESH'}
-    else if (key == OSKEY_BROWSER_STOP){return 'BROWSER_STOP'}
-    else if (key == OSKEY_BROWSER_SEARCH){return 'BROWSER_SEARCH'}
-    else if (key == OSKEY_BROWSER_FAVORITES){return 'BROWSER_FAVORITES'}
-    else if (key == OSKEY_BROWSER_HOME){return 'BROWSER_HOME'}
-    else if (key == OSKEY_VOLUME_MUTE){return 'VOLUME_MUTE'}
-    else if (key == OSKEY_VOLUME_DOWN){return 'VOLUME_DOWN'}
-    else if (key == OSKEY_VOLUME_UP){return 'VOLUME_UP'}
-    else if (key == OSKEY_MEDIA_NEXT_TRACK){return 'MEDIA_NEXT_TRACK'}
-    else if (key == OSKEY_MEDIA_PREV_TRACK){return 'MEDIA_PREV_TRACK'}
-    else if (key == OSKEY_MEDIA_STOP){return 'MEDIA_STOP'}
-    else if (key == OSKEY_MEDIA_PLAY_PAUSE){return 'MEDIA_PLAY_PAUSE'}
-    else if (key == OSKEY_LAUNCH_MAIL){return 'LAUNCH_MAIL'}
-    else if (key == OSKEY_LAUNCH_MEDIA_SELECT){return 'LAUNCH_MEDIA_SELECT'}
-    else if (key == OSKEY_LAUNCH_APP1){return 'LAUNCH_APP1'}
-    else if (key == OSKEY_LAUNCH_APP2){return 'LAUNCH_APP2'}
-    else if (key == OSKEY_OEM_1){return 'OEM_1'}
-    else if (key == OSKEY_OEM_PLUS){return 'OEM_PLUS'}
-    else if (key == OSKEY_OEM_COMMA){return 'OEM_COMMA'}
-    else if (key == OSKEY_OEM_MINUS){return 'OEM_MINUS'}
-    else if (key == OSKEY_OEM_PERIOD){return 'OEM_PERIOD'}
-    else if (key == OSKEY_OEM_2){return 'OEM_2'}
-    else if (key == OSKEY_OEM_3){return 'OEM_3'}
-    else if (key == OSKEY_OEM_4){return 'OEM_4'}
-    else if (key == OSKEY_OEM_5){return 'OEM_5'}
-    else if (key == OSKEY_OEM_6){return 'OEM_6'}
-    else if (key == OSKEY_OEM_7){return 'OEM_7'}
-    else if (key == OSKEY_OEM_8){return 'OEM_8'}
-    else if (key == OSKEY_OEM_AX){return 'OEM_AX'}
-    else if (key == OSKEY_OEM_102){return 'OEM_102'}
-    else if (key == OSKEY_ICO_HELP){return 'ICO_HELP'}
-    else if (key == OSKEY_ICO_00){return 'ICO_00'}
-    else if (key == OSKEY_PROCESSKEY){return 'PROCESSKEY'}
-    else if (key == OSKEY_ICO_CLEAR){return 'ICO_CLEAR'}
-    else if (key == OSKEY_PACKET){return 'PACKET'}
-    else if (key == OSKEY_OEM_RESET){return 'OEM_RESET'}
-    else if (key == OSKEY_OEM_JUMP){return 'OEM_JUMP'}
-    else if (key == OSKEY_OEM_PA1){return 'OEM_PA1'}
-    else if (key == OSKEY_OEM_PA2){return 'OEM_PA2'}
-    else if (key == OSKEY_OEM_PA3){return 'OEM_PA3'}
-    else if (key == OSKEY_OEM_WSCTRL){return 'OEM_WSCTRL'}
-    else if (key == OSKEY_OEM_CUSEL){return 'OEM_CUSEL'}
-    else if (key == OSKEY_OEM_ATTN){return 'OEM_ATTN'}
-    else if (key == OSKEY_OEM_FINISH){return 'OEM_FINISH'}
-    else if (key == OSKEY_OEM_COPY){return 'OEM_COPY'}
-    else if (key == OSKEY_OEM_AUTO){return 'OEM_AUTO'}
-    else if (key == OSKEY_OEM_ENLW){return 'OEM_ENLW'}
-    else if (key == OSKEY_OEM_BACKTAB){return 'OEM_BACKTAB'}
-    else if (key == OSKEY_ATTN){return 'ATTN'}
-    else if (key == OSKEY_CRSEL){return 'CRSEL'}
-    else if (key == OSKEY_EXSEL){return 'EXSEL'}
-    else if (key == OSKEY_EREOF){return 'EREOF'}
-    else if (key == OSKEY_PLAY){return 'PLAY'}
-    else if (key == OSKEY_ZOOM){return 'ZOOM'}
-    else if (key == OSKEY_NONAME){return 'NONAME'}
-    else if (key == OSKEY_PA1){return 'PA1'}
-    else if (key == OSKEY_OEM_CLEAR){return 'OEM_CLEAR'}
-    else {return ''}
+    switch (key){
+        case OSKEY_BACKSPACE: {return 'BACKSPACE'}
+        case OSKEY_TAB: {return 'TAB'}
+        case OSKEY_CLEAR: {return 'CLEAR'}
+        case OSKEY_RETURN: {return 'RETURN'}
+        case OSKEY_SHIFT: {return 'SHIFT'}
+        case OSKEY_CONTROL: {return 'CONTROL'}
+        case OSKEY_ALT: {return 'ALT'}
+        case OSKEY_PAUSE: {return 'PAUSE'}
+        case OSKEY_CAPSLOCK: {return 'CAPSLOCK'}
+        case OSKEY_KANA: {return 'KANA'}
+        case OSKEY_HANGUL: {return 'HANGUL'}
+        case OSKEY_JUNJA: {return 'JUNJA'}
+        case OSKEY_FINAL: {return 'FINAL'}
+        case OSKEY_HANJA: {return 'HANJA'}
+        case OSKEY_KANJI: {return 'KANJI'}
+        case OSKEY_ESCAPE: {return 'ESCAPE'}
+        case OSKEY_CONVERT: {return 'CONVERT'}
+        case OSKEY_NONCONVERT: {return 'NONCONVERT'}
+        case OSKEY_ACCEPT: {return 'ACCEPT'}
+        case OSKEY_MODECHANGE: {return 'MODECHANGE'}
+        case OSKEY_SPACE: {return 'SPACE'}
+        case OSKEY_PAGEUP: {return 'PAGEUP'}
+        case OSKEY_PAGEDOWN: {return 'PAGEDOWN'}
+        case OSKEY_END: {return 'END'}
+        case OSKEY_HOME: {return 'HOME'}
+        case OSKEY_LEFT: {return 'LEFT'}
+        case OSKEY_UP: {return 'UP'}
+        case OSKEY_RIGHT: {return 'RIGHT'}
+        case OSKEY_DOWN: {return 'DOWN'}
+        case OSKEY_SELECT: {return 'SELECT'}
+        case OSKEY_PRINT: {return 'PRINT'}
+        case OSKEY_EXECUTE: {return 'EXECUTE'}
+        case OSKEY_PRINTSCREEN: {return 'PRINTSCREEN'}
+        case OSKEY_INSERT: {return 'INSERT'}
+        case OSKEY_DELETE: {return 'DELETE'}
+        case OSKEY_HELP: {return 'HELP'}
+        case OSKEY_0: {return '0'}
+        case OSKEY_1: {return '1'}
+        case OSKEY_2: {return '2'}
+        case OSKEY_3: {return '3'}
+        case OSKEY_4: {return '4'}
+        case OSKEY_5: {return '5'}
+        case OSKEY_6: {return '6'}
+        case OSKEY_7: {return '7'}
+        case OSKEY_8: {return '8'}
+        case OSKEY_9: {return '9'}
+        case OSKEY_A: {return 'A'}
+        case OSKEY_B: {return 'B'}
+        case OSKEY_C: {return 'C'}
+        case OSKEY_D: {return 'D'}
+        case OSKEY_E: {return 'E'}
+        case OSKEY_F: {return 'F'}
+        case OSKEY_G: {return 'G'}
+        case OSKEY_H: {return 'H'}
+        case OSKEY_I: {return 'I'}
+        case OSKEY_J: {return 'J'}
+        case OSKEY_K: {return 'K'}
+        case OSKEY_L: {return 'L'}
+        case OSKEY_M: {return 'M'}
+        case OSKEY_N: {return 'N'}
+        case OSKEY_O: {return 'O'}
+        case OSKEY_P: {return 'P'}
+        case OSKEY_Q: {return 'Q'}
+        case OSKEY_R: {return 'R'}
+        case OSKEY_S: {return 'S'}
+        case OSKEY_T: {return 'T'}
+        case OSKEY_U: {return 'U'}
+        case OSKEY_V: {return 'V'}
+        case OSKEY_W: {return 'W'}
+        case OSKEY_X: {return 'X'}
+        case OSKEY_Y: {return 'Y'}
+        case OSKEY_Z: {return 'Z'}
+        case OSKEY_LMETA: {return 'LMETA'}
+        case OSKEY_RMETA: {return 'RMETA'}
+        case OSKEY_APPS: {return 'APPS'}
+        case OSKEY_SLEEP: {return 'SLEEP'}
+        case OSKEY_NUMPAD0: {return 'NUMPAD0'}
+        case OSKEY_NUMPAD1: {return 'NUMPAD1'}
+        case OSKEY_NUMPAD2: {return 'NUMPAD2'}
+        case OSKEY_NUMPAD3: {return 'NUMPAD3'}
+        case OSKEY_NUMPAD4: {return 'NUMPAD4'}
+        case OSKEY_NUMPAD5: {return 'NUMPAD5'}
+        case OSKEY_NUMPAD6: {return 'NUMPAD6'}
+        case OSKEY_NUMPAD7: {return 'NUMPAD7'}
+        case OSKEY_NUMPAD8: {return 'NUMPAD8'}
+        case OSKEY_NUMPAD9: {return 'NUMPAD9'}
+        case OSKEY_MULTIPLY: {return 'MULTIPLY'}
+        case OSKEY_ADD: {return 'ADD'}
+        case OSKEY_SEPARATOR: {return 'SEPARATOR'}
+        case OSKEY_SUBTRACT: {return 'SUBTRACT'}
+        case OSKEY_DECIMAL: {return 'DECIMAL'}
+        case OSKEY_DIVIDE: {return 'DIVIDE'}
+        case OSKEY_F1: {return 'F1'}
+        case OSKEY_F2: {return 'F2'}
+        case OSKEY_F3: {return 'F3'}
+        case OSKEY_F4: {return 'F4'}
+        case OSKEY_F5: {return 'F5'}
+        case OSKEY_F6: {return 'F6'}
+        case OSKEY_F7: {return 'F7'}
+        case OSKEY_F8: {return 'F8'}
+        case OSKEY_F9: {return 'F9'}
+        case OSKEY_F10: {return 'F10'}
+        case OSKEY_F11: {return 'F11'}
+        case OSKEY_F12: {return 'F12'}
+        case OSKEY_F13: {return 'F13'}
+        case OSKEY_F14: {return 'F14'}
+        case OSKEY_F15: {return 'F15'}
+        case OSKEY_F16: {return 'F16'}
+        case OSKEY_F17: {return 'F17'}
+        case OSKEY_F18: {return 'F18'}
+        case OSKEY_F19: {return 'F19'}
+        case OSKEY_F20: {return 'F20'}
+        case OSKEY_F21: {return 'F21'}
+        case OSKEY_F22: {return 'F22'}
+        case OSKEY_F23: {return 'F23'}
+        case OSKEY_F24: {return 'F24'}
+        case OSKEY_NUMLOCK: {return 'NUMLOCK'}
+        case OSKEY_SCROLLLOCK: {return 'SCROLLLOCK'}
+        case OSKEY_OEM_NEC_EQUAL: {return 'OEM_NEC_EQUAL'}
+        case OSKEY_OEM_FJ_JISHO: {return 'OEM_FJ_JISHO'}
+        case OSKEY_OEM_FJ_MASSHOU: {return 'OEM_FJ_MASSHOU'}
+        case OSKEY_OEM_FJ_TOUROKU: {return 'OEM_FJ_TOUROKU'}
+        case OSKEY_OEM_FJ_LOYA: {return 'OEM_FJ_LOYA'}
+        case OSKEY_OEM_FJ_ROYA: {return 'OEM_FJ_ROYA'}
+        case OSKEY_LSHIFT: {return 'LSHIFT'}
+        case OSKEY_RSHIFT: {return 'RSHIFT'}
+        case OSKEY_LCONTROL: {return 'LCONTROL'}
+        case OSKEY_RCONTROL: {return 'RCONTROL'}
+        case OSKEY_LALT: {return 'LALT'}
+        case OSKEY_RALT: {return 'RALT'}
+        case OSKEY_BROWSER_BACK: {return 'BROWSER_BACK'}
+        case OSKEY_BROWSER_FORWARD: {return 'BROWSER_FORWARD'}
+        case OSKEY_BROWSER_REFRESH: {return 'BROWSER_REFRESH'}
+        case OSKEY_BROWSER_STOP: {return 'BROWSER_STOP'}
+        case OSKEY_BROWSER_SEARCH: {return 'BROWSER_SEARCH'}
+        case OSKEY_BROWSER_FAVORITES: {return 'BROWSER_FAVORITES'}
+        case OSKEY_BROWSER_HOME: {return 'BROWSER_HOME'}
+        case OSKEY_VOLUME_MUTE: {return 'VOLUME_MUTE'}
+        case OSKEY_VOLUME_DOWN: {return 'VOLUME_DOWN'}
+        case OSKEY_VOLUME_UP: {return 'VOLUME_UP'}
+        case OSKEY_MEDIA_NEXT_TRACK: {return 'MEDIA_NEXT_TRACK'}
+        case OSKEY_MEDIA_PREV_TRACK: {return 'MEDIA_PREV_TRACK'}
+        case OSKEY_MEDIA_STOP: {return 'MEDIA_STOP'}
+        case OSKEY_MEDIA_PLAY_PAUSE: {return 'MEDIA_PLAY_PAUSE'}
+        case OSKEY_LAUNCH_MAIL: {return 'LAUNCH_MAIL'}
+        case OSKEY_LAUNCH_MEDIA_SELECT: {return 'LAUNCH_MEDIA_SELECT'}
+        case OSKEY_LAUNCH_APP1: {return 'LAUNCH_APP1'}
+        case OSKEY_LAUNCH_APP2: {return 'LAUNCH_APP2'}
+        case OSKEY_OEM_1: {return 'OEM_1'}
+        case OSKEY_OEM_PLUS: {return 'OEM_PLUS'}
+        case OSKEY_OEM_COMMA: {return 'OEM_COMMA'}
+        case OSKEY_OEM_MINUS: {return 'OEM_MINUS'}
+        case OSKEY_OEM_PERIOD: {return 'OEM_PERIOD'}
+        case OSKEY_OEM_2: {return 'OEM_2'}
+        case OSKEY_OEM_3: {return 'OEM_3'}
+        case OSKEY_OEM_4: {return 'OEM_4'}
+        case OSKEY_OEM_5: {return 'OEM_5'}
+        case OSKEY_OEM_6: {return 'OEM_6'}
+        case OSKEY_OEM_7: {return 'OEM_7'}
+        case OSKEY_OEM_8: {return 'OEM_8'}
+        case OSKEY_OEM_AX: {return 'OEM_AX'}
+        case OSKEY_OEM_102: {return 'OEM_102'}
+        case OSKEY_ICO_HELP: {return 'ICO_HELP'}
+        case OSKEY_ICO_00: {return 'ICO_00'}
+        case OSKEY_PROCESSKEY: {return 'PROCESSKEY'}
+        case OSKEY_ICO_CLEAR: {return 'ICO_CLEAR'}
+        case OSKEY_PACKET: {return 'PACKET'}
+        case OSKEY_OEM_RESET: {return 'OEM_RESET'}
+        case OSKEY_OEM_JUMP: {return 'OEM_JUMP'}
+        case OSKEY_OEM_PA1: {return 'OEM_PA1'}
+        case OSKEY_OEM_PA2: {return 'OEM_PA2'}
+        case OSKEY_OEM_PA3: {return 'OEM_PA3'}
+        case OSKEY_OEM_WSCTRL: {return 'OEM_WSCTRL'}
+        case OSKEY_OEM_CUSEL: {return 'OEM_CUSEL'}
+        case OSKEY_OEM_ATTN: {return 'OEM_ATTN'}
+        case OSKEY_OEM_FINISH: {return 'OEM_FINISH'}
+        case OSKEY_OEM_COPY: {return 'OEM_COPY'}
+        case OSKEY_OEM_AUTO: {return 'OEM_AUTO'}
+        case OSKEY_OEM_ENLW: {return 'OEM_ENLW'}
+        case OSKEY_OEM_BACKTAB: {return 'OEM_BACKTAB'}
+        case OSKEY_ATTN: {return 'ATTN'}
+        case OSKEY_CRSEL: {return 'CRSEL'}
+        case OSKEY_EXSEL: {return 'EXSEL'}
+        case OSKEY_EREOF: {return 'EREOF'}
+        case OSKEY_PLAY: {return 'PLAY'}
+        case OSKEY_ZOOM: {return 'ZOOM'}
+        case OSKEY_NONAME: {return 'NONAME'}
+        case OSKEY_PA1: {return 'PA1'}
+        case OSKEY_OEM_CLEAR: {return 'OEM_CLEAR'}
+        default: {return ''}
+    }
 }

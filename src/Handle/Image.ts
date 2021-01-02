@@ -2,11 +2,15 @@ import { Color, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 export class Image extends Handle<jimage> {
-    constructor(image: string, size_x: number, size_y: number, size_z: number){
+    constructor(image: string,
+                size_x: number, size_y: number, size_z: number,
+                origin_x?: number, origin_y?: number, origin_z?: number){
         super(CreateImage(image,
                           size_x, size_y, size_z,
                           0, 0, -5000,
-                          size_x / 2, size_y / 2, size_z / 2, 4))
+                          origin_x ? origin_x : size_x / 2,
+                          origin_y ? origin_y : size_y / 2,
+                          origin_z ? origin_z : size_z / 2, 4))
         this._x = 0
         this._y = 0
         this._z = 0

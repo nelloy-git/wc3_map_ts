@@ -8,6 +8,7 @@ import {Line} from './Image/Line'
 import {Pixel} from './Image/Pixel'
 import {Projectile} from './Effect/Projectile'
 import {TextTag} from './TextTag'
+import {Tile} from './Tile'
 import {Timer} from './Timer'
 import {TimerList} from './Timer/TimerList'
 import {TimerObj} from './Timer/TimerObj'
@@ -26,6 +27,7 @@ export {
     Pixel as hImagePixel,
     Projectile as hEffectProjectile,
     TextTag as hTextTag,
+    Tile as hTile,
     Timer as hTimer,
     TimerList as hTimerList,
     TimerObj as hTimerObj,

@@ -86,10 +86,10 @@ function grab_byte(v: number): [number, string]{
 }
 
 declare namespace string {
-    function byte(str: string, i?: number): number
+    function byte(this: void, str: string, i?: number): number
 }
 
-function nextId(cur_id: string){
+export function nextId(this: void, cur_id: string){
     let p4 = string.byte(cur_id, 1)
     let p3 = string.byte(cur_id, 2)
     let p2 = string.byte(cur_id, 3)
@@ -113,20 +113,15 @@ function nextId(cur_id: string){
     return string.char(p4) + string.char(p3) + string.char(p2) + string.char(p1)
 }
 
-type IdType = 'UNIT'|'HERO'|'ABIL'|'BUFF'|'ITEM'|'UPGR'
-let ID = new Map<IdType, string>([
-    ['UNIT', 'x###'],
-    ['HERO', 'HM##'],
-    ['ABIL', 'AM##'],
-    ['BUFF', 'BM##'],
-    ['ITEM', 'IM##'],
-    ['UPGR', 'RM##'],
+type IdType = 'UNIT'|'HERO'|'ABIL'|'BUFF'|'ITEM'|'UPGR'|'DECO'
 
-])
-
-export function getFreeId(type: IdType){
-    let CUR = ID.get(type) as string
-    CUR = nextId(CUR)
-    ID.set(type, CUR)
-    return byte2id(CUR)
+export function getFirstId(type: IdType){
+    if (type == 'UNIT'){return 'x###'}
+    if (type == 'HERO'){return 'HM##'}
+    if (type == 'ABIL'){return 'AM##'}
+    if (type == 'BUFF'){return 'BM##'}
+    if (type == 'ITEM'){return 'IM##'}
+    if (type == 'UPGR'){return 'RM##'}
+    if (type == 'DECO'){return 'D###'}
+    return Log.err('unknow id type.')
 }

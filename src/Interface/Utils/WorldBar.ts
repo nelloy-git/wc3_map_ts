@@ -10,14 +10,14 @@ export class WorldBar extends hEffect {
         super(WorldBar._import_bar.dst, 0, 0, 1000)
     }
 
-    get offsetX(){return this._x}
-    set offsetX(x: number){this._x = x; this._update()}
+    get offsetX(){return this._offset_x}
+    set offsetX(x: number){this._offset_x = x; this._update()}
 
-    get offsetY(){return this._y}
-    set offsetY(y: number){this._y = y; this._update()}
+    get offsetY(){return this._offset_y}
+    set offsetY(y: number){this._offset_y = y; this._update()}
 
-    get offsetZ(){return this._z}
-    set offsetZ(z: number){this._z = z; this._update()}
+    get offsetZ(){return this._offset_z}
+    set offsetZ(z: number){this._offset_z = z; this._update()}
 
     get target(){return this._target}
     set target(targ: hUnit | undefined){
@@ -38,7 +38,7 @@ export class WorldBar extends hEffect {
     get fullness(){return this._fullness}
     set fullness(val: number){
         let prev = this._fullness
-        this._fullness = val > 1 ? 1 : val < 0 ? 0 : val
+        this._fullness = val > 1 ? 1 : val < 0.001 ? 0.001 : val
 
         this.scaleX = this._fullness / prev
     }
@@ -53,19 +53,20 @@ export class WorldBar extends hEffect {
 
     private _update(){
         if (this._target){
-            this.x = this._target.x - 16 + this._x  // TODO default offset
-            this.y = this._target.y - 16 + this._y  // TODO default offset
-            this.z = this._target.z + this._z
+            this.x = this._target.x - 16 + this._offset_x  // TODO default offset
+            this.y = this._target.y - 16 + this._offset_y  // TODO default offset
+            MoveLocation(WorldBar._location, this.x, this.y)
+            this.z = this._target.z + GetLocationZ(WorldBar._location) + this._offset_z
         } else {
-            this.x = this.x + this._x
-            this.y = this.y + this._y
-            this.z = this.z + this._z
+            this.x = this.x + this._offset_x
+            this.y = this.y + this._offset_y
+            this.z = this.z + this._offset_z
         }
     }
     
-    private _x: number = 0
-    private _y: number = 0
-    private _z: number = 0
+    private _offset_x: number = 0
+    private _offset_y: number = 0
+    private _offset_z: number = 0
     private _target: hUnit | undefined
     private _fullness: number = 1
     private _timer: hTimerObj | undefined
@@ -76,4 +77,7 @@ export class WorldBar extends hEffect {
                                             'war3mapImported\\WorldBar\\generic_bar.mdx')
     private static _import_noglow = new Import(GetSrc() + '\\Interface\\Utils\\WorldBar\\heroglow_bw.dds',
                                                'war3mapImported\\WorldBar\\heroglow_bw.dds')
+    private static _location = IsGame() ? (()=>{
+        return Location(0, 0)
+    })() : <jlocation><unknown>undefined
 }

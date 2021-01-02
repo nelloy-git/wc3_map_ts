@@ -1,0 +1,1464 @@
+﻿STRING 1
+{
+Just another Warcraft III map
+}
+
+STRING 2
+{
+Any
+}
+
+STRING 3
+{
+Nondescript
+}
+
+STRING 4
+{
+Unknown
+}
+
+STRING 5
+{
+Player 1
+}
+
+STRING 6
+{
+Force 1
+}
+
+STRING 7
+// Doodads: D000 (_Archway01), Name (Name)
+{
+_Archway01
+}
+
+STRING 8
+// Doodads: D001 (_Archway02), Name (Name)
+{
+_Archway02
+}
+
+STRING 9
+// Doodads: D002 (_Coral06), Name (Name)
+{
+_Coral06
+}
+
+STRING 10
+// Doodads: D003 (_Archway03), Name (Name)
+{
+_Archway03
+}
+
+STRING 11
+// Doodads: D004 (_Archway04), Name (Name)
+{
+_Archway04
+}
+
+STRING 12
+// Doodads: D005 (_Bush01), Name (Name)
+{
+_Bush01
+}
+
+STRING 13
+// Doodads: D006 (_Bush02), Name (Name)
+{
+_Bush02
+}
+
+STRING 14
+// Doodads: D007 (_Bush03), Name (Name)
+{
+_Bush03
+}
+
+STRING 15
+// Doodads: D008 (_Bush04), Name (Name)
+{
+_Bush04
+}
+
+STRING 16
+// Doodads: D009 (_Cattail01), Name (Name)
+{
+_Cattail01
+}
+
+STRING 17
+// Doodads: D00A (_Cattail02), Name (Name)
+{
+_Cattail02
+}
+
+STRING 18
+// Doodads: D00B (_Coral01), Name (Name)
+{
+_Coral01
+}
+
+STRING 19
+// Doodads: D00C (_Coral02), Name (Name)
+{
+_Coral02
+}
+
+STRING 20
+// Doodads: D00D (_Coral03), Name (Name)
+{
+_Coral03
+}
+
+STRING 21
+// Doodads: D00E (_Coral04), Name (Name)
+{
+_Coral04
+}
+
+STRING 22
+// Doodads: D00F (_Coral05), Name (Name)
+{
+_Coral05
+}
+
+STRING 23
+// Doodads: D00G (_Coral09), Name (Name)
+{
+_Coral09
+}
+
+STRING 24
+// Doodads: D00H (_Coral07), Name (Name)
+{
+_Coral07
+}
+
+STRING 25
+// Doodads: D00I (_Coral08), Name (Name)
+{
+_Coral08
+}
+
+STRING 26
+// Doodads: D00J (_Coral10), Name (Name)
+{
+_Coral10
+}
+
+STRING 27
+// Doodads: D00K (_Fish03), Name (Name)
+{
+_Fish03
+}
+
+STRING 28
+// Doodads: D00L (_Coral11), Name (Name)
+{
+_Coral11
+}
+
+STRING 29
+// Doodads: D00M (_Coral12), Name (Name)
+{
+_Coral12
+}
+
+STRING 30
+// Doodads: D00N (_Coral13), Name (Name)
+{
+_Coral13
+}
+
+STRING 31
+// Doodads: D00O (_Fish01), Name (Name)
+{
+_Fish01
+}
+
+STRING 32
+// Doodads: D00P (_Fish02), Name (Name)
+{
+_Fish02
+}
+
+STRING 33
+// Doodads: D00Q (_GrainScorched01), Name (Name)
+{
+_GrainScorched01
+}
+
+STRING 34
+// Doodads: D00R (_Flower01), Name (Name)
+{
+_Flower01
+}
+
+STRING 35
+// Doodads: D00S (_Flower02), Name (Name)
+{
+_Flower02
+}
+
+STRING 36
+// Doodads: D00T (_Flower03), Name (Name)
+{
+_Flower03
+}
+
+STRING 37
+// Doodads: D00U (_Flower04), Name (Name)
+{
+_Flower04
+}
+
+STRING 38
+// Doodads: D00V (_Flower05), Name (Name)
+{
+_Flower05
+}
+
+STRING 39
+// Doodads: D00W (_HeadOnSpear03), Name (Name)
+{
+_HeadOnSpear03
+}
+
+STRING 40
+// Doodads: D00X (_GrainScorched02), Name (Name)
+{
+_GrainScorched02
+}
+
+STRING 41
+// Doodads: D00Y (_HeadOnSpear01), Name (Name)
+{
+_HeadOnSpear01
+}
+
+STRING 42
+// Doodads: D00Z (_HeadOnSpear02), Name (Name)
+{
+_HeadOnSpear02
+}
+
+STRING 43
+// Doodads: D010 (_Log04), Name (Name)
+{
+_Log04
+}
+
+STRING 44
+// Doodads: D011 (_Waterfall01), Name (Name)
+{
+_Waterfall01
+}
+
+STRING 45
+// Doodads: D012 (_Log01), Name (Name)
+{
+_Log01
+}
+
+STRING 46
+// Doodads: D013 (_Log02), Name (Name)
+{
+_Log02
+}
+
+STRING 47
+// Doodads: D014 (_Log03), Name (Name)
+{
+_Log03
+}
+
+STRING 48
+// Doodads: D015 (_Junk02), Name (Name)
+{
+_Junk02
+}
+
+STRING 49
+// Doodads: D016 (_Junk01), Name (Name)
+{
+_Junk01
+}
+
+STRING 50
+// Doodads: D017 (_Junk03), Name (Name)
+{
+_Junk03
+}
+
+STRING 51
+// Doodads: D018 (_Junk04), Name (Name)
+{
+_Junk04
+}
+
+STRING 52
+// Doodads: D019 (_PostHitching01), Name (Name)
+{
+_PostHitching01
+}
+
+STRING 53
+// Doodads: D01A (_Rushes01), Name (Name)
+{
+_Rushes01
+}
+
+STRING 54
+// Doodads: D01B (_Rushes02), Name (Name)
+{
+_Rushes02
+}
+
+STRING 55
+// Doodads: D01C (_Rushes04), Name (Name)
+{
+_Rushes04
+}
+
+STRING 56
+// Doodads: D01D (_Rushes03), Name (Name)
+{
+_Rushes03
+}
+
+STRING 57
+// Doodads: D01E (_Archway05), Name (Name)
+{
+_Archway05
+}
+
+STRING 58
+// Doodads: D01F (_Archway06), Name (Name)
+{
+_Archway06
+}
+
+STRING 59
+// Doodads: D01G (_Archway07), Name (Name)
+{
+_Archway07
+}
+
+STRING 60
+// Doodads: D01H (_RockPillar03), Name (Name)
+{
+_RockPillar03
+}
+
+STRING 61
+// Doodads: D01I (_RockPillar01), Name (Name)
+{
+_RockPillar01
+}
+
+STRING 62
+// Doodads: D01J (_RockPillar02), Name (Name)
+{
+_RockPillar02
+}
+
+STRING 160
+// Doodads: D049 (_RubbleLarge01), Name (Name)
+{
+_RubbleLarge01
+}
+
+STRING 161
+// Doodads: D04A (_RubbleLarge02), Name (Name)
+{
+_RubbleLarge02
+}
+
+STRING 162
+// Doodads: D04B (_RubbleLarge03), Name (Name)
+{
+_RubbleLarge03
+}
+
+STRING 163
+// Doodads: D04C (_RubbleLarge04), Name (Name)
+{
+_RubbleLarge04
+}
+
+STRING 164
+// Doodads: D04D (_RubbleSmall01), Name (Name)
+{
+_RubbleSmall01
+}
+
+STRING 165
+// Doodads: D04E (_RubbleSmall02), Name (Name)
+{
+_RubbleSmall02
+}
+
+STRING 166
+// Doodads: D04F (_RubbleSmall03), Name (Name)
+{
+_RubbleSmall03
+}
+
+STRING 167
+// Doodads: D04G (_RubbleSmall04), Name (Name)
+{
+_RubbleSmall04
+}
+
+STRING 168
+// Doodads: D04H (_Rubble01), Name (Name)
+{
+_Rubble01
+}
+
+STRING 169
+// Doodads: D04I (_Rubble02), Name (Name)
+{
+_Rubble02
+}
+
+STRING 170
+// Doodads: D04J (_Rubble03), Name (Name)
+{
+_Rubble03
+}
+
+STRING 171
+// Doodads: D04K (_Rubble04), Name (Name)
+{
+_Rubble04
+}
+
+STRING 172
+// Doodads: D04L (_Rubble05), Name (Name)
+{
+_Rubble05
+}
+
+STRING 173
+// Doodads: D04M (_Rubble06), Name (Name)
+{
+_Rubble06
+}
+
+STRING 174
+// Doodads: D04N (_Rubble07), Name (Name)
+{
+_Rubble07
+}
+
+STRING 175
+// Doodads: D04O (_Rubble08), Name (Name)
+{
+_Rubble08
+}
+
+STRING 176
+// Doodads: D04P (_Rubble09), Name (Name)
+{
+_Rubble09
+}
+
+STRING 177
+// Doodads: D04Q (_Rubble10), Name (Name)
+{
+_Rubble10
+}
+
+STRING 178
+// Doodads: D04R (_Rubble11), Name (Name)
+{
+_Rubble11
+}
+
+STRING 179
+// Doodads: D04S (_Rubble12), Name (Name)
+{
+_Rubble12
+}
+
+STRING 180
+// Doodads: D04T (_Rubble13), Name (Name)
+{
+_Rubble13
+}
+
+STRING 181
+// Doodads: D04U (_Rubble14), Name (Name)
+{
+_Rubble14
+}
+
+STRING 182
+// Doodads: D04V (_Rubble15), Name (Name)
+{
+_Rubble15
+}
+
+STRING 183
+// Doodads: D04W (_Rubble16), Name (Name)
+{
+_Rubble16
+}
+
+STRING 184
+// Doodads: D04X (_Rubble17), Name (Name)
+{
+_Rubble17
+}
+
+STRING 185
+// Doodads: D04Y (_Ruined01), Name (Name)
+{
+_Ruined01
+}
+
+STRING 186
+// Doodads: D04Z (_Ruined02), Name (Name)
+{
+_Ruined02
+}
+
+STRING 187
+// Doodads: D050 (_Ruined03), Name (Name)
+{
+_Ruined03
+}
+
+STRING 188
+// Doodads: D051 (_Ruined04), Name (Name)
+{
+_Ruined04
+}
+
+STRING 189
+// Doodads: D052 (_Ruined05), Name (Name)
+{
+_Ruined05
+}
+
+STRING 190
+// Doodads: D053 (_Ruined06), Name (Name)
+{
+_Ruined06
+}
+
+STRING 191
+// Doodads: D054 (_Ruined07), Name (Name)
+{
+_Ruined07
+}
+
+STRING 192
+// Doodads: D055 (_RuinsBrazier01), Name (Name)
+{
+_RuinsBrazier01
+}
+
+STRING 193
+// Doodads: D056 (_RuinsBrazier02), Name (Name)
+{
+_RuinsBrazier02
+}
+
+STRING 194
+// Doodads: D057 (_RuinsStatue01), Name (Name)
+{
+_RuinsStatue01
+}
+
+STRING 195
+// Doodads: D058 (_RuinsStatue02), Name (Name)
+{
+_RuinsStatue02
+}
+
+STRING 196
+// Doodads: D059 (_RuinsFirepot01), Name (Name)
+{
+_RuinsFirepot01
+}
+
+STRING 197
+// Doodads: D05A (_RuinsFountain01), Name (Name)
+{
+_RuinsFountain01
+}
+
+STRING 198
+// Doodads: D05B (_RuinsBookshell01), Name (Name)
+{
+_RuinsBookshell01
+}
+
+STRING 199
+// Doodads: D05C (_RuinsBookshell02), Name (Name)
+{
+_RuinsBookshell02
+}
+
+STRING 200
+// Doodads: D05D (_RuinsBookshell03), Name (Name)
+{
+_RuinsBookshell03
+}
+
+STRING 201
+// Doodads: D05E (_RuinsObelisk01), Name (Name)
+{
+_RuinsObelisk01
+}
+
+STRING 202
+// Doodads: D05F (_RuinsObelisk02), Name (Name)
+{
+_RuinsObelisk02
+}
+
+STRING 203
+// Doodads: D05G (_RuinsObelisk03), Name (Name)
+{
+_RuinsObelisk03
+}
+
+STRING 204
+// Doodads: D05H (_RuinsPillar01), Name (Name)
+{
+_RuinsPillar01
+}
+
+STRING 205
+// Doodads: D05I (_RuinsPillar02), Name (Name)
+{
+_RuinsPillar02
+}
+
+STRING 206
+// Doodads: D05J (_RuinsPillar03), Name (Name)
+{
+_RuinsPillar03
+}
+
+STRING 207
+// Doodads: D05K (_RuinsPillar04), Name (Name)
+{
+_RuinsPillar04
+}
+
+STRING 208
+// Doodads: D05L (_RuinsPillar05), Name (Name)
+{
+_RuinsPillar05
+}
+
+STRING 209
+// Doodads: D05M (_RuinsStatue03), Name (Name)
+{
+_RuinsStatue03
+}
+
+STRING 210
+// Doodads: D05N (_RuinsStatue04), Name (Name)
+{
+_RuinsStatue04
+}
+
+STRING 211
+// Doodads: D05O (_RuinsStone01), Name (Name)
+{
+_RuinsStone01
+}
+
+STRING 212
+// Doodads: D05P (_RuinsStone02), Name (Name)
+{
+_RuinsStone02
+}
+
+STRING 213
+// Doodads: D05Q (_RuinsStone03), Name (Name)
+{
+_RuinsStone03
+}
+
+STRING 214
+// Doodads: D05R (_RuinsStone04), Name (Name)
+{
+_RuinsStone04
+}
+
+STRING 215
+// Doodads: D05S (_Ruins01), Name (Name)
+{
+_Ruins01
+}
+
+STRING 216
+// Doodads: D05T (_Ruins02), Name (Name)
+{
+_Ruins02
+}
+
+STRING 217
+// Doodads: D05U (_Ruins03), Name (Name)
+{
+_Ruins03
+}
+
+STRING 218
+// Doodads: D05V (_Seaweed01), Name (Name)
+{
+_Seaweed01
+}
+
+STRING 219
+// Doodads: D05W (_Seaweed02), Name (Name)
+{
+_Seaweed02
+}
+
+STRING 220
+// Doodads: D05X (_Seaweed03), Name (Name)
+{
+_Seaweed03
+}
+
+STRING 221
+// Doodads: D05Y (_Seaweed04), Name (Name)
+{
+_Seaweed04
+}
+
+STRING 222
+// Doodads: D05Z (_Seaweed05), Name (Name)
+{
+_Seaweed05
+}
+
+STRING 223
+// Doodads: D060 (_Shell01), Name (Name)
+{
+_Shell01
+}
+
+STRING 224
+// Doodads: D061 (_Shell02), Name (Name)
+{
+_Shell02
+}
+
+STRING 225
+// Doodads: D062 (_Shell03), Name (Name)
+{
+_Shell03
+}
+
+STRING 226
+// Doodads: D063 (_Shell04), Name (Name)
+{
+_Shell04
+}
+
+STRING 227
+// Doodads: D064 (_Shell05), Name (Name)
+{
+_Shell05
+}
+
+STRING 228
+// Doodads: D065 (_Shell06), Name (Name)
+{
+_Shell06
+}
+
+STRING 229
+// Doodads: D066 (_Shell07), Name (Name)
+{
+_Shell07
+}
+
+STRING 230
+// Doodads: D067 (_Shell08), Name (Name)
+{
+_Shell08
+}
+
+STRING 231
+// Doodads: D068 (_Shell09), Name (Name)
+{
+_Shell09
+}
+
+STRING 232
+// Doodads: D069 (_Shell10), Name (Name)
+{
+_Shell10
+}
+
+STRING 233
+// Doodads: D06A (_Shrub01), Name (Name)
+{
+_Shrub01
+}
+
+STRING 234
+// Doodads: D06B (_Shrub02), Name (Name)
+{
+_Shrub02
+}
+
+STRING 235
+// Doodads: D06C (_Shrub03), Name (Name)
+{
+_Shrub03
+}
+
+STRING 236
+// Doodads: D06D (_Skull01), Name (Name)
+{
+_Skull01
+}
+
+STRING 237
+// Doodads: D06E (_Skull02), Name (Name)
+{
+_Skull02
+}
+
+STRING 238
+// Doodads: D06F (_SkullOnStick01), Name (Name)
+{
+_SkullOnStick01
+}
+
+STRING 239
+// Doodads: D06G (_SkullOnStick02), Name (Name)
+{
+_SkullOnStick02
+}
+
+STRING 240
+// Doodads: D06H (_SkullOnStick03), Name (Name)
+{
+_SkullOnStick03
+}
+
+STRING 241
+// Doodads: D06I (_SkullOnStick04), Name (Name)
+{
+_SkullOnStick04
+}
+
+STRING 242
+// Doodads: D06J (_SkullOnStick05), Name (Name)
+{
+_SkullOnStick05
+}
+
+STRING 243
+// Doodads: D06K (_SkullOnStick06), Name (Name)
+{
+_SkullOnStick06
+}
+
+STRING 244
+// Doodads: D06L (_Statue01), Name (Name)
+{
+_Statue01
+}
+
+STRING 245
+// Doodads: D06M (_Statue02), Name (Name)
+{
+_Statue02
+}
+
+STRING 246
+// Doodads: D06N (_Statue03), Name (Name)
+{
+_Statue03
+}
+
+STRING 247
+// Doodads: D06O (_Statue04), Name (Name)
+{
+_Statue04
+}
+
+STRING 248
+// Doodads: D06P (_Statue05), Name (Name)
+{
+_Statue05
+}
+
+STRING 249
+// Doodads: D06Q (_Statue06), Name (Name)
+{
+_Statue06
+}
+
+STRING 250
+// Doodads: D06R (_Statue07), Name (Name)
+{
+_Statue07
+}
+
+STRING 251
+// Doodads: D06S (_Statue08), Name (Name)
+{
+_Statue08
+}
+
+STRING 252
+// Doodads: D06T (_Statue09), Name (Name)
+{
+_Statue09
+}
+
+STRING 253
+// Doodads: D06U (_RuinsTree01), Name (Name)
+{
+_RuinsTree01
+}
+
+STRING 254
+// Doodads: D06V (_RuinsTree02), Name (Name)
+{
+_RuinsTree02
+}
+
+STRING 255
+// Doodads: D06W (_RuinsTree03), Name (Name)
+{
+_RuinsTree03
+}
+
+STRING 256
+// Doodads: D06X (_RuinsTree04), Name (Name)
+{
+_RuinsTree04
+}
+
+STRING 257
+// Doodads: D06Y (_RuinsTree05), Name (Name)
+{
+_RuinsTree05
+}
+
+STRING 258
+// Doodads: D06Z (_RuinsTree06), Name (Name)
+{
+_RuinsTree06
+}
+
+STRING 259
+// Doodads: D070 (_RuinsTree07), Name (Name)
+{
+_RuinsTree07
+}
+
+STRING 260
+// Doodads: D071 (_RuinsTree08), Name (Name)
+{
+_RuinsTree08
+}
+
+STRING 261
+// Doodads: D072 (_RuinsTree09), Name (Name)
+{
+_RuinsTree09
+}
+
+STRING 262
+// Doodads: D073 (_RuinsTree10), Name (Name)
+{
+_RuinsTree10
+}
+
+STRING 263
+// Doodads: D074 (_RuinsTree11), Name (Name)
+{
+_RuinsTree11
+}
+
+STRING 264
+// Doodads: D075 (_Torch01), Name (Name)
+{
+_Torch01
+}
+
+STRING 265
+// Doodads: D076 (_Torch02), Name (Name)
+{
+_Torch02
+}
+
+STRING 266
+// Doodads: D077 (_Torch03), Name (Name)
+{
+_Torch03
+}
+
+STRING 267
+// Doodads: D078 (_Torch04), Name (Name)
+{
+_Torch04
+}
+
+STRING 268
+// Doodads: D079 (_Torch05), Name (Name)
+{
+_Torch05
+}
+
+STRING 269
+// Doodads: D07A (_Torch06), Name (Name)
+{
+_Torch06
+}
+
+STRING 270
+// Doodads: D07B (_Torch07), Name (Name)
+{
+_Torch07
+}
+
+STRING 271
+// Doodads: D07C (_Torch08), Name (Name)
+{
+_Torch08
+}
+
+STRING 272
+// Doodads: D07D (_Totem01), Name (Name)
+{
+_Totem01
+}
+
+STRING 273
+// Doodads: D07E (_Totem02), Name (Name)
+{
+_Totem02
+}
+
+STRING 274
+// Doodads: D07F (_Totem03), Name (Name)
+{
+_Totem03
+}
+
+STRING 275
+// Doodads: D07G (_Totem04), Name (Name)
+{
+_Totem04
+}
+
+STRING 276
+// Doodads: D07H (_Totem05), Name (Name)
+{
+_Totem05
+}
+
+STRING 277
+// Doodads: D07I (_Totem06), Name (Name)
+{
+_Totem06
+}
+
+STRING 278
+// Doodads: D07J (_Trash01), Name (Name)
+{
+_Trash01
+}
+
+STRING 279
+// Doodads: D07K (_Vine01), Name (Name)
+{
+_Vine01
+}
+
+STRING 280
+// Doodads: D07L (_Vine02), Name (Name)
+{
+_Vine02
+}
+
+STRING 281
+// Doodads: D07M (_VinyPlant01), Name (Name)
+{
+_VinyPlant01
+}
+
+STRING 282
+// Doodads: D07N (_VinyPlant02), Name (Name)
+{
+_VinyPlant02
+}
+
+STRING 283
+// Doodads: D07O (_VinyPlant03), Name (Name)
+{
+_VinyPlant03
+}
+
+STRING 284
+// Doodads: D07P (_VinyPlant04), Name (Name)
+{
+_VinyPlant04
+}
+
+STRING 285
+// Doodads: D07Q (_Fountain01), Name (Name)
+{
+_Fountain01
+}
+
+STRING 286
+// Doodads: D07R (_Trash02), Name (Name)
+{
+_Trash02
+}
+
+STRING 287
+// Doodads: D07S (_Waterfall02), Name (Name)
+{
+_Waterfall02
+}
+
+STRING 288
+// Doodads: D07T (_Trash03), Name (Name)
+{
+_Trash03
+}
+
+STRING 289
+// Doodads: D07U (_RuinsWall01), Name (Name)
+{
+_RuinsWall01
+}
+
+STRING 290
+// Doodads: D07V (_RuinsWall02), Name (Name)
+{
+_RuinsWall02
+}
+
+STRING 291
+// Doodads: D07W (_RuinsWall03), Name (Name)
+{
+_RuinsWall03
+}
+
+STRING 292
+// Doodads: D07X (_RuinsWall04), Name (Name)
+{
+_RuinsWall04
+}
+
+STRING 293
+// Doodads: D07Y (_RuinsWall05), Name (Name)
+{
+_RuinsWall05
+}
+
+STRING 294
+// Doodads: D07Z (_RuinsWall06), Name (Name)
+{
+_RuinsWall06
+}
+
+STRING 295
+// Doodads: D080 (_RuinsWall07), Name (Name)
+{
+_RuinsWall07
+}
+
+STRING 296
+// Doodads: D081 (_RuinsWall08), Name (Name)
+{
+_RuinsWall08
+}
+
+STRING 297
+// Doodads: D082 (_RuinsWall09), Name (Name)
+{
+_RuinsWall09
+}
+
+STRING 298
+// Doodads: D083 (_RuinsWall10), Name (Name)
+{
+_RuinsWall10
+}
+
+STRING 299
+// Doodads: D084 (_RuinsWall11), Name (Name)
+{
+_RuinsWall11
+}
+
+STRING 300
+// Doodads: D085 (_RuinsWall12), Name (Name)
+{
+_RuinsWall12
+}
+
+STRING 301
+// Doodads: D086 (_RuinsWall13), Name (Name)
+{
+_RuinsWall13
+}
+
+STRING 302
+// Doodads: D087 (_RuinsWall14), Name (Name)
+{
+_RuinsWall14
+}
+
+STRING 303
+// Doodads: D088 (_RuinsWall15), Name (Name)
+{
+_RuinsWall15
+}
+
+STRING 304
+// Doodads: D089 (_RuinsWall16), Name (Name)
+{
+_RuinsWall16
+}
+
+STRING 305
+// Doodads: D08A (_RuinsWall17), Name (Name)
+{
+_RuinsWall17
+}
+
+STRING 306
+// Doodads: D08B (_RuinsWall18), Name (Name)
+{
+_RuinsWall18
+}
+
+STRING 307
+// Doodads: D08C (_RuinsWall19), Name (Name)
+{
+_RuinsWall19
+}
+
+STRING 308
+// Doodads: D08D (_RuinsWall20), Name (Name)
+{
+_RuinsWall20
+}
+
+STRING 309
+// Doodads: D08E (_RuinsWall21), Name (Name)
+{
+_RuinsWall21
+}
+
+STRING 310
+// Doodads: D08F (_RuinsWall22), Name (Name)
+{
+_RuinsWall22
+}
+
+STRING 311
+// Doodads: D08G (_RuinsWall23), Name (Name)
+{
+_RuinsWall23
+}
+
+STRING 312
+// Doodads: D08H (_RuinsWall24), Name (Name)
+{
+_RuinsWall24
+}
+
+STRING 313
+// Doodads: D08I (_RuinsStairs01), Name (Name)
+{
+_RuinsStairs01
+}
+
+STRING 314
+// Doodads: D08J (_RuinsStairs02), Name (Name)
+{
+_RuinsStairs02
+}
+
+STRING 315
+// Doodads: D08K (_RuinsStairs03), Name (Name)
+{
+_RuinsStairs03
+}
+
+STRING 316
+// Doodads: D08L (_RuinsStairs04), Name (Name)
+{
+_RuinsStairs04
+}
+
+STRING 317
+// Doodads: D08M (_Statue10), Name (Name)
+{
+_Statue10
+}
+
+STRING 318
+// Doodads: D08N (_Statue11), Name (Name)
+{
+_Statue11
+}
+
+STRING 319
+// Doodads: D08O (_Crates01), Name (Name)
+{
+_Crates01
+}
+
+STRING 320
+// Doodads: D08P (_Crates02), Name (Name)
+{
+_Crates02
+}
+
+STRING 321
+// Doodads: D01P (_RuinRock01), Name (Name)
+{
+_RuinRock01
+}
+
+STRING 322
+// Doodads: D020 (_RuinRock02), Name (Name)
+{
+_RuinRock02
+}
+
+STRING 323
+// Doodads: D02B (_RuinRock03), Name (Name)
+{
+_RuinRock03
+}
+
+STRING 324
+// Doodads: D02K (_RuinRock04), Name (Name)
+{
+_RuinRock04
+}
+
+STRING 325
+// Doodads: D02U (_RuinRock05), Name (Name)
+{
+_RuinRock05
+}
+
+STRING 326
+// Doodads: D033 (_RuinRock06), Name (Name)
+{
+_RuinRock06
+}
+
+STRING 327
+// Doodads: D03E (_RuinRock07), Name (Name)
+{
+_RuinRock07
+}
+
+STRING 328
+// Doodads: D03O (_RuinRock08), Name (Name)
+{
+_RuinRock08
+}
+
+STRING 329
+// Doodads: D03T (_RuinRock09), Name (Name)
+{
+_RuinRock09
+}
+
+STRING 330
+// Doodads: D046 (_RuinRock10), Name (Name)
+{
+_RuinRock10
+}
+
+STRING 331
+// Doodads: D01O (_FelwoodRock07), Name (Name)
+{
+_FelwoodRock07
+}
+
+STRING 332
+// Doodads: D08Q (_FelwoodRock10), Name (Name)
+{
+_FelwoodRock10
+}
+
+STRING 333
+// Doodads: D08R (_FelwoodRock01), Name (Name)
+{
+_FelwoodRock01
+}
+
+STRING 334
+// Doodads: D08S (_FelwoodRock03), Name (Name)
+{
+_FelwoodRock03
+}
+
+STRING 335
+// Doodads: D08T (_FelwoodRock04), Name (Name)
+{
+_FelwoodRock04
+}
+
+STRING 336
+// Doodads: D08U (_FelwoodRock05), Name (Name)
+{
+_FelwoodRock05
+}
+
+STRING 337
+// Doodads: D08V (_FelwoodRock02), Name (Name)
+{
+_FelwoodRock02
+}
+
+STRING 338
+// Doodads: D08W (_FelwoodRock08), Name (Name)
+{
+_FelwoodRock08
+}
+
+STRING 339
+// Doodads: D08X (_FelwoodRock09), Name (Name)
+{
+_FelwoodRock09
+}
+
+STRING 340
+// Doodads: D08Y (_FelwoodRock06), Name (Name)
+{
+_FelwoodRock06
+}
+
+STRING 341
+// Doodads: D01K (_MineSupport01), Name (Name)
+{
+_MineSupport01
+}
+
+STRING 342
+// Doodads: D01L (_MineSupport02), Name (Name)
+{
+_MineSupport02
+}
+
