@@ -1,6 +1,6 @@
-import { TimerObj } from "./TimerObj";
+import { hTimerObj } from "./TimerObj";
 
-export class TimerList {
+export class hTimerList {
     constructor(period: number, offset?: number){
         if (!offset){offset = period * math.random()}
         this._period = period
@@ -18,16 +18,16 @@ export class TimerList {
     get period(){return this._period}
 
     newTimerObj(){
-        let obj = new TimerObj(this)
+        let obj = new hTimerObj(this)
         this._objects.push(obj)
         return obj
     }
 
-    addTimerObj(obj: TimerObj){
+    addTimerObj(obj: hTimerObj){
         this._objects.push(obj)
     }
 
-    removeTimerObj(obj: TimerObj){
+    removeTimerObj(obj: hTimerObj){
         let found = false
         for (let i = 0; i < this._objects.length; i++){
             if (obj == this._objects[i]){
@@ -43,10 +43,10 @@ export class TimerList {
         this._cur_time += this._period
 
         for (let cur of this._objects){
-            if (cur.timeLeft < 0){return}
+            if (cur.left < 0){continue}
             if (cur.pause){
-                cur.timeLeft += this._period
-                return
+                cur.left += this._period
+                continue
             }
 
             cur.period(false)
@@ -56,5 +56,5 @@ export class TimerList {
     private _cur_time = 0
     private _period: number;
     private _timer = IsGame() ? CreateTimer() : undefined
-    private _objects: TimerObj[] = []
+    private _objects: hTimerObj[] = []
 }

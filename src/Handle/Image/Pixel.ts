@@ -1,9 +1,9 @@
 import { Import } from '../../Utils'
-import { Image } from "../Image";
+import { hImage } from "../Image";
 
-export class Pixel extends Image {
+export class hImagePixel extends hImage {
     constructor(size: number){
-        super(Pixel._import_file.dst, size, size, size)
+        super(hImagePixel._import_file.dst, size, size, size)
     }
 
     private static _import_file = new Import(GetSrc() + '\\Handle\\Image\\Pixel\\Pixel.dds',

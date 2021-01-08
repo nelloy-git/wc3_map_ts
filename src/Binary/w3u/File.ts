@@ -3,17 +3,17 @@ import { File } from "../File";
 import { byte2id, getFirstId, int2byte, nextId } from "../Utils";
 import { UnitChange } from "./Change";
 import { FieldUnitBool, FieldUnitInt, FieldUnitList, FieldUnitReal, FieldUnitString, FieldUnitUnreal } from "./Field";
-import { Unit } from "./Unit";
+import { tUnit } from "./Unit";
 
 export class w3uFile extends File {
 
     get version(){return this._version}
-    get data(): ReadonlyArray<Unit>{
+    get data(): ReadonlyArray<tUnit>{
         return this._data
     }
 
     add(base_id: number){
-        let u = new Unit(base_id, this._getNextId(), [])
+        let u = new tUnit(base_id, this._getNextId(), [])
         this._data.push(u)
         return u
     }
@@ -89,7 +89,7 @@ export class w3uFile extends File {
                 this._file_pos += 4
             }
 
-            let unit = new Unit(base, id, changes)
+            let unit = new tUnit(base, id, changes)
             this._data.push(unit)
         }
     }
@@ -137,7 +137,7 @@ export class w3uFile extends File {
     private _file_pos: number = 0
     
     private _version: number = 0
-    private _data: Unit[] = []
+    private _data: tUnit[] = []
 
     private _last_id = getFirstId('UNIT')
     private _getNextId(){

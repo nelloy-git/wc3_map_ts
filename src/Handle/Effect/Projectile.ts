@@ -1,14 +1,14 @@
 import { Action, ActionList, Log } from "../../Utils";
-import { Effect } from '../Effect';
-import { Timer } from '../Timer'
+import { hEffect } from '../Effect';
+import { hTimer } from '../Timer'
 
 type ProjectileEvent = 'LOOP'|'FINISH'
 
-export class Projectile extends Effect {
+export class hProjectile extends hEffect {
     constructor(model: string, x: number, y:number, z: number){
         super(model, x, y, z)
-        this._timer_action = Projectile._timer?.addAction(
-            (timer: Timer): void => {this.loop()}
+        this._timer_action = hProjectile._timer?.addAction(
+            (timer: hTimer): void => {this.loop()}
         )
     }
 
@@ -22,8 +22,8 @@ export class Projectile extends Effect {
         this.yaw = math.atan2(dy, dx)
 
         let r = math.sqrt(dx * dx + dy * dy)
-        this._vel_x = Projectile._update_period * this._vel * dx / r
-        this._vel_y = Projectile._update_period * this._vel * dy / r
+        this._vel_x = hProjectile._update_period * this._vel * dx / r
+        this._vel_y = hProjectile._update_period * this._vel * dy / r
     }
 
     public get velocity(){return this._vel}
@@ -42,11 +42,11 @@ export class Projectile extends Effect {
     }
 
     public addAction(event: ProjectileEvent,
-                     callback: (this: void, proj: Projectile, event: ProjectileEvent)=>void){
+                     callback: (this: void, proj: hProjectile, event: ProjectileEvent)=>void){
         return this._actions.get(event)?.add(callback)
     }
 
-    public removeAction(action: Action<[Projectile, ProjectileEvent], void>){
+    public removeAction(action: Action<[hProjectile, ProjectileEvent], void>){
         let found = false
         for (let [event, list] of this._actions){
             found = list.remove(action)
@@ -57,7 +57,7 @@ export class Projectile extends Effect {
 
     destroy(){
         super.destroy()
-        Projectile._timer?.removeAction(this._timer_action)
+        hProjectile._timer?.removeAction(this._timer_action)
     }
 
     private loop(){
@@ -85,17 +85,17 @@ export class Projectile extends Effect {
     private _vel_x = 0
     private _vel_y = 0
     private _timer_action;
-    private _actions = new Map<ProjectileEvent, ActionList<[Projectile, ProjectileEvent]>>([
+    private _actions = new Map<ProjectileEvent, ActionList<[hProjectile, ProjectileEvent]>>([
         ['LOOP', new ActionList()],
         ['FINISH', new ActionList()]
     ])
     
     private static createTimer(period: number){
-        let timer = new Timer()
+        let timer = new hTimer()
         timer.start(period, true)
         return timer
     }
 
     private static _update_period = 0.05
-    private static _timer = IsGame() ? Projectile.createTimer(Projectile._update_period) : undefined
+    private static _timer = IsGame() ? hProjectile.createTimer(hProjectile._update_period) : undefined
 }

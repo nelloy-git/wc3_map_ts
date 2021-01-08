@@ -16,32 +16,29 @@ if (!IsGame()){
 }
 
 import * as Abil from './AbilityExt'
-import * as Buff from './Buff'
-import * as Param from './Parameter'
+import * as Map from './Binary'
 import * as Utils from "./Utils"
 
-import { Map, FieldUnit } from './Binary'
-import { hEffect, hTimer, hUnit } from './Handle'
+import { TestType as TestAbil } from './AbilityExt/TestType'
+
+import { UnitExt } from './UnitExt/UnitExt'
+
 import { id2int} from './Utils'
 import { Init } from './Interface/Init'
 import { LifeForceShield } from './Abilities/LifeForceShield'
 import { TerrainPreset } from './Binary/Cached/Terrain'
-import { w3dFileOld } from './Binary/w3d/File2'
 import { id2byte } from './Binary/Utils'
+import { Ogre } from './UnitExt/Ogre/Ogre'
+import { Ability } from './AbilityExt'
 
-let w3u = Map.w3u
-let bin_unit = w3u.add(id2int('hfoo'))
-bin_unit.setInt(FieldUnit.HitPointsMaximumBase, 100)
-bin_unit.setInt(FieldUnit.ManaMaximum, 100)
+let w3u = Map.Map.w3u
+let unit_type = w3u.add(id2int('hfoo'))
+unit_type.setInt(Map.FieldUnitList.HitPointsMaximumBase, 100)
+unit_type.setInt(Map.FieldUnitList.ManaMaximum, 100)
 
-let pref = 'TerrainPresets/MurlocLagoonHD.w3x/war3map.'
-let murloc_lagoon = new TerrainPreset(pref + 'w3e', pref + 'w3d', pref + 'doo')
-murloc_lagoon.enable(true)
-
-// let w3d = new w3dFile()
-// w3d.open('TerrainPresets/MurlocLagoonHD.w3x/war3map.w3d')
-// w3d.parse()
-
+// let pref = 'TerrainPresets/MurlocLagoonHD.w3x/war3map.'
+// let murloc_lagoon = new TerrainPreset(pref + 'w3e', pref + 'w3d', pref + 'doo')
+// murloc_lagoon.enable(true)
 
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
@@ -53,40 +50,24 @@ if (IsGame()){
     let f = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(f)
 
-    let u = new hUnit(bin_unit.id, 0, 0, Player(0))
-    let params = new Param.Unit(u)
-    params.set('LIFE', 'BASE', 1000)
-    params.set('PATK', 'BASE', 10)
-    params.set('PDEF', 'BASE', 5)
-    params.set('RECO', 'BASE', 5)
+    let u1 = new UnitExt(unit_type, 0, 0, Player(0))
+    u1.params.set('LIFE', 'BASE', 1000)
+    u1.params.set('PATK', 'BASE', 10)
+    u1.params.set('PDEF', 'BASE', 5)
+    u1.params.set('RECO', 'BASE', 5)
 
-    let abils = new Abil.Container(u)
-    abils.set(2, LifeForceShield)
+    u1.abils.set(0, TestAbil)
+    u1.abils.set(1, LifeForceShield)
 
-    let buffs = new Buff.Container(u)
+    let u2 = new UnitExt(unit_type, 0, 0, Player(0))
+    u2.params.set('LIFE', 'BASE', 500)
+    u2.params.set('PATK', 'BASE', 10)
+    u2.params.set('PDEF', 'BASE', 5)
+    u2.params.set('RECO', 'BASE', 5)
 
-    let u2 = new hUnit(bin_unit.id, 0, 0, Player(0))
-    let params2 = new Param.Unit(u2)
-    params2.set('LIFE', 'BASE', 600)
-    params2.set('PATK', 'BASE', 10)
-    params2.set('PDEF', 'BASE', 5)
-    params2.set('RECO', 'BASE', 1)
-    
-    let buffs2 = new Buff.Container(u2)
+    u2.abils.set(1, TestAbil)
+    u2.abils.set(2, LifeForceShield)
+    // u2.abils.set(1, LifeForceShield)
 
-    
-    // TerrainDeformCrater(0, 0, 128, -400, 1, true)
-
-    let t = new hTimer()
-    t.addAction(() => {
-        let loc = Location(0, 0)
-        MoveLocation(loc, 0, 0)
-
-        let eff = new hEffect('Doodads\\Outland\\Props\\Altar\\Altar', 0, 0, GetLocationZ(loc))
-        eff.yaw = math.pi / 4
-        eff.scaleX = 2
-        eff.scaleY = 4
-        eff.scaleZ = 0.1
-    })
-    t.start(0.1, false)
+    // let u3 = new Ogre(0, 0, Player(0))
 }

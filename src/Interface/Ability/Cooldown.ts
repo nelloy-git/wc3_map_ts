@@ -25,26 +25,23 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
     }
 
     get ability(){return this._abil}
-    set ability(abil: Abil.IFace | undefined){
-        if (this._charges){
-            this._charges?.removeAction(this._changed_action)
-            this._charges?.removeAction(this._cooldown_action)
+    set ability(abil: Abil.Ability<any> | undefined){
+        if (this._abil){
+            this._abil.Data.Charges.removeAction(this._changed_action)
+            this._abil.Data.Charges.removeAction(this._cooldown_action)
         }
 
         this._abil = abil
-        this._charges = abil ? abil.charges : undefined
-        if (!this._charges){this.visible = false; return}
+        if (!abil){return}
 
-        this.visible = true
-        this._changed_action = this._charges.addAction('COUNT_CHANGED',
-                                                        (charges: Abil.Charges): void => 
-                                                            {this._chargesChanged(charges)})
-        this._chargesChanged(this._charges)
+        this._changed_action = abil.Data.Charges.addAction('CHARGE_CHANGED',
+                                                            charges => {this._chargesChanged(charges)})
 
-        this._cooldown_action = this._charges.addAction('COOLDOWN_LOOP',
-                                                        (charges: Abil.Charges): void =>
-                                                            {this._cooldownLoop(charges)})
-        this._cooldownLoop(this._charges)
+        this._cooldown_action = abil.Data.Charges.addAction('CHARGE_CD',
+                                                            charges => {this._cooldownLoop(charges)})
+
+        this._chargesChanged(abil.Data.Charges)
+        this._cooldownLoop(abil.Data.Charges)
     }
 
     private _chargesChanged(charges: Abil.Charges){
@@ -55,7 +52,8 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
     }
 
     private _cooldownLoop(charges: Abil.Charges){
-        let left = charges.timeLeft
+        let left = charges.left
+        // print(left)
         if (left <= 0){this._text.text = ''; return}
 
         let full = charges.cooldown
@@ -65,12 +63,11 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
         this._text.text = float2str(left, 1)
     }
 
-    private _size: [number, number] = this._get_size();
+    private _size: [number, number] = this._get_size()
 
-    private _cd_part: number = 0;
-    private _abil: Abil.IFace | undefined;
-    private _charges: Abil.Charges | undefined;
-    private _changed_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined;
+    private _cd_part: number = 0
+    private _abil: Abil.Ability<any> | undefined
+    private _changed_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
     private _cooldown_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
 
     private _text = new Frame.SimpleText()

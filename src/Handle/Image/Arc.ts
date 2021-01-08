@@ -1,7 +1,7 @@
 import { Color, Log } from '../../Utils'
-import { Pixel } from "./Pixel";
+import { hImagePixel } from "./Pixel";
 
-export class Arc {
+export class hImageArc {
     constructor(max_pixels: number,
                 pixel_size?: number,
                 pixel_step?: number){
@@ -12,7 +12,7 @@ export class Arc {
         this._pixels = []
         
         for (let i = 0; i < max_pixels; i++){
-            let pixel = new Pixel(this._size)
+            let pixel = new hImagePixel(this._size)
             this._pixels.push(pixel)
             pixel.renderAlways = true
             pixel.visible = false
@@ -71,7 +71,7 @@ export class Arc {
 
         this._in_use = math.floor(arc_length / this._step) + 1
         if (this._in_use > this._pixels.length){
-            Log.wrn(Arc.toString() + 
+            Log.wrn(hImageArc.toString() + 
                     ': is not enought pixels to fill arc.')
         }
 
@@ -101,7 +101,7 @@ export class Arc {
     private _size: number;
     private _step: number;
     private _in_use: number;
-    private _pixels: Pixel[];
+    private _pixels: hImagePixel[];
 
     private _color = new Color(1, 1, 1, 1)
     private _render_always = true

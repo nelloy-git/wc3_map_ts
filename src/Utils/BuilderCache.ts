@@ -44,6 +44,17 @@ export class BuilderCache <K extends BuilderData, V extends BuilderData> {
         this._vals[index] = val
     }
 
+    static hash(str: string){
+        let hash = 0
+        let char
+        for (let i = 0; i < str.length; i++) {
+          char = str.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
     readonly id: number
 
     private _keys: K[] = []

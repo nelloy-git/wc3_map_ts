@@ -2,6 +2,7 @@ import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
 
 import { hUnit } from "../../Handle";
+import { UnitExt } from "../../UnitExt/UnitExt";
 import { Action } from "../../Utils";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
@@ -28,8 +29,24 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
             }
         }
         this.size = this.size
+    }
 
-        this.setKey(2, 0, OSKEY_E)
+    get unit(){return this._unit}
+    set unit(u: UnitExt | undefined){
+        if (this._unit){
+            this._unit.abils.removeAction(this._abils_changed)
+        }
+
+        this._unit = u
+        if (!u){return}
+
+        let a = u.abils
+        a.addAction('LIST_CHANGED', a => {this._update(a)})
+        this._update(a)
+    }
+
+    setKey(x: number, y: number, key: joskeytype | undefined){
+        this._buttons[y][x].key = key
     }
 
     protected _set_size(size: [number, number]){
@@ -49,25 +66,12 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
         }
     }
 
-    get unit(){return this._unit}
-    set unit(u: hUnit | undefined){
-        if (this._abils){
-            this._abils.removeAction(this._abils_changed)
-        }
-
-        this._abils = Abil.Container.get(u)
-        if (this._abils){
-            this._abils_changed = this._abils.addAction(()=>{this._update()})    
-        }
-        this._update()
+    protected _set_visible(flag:boolean){
+        super._set_visible(flag)
     }
 
-    setKey(x: number, y: number, key: joskeytype | undefined){
-        this._buttons[y][x].key = key
-    }
-
-    protected _update(){
-        let list = this._abils ? this._abils.getList(this.rows * this.cols) : []
+    protected _update(abils: Abil.Container){
+        let list = abils.list
 
         let i = 0
         for (let y = 0; y < this.rows; y++){
@@ -81,8 +85,7 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     readonly cols: number
     readonly rows: number
 
-    private _unit: hUnit | undefined
-    private _abils: Abil.Container | undefined
+    private _unit: UnitExt | undefined
     private _abils_changed: Action<[Abil.Container], void> | undefined
 
     private _backgrounds: Frame.Backdrop[][] = [];

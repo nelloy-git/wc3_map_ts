@@ -4,7 +4,7 @@ import { id2byte, int2byte } from "../Utils";
 import { UnitChange } from "./Change";
 import { Object } from "../Object";
 
-export class Unit extends Object {
+export class tUnit extends Object {
     constructor(base_id: number, id: number, changes: UnitChange<any>[]){
         super(base_id, id, changes)
     }

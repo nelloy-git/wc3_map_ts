@@ -1,120 +1,76 @@
 import { Mouse, Selection } from '../../../Input'
-import { hImageArc, hTimer, hUnit } from '../../../Handle'
+import { hTimer, hUnit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
-import { TypeTargeting } from '../Targeting'
+import { TTargeting } from '../Targeting'
+import { IFace } from '../../Ability/IFace'
 
-export class TypeTargetingFriend extends TypeTargeting<[hUnit]> {
-    static readonly instance = new TypeTargetingFriend()
+export let TTargetingFriend = new TTargeting<hUnit[]>(getTarget)
 
-    protected _start(){
-        TypeTargetingFriend.enable = true
-    }
+let cur_abil: IFace<[hUnit]> | undefined
+let previous: hUnit | undefined
+let highlight: Color = new Color(0.3, 1, 0.3, 1)
+let prev_color: Color = new Color(1, 1, 1, 1)
 
-    protected _cancel(){
-        TypeTargetingFriend.enable = false
-    }
+if (IsGame()){
+    let timer = new hTimer()
+    timer.addAction(mouseTrack)
+    timer.start(0.02, true)
+}
 
-    protected _finish(target?: [hUnit]){
-        TypeTargetingFriend.enable = false
+TTargetingFriend.addAction('START', (inst, pl, abil) => {startDrawing(pl, abil)})
+TTargetingFriend.addAction('STOP', (inst, pl, abil) => {stopDrawing(pl, abil)})
 
-        let abil = TypeTargeting.getActiveAbility(GetLocalPlayer())
-        if (!abil){
-            return Log.err(TypeTargetingFriend.name + 
-                           ': to finish targeting start it first.', 2)
-        }
-        
-        if (!target){
-            let hovered = hUnit.getMouseFocus()
-            if (!hovered || hovered.isEnemy(abil.owner)){
-                this.cancel(GetLocalPlayer())
-                return
-            }
-            target = [hovered]
-        }
+function startDrawing(pl: jplayer, abil: IFace<[hUnit]>){
+    if (pl != GetLocalPlayer()){return}
+    
+    cur_abil = abil
+    Selection.lock(true)
+}
 
-        return target
-    }
+function stopDrawing(pl: jplayer, abil: IFace<[hUnit]>){
+    if (pl != GetLocalPlayer()){return}
 
-    private static get enable(){return TypeTargetingFriend._enabled}
-    private static set enable(flag: boolean){
-        TypeTargetingFriend._enabled = flag
-        Selection.lock(flag)
-        if (TypeTargetingFriend._circle){TypeTargetingFriend._circle.visible = flag}
-        
-        // Restore color if color has not been changed.
-        if (!flag &&
-            TypeTargetingFriend._previous &&
-            TypeTargetingFriend._highlight.compare(TypeTargetingFriend._previous.color)){
+    cur_abil = undefined
+    Selection.lock(false)
             
-            TypeTargetingFriend._previous.color = TypeTargetingFriend._prev_color
-        }
+    // Restore color if color has not been changed.
+    if (previous && highlight.compare(previous.color)){
+        previous.color = prev_color
+    }
+}
+
+function mouseTrack(this: void){
+    if (!cur_abil){return}
+
+    let hovered = hUnit.getMouseFocus()
+    let owner = cur_abil.Data.owner
+
+    // Restore color if highlight color has not been changed.
+    if (previous && previous != hovered &&
+        highlight.compare(previous.color)){
+        
+        previous.color = prev_color
     }
 
-    private static _enabled = false
-    private static _circle = IsGame() ? new hImageArc(72) : undefined
-
-    // Mouse track
-    private static _mouseTrack(this: void){
-        if (!TypeTargetingFriend._enabled){return}
-
-        let hovered = hUnit.getMouseFocus()
-        let owner = TypeTargeting.getActiveAbility(GetLocalPlayer())?.owner
-
-        // Restore color if highlight color has not been changed.
-        if (TypeTargetingFriend._previous &&
-            TypeTargetingFriend._previous != hovered &&
-            TypeTargetingFriend._highlight.compare(TypeTargetingFriend._previous.color)){
-            
-            TypeTargetingFriend._previous.color = TypeTargetingFriend._prev_color
+    if (hovered && owner?.isAlly(hovered)){
+        let color = hovered.color
+        previous = hovered
+        if (!color.compare(highlight)){
+            prev_color = color
+            hovered.color = highlight
         }
+    } else {
+        previous = undefined
+        prev_color = new Color(1, 1, 1, 1)
+    }
+}
 
-        let x: number, y: number
-        if (hovered && owner?.isAlly(hovered)){
-            let color = hovered.color
-            TypeTargetingFriend._previous = hovered
-            if (!color.compare(TypeTargetingFriend._highlight)){
-                TypeTargetingFriend._prev_color = color
-                hovered.color = TypeTargetingFriend._highlight
-            }
-
-            x = hovered.x
-            y = hovered.y
-        } else {
-            TypeTargetingFriend._previous = undefined
-            TypeTargetingFriend._prev_color = new Color(1, 1, 1, 1)
-
-            x = Mouse.getX()
-            y = Mouse.getY()
-        }
-
-        let size = hovered ? hovered.getCollisionSize() : 32
-        TypeTargetingFriend._circle?.setPolarPos(x - size / 2, y - size / 2, size, 0, 2 * math.pi)
+function getTarget(this: void, pl: jplayer, abil: IFace<(hUnit)[]>): hUnit[]{
+    if (abil != cur_abil){
+        return Log.err(TTargeting.name + 
+                       ': getTarget error.')
     }
 
-    private static _mouseClick(this: void, event: Mouse.Event, pl: jplayer, btn: jmousebuttontype){
-        if (pl != GetLocalPlayer()){return}
-        if (!TypeTargetingFriend._enabled){return}
-
-        let cur_instance = TypeTargeting.getActiveInstance(pl)
-        if(!(cur_instance instanceof TypeTargetingFriend)){return}
-
-        if (btn == MOUSE_BUTTON_TYPE_LEFT){
-            cur_instance.finish(pl)
-        } else {
-            cur_instance.cancel(pl)
-        }
-    }
-
-    private static _mouseTimer = IsGame() ? (():hTimer=>{
-        let t = new hTimer()
-        t.addAction(TypeTargetingFriend._mouseTrack)
-        t.start(0.02, true)
-        return t
-    })() : undefined
-
-    private static _mouseAction = Mouse.addAction('UP', TypeTargetingFriend._mouseClick)
-
-    private static _previous: hUnit | undefined;
-    private static _highlight: Color = new Color(0.3, 1, 0.3, 1);
-    private static _prev_color: Color = new Color(1, 1, 1, 1);
+    let hovered = hUnit.getMouseFocus()
+    return hovered ? [hovered] : []
 }

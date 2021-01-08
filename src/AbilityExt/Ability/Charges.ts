@@ -1,15 +1,18 @@
-import { Action, ActionList } from '../Utils'
-import { hTimerList } from '../Handle'
+import { Action, ActionList } from '../../Utils'
+import { hTimerList } from '../../Handle'
 
 export class Charges {
     constructor(){
         this._timer.addAction('PERIOD', ()=>{
-            this._actions.get('COOLDOWN_LOOP')?.run(this, 'COOLDOWN_LOOP')
+            this._actions.get('CHARGE_CD')?.run(this, 'CHARGE_CD')
         })
         this._timer.addAction('FINISH', ()=>{
             this.count += 1
         })
     }
+
+    static readonly period = 0.05
+    readonly period = Charges.period
     
     get count(){return this._count} 
     set count(count: number){
@@ -18,7 +21,7 @@ export class Charges {
         this._count = count
         
         if (count < this._count_max){
-            if (this._timer.timeLeft < 0){
+            if (this._timer.left < 0){
                 this._timer.start(this._cooldown)
             }
         } else {
@@ -26,7 +29,7 @@ export class Charges {
         }
 
         if (prev != count){
-            this._actions.get('COUNT_CHANGED')?.run(this, 'COUNT_CHANGED')
+            this._actions.get('CHARGE_CHANGED')?.run(this, 'CHARGE_CHANGED')
         }
     }
 
@@ -39,14 +42,14 @@ export class Charges {
     get pause(){return this._pause}
     set pause(flag: boolean){this._timer.pause = flag}
 
-    get timeLeft(){return this._timer.timeLeft}
-    set timeLeft(left: number){this._timer.timeLeft = left}
+    get left(){return this._timer.left}
+    set left(left: number){this._timer.left = left}
 
     get cooldown(){return this._cooldown}
     set cooldown(cd: number){this._cooldown = cd}
 
     addAction(event: Charges.Event,
-                     callback: (this: void, charges: Charges, event: Charges.Event)=>void){
+              callback: (this: void, charges: Charges, event: Charges.Event)=>void){
         return this._actions.get(event)?.add(callback)
     }
 
@@ -71,13 +74,13 @@ export class Charges {
     private _pause = false;
     private _timer = Charges._timer_list.newTimerObj();
     private readonly _actions = new Map<Charges.Event, ActionList<[Charges, Charges.Event]>>([
-        ['COOLDOWN_LOOP', new ActionList()],
-        ['COUNT_CHANGED', new ActionList()],
+        ['CHARGE_CD', new ActionList()],
+        ['CHARGE_CHANGED', new ActionList()],
     ])
 
-    private static _timer_list = new hTimerList(0.05)
+    private static _timer_list = new hTimerList(Charges.period)
 }
 
 export namespace Charges {
-    export type Event = 'COOLDOWN_LOOP' | 'COUNT_CHANGED'
+    export type Event = 'CHARGE_CD'|'CHARGE_CHANGED'
 }

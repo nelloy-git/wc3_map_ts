@@ -16,6 +16,9 @@ export class Container {
 
     readonly owner: hUnit
     get size(){return this._list.length}
+    get list(): ReadonlyArray<IFace>{
+        return this._list
+    }
 
     add<T>(src: hUnit, dur: number, type: Type<T>, data: T){
         let buff = new Buff<T>(src, this.owner, type, data)
@@ -29,14 +32,6 @@ export class Container {
 
     get(i: number){
         return this._list[i]
-    }
-    
-    getList(size: number){
-        let copy: (IFace | undefined)[] = []
-        for (let i = 0; i < size; i++){
-            copy[i] = this._list[i]
-        }
-        return copy
     }
 
     addAction(callback: (this: void, cont: Container)=>void){

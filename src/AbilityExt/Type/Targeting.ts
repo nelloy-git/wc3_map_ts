@@ -1,92 +1,82 @@
-import { Log } from '../../Utils'
-import { IFace, TargetType } from '../IFace'
+import { ActionList, Log } from '../../Utils'
+
+import { IFace } from '../Ability/IFace'
 import { SyncTargets } from './SyncTargets'
+import { TargetType } from '../Utils'
 
-export abstract class TypeTargeting<T extends TargetType> {
-    protected constructor(){}
-
-    static cancelActive(pl: jplayer){
-        let cur = TypeTargeting._current[GetPlayerId(pl)]
-        if (cur){cur.cancel(pl)}
+export class TTargeting<T extends TargetType> {
+    constructor(target_getter: (this: void, pl: jplayer, abil: IFace<T>)=>T){
+        this._target_getter = target_getter
     }
 
-    static getActiveAbility(pl: jplayer){
-        return TypeTargeting._abil[GetPlayerId(pl)]
+    static activeInstance(pl: jplayer): Readonly<TTargeting<any>> | undefined {
+        return TTargeting._active[GetPlayerId(pl)]
     }
 
-    static getActiveInstance(pl: jplayer){
-        return TypeTargeting._current[GetPlayerId(pl)]
+    static activeAbility(pl: jplayer): Readonly<IFace<any>> | undefined {
+        return TTargeting._abil[GetPlayerId(pl)]
     }
 
-    /* Final function */
-    readonly start = (pl: jplayer, abil: IFace) => {
+    start(pl: jplayer, abil: IFace<T>){
         let pl_id = GetPlayerId(pl)
 
-        TypeTargeting.cancelActive(pl)
-        TypeTargeting._current[pl_id] = this
-        TypeTargeting._abil[pl_id] = abil
-
-        if (pl == GetLocalPlayer()){
-            this._start()
+        if (TTargeting._active[pl_id] != undefined || TTargeting._abil[pl_id] != undefined){
+            return Log.err(TTargeting.name + 
+                           ': can not start ability targeting. Another one is active.')
         }
+
+        TTargeting._active[pl_id] = this
+        TTargeting._abil[pl_id] = abil
+
+        this._start_actions.run(this, pl, abil)
     }
 
-    /* Final function */
-    readonly cancel = (pl: jplayer) => {
+    stop(pl: jplayer, abil: IFace<T>){
         let pl_id = GetPlayerId(pl)
-        if (TypeTargeting._current[pl_id] != this){
-            return Log.err(TypeTargeting.name + 
-                           ': can not cancel inactive targeting. ' +
-                           'Use static cancelCurrent() instead.', 2)
+
+        if (TTargeting._active[pl_id] != this || abil != TTargeting._abil[pl_id]){
+            return Log.err(TTargeting.name + 
+                           ': can not cancel inactive ability.')
         }
 
-        if (pl == GetLocalPlayer()){
-            this._cancel()
-        }
+        this._stop_actions.run(this, pl, abil)
 
-        TypeTargeting._current[pl_id] = undefined
-        TypeTargeting._abil[pl_id] = undefined
+        TTargeting._active[pl_id] = undefined
+        TTargeting._abil[pl_id] = undefined
     }
 
-    /** Final function.
-        Use 'targets == Unit[]' to force targets. */
-    readonly finish = (pl: jplayer, targets?: T): void => {
-        let pl_id = GetPlayerId(pl)
-        if (TypeTargeting._current[pl_id] != this){
-            return Log.err(TypeTargeting.name + 
-                           ': can not finish inactive targeting.', 2)
-        }
-        let abil = TypeTargeting.getActiveAbility(pl)
-        if (!abil){
-            return Log.err(TypeTargeting.name + 
-                           ': current ability for player has not been set.', 2)
-        }
-
-        /* Sync targets from local player. */
-        if (pl == GetLocalPlayer()){
-            let abil_targets = this._finish(targets)
-            if (abil_targets){
-                TypeTargeting._syncer?.send(abil, abil_targets)
-            }
-        }
-
-        TypeTargeting._current[pl_id] = undefined
-        TypeTargeting._abil[pl_id] = undefined
+    finish(pl: jplayer, abil: IFace<T>, target?: T){
+        if (!target){target = this._target_getter(pl, abil)}
+        
+        this.stop(pl, abil)
+        TTargeting._syncer.send(abil, target)
     }
 
-    protected abstract _start(): void
-    protected abstract _cancel(): void
-    /** 'targets = undefined' should capture targets by itself. */
-    protected abstract _finish(targets?: T): T | undefined
+    addAction(event: TTargeting.Event,
+              callback: (this: void, instance: TTargeting<T>, pl: jplayer, abil: IFace<T>) => void){
+        if (event == 'START'){
+            this._start_actions.add(callback)
+        } else {
+            this._stop_actions.add(callback)
+        }
+    }
 
-    private static _current: (TypeTargeting<any> | undefined)[] = [];
-    private static _abil: (IFace | undefined)[] = [];
+    private _target_getter: (this: void, pl: jplayer, abil: IFace<T>)=>T
+    private _start_actions = new ActionList<[TTargeting<T>, jplayer, IFace<T>]>()
+    private _stop_actions = new ActionList<[TTargeting<T>, jplayer, IFace<T>]>()
+
+    private static _active: (TTargeting<any> | undefined)[] = []
+    private static _abil: (IFace<TargetType> | undefined)[] = []
 
     private static _syncer = IsGame() ? (():SyncTargets => {
         let sync = new SyncTargets()
-        sync.addAction((pl: jplayer, abil: IFace, targets: TargetType) => {
-            abil.castingStart(targets)
+        sync.addAction((pl: jplayer, abil: IFace<TargetType>, target: TargetType) => {
+            abil.Casting.start(target)
         })
         return sync
-    })() : undefined;
+    })() : <SyncTargets><unknown>undefined;
+}
+
+export namespace TTargeting {
+    export type Event = 'START'|'STOP'
 }

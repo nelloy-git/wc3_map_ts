@@ -3,14 +3,15 @@ import { SyncData } from '../../Input/index'
 import { hUnit } from '../../Handle/index'
 
 import { Point } from '../Point'
-import { IFace, TargetType } from '../IFace'
+import { TargetType } from '../Utils'
+import { IFace } from '../Ability/IFace'
 
-export class SyncTargets extends SyncData<[IFace, TargetType]> {
+export class SyncTargets extends SyncData<[IFace<TargetType>, TargetType]> {
     
-    protected data2raw(abil: IFace,
+    protected data2raw(abil: IFace<TargetType>,
                        target: TargetType){
 
-        let raw = abil.id.toString()
+        let raw = abil.Data.id.toString()
         for (let targ of target){
             raw += SyncTargets._sep + 
                    this._toRaw(targ)
@@ -18,7 +19,7 @@ export class SyncTargets extends SyncData<[IFace, TargetType]> {
         return raw
     }
 
-    protected raw2data(raw: string): [IFace, TargetType]{
+    protected raw2data(raw: string): [IFace<TargetType>, TargetType]{
         let vals = raw.split(SyncTargets._sep)
 
         let abil_id = parseInt(vals[0])

@@ -37,10 +37,8 @@ export class WorldBar extends hEffect {
 
     get fullness(){return this._fullness}
     set fullness(val: number){
-        let prev = this._fullness
         this._fullness = val > 1 ? 1 : val < 0.001 ? 0.001 : val
-
-        this.scaleX = this._fullness / prev
+        this.scaleX = this._fullness
     }
 
     destroy(){

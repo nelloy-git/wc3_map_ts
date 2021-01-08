@@ -11,14 +11,14 @@ function createFramehandle(name: string, is_simple: boolean){
     if (tostring(handle) == tostring(test)){
         BlzDestroyFrame(handle)
         BlzDestroyFrame(test)
-        return Log.err(Frame.toString() +
+        return Log.err(hFrame.toString() +
                        ': can not create framehandle with name ' + name)
     }
     BlzDestroyFrame(test)
     return handle
 }
 
-export class Frame extends Handle<jframehandle> {
+export class hFrame extends Handle<jframehandle> {
     constructor(name: string, is_simple: boolean)
     constructor(name: jframehandle, is_simple: boolean)
     constructor(name: string|jframehandle, is_simple: boolean){
@@ -36,14 +36,14 @@ export class Frame extends Handle<jframehandle> {
         if (wcType(instance.handle) != 'framehandle'){
             Log.err('Frame: got wrong type of handle.', 2)
         }
-        return <Frame>instance
+        return <hFrame>instance
     }
 
     public get size():[w: number, h: number]{return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]}
     public set size(size: [w: number, h: number]){BlzFrameSetSize(this.handle, size[0], size[1])}
 
-    public get parent(){let h = BlzFrameGetParent(this.handle); return h ? Handle.get(h) as Frame : null}
-    public set parent(parent: Frame | null){BlzFrameSetParent(this.handle, parent?.handle)}
+    public get parent(){let h = BlzFrameGetParent(this.handle); return h ? Handle.get(h) as hFrame : null}
+    public set parent(parent: hFrame | null){BlzFrameSetParent(this.handle, parent?.handle)}
 
     public get visible(){return BlzFrameIsVisible(this.handle)};
     public set visible(flag: boolean){BlzFrameSetVisible(this.handle, flag)};
@@ -60,7 +60,7 @@ export class Frame extends Handle<jframehandle> {
         BlzFrameSetVertexColor(this.handle, color.getWcCode())
     }
 
-    public setPoint(relative: Frame, 
+    public setPoint(relative: hFrame, 
                     point: jframepointtype, relative_point: jframepointtype,
                     x: number, y: number){
         BlzFrameSetPoint(this.handle, point, relative.handle, relative_point, x, y)
@@ -68,7 +68,7 @@ export class Frame extends Handle<jframehandle> {
     public setPointAbs(point: jframepointtype, x: number, y:number){
         BlzFrameSetAbsPoint(this.handle, point, x, y)
     }
-    public setPointAll(relative: Frame){BlzFrameSetAllPoints(this.handle, relative.handle)}
+    public setPointAll(relative: hFrame){BlzFrameSetAllPoints(this.handle, relative.handle)}
     public freePointAll(){BlzFrameClearAllPoints(this.handle)}
 
     destroy(){

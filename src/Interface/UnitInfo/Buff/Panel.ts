@@ -2,6 +2,7 @@ import * as Buff from "../../../Buff";
 import * as Frame from "../../../FrameExt";
 
 import { hUnit } from "../../../Handle";
+import { UnitExt } from "../../../UnitExt/UnitExt";
 import { Action } from "../../../Utils";
 import { InterfaceBuff } from "./Buff";
 
@@ -24,6 +25,20 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         this.size = this.size
     }
 
+    get unit(){return this._unit}
+    set unit(u: UnitExt | undefined){
+        if (this._unit){
+            this._unit.buffs.removeAction(this._buffs_changed)
+        }
+
+        this._unit = u
+        if (!u){return}
+
+        let b = u.buffs
+        this._buffs_changed = b.addAction(b => {this._update(b)})
+        this._update(b)
+    }
+
     protected _set_size(size: [w: number, h: number]){
         super._set_size(size)
 
@@ -43,21 +58,23 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         }
     }
 
-    get unit(){return this._unit}
-    set unit(u: hUnit | undefined){
-        if (this._buffs){
-            this._buffs.removeAction(this._buffs_changed)
-        }
+    protected _set_visible(flag: boolean){
+        super._set_visible(flag)
 
-        this._buffs = Buff.Container.get(u)
-        if (this._buffs){
-            this._buffs_changed = this._buffs.addAction(()=>{this._update()})    
+        if (flag){
+            for (let y = 0; y < this.rows; y++){
+                for (let x = 0; x < this.cols; x++){
+                    let cur = this._buttons[y][x]
+                    if (cur.buff == undefined){
+                        cur.visible = false
+                    }
+                }
+            }
         }
-        this._update()
     }
     
-    protected _update(){
-        let list = this._buffs ? this._buffs.getList(this.rows * this.cols) : []
+    protected _update(buffs: Buff.Container){
+        let list = buffs.list
 
         let i = 0
         for (let y = 0; y < this.rows; y++){
@@ -71,8 +88,7 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     readonly cols: number
     readonly rows: number
 
-    private _unit: hUnit | undefined;
-    private _buffs: Buff.Container | undefined
+    private _unit: UnitExt | undefined;
     private _buffs_changed: Action<[Buff.Container], void> | undefined
     
     private _buttons: InterfaceBuff[][] = []

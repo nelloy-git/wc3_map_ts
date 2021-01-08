@@ -7,7 +7,7 @@ export interface IFace {
     type: Type<any>
     data: any
 
-    timeLeft: number
+    left: number
     readonly fullTime: number
 
     start(dur: number): void

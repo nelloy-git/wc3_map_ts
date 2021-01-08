@@ -1,13 +1,13 @@
 export class Tile {
-    constructor(x: number, y: number, h: number, tile: number){
+    constructor(id: number, x: number, y: number, z: number){
+        this.id = id
         this.x = x
         this.y = y
-        this.h = h
-        this.tile = tile
+        this.z = z
     }
 
+    readonly id: number
     readonly x: number
     readonly y: number
-    readonly h: number
-    readonly tile: number
+    readonly z: number
 }

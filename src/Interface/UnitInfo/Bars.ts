@@ -2,6 +2,7 @@ import * as Frame from "../../FrameExt";
 
 import { hTimerList, hTimerObj, hUnit } from "../../Handle";
 import { Shield } from "../../Parameter";
+import { UnitExt } from "../../UnitExt/UnitExt";
 import { Color, float2str } from "../../Utils";
 import { InterfaceAutoBar } from "../Utils/AutoBar";
 import { InterfaceMultiBar } from "../Utils/MultiBar";
@@ -31,6 +32,50 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
         
         this.size = this.size
     }
+
+    get unit(){return this._unit}
+    set unit(u: UnitExt | undefined){
+        this._unit = u
+        this.update()
+    }
+
+    update(){
+        if (this._unit){
+            let u = this._unit.unit
+
+            // Life and shield
+            let life = u.life
+            let max_life = u.lifeMax
+
+            let p_shield = Shield.getCur('PHYS', u)
+            let max_p_shield = Shield.getMax('PHYS', u)
+
+            let m_shield = Shield.getCur('MAGIC', u)
+            let max_m_shield = Shield.getMax('MAGIC', u)
+
+            let min = Math.min(p_shield, m_shield)
+            let max = Math.max(max_p_shield, max_m_shield, max_life)
+
+            this._life.bar(0).fullness = life / max_life
+            this._life.bar(1).fullness = p_shield / max
+            this._life.bar(2).fullness = m_shield / max
+            this._life.bar(3).fullness = min / max
+            this._life.text.text = string.format('%.0f / %.0f (%.1f%%)',
+                                                 life, max_life, 100 * life / max_life)
+
+            // Mana
+
+            let mana = u.mana
+            let max_mana = u.manaMax
+
+            this._mana.fullness = mana / max_mana
+            let mana_text = this._mana.getElement('TEXT')
+            if (mana_text){
+                mana_text.text = string.format('%.0f / %.0f (%.1f%%)',
+                                                mana, max_mana, 100 * mana / max_mana)
+            }
+        }
+    }
     
     protected _set_size(size: [w: number, h: number]){
         super._set_size(size)
@@ -49,46 +94,7 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
         }
     }
 
-    update(){
-        if (this._unit){
-            let life = this._unit.life
-            let max_life = this._unit.lifeMax
-
-            let mana = this._unit.mana
-            let max_mana = this._unit.manaMax
-
-            let p_shield = Shield.getCur('PHYS', this._unit)
-            let max_p_shield = Shield.getMax('PHYS', this._unit)
-
-            let m_shield = Shield.getCur('MAGIC', this._unit)
-            let max_m_shield = Shield.getMax('MAGIC', this._unit)
-
-            let min = Math.min(p_shield, m_shield)
-            let max = Math.max(max_p_shield, max_m_shield, max_life)
-
-            this._life.bar(0).fullness = life / max_life
-            this._life.bar(1).fullness = p_shield / max
-            this._life.bar(2).fullness = m_shield / max
-            this._life.bar(3).fullness = min / max
-            this._life.text.text = float2str(life, 0) + ' / ' + float2str(max_life, 0) + 
-                                   ' (' + float2str(100 * life / max_life, 0) + '%)'
-
-            this._mana.fullness = mana / max_mana
-            let mana_text = this._mana.getElement('TEXT')
-            if (mana_text){
-                mana_text.text = float2str(mana, 0) + ' / ' + float2str(max_mana, 0) + 
-                                 ' (' + float2str(100 * mana / max_mana, 0) + '%)'
-            }
-        }
-    }
-
-    get unit(){return this._unit}
-    set unit(u: hUnit | undefined){
-        this._unit = u
-        this.update()
-    }
-
-    private _unit: hUnit | undefined
+    private _unit: UnitExt | undefined
 
     private _timer: hTimerObj
     private _life: InterfaceMultiBar

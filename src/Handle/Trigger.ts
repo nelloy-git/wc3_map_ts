@@ -1,10 +1,10 @@
 import { Action, ActionList, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
-export class Trigger extends Handle<jtrigger> {
+export class hTrigger extends Handle<jtrigger> {
     constructor(){
         super(CreateTrigger())
-        TriggerAddAction(this.handle, Trigger.runActions)
+        TriggerAddAction(this.handle, hTrigger.runActions)
     }
     public static get(id: jtrigger | number){
         let instance = Handle.get(id)
@@ -12,20 +12,20 @@ export class Trigger extends Handle<jtrigger> {
         if (wcType(instance.handle) != 'trigger'){
             Log.err('Trigger: got wrong type of handle.', 2)
         }
-        return instance as Trigger
+        return instance as hTrigger
     }
-    public static getTriggering(){return Trigger.get(GetTriggeringTrigger())}
+    public static getTriggering(){return hTrigger.get(GetTriggeringTrigger())}
 
-    public addAction(callback: (this: void, trig: Trigger)=>void){
+    public addAction(callback: (this: void, trig: hTrigger)=>void){
         return this._actions.add(callback)
     }
 
-    public removeAction(action: Action<[Trigger], void>){
+    public removeAction(action: Action<[hTrigger], void>){
         return this._actions.remove(action)
     }
 
     private static runActions(this: void){
-        let trig = Trigger.getTriggering()
+        let trig = hTrigger.getTriggering()
         trig?._actions.run(trig)
     }
 
@@ -34,5 +34,5 @@ export class Trigger extends Handle<jtrigger> {
         super.destroy()
     }
 
-    private _actions = new ActionList<[Trigger]>()
+    private _actions = new ActionList<[hTrigger]>()
 }

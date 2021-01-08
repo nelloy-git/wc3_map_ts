@@ -1,6 +1,6 @@
 import { hUnit } from "../../Handle";
-import { Trigger } from "../../Handle/Trigger";
-import { TriggerEvent } from "../../Handle/TriggerEvent";
+import { hTrigger } from "../../Handle/Trigger";
+import { hTriggerEvent } from "../../Handle/TriggerEvent";
 import { Action, Color, Log } from "../../Utils";
 
 import { Shield } from "./Shield";
@@ -64,11 +64,11 @@ export namespace Damage {
     let _modifiers = new Map<number, Action<[hUnit, hUnit, number, Damage.Type], number>[]>()
 
     if (IsGame()){
-        let _trigger = new Trigger()
+        let _trigger = new hTrigger()
         _trigger.addAction(_applyModifiers)
         for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
             let pl = Player(i)
-            let event = TriggerEvent.newPlayerUnitEvent(pl, EVENT_PLAYER_UNIT_DAMAGING)
+            let event = hTriggerEvent.newPlayerUnitEvent(pl, EVENT_PLAYER_UNIT_DAMAGING)
             event.applyToTrigger(_trigger)
         }
     }

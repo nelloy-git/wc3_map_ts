@@ -5,6 +5,7 @@ import { hUnit } from "../../Handle";
 import { Action } from "../../Utils";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
+import { UnitExt } from "../../UnitExt/UnitExt";
 
 export class InterfaceUnitParameters extends Frame.Backdrop {
     constructor(){
@@ -18,8 +19,21 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
             val.text = '0'
         }
 
-        this.visible = false
         this.size = this.size
+    }
+
+    get unit(){return this._unit}
+    set unit(u: UnitExt | undefined){
+        if (this._unit){
+            this._unit.params.removeAction(this._changed_action)
+        }
+
+        this._unit = u
+        if (!u){return}
+
+        let p = u.params
+        this._changed_action = p.addAction(p => {this._updateValues(p)})
+        this._updateValues(p)
     }
 
     protected _set_size(size: [w: number, h: number]){
@@ -41,25 +55,6 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
 
             y0 += h
         }
-    }
-
-    get unit(){return this._unit}
-    set unit(u: hUnit | undefined){
-        if (this._params){
-            this._params.removeAction(this._changed_action)
-        }
-
-        this._unit = u
-
-        this.visible = false
-        if (!u){return}
-        this._params = Param.Unit.get(u)
-        if (!this._params){return}
-
-        this._changed_action = this._params.addAction((params)=>{this._updateValues(params)})
-        this._updateValues(this._params)
-
-        this.visible = true
     }
 
     private _updateValues(params: Param.Container){
@@ -88,7 +83,6 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
         ['MOVE', [new Frame.SimpleText(), new Frame.SimpleText()]],
     ])
 
-    private _unit: hUnit | undefined
-    private _params: Param.Unit | undefined;
+    private _unit: UnitExt | undefined
     private _changed_action: Action<[Param.Container, Param.Type], void> | undefined
 }

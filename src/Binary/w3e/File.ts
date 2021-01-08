@@ -81,7 +81,7 @@ export class w3eFile extends File {
             // Pass 2 bytes
             this._file_pos += 2
 
-            let tile = new Tile(x, y, h, tile_id)
+            let tile = new Tile(tile_id, x, y, h)
             this._data.push(tile)
             
             cur_x += 1

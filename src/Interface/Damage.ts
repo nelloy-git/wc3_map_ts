@@ -1,5 +1,5 @@
 import { hUnit } from '../Handle'
-import { TextTag } from '../Handle/TextTag'
+import { hTextTag } from '../Handle/TextTag'
 import { Damage } from '../Parameter'
 
 export namespace InterfaceDamage {
@@ -15,7 +15,7 @@ export namespace InterfaceDamage {
         let y_vel = 0.05 - x_vel
         let h = 100 * Math.random()
 
-        TextTag.Timed(Math.floor(dmg).toString(), 12, color,
+        hTextTag.Timed(Math.floor(dmg).toString(), 12, color,
                       dst.x, dst.y, dst.z + h,
                       x_vel, y_vel, 1)
 

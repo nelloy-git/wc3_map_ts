@@ -1,8 +1,4 @@
-import { Map } from './Map'
+export { Map } from './Map'
 
-import { FieldUnitList } from './w3u/Field'
-
-export {
-    Map,
-    FieldUnitList as FieldUnit
-}
+export { tUnit } from './w3u/Unit'
+export { FieldUnitList } from './w3u/Field'

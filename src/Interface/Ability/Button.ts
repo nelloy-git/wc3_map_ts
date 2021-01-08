@@ -48,7 +48,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     get ability(){return this._abil}
-    set ability(abil: Abil.IFace | undefined){
+    set ability(abil: Abil.Ability<any> | undefined){
         this._clearAbility()
         this._applyAbility(abil)
     }
@@ -68,16 +68,16 @@ export class InterfaceAbilityButton extends GlueTextButton {
         this.visible = false
     }
 
-    private _applyAbility(abil: Abil.IFace | undefined){
+    private _applyAbility(abil: Abil.Ability<any> | undefined){
         if (abil){
             let normal = this.getElement('NORMAL')
-            if (normal){normal.texture = abil.type.data.iconNormal(abil)}
+            if (normal){normal.texture = abil.Data.icon_normal}
 
             let pushed = this.getElement('PUSHED')
-            if (pushed){pushed.texture = abil.type.data.iconNormal(abil)}
+            if (pushed){pushed.texture = abil.Data.icon_normal}
 
             let disabled = this.getElement('DISABLED')
-            if (disabled){disabled.texture = abil.type.data.iconDisabled(abil)}
+            if (disabled){disabled.texture = abil.Data.icon_disabled}
         }
         
         this._abil = abil
@@ -89,25 +89,25 @@ export class InterfaceAbilityButton extends GlueTextButton {
     private _clicked(pl: jplayer){
         if (!this._abil ){return}
 
-        let active = Abil.TypeTargeting.getActiveAbility(pl)
-        if (this._abil == active){
-            this._abil.targetingFinish(pl)
+        let active = Abil.TTargeting.activeAbility(pl)
+        if (active == undefined){
+            this._abil.Targeting.start(pl)
+        } else if (active == this._abil) {
+            this._abil.Targeting.finish(pl)
         } else {
-            this._abil.targetingStart(pl)
+            active.Targeting.cancel(pl)
         }
     }
 
     private _hotkeyUsed(pl: jplayer, meta: number, is_down: boolean){
         if (!this._abil){return}
-        let active = Abil.TypeTargeting.getActiveAbility(pl)
 
+        let active = Abil.TTargeting.activeAbility(pl)
         if (this.smartCast){
-            if (is_down && this._abil != active){
-                this._abil.targetingStart(pl)
-                return
+            if (is_down && active == undefined){
+                this._abil.Targeting.start(pl)
             } else if (!is_down && this._abil == active){
-                this._abil.targetingFinish(pl)
-                return
+                this._abil.Targeting.finish(pl)
             }
         } else {
             // TODO
@@ -115,19 +115,16 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     private _checkEnable(){
-        if (this._abil && this._abil.type.data.isAvailable(this._abil)){
-            this.enable = true
-        } else {
-            this.enable = false
-        }
+        if (!this._abil){return}
+        this.enable = this._abil.Data.is_available
     }
 
-    private _abil: Abil.IFace | undefined
+    private _abil: Abil.Ability<any> | undefined
 
     private _charges = new InterfaceAbilityCharges()
     private _cooldown = new InterfaceAbilityCooldown()
     private _hotkey = new InterfaceHotkey()
     private _timer = InterfaceAbilityButton._timer_list.newTimerObj()
     
-    private static _timer_list: hTimerList = new hTimerList(0.1);
+    private static _timer_list: hTimerList = new hTimerList(0.05);
 }

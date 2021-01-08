@@ -36,21 +36,19 @@ class AbilBuffProcess extends Buff.TypeProcess<Param.Shield> {
 let AbilBuffType = new Buff.Type<Param.Shield>(AbilBuffData.instance,
                                         AbilBuffProcess.instance)
 
+let TCasting = new Abil.TCasting<hUnit[]>()
 
-class Casting extends Abil.TypeCasting<[hUnit]> {
-    static readonly instance = new Casting()
-
-    start(abil: Abil.Ability<[hUnit]>): void {};
-    casting(abil: Abil.Ability<[hUnit]>, dt: number): void {};
-    cancel(abil: Abil.Ability<[hUnit]>): void {};
-    interrupt(abil: Abil.Ability<[hUnit]>): void {};
-    finish(abil: Abil.Ability<[hUnit]>): void {
-        let targ = abil.getTarget()[0]
+// TCasting.start = () => {};
+// TCasting.casting = () => {};
+// TCasting.cancel = () => {};
+// TCasting.interrupt = () => {};
+TCasting.finish = (abil, target) => {
+        let targ = target[0]
 
         let params = Param.Unit.get(targ)
         let buffs = Buff.Container.get(targ)
         if (!params || !buffs){
-            return Log.err(Casting.name + 
+            return Log.err(Abil.TCasting.name + 
                            ': target does not have parameter or buff containers.')
         }
 
@@ -61,27 +59,33 @@ class Casting extends Abil.TypeCasting<[hUnit]> {
         shield.value = SHIELD_OF_DRAINED * drain + SHIELD_MATK * params.get('MATK', 'RES')
         let time = SHIELD_TIME_BASE * SHIELD_TIME_MSPD * (1 + params.get('MSPD', 'RES'))
 
-        buffs.add<Param.Shield>(abil.owner, time, AbilBuffType, shield)
+        buffs.add<Param.Shield>(abil.Data.owner, time, AbilBuffType, shield)
     };
-    isTargetValid(abil: Abil.Ability<[hUnit]>, target: [hUnit]): boolean {return true}
+TCasting.isTargetValid = (abil, target) => {return true}
+
+let TData = new Abil.TData<hUnit[]>()
+
+TData.name = abil => {return NAME}
+TData.iconNormal = abil => {return ICON}
+TData.iconDisabled = abil => {return DIS_ICON}
+TData.tooltip = abil => {return TOOLTIP}
+TData.lifeCost = abil => {return 0}
+TData.manaCost = abil => {return 0}
+TData.range = abil => {return 1000}
+TData.area = abil => {return 0}
+TData.chargeUsed = abil => {return 1}
+TData.chargeMax = abil => {return 1}
+TData.chargeCooldown = abil => {return 5}
+TData.castingTime = abil => {return 1}
+TData.isAvailable = abil => {
+    let charges = abil.Data.Charges.count > 0
+    let casting = abil.Casting.timer.left <= 0
+    return charges && casting
+}
+TData.consume = abil => {
+    abil.Data.Charges.cooldown = TData.chargeCooldown(abil)
+    abil.Data.Charges.count -= TData.chargeUsed(abil)
+    return true
 }
 
-class Data extends Abil.TypeData {
-    static readonly instance = new Data()
-    name(abil: Abil.IFace): string {return NAME}
-    iconNormal(abil: Abil.IFace): string {return ICON}
-    iconDisabled(abil: Abil.IFace): string {return DIS_ICON}
-    tooltip(abil: Abil.IFace): string {return TOOLTIP}
-    lifeCost(abil: Abil.IFace): number {return 0}
-    manaCost(abil: Abil.IFace): number {return 0}
-    chargeUsed(abil: Abil.IFace): number {return 1}
-    chargeMax(abil: Abil.IFace): number {return 1}
-    chargeCooldown(abil: Abil.IFace): number {return 5}
-    castingTime(abil: Abil.IFace): number {return 1}
-    isAvailable(abil: Abil.IFace): boolean {return abil.charges.count > 0}
-    consume(abil: Abil.IFace): boolean {abil.charges.count -= 1; return true}
-}
-
-export let LifeForceShield = new Abil.Type(Casting.instance,
-                                           Data.instance,
-                                           Abil.TypeTargetingFriend.instance)
+export let LifeForceShield = new Abil.TAbility(TCasting, TData, Abil.TTargetingFriend)

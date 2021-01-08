@@ -1,12 +1,12 @@
 import { Action, ActionList, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
-import { Trigger } from './Trigger'
-import { TriggerEvent } from './TriggerEvent'
+import { hTrigger } from './Trigger'
+import { hTriggerEvent } from './TriggerEvent'
 import { hUnit } from './Unit'
 
 type AbilityEvent = 'CAST'|'CHANNEL'|'EFFECT'|'FINISH'|'ENDCAST'
 
-export class Ability extends Handle<jability> {
+export class hAbility extends Handle<jability> {
     constructor(abil_id: number, owner: hUnit){
         super(((): jability=>{
             UnitAddAbility(owner.handle, abil_id)
@@ -22,19 +22,19 @@ export class Ability extends Handle<jability> {
         if (wcType(instance.handle) != 'ability'){
             Log.err('Ability: got wrong type of handle.', 2)
         }
-        return instance as Ability
+        return instance as hAbility
     }
-    public static getSpell(){return Ability.get(GetSpellAbility())}
+    public static getSpell(){return hAbility.get(GetSpellAbility())}
 
     public owner(){ return this._owner }
     public abil_id(){ return this._abil_id }
 
     public addAction(event: AbilityEvent,
-                     callback: (this: void, abil: Ability, event: AbilityEvent)=>void){
+                     callback: (this: void, abil: hAbility, event: AbilityEvent)=>void){
         return this._actions.get(event)?.add(callback)
     }
 
-    public removeAction(action: Action<[Ability, AbilityEvent], void>){
+    public removeAction(action: Action<[hAbility, AbilityEvent], void>){
         let found = false
         for (let [event, list] of this._actions){
             found = list.remove(action)
@@ -45,7 +45,7 @@ export class Ability extends Handle<jability> {
 
     private static runActions(this: void,
                               event: AbilityEvent){
-        let abil = Ability.getSpell()
+        let abil = hAbility.getSpell()
 
         abil?._actions.get(event)?.run(abil, event)
     }
@@ -60,7 +60,7 @@ export class Ability extends Handle<jability> {
 
     private _owner: hUnit | undefined;
     private _abil_id: number | undefined;
-    private _actions = new Map<AbilityEvent, ActionList<[Ability, AbilityEvent]>>([
+    private _actions = new Map<AbilityEvent, ActionList<[hAbility, AbilityEvent]>>([
         ['CAST', new ActionList()],
         ['CHANNEL', new ActionList()],
         ['EFFECT', new ActionList()],
@@ -77,23 +77,23 @@ export class Ability extends Handle<jability> {
     ])
 
     private static newTrigger(event: AbilityEvent){
-        let trig = new Trigger()
-        trig.addAction((trig: Trigger):void => {Ability.runActions(event)})
+        let trig = new hTrigger()
+        trig.addAction((trig: hTrigger):void => {hAbility.runActions(event)})
         for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
             let jevent = this.name2jevent.get(event)
             if (jevent){
-                let trig_event = TriggerEvent.newPlayerUnitEvent(Player(i), jevent)
+                let trig_event = hTriggerEvent.newPlayerUnitEvent(Player(i), jevent)
                 trig_event.applyToTrigger(trig)
             }
         }
         return trig
     }
 
-    private static _triggers = IsGame() ? new Map<AbilityEvent, Trigger>([
-        ['CAST', Ability.newTrigger('CAST')],
-        ['CHANNEL', Ability.newTrigger('CHANNEL')],
-        ['EFFECT', Ability.newTrigger('EFFECT')],
-        ['FINISH', Ability.newTrigger('FINISH')],
-        ['ENDCAST', Ability.newTrigger('ENDCAST')],
+    private static _triggers = IsGame() ? new Map<AbilityEvent, hTrigger>([
+        ['CAST', hAbility.newTrigger('CAST')],
+        ['CHANNEL', hAbility.newTrigger('CHANNEL')],
+        ['EFFECT', hAbility.newTrigger('EFFECT')],
+        ['FINISH', hAbility.newTrigger('FINISH')],
+        ['ENDCAST', hAbility.newTrigger('ENDCAST')],
     ]) : undefined
 }

@@ -9,8 +9,8 @@ export class Map {
         this.w3d.save(path + '/war3map.w3d')
     }
 
-    static w3u = new w3uFile()
-    static w3d = new w3dFile()
+    static readonly w3u = new w3uFile()
+    static readonly w3d = new w3dFile()
 }
 
 if (!IsGame()){

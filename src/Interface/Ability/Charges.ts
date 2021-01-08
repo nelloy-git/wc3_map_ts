@@ -21,20 +21,17 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
     }
 
     get ability(){return this._abil}
-    set ability(abil: Abil.IFace | undefined){
-        if (this._charges){
-            this._charges.removeAction(this._charges_action)
+    set ability(abil: Abil.Ability<any> | undefined){
+        if (this._abil){
+            this._abil.Data.Charges.removeAction(this._charged_action)
         }
 
         this._abil = abil
-        this._charges = abil ? abil.charges : undefined
+        if (!abil){return}
 
-        if (!this._charges){this.visible = false; return}
-
-        this._charges_action = this._charges.addAction('COUNT_CHANGED',
-                                                       (charges: Abil.Charges)=>
-                                                           {this._chargesChanged(charges)})
-        this._chargesChanged(this._charges)
+        this._charged_action = abil.Data.Charges.addAction('CHARGE_CHANGED',
+                                                            charges => {this._chargesChanged(charges)})
+        this._chargesChanged(abil.Data.Charges)
     }
 
     private _chargesChanged(charges: Abil.Charges){
@@ -47,9 +44,8 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
         }
     }
 
-    private _abil: Abil.IFace | undefined;
-    private _charges: Abil.Charges | undefined;
-    private _charges_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined;
+    private _abil: Abil.Ability<any> | undefined;
+    private _charged_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined;
 
     private _text = new Frame.SimpleText()
 }

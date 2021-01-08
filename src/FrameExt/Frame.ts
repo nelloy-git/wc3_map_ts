@@ -1,8 +1,8 @@
 import * as Fdf from "../Fdf";
-import { hHandle, hTrigger, hTriggerEvent } from "../Handle";
+import { Handle, hTrigger, hTriggerEvent } from "../Handle";
 import { Action, ActionList, Color, Log, wcType } from "../Utils";
 
-export class Frame extends hHandle<jframehandle> {
+export class Frame extends Handle<jframehandle> {
     constructor(fdf: Fdf.Fdf)
     constructor(handle: jframehandle, is_simple: boolean)
     constructor(handle: jframehandle | Fdf.Fdf, is_simple?: boolean){
@@ -43,7 +43,7 @@ export class Frame extends hHandle<jframehandle> {
     }
     
     static get(id: jframehandle | number){
-        let instance = hHandle.get(id)
+        let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'framehandle'){
             Log.err('Frame: got wrong type of handle.', 2)

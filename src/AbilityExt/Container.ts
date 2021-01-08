@@ -1,8 +1,7 @@
-import { IFace } from './IFace'
-import { Ability } from './Ability'
-import { hUnit } from "../Handle";
 import { Action, ActionList, Log } from "../Utils";
-import { Type } from './Type';
+import { hUnit } from "../Handle";
+
+import { Ability, TAbility } from './Ability'
 
 export class Container {
     constructor(owner: hUnit){
@@ -13,41 +12,52 @@ export class Container {
         }
         Container._owner2container.set(owner, this)
     }
+
     static get(owner: hUnit | undefined){
         if (!owner){return undefined}
         return Container._owner2container.get(owner)
     }
 
-    readonly owner: hUnit;
-
-    set(i: number, type: Type<any> | undefined){
-        let abil = type ? new Ability(this.owner, type) : undefined
-        this._list[i] = abil
-        this._actions.run(this)
+    get list(): ReadonlyArray<Ability<any> | undefined>{
+        return this._list
     }
 
-    get(i: number){
+    set(i: number, type: TAbility<any>){
+        this._list[i] = new Ability(this.owner, type)
+        this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
+    }
+
+    del(i: number){
+        this._list[i] = undefined
+        this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
+    }
+
+    get(i: number): Readonly<Ability<any>> | undefined{
         return this._list[i]
     }
-    
-    getList(size: number){
-        let copy: (IFace | undefined)[] = []
-        for (let i = 0; i < size; i++){
-            copy[i] = this._list[i]
+
+    addAction(event: Container.Event,
+              callback: (this: void, cont: Container, event: Container.Event)=>void){
+        return this._actions.get(event)?.add(callback)
+    }
+
+    removeAction(action: Action<[Container, Container.Event], void> | undefined){
+        for (let [event, list] of this._actions){
+            if (list.remove(action)){return true}
         }
-        return copy
+        return false
     }
 
-    addAction(callback: (this: void, cont: Container)=>void){
-        return this._actions.add(callback)
-    }
+    readonly owner: hUnit;
 
-    removeAction(action: Action<[Container], void> | undefined){
-        return this._actions.remove(action) 
-    }
-
-    private _list: (IFace | undefined)[] = []
-    private _actions: ActionList<[Container]> = new ActionList<[Container]>()
+    private _list: (Ability<any> | undefined)[] = []
+    private _actions = new Map<Container.Event, ActionList<[Container, Container.Event]>>([
+        ['LIST_CHANGED', new ActionList()],
+    ])
 
     private static _owner2container = new Map<hUnit, Container>()
+}
+
+export namespace Container {
+    export type Event = 'LIST_CHANGED'
 }

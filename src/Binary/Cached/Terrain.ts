@@ -1,41 +1,22 @@
-import { BuilderCache, int2id, Log } from "../../Utils";
-import { Doodad } from "../doo/Doodad";
-import { dooFile } from "../doo/File";
-import { Decor } from "../w3d/Decor";
-import { FieldDecorList } from "../w3d/Field";
-import { w3dFile } from "../w3d/File";
-import { w3eFile } from "../w3e/File";
-import { hEffect, hTile, hTimer } from '../../Handle'
-
-type TypeData = [virt_id: number, model: string]
-type TileData = [x: number, y: number, h: number, tile: number]
-type DoodadData = [id: number,
-                    x: number, y: number, z: number, a: number,
-                    scale_x: number, scale_y: number, scale_z: number]
+import { id2int, int2id, Log } from "../../Utils";
+import { hDestructable, hEffect, hTile, hTimer } from '../../Handle'
+import { CacheW3e } from "./CacheW3e";
+import { CacheW3d } from "./CacheW3d";
+import { CacheDoo } from "./CacheDoo";
 
 export class TerrainPreset {
     constructor(w3e_path: string, w3d_path: string, doo_path: string){
-        this._w3d_path = w3d_path
-        this._w3e_path = w3e_path
-        this._doo_path = doo_path
-
-        this._w3e = new w3eFile()
-        this._doo = new dooFile()
-        this._w3d = new w3dFile()
-
-        if (!IsGame()){
-            this._cacheW3e(w3e_path)
-            this._cacheW3dDoo(w3d_path, doo_path)
-        }
+        this._w3e_cache = new CacheW3e(w3e_path)
+        this._w3d_cache = new CacheW3d(w3d_path)
+        this._doo_cache = new CacheDoo(doo_path)
     }
 
     enable(flag: boolean){
         if (!IsGame()){return}
 
         if (flag){
-            let cache_w3e = TerrainPreset._cache_w3e.get(this._w3e_path)
-            cache_w3e.forEach(data => {
-                this._tiles.push(new hTile(...data))
+            this._w3e_cache.data.forEach(tile => {
+                this._tiles.push(new hTile(tile.x, tile.y, tile.z, tile.id))
             })
 
             // Wait for tiles.
@@ -49,100 +30,61 @@ export class TerrainPreset {
     }
 
     private _createDoodads(){
-        let id2model = TerrainPreset._cache_id2model.get(this._w3d_path)
-        let cache_doo = TerrainPreset._cache_doo.get(this._doo_path)
-        cache_doo.forEach(dood => {
-            let model: string|undefined
-            for (let i = 0; i < id2model.length; i++){
-                if (id2model[i][0] == dood[0]){
-                    model = id2model[i][1]
-                }
-            }
-
-            if (!model){
-                return Log.err('')
-            }
-
-            let data = new Doodad(...dood)
-            let eff = new hEffect(model, data.x, data.y, data.z)
-            eff.x = data.x
-            eff.y = data.y
-            eff.z = data.z
-            eff.yaw = data.a
-            eff.scaleX = 1.0975 * data.scale_x // Magic const
-            eff.scaleY = 1.0975 * data.scale_y // Magic const
-            eff.scaleZ = 1.0975 * data.scale_z // Magic const
-            this._doods.push(eff)
-
-            if (data.scale_x != data.scale_y){
-                print('data.scale_x != data.scale_y')
-            }
-        })
-    }
-
-    private _cacheW3e(w3e_path: string){
-        this._w3e.open(w3e_path)
-
-        let cache: TileData[] = []
-        let tiles = this._w3e.data
-        tiles.forEach(t => {
-            cache.push([t.x, t.y, t.h, t.tile])
-        })
-        TerrainPreset._cache_w3e.set(w3e_path, cache)
-    }
-
-    private _cacheW3dDoo(w3d_path: string, doo_path: string){
-        // TODO optimization
-        this._w3d.open(w3d_path)
-        this._doo.open(doo_path)
-
-        let id2model: TypeData[] = []
-        let cache: DoodadData[] = []
-
-        let types = this._w3d.data
-        let doods = this._doo.data
+        let id2model = this._w3d_cache.data
+        let doods = this._doo_cache.data
 
         doods.forEach(dood => {
-            let id = dood.id
-            let type: Decor | undefined
-            for (let i = 0; i < types.length; i++){
-                if (types[i].id == id){
-                    type = types[i]
-                    break
+            // Is pathblocker?
+            if (TerrainPreset._destructable_ids.indexOf(dood.id) >= 0){
+                // print(int2id(dood.id), dood.x, dood.y, dood.z)
+                this._destrs.push(new hDestructable(dood.id, dood.x, dood.y, dood.z, dood.a,
+                                                    dood.scale_x, 0))
+            } else {
+                let model: string|undefined
+                for (let i = 0; i < id2model.length; i++){
+                    if (id2model[i][0] == dood.id){
+                        model = id2model[i][1]
+                    }
+                }
+    
+                if (!model){
+                    return Log.err(TerrainPreset.name + 
+                                   ': model not found for id ' + int2id(dood.id))
+                }
+    
+                let eff = new hEffect(model, dood.x, dood.y, dood.z)
+                eff.yaw = dood.a
+                eff.scaleX = 1.0975 * dood.scale_x // Magic const
+                eff.scaleY = 1.0975 * dood.scale_y // Magic const
+                eff.scaleZ = 1.0975 * dood.scale_z // Magic const
+                this._doods.push(eff)
+    
+                if (dood.scale_x != dood.scale_y){
+                    Log.err(TerrainPreset.name + 
+                            ': data.scale_x != data.scale_y')
                 }
             }
-
-            if (!type){
-                return Log.err(TerrainPreset.name + 
-                               ': can not find id \'' + int2id(id) + '\' type.')
-            }
-
-            let model = type.getString(FieldDecorList.Model)
-
-            if (!model){
-                return Log.err(TerrainPreset.name + 
-                               ': can not find \'' + int2id(id) + '\' doodad\'s model.')
-            }
-
-            id2model.push([id, model])
-            cache.push([dood.id, dood.x, dood.y, dood.z, dood.a, dood.scale_x, dood.scale_y, dood.scale_z])
         })
-        TerrainPreset._cache_id2model.set(w3d_path, id2model)
-        TerrainPreset._cache_doo.set(doo_path, cache)
     }
-    
-    private _w3d_path: string
-    private _w3e_path: string
-    private _doo_path: string
-    
-    private _w3d: w3dFile
-    private _w3e: w3eFile
-    private _doo: dooFile
+
+    private _w3e_cache: CacheW3e
+    private _w3d_cache: CacheW3d
+    private _doo_cache: CacheDoo
 
     private _tiles: hTile[] = []
     private _doods: hEffect[] = []
+    private _destrs: hDestructable[] = []
 
-    private static _cache_id2model = new BuilderCache<string, TypeData[]>(0)
-    private static _cache_doo = new BuilderCache<string, DoodadData[]>(1)
-    private static _cache_w3e = new BuilderCache<string, TileData[]>(2)
+    private static _destructable_ids: number[] = [
+        id2int('YTfb'), //2x2 Unflyable
+        id2int('YTfc'), //4x4 Unflyable
+        id2int('YTlb'), //2x2 Default
+        id2int('Ytlc'), //4x4 Default
+        id2int('YTpb'), //2x2 Default
+        id2int('YTpc'), //4x4 Default
+        id2int('YTab'), //2x2 Cyan
+        id2int('YTac'), //4x4 Cyan
+        id2int('OTis'), //2x2 Platform 
+        id2int('OTip'), //4x4 Platform
+    ]
 }

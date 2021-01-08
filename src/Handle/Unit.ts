@@ -68,6 +68,9 @@ export class hUnit extends Handle<junit>{
     get z(){return GetUnitFlyHeight(this.handle)}
     set z(z: number){SetUnitFlyHeight(this.handle, z, 0)}
 
+    get angle(){return GetUnitFacing(this.handle)}
+    set angle(a: number){SetUnitFacing(this.handle, a)}
+
     get life(){return GetUnitState(this.handle, UNIT_STATE_LIFE)}
     set life(val: number){SetUnitState(this.handle, UNIT_STATE_LIFE, val)}
     
@@ -131,11 +134,13 @@ export class hUnit extends Handle<junit>{
         SetUnitScale(this.handle, scale, scale, scale)
     }
 
+    get pause(){return IsUnitPaused(this.handle)}
+    set pause(flag: boolean){PauseUnit(this.handle, flag)}
+
     get typeId(){return this._type_id}
 
     isEnemy(other: hUnit){return IsUnitEnemy(this.handle, other.owner)}
     isAlly(other: hUnit){return IsUnitAlly(this.handle, other.owner)}
-
 
     setAnimation(index: number){SetUnitAnimationByIndex(this.handle, index)}
     getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}

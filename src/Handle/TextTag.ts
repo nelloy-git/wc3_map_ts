@@ -1,7 +1,7 @@
 import { Color, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
-export class TextTag extends Handle<jtexttag> {
+export class hTextTag extends Handle<jtexttag> {
     constructor(){
         super(CreateTextTag())
     }
@@ -11,7 +11,7 @@ export class TextTag extends Handle<jtexttag> {
         if (wcType(instance.handle) != 'textjtexttag'){
             Log.err('TextTag: got wrong type of handle.', 2)
         }
-        return instance as TextTag
+        return instance as hTextTag
     }
     static Timed(text: string, size: number, color: Color,
                  x: number, y: number, z: number,

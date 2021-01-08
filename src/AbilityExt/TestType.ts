@@ -1,32 +1,36 @@
 import * as Abil from './index'
 import { hUnit } from '../Handle'
 
-class TestCasting extends Abil.TypeCasting<[hUnit]> {
-    static readonly instance = new TestCasting()
-    start(abil: Abil.Ability<[hUnit]>): void {print('TestType: casting start')};
-    casting(abil: Abil.Ability<[hUnit]>, dt: number): void {};
-    cancel(abil: Abil.Ability<[hUnit]>): void {print('TestType: casting cancel')};
-    interrupt(abil: Abil.Ability<[hUnit]>): void {print('TestType: casting interrupt')};
-    finish(abil: Abil.Ability<[hUnit]>): void {print('TestType: casting finish')};
-    isTargetValid(abil: Abil.Ability<[hUnit]>, target: [hUnit]): boolean {return true}
+let TCasting = new Abil.TCasting<hUnit[]>()
+TCasting.start = (abil, target) => {print(abil.Data.name + ': casting start')}
+TCasting.casting = (abil, target) => {print(abil.Data.name + ': casting left ' + abil.Casting.timer.left)}
+TCasting.cancel = (abil, target) => {print(abil.Data.name + ': casting cancel')}
+TCasting.interrupt = (abil, target) => {print(abil.Data.name + ': casting interrupt')}
+TCasting.finish = (abil, target) => {print(abil.Data.name + ': casting finish')}
+TCasting.isTargetValid = (abil, target) => {return true}
+
+let TData = new Abil.TData<hUnit[]>()
+TData.name = abil => {return 'TestType'}
+TData.iconNormal = abil => {return 'TestIcon'}
+TData.iconDisabled = abil => {return 'TestIcon'}
+TData.tooltip = abil => {return 'TestTooltip'}
+TData.lifeCost = abil => {return 0}
+TData.manaCost = abil => {return 0}
+TData.range = abil => {return 500}
+TData.area = abil => {return 50}
+TData.chargeUsed = abil => {return 1}
+TData.chargeMax = abil => {return 1}
+TData.chargeCooldown = abil => {return 5}
+TData.castingTime = abil => {return 3}
+TData.isAvailable = abil => {
+    let charges = abil.Data.Charges.count > 0
+    let casting = abil.Casting.timer.left <= 0
+    return charges && casting
+}
+TData.consume = abil => {
+    abil.Data.Charges.cooldown = TData.chargeCooldown(abil)
+    abil.Data.Charges.count -= TData.chargeUsed(abil)
+    return true
 }
 
-class TestData extends Abil.TypeData {
-    static readonly instance = new TestData()
-    name(abil: Abil.Ability<[hUnit]>) {return 'TestType'}
-    iconNormal(abil: Abil.Ability<[hUnit]>) {return 'TestIcon'}
-    iconDisabled(abil: Abil.Ability<[hUnit]>) {return 'TestIcon'}
-    tooltip(abil: Abil.Ability<[hUnit]>) {return 'TestTooltip'}
-    lifeCost(abil: Abil.Ability<[hUnit]>) {return 0}
-    manaCost(abil: Abil.Ability<[hUnit]>) {return 0}
-    chargeUsed(abil: Abil.Ability<[hUnit]>) {return 1}
-    chargeMax(abil: Abil.Ability<[hUnit]>) {return 1}
-    chargeCooldown(abil: Abil.Ability<[hUnit]>) {return 3}
-    castingTime(abil: Abil.Ability<[hUnit]>) {return 1}
-    isAvailable(abil: Abil.Ability<[hUnit]>) {return abil.charges.count > 0}
-    consume(abil: Abil.Ability<[hUnit]>) {abil.charges.count -= 1; return true}
-}
-
-export let TestType = new Abil.Type(TestCasting.instance,
-                                    TestData.instance,
-                                    Abil.TypeTargetingFriend.instance)
+export let TestType = new Abil.TAbility(TCasting, TData, Abil.TTargetingFriend)

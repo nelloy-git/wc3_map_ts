@@ -1,7 +1,7 @@
 import { Color, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
-export class Image extends Handle<jimage> {
+export class hImage extends Handle<jimage> {
     constructor(image: string,
                 size_x: number, size_y: number, size_z: number,
                 origin_x?: number, origin_y?: number, origin_z?: number){
@@ -21,7 +21,7 @@ export class Image extends Handle<jimage> {
         if (wcType(instance.handle) != 'image'){
             Log.err('Image: got wrong type of handle.', 2)
         }
-        return instance as Image
+        return instance as hImage
     }
 
     public get x(){return this._x}

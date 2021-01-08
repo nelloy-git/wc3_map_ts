@@ -1,88 +1,88 @@
-import { Trigger } from "./Trigger";
+import { hTrigger } from "./Trigger";
 
-export class TriggerEvent {
+export class hTriggerEvent {
     private constructor(func: (this: void, trig: jtrigger, ...args: any[])=>jevent, ...args:any[]){
         this._func = func
         this._args = [...args]
     }
 
     static newVariableEvent(var_name: string, opcode: jlimitop, limitval: number){
-        return new TriggerEvent(TriggerRegisterVariableEvent, var_name, opcode, limitval)
+        return new hTriggerEvent(TriggerRegisterVariableEvent, var_name, opcode, limitval)
     }
 
     static newGameStateEvent(gamestate: jgamestate, opcode: jlimitop, limitval: number){
-        return new TriggerEvent(TriggerRegisterGameStateEvent, gamestate, opcode, limitval)
+        return new hTriggerEvent(TriggerRegisterGameStateEvent, gamestate, opcode, limitval)
     }
 
     static newDialogEvent(dialog: jdialog){
-        return new TriggerEvent(TriggerRegisterDialogEvent, dialog)
+        return new hTriggerEvent(TriggerRegisterDialogEvent, dialog)
     }
 
     static newDialogButtonEvent(button: jbutton){
-        return new TriggerEvent(TriggerRegisterDialogButtonEvent, button)
+        return new hTriggerEvent(TriggerRegisterDialogButtonEvent, button)
     }
 
     static newGameEvent(gameevent: jgameevent){
-        return new TriggerEvent(TriggerRegisterGameEvent, gameevent)
+        return new hTriggerEvent(TriggerRegisterGameEvent, gameevent)
     }
 
     static newEnterRegion(region: jregion){
-        return new TriggerEvent(TriggerRegisterEnterRegion, region)
+        return new hTriggerEvent(TriggerRegisterEnterRegion, region)
     }
 
     static newFrameEvent(frame: jframehandle, event: jframeeventtype){
-        return new TriggerEvent(BlzTriggerRegisterFrameEvent, frame, event)
+        return new hTriggerEvent(BlzTriggerRegisterFrameEvent, frame, event)
     }
 
     static newLeaveRegion(region: jregion){
-        return new TriggerEvent(TriggerRegisterLeaveRegion, region)
+        return new hTriggerEvent(TriggerRegisterLeaveRegion, region)
     }
 
     static newTrackableHitEvent(trackable: jtrackable){
-        return new TriggerEvent(TriggerRegisterTrackableHitEvent, trackable)
+        return new hTriggerEvent(TriggerRegisterTrackableHitEvent, trackable)
     }
 
     static newTrackableTrackEvent(trackable: jtrackable){
-        return new TriggerEvent(TriggerRegisterTrackableTrackEvent, trackable)
+        return new hTriggerEvent(TriggerRegisterTrackableTrackEvent, trackable)
     }
 
     static newPlayerEvent(player: jplayer, playerevent: jplayerevent){
-        return new TriggerEvent(TriggerRegisterPlayerEvent, player, playerevent)
+        return new hTriggerEvent(TriggerRegisterPlayerEvent, player, playerevent)
     }
 
     static newPlayerUnitEvent(player: jplayer, playerunitevent: jplayerunitevent){
-        return new TriggerEvent(TriggerRegisterPlayerUnitEvent, player, playerunitevent, null)
+        return new hTriggerEvent(TriggerRegisterPlayerUnitEvent, player, playerunitevent, null)
     }
 
     static newPlayerAllianceChange(player: jplayer, alliancetype: jalliancetype){
-        return new TriggerEvent(TriggerRegisterPlayerAllianceChange, player, alliancetype)
+        return new hTriggerEvent(TriggerRegisterPlayerAllianceChange, player, alliancetype)
     }
 
     static newPlayerStateEvent(player: jplayer, playerstate: jplayerstate, opcode: jlimitop, limitval: number){
-        return new TriggerEvent(TriggerRegisterPlayerStateEvent, player, playerstate, opcode, limitval)
+        return new hTriggerEvent(TriggerRegisterPlayerStateEvent, player, playerstate, opcode, limitval)
     }
 
     static newPlayerChatEvent(player: jplayer, message: string, exact_match: boolean){
-        return new TriggerEvent(TriggerRegisterPlayerChatEvent, player, message, exact_match)
+        return new hTriggerEvent(TriggerRegisterPlayerChatEvent, player, message, exact_match)
     }
 
     static newDeathEvent(widget: jwidget){
-        return new TriggerEvent(TriggerRegisterDeathEvent, widget)
+        return new hTriggerEvent(TriggerRegisterDeathEvent, widget)
     }
 
     static newUnitStateEvent(unit: junit, unitstate: junitstate, opcode: jlimitop, limitval: number){
-        return new TriggerEvent(TriggerRegisterUnitStateEvent, unit, unitstate, opcode, limitval)
+        return new hTriggerEvent(TriggerRegisterUnitStateEvent, unit, unitstate, opcode, limitval)
     }
 
     static newUnitEvent(unitevent: junitevent, unit: junit){
-        return new TriggerEvent(TriggerRegisterUnitEvent, unitevent, unit)
+        return new hTriggerEvent(TriggerRegisterUnitEvent, unitevent, unit)
     }
 
     static newUnitInRange(unit: junit, range: number){
-        return new TriggerEvent(TriggerRegisterUnitInRange, unit, range)
+        return new hTriggerEvent(TriggerRegisterUnitInRange, unit, range)
     }
 
-    public applyToTrigger(trigger: Trigger){
+    public applyToTrigger(trigger: hTrigger){
         this._func(trigger.handle, ...this._args)
     }
 

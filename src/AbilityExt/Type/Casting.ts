@@ -1,11 +1,30 @@
-import { IFace, TargetType } from '../IFace'
+import { IFace } from '../Ability/IFace'
+import { TargetType } from '../Utils'
 
-export abstract class TypeCasting<T extends TargetType> {
-    protected constructor(){}
-    abstract start(abil: IFace): void;
-    abstract casting(abil: IFace, dt: number): void;
-    abstract cancel(abil: IFace): void;
-    abstract interrupt(abil: IFace): void;
-    abstract finish(abil: IFace): void;
-    abstract isTargetValid(abil: IFace, target: T): boolean
+export class TCasting<T extends TargetType> {
+
+    get start(){return this._start}
+    set start(f: ((abil: IFace<T>, targ: T)=>void)){this._start = f}
+    
+    get casting(){return this._casting}
+    set casting(f: ((abil: IFace<T>, targ: T)=>void)){this._casting = f}
+    
+    get cancel(){return this._cancel}
+    set cancel(f: ((abil: IFace<T>, targ: T)=>void)){this._cancel = f}
+    
+    get interrupt(){return this._interrupt}
+    set interrupt(f: ((abil: IFace<T>, targ: T)=>void)){this._interrupt = f}
+    
+    get finish(){return this._finish}
+    set finish(f: ((abil: IFace<T>, targ: T)=>void)){this._finish = f}
+    
+    get isTargetValid(){return this._isTargetValid}
+    set isTargetValid(f: ((abil: IFace<T>, targ: T)=>boolean)){this._isTargetValid = f}
+
+    private _start: (abil: IFace<T>, targ: T)=>void = ()=>{}
+    private _casting: (abil: IFace<T>, targ: T)=>void = ()=>{}
+    private _cancel: (abil: IFace<T>, targ: T)=>void = ()=>{}
+    private _interrupt: (abil: IFace<T>, targ: T)=>void = ()=>{}
+    private _finish: (abil: IFace<T>, targ: T)=>void = ()=>{}
+    private _isTargetValid: (abil: IFace<T>, targ: T)=>boolean = ()=>{return true}
 }

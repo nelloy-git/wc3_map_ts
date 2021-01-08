@@ -1,7 +1,8 @@
+import { hUnit } from "./Unit";
 import { Color, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
-export class Effect extends Handle<jeffect> {
+export class hEffect extends Handle<jeffect> {
     constructor(model: string, x: number, y:number, z: number){
         super(AddSpecialEffect(model, x, y))
         BlzSetSpecialEffectHeight(this.handle, z)
@@ -16,7 +17,7 @@ export class Effect extends Handle<jeffect> {
         if (wcType(instance.handle) != 'effect'){
             Log.err('Effect: got wrong type of handle.', 2)
         }
-        return instance as Effect
+        return instance as hEffect
     }
 
     get x(){return this._x}
@@ -45,8 +46,6 @@ export class Effect extends Handle<jeffect> {
         this._roll = roll
         BlzSetSpecialEffectRoll(this.handle, this._roll)
     }
-
-    
 
     get scaleX(){return this._scale_x}
     set scaleX(scale: number){
@@ -94,4 +93,37 @@ export class Effect extends Handle<jeffect> {
     private _scale_y: number = 1;
     private _scale_z: number = 1;
     private _color: Color = new Color(1, 1, 1, 1);
+}
+
+type AttachPoint = 'Overhead'|'Head'|'Chest'|'Origin'|'Hand'|'Foot'|'Weapon'|'Sprite'|'Medium'|'Large'|'Right Hand'|'Left Hand'|'Right Foot'|'Left Foot'
+
+export class hEffectAttached extends Handle<jeffect> {
+    constructor(model: string, targ: hUnit, point: AttachPoint){
+        super(AddSpecialEffectTarget(model , targ.handle, point))
+        hEffectAttached._is_attached.set(this, true)
+    }
+
+    static get(id: jeffect | number){
+        let instance = Handle.get(id)
+        if (!instance){return}
+
+        if (wcType(instance.handle) != 'effect'){
+            Log.err('Effect: got wrong type of handle.', 2)
+        }
+
+        if (!hEffectAttached._is_attached.get(instance)){
+            return
+        }
+
+        return instance as hEffect
+    }
+
+    destroy(){
+        hEffectAttached._is_attached.delete(this)
+        BlzSetSpecialEffectScale(this.handle, 0.001)
+        DestroyEffect(this.handle)
+        super.destroy()
+    }
+
+    private static _is_attached = new Map<Handle<jhandle>, boolean>()
 }

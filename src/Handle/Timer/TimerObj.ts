@@ -1,17 +1,17 @@
 import { Action, ActionList } from '../../Utils'
-import { TimerList } from './TimerList'
+import { hTimerList } from './TimerList'
 
-export class TimerObj {
-    constructor(timer_list: TimerList){
+export class hTimerObj {
+    constructor(timer_list: hTimerList){
         this._timer_list = timer_list
         timer_list.addTimerObj(this)
     }
     
     pause: boolean = false
 
-    get timeLeft(){return this._end - this._timer_list.time}
-    set timeLeft(left: number){
-        if (this.timeLeft < 0){
+    get left(){return this._end - this._timer_list.time}
+    set left(left: number){
+        if (this.left < 0){
             this.start(left)
         } else {
             this._end = this._timer_list.time + left
@@ -23,6 +23,7 @@ export class TimerObj {
     start(timeout: number){
         this._start = this._timer_list.time
         this._end = this._start + timeout
+        print('Timer start')
         this._actions.get('START')?.run(this)
     }
 
@@ -32,7 +33,7 @@ export class TimerObj {
         }
         this._actions.get('PERIOD')?.run(this)
 
-        if (this.timeLeft < this._timer_list.period){
+        if (this.left < this._timer_list.period){
             this.finish()
         }
     }
@@ -50,11 +51,11 @@ export class TimerObj {
     }
 
     addAction(event: TimerObj.Event,
-              callback: (this: void, obj: TimerObj)=>void){
+              callback: (this: void, obj: hTimerObj)=>void){
         return this._actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[TimerObj], void>){
+    removeAction(action: Action<[hTimerObj], void>){
         let found = false
         for (let [event, list] of this._actions){
             found = list.remove(action)
@@ -63,10 +64,10 @@ export class TimerObj {
         return found
     }
 
-    private _timer_list: TimerList;
+    private _timer_list: hTimerList;
     private _start = -1;
     private _end = -1;
-    private readonly _actions = new Map<TimerObj.Event, ActionList<[TimerObj]>>([
+    private readonly _actions = new Map<TimerObj.Event, ActionList<[hTimerObj]>>([
         ['START', new ActionList()],
         ['PERIOD', new ActionList()],
         ['CANCEL', new ActionList()],
