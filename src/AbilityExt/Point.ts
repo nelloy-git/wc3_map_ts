@@ -16,7 +16,7 @@ export class Point {
         return Point._l_border +
                this.x.toString() +
                Point._sep +
-               this.y.toString +
+               this.y.toString() +
                Point._r_border
     }
 

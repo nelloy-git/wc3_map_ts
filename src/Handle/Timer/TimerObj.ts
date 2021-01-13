@@ -18,12 +18,12 @@ export class hTimerObj {
         }
     }
 
+    get endTime(){return this._end}
     get fullTime(){return this._end - this._start}
 
     start(timeout: number){
         this._start = this._timer_list.time
         this._end = this._start + timeout
-        print('Timer start')
         this._actions.get('START')?.run(this)
     }
 
@@ -31,23 +31,25 @@ export class hTimerObj {
         if (reduce_time_left){
             this._end -= this._timer_list.period
         }
-        this._actions.get('PERIOD')?.run(this)
 
         if (this.left < this._timer_list.period){
             this.finish()
+            return
         }
+
+        this._actions.get('PERIOD')?.run(this)
     }
 
     cancel(){
+        this._actions.get('CANCEL')?.run(this)
         this._start = -1
         this._end = -1
-        this._actions.get('CANCEL')?.run(this)
     }
 
     finish(){
+        this._actions.get('FINISH')?.run(this)
         this._start = -1
         this._end = -1
-        this._actions.get('FINISH')?.run(this)
     }
 
     addAction(event: TimerObj.Event,

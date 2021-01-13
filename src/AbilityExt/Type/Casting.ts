@@ -17,6 +17,9 @@ export class TCasting<T extends TargetType> {
     
     get finish(){return this._finish}
     set finish(f: ((abil: IFace<T>, targ: T)=>void)){this._finish = f}
+
+    get castingTime(){return this._castingTime}
+    set castingTime(f: (abil: IFace<T>, targ: T | undefined)=> number){this._castingTime = f}
     
     get isTargetValid(){return this._isTargetValid}
     set isTargetValid(f: ((abil: IFace<T>, targ: T)=>boolean)){this._isTargetValid = f}
@@ -26,5 +29,6 @@ export class TCasting<T extends TargetType> {
     private _cancel: (abil: IFace<T>, targ: T)=>void = ()=>{}
     private _interrupt: (abil: IFace<T>, targ: T)=>void = ()=>{}
     private _finish: (abil: IFace<T>, targ: T)=>void = ()=>{}
+    private _castingTime: (abil: IFace<T>, targ: T | undefined)=>number = ()=>{return 1}
     private _isTargetValid: (abil: IFace<T>, targ: T)=>boolean = ()=>{return true}
 }

@@ -12,15 +12,10 @@ import { TData } from './Type/Data'
 import { TTargeting } from './Type/Targeting'
 
 export class TAbility<T extends TargetType>{
-    constructor(TCasting: TCasting<T>, TData: TData<T>, TTargeting: TTargeting<T>){
-        this.TData = TData
-        this.TCasting = TCasting
-        this.TTargeting = TTargeting
-    }
-
-    readonly TData: TData<T>
-    readonly TCasting: TCasting<T>
-    readonly TTargeting: TTargeting<T>
+    constructor(
+        public TCasting: TCasting<T>, 
+        public TData: TData<T>,
+        public TTargeting: TTargeting<T>){}
 }
 
 export class Ability<T extends TargetType> implements IFace<T> {

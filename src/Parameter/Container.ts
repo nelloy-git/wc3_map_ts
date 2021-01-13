@@ -10,10 +10,6 @@ export class Container{
             return Log.err(Container.name + 
                            ': can not get \"' + param + '\" parameter.')
         }
-
-        val = val < Type.min(param) ? Type.min(param)
-                                    : val > Type.max(param) ? Type.max(param)
-                                                            : val
         return val
     }
 
@@ -23,9 +19,6 @@ export class Container{
             return Log.err(Container.name + 
                            ': can not get \"' + param + '\" parameter.')
         }
-        res = res < Type.min(param) ? Type.min(param)
-                                    : res > Type.max(param) ? Type.max(param)
-                                                            : res
         this._actions.run(this, param)
         return res
     }
@@ -36,9 +29,6 @@ export class Container{
             return Log.err(Container.name + 
                            ': can not get \"' + param + '\" parameter.')
         }
-        res = res < Type.min(param) ? Type.min(param)
-                                    : res > Type.max(param) ? Type.max(param)
-                                                            : res
         this._actions.run(this, param)
         return res
     }
@@ -53,8 +43,7 @@ export class Container{
         return this._actions.remove(action)
     }
 
-    private _actions = new ActionList<[Container, Type]>()
-    private _values = new Map<Type, Value>([
+    protected _values = new Map<Type, Value>([
         ['PATK', new Value()],
         ['PSPD', new Value()],
         ['PDEF', new Value()],
@@ -70,4 +59,5 @@ export class Container{
         ['RECO', new Value()],
         ['MOVE', new Value()],
     ])
+    private _actions = new ActionList<[Container, Type]>()
 }

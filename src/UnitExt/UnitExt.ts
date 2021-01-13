@@ -18,7 +18,12 @@ export class UnitExt {
 
     static get(id: number): UnitExt|undefined
     static get(u: junit): UnitExt|undefined
-    static get(id_or_junit: junit | number){
+    static get(u: hUnit): UnitExt|undefined
+    static get(id_or_junit: hUnit | junit | number){
+        if (id_or_junit instanceof hUnit){
+            return UnitExt._junit2ext.get(id_or_junit)
+        }
+        
         let unit = hUnit.get(id_or_junit)
         if (!unit){ return }
         return UnitExt._junit2ext.get(unit)

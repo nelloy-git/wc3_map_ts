@@ -2,17 +2,22 @@ import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
 
 import { hUnit } from "../../Handle";
+import { Mouse } from "../../Input";
 import { UnitExt } from "../../UnitExt/UnitExt";
 import { Action } from "../../Utils";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
 import { InterfaceAbilityButton } from "./Button";
+import { InterfaceCastingBar } from "./CastingBar";
 
 export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     constructor(cols: number, rows: number){
         super()
         this.cols = cols
         this.rows = rows
+
+        this._casting_bar = new InterfaceCastingBar()
+        this._casting_bar.parent = this
 
         for (let y = 0; y < rows; y++){
             this._backgrounds.push([])
@@ -38,6 +43,8 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
         }
 
         this._unit = u
+        this._casting_bar.unit = u
+        this.visible = (u != undefined)
         if (!u){return}
 
         let a = u.abils
@@ -52,9 +59,11 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     protected _set_size(size: [number, number]){
         super._set_size(size)
 
+        this._casting_bar.pos = [size[0] / 4, -size[1] / 4]
+        this._casting_bar.size = [size[0] / 2, size[1] / 4]
+
         let w = size[0] / this.cols
         let h = size[1] / this.rows
-
         for (let y = 0; y < this.rows; y++){
             for (let x = 0; x < this.cols; x++){
                 this._backgrounds[y][x].pos = [x * w, y * h]
@@ -66,17 +75,13 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
         }
     }
 
-    protected _set_visible(flag:boolean){
-        super._set_visible(flag)
-    }
-
     protected _update(abils: Abil.Container){
         let list = abils.list
 
         let i = 0
         for (let y = 0; y < this.rows; y++){
             for (let x = 0; x < this.cols; x++){
-                this._buttons[y][x].ability = list[i]
+                this._buttons[y][x].ability = list.get(i)
                 i++
             }
         }
@@ -88,6 +93,23 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     private _unit: UnitExt | undefined
     private _abils_changed: Action<[Abil.Container], void> | undefined
 
-    private _backgrounds: Frame.Backdrop[][] = [];
+    private _casting_bar: InterfaceCastingBar
+    private _backgrounds: Frame.Backdrop[][] = []
     private _buttons: InterfaceAbilityButton[][] = []
+
+    private _mouse_control = Mouse.addAction('UP', (event, pl, btn) => {
+        if (btn == MOUSE_BUTTON_TYPE_LEFT){
+            let active_targ = Abil.TTargeting.activeAbility(pl)
+            if (active_targ){
+                active_targ.Targeting.finish(pl)
+            }
+        } else if (btn == MOUSE_BUTTON_TYPE_RIGHT){
+            if (this._unit){
+                let active_cast = Abil.Casting.getActive(this._unit.unit)
+                if (active_cast){
+                    active_cast.Casting.cancel()
+                }
+            }
+        }
+    })
 }

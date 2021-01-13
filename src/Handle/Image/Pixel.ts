@@ -1,11 +1,15 @@
-import { Import } from '../../Utils'
+import { Color, Import } from '../../Utils'
+import { hEffect } from '../Effect';
 import { hImage } from "../Image";
 
-export class hImagePixel extends hImage {
-    constructor(size: number){
-        super(hImagePixel._import_file.dst, size, size, size)
-    }
+export interface hPixel {
+    destroy(): void
 
-    private static _import_file = new Import(GetSrc() + '\\Handle\\Image\\Pixel\\Pixel.dds',
-                                             'war3mapImported\\Pixel\\Pixel.dds')
+    x: number
+    y: number
+    z: number
+    visible: boolean
+    color: Color
 }
+
+export type hPixelList<T extends hPixel> = Array<T>

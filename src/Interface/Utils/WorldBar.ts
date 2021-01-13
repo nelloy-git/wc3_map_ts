@@ -51,8 +51,8 @@ export class WorldBar extends hEffect {
 
     private _update(){
         if (this._target){
-            this.x = this._target.x - 16 + this._offset_x  // TODO default offset
-            this.y = this._target.y - 16 + this._offset_y  // TODO default offset
+            this.x = this._target.x + this._offset_x  // TODO default offset
+            this.y = this._target.y + this._offset_y  // TODO default offset
             MoveLocation(WorldBar._location, this.x, this.y)
             this.z = this._target.z + GetLocationZ(WorldBar._location) + this._offset_z
         } else {

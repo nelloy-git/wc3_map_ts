@@ -1,25 +1,10 @@
-import { int2id, id2int, wcType, float2str } from'./Funcs'
-import { Action } from './Action'
-import { ActionList } from './ActionList'
-import { BuilderCache } from './BuilderCache'
-import { Color } from './Color'
-import { Import } from './Import'
+export { int2id, id2int, wcType, GetTerrainZ, IsWalkable, IsReforged } from'./Funcs'
+export { Action } from './Action'
+export { ActionList } from './ActionList'
+export { BuilderCache } from './BuilderCache'
+export { Color } from './Color'
+export { Import } from './Import'
+export { Mat } from './Mat'
+
 import { Logger } from './Logger'
-import { Mat } from './Mat'
-
-let Log = Logger.Default
-
-export {
-    Action,
-    ActionList,
-    BuilderCache,
-    Color,
-    Import,
-    Log,
-    Mat,
-    
-    int2id,
-    id2int,
-    wcType,
-    float2str
-}
+export let Log = Logger.Default

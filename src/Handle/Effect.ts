@@ -28,6 +28,13 @@ export class hEffect extends Handle<jeffect> {
     
     get z(){return this._z}
     set z(z: number){this._z = z; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
+    
+    get visible(){return this._visible}
+    set visible(flag: boolean){
+        this._visible = flag
+        let z = flag ? this.z : -100000
+        BlzSetSpecialEffectPosition(this.handle, this.x, this.y, z)
+    }
 
     get yaw(){return this._yaw}
     set yaw(yaw: number){
@@ -86,6 +93,7 @@ export class hEffect extends Handle<jeffect> {
     private _x: number
     private _y: number
     private _z: number
+    private _visible: boolean = true
     private _yaw: number = 0;
     private _pitch: number = 0;
     private _roll: number = 0;
@@ -95,11 +103,12 @@ export class hEffect extends Handle<jeffect> {
     private _color: Color = new Color(1, 1, 1, 1);
 }
 
-type AttachPoint = 'Overhead'|'Head'|'Chest'|'Origin'|'Hand'|'Foot'|'Weapon'|'Sprite'|'Medium'|'Large'|'Right Hand'|'Left Hand'|'Right Foot'|'Left Foot'
+type AttachPoint = 'overhead'|'head'|'chest'|'origin'|'hand'|'foot'|'weapon'|'sprite'|'medium'|'large'|'right hand'|'left hand'|'right foot'|'left foot'
 
 export class hEffectAttached extends Handle<jeffect> {
     constructor(model: string, targ: hUnit, point: AttachPoint){
         super(AddSpecialEffectTarget(model , targ.handle, point))
+        BlzPlaySpecialEffect(this.handle, ANIM_TYPE_STAND)
         hEffectAttached._is_attached.set(this, true)
     }
 

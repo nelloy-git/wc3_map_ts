@@ -21,7 +21,6 @@ export interface DataIFace<T extends TargetType> {
     readonly charges_use: number
     readonly charges_max: number
     readonly charge_cd: number
-    readonly casting_time: number
     readonly is_available: boolean
     consume(target: T): boolean
     
@@ -38,13 +37,17 @@ export interface TargetingIFace<T extends TargetType> {
 
 export interface CastingIFace<T extends TargetType> {
     readonly abil: IFace<T>
-    readonly timer: hTimerObj
+    readonly period: number
+    readonly Timer: hTimerObj
 
     start(target: T): void
     extraPeriod(reduce_time_left: boolean): void
     cancel(): void
     interrupt(): void
     finish(): void
+
+    castingTime(target: T | undefined): number
+    isTargetValid(target: T): boolean
 }
 
 export interface IFace<T extends TargetType> {

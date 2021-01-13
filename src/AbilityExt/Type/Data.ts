@@ -36,18 +36,15 @@ export class TData<T extends TargetType> {
     get chargeCooldown(){return this._chargeCooldown}
     set chargeCooldown(f: (abil: IFace<T>)=> number){this._chargeCooldown = f}
 
-    get castingTime(){return this._castingTime}
-    set castingTime(f: (abil: IFace<T>)=> number){this._castingTime = f}
-
     get isAvailable(){return this._isAvailable}
     set isAvailable(f: (abil: IFace<T>)=> boolean){this._isAvailable = f}
 
     get consume(){return this._consume}
     set consume(f: (abil: IFace<T>, target: T)=> boolean){this._consume = f}
 
-    private _name: ((abil: IFace<T>) => string) = () => {return ''}
-    private _iconNormal: ((abil: IFace<T>) => string) = () => {return ''}
-    private _iconDisabled: ((abil: IFace<T>) => string) = () => {return ''}
+    private _name: ((abil: IFace<T>) => string) = () => {return 'undefined'}
+    private _iconNormal: ((abil: IFace<T>) => string) = () => {return 'ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp'}
+    private _iconDisabled: ((abil: IFace<T>) => string) = () => {return 'undefined'}
     private _tooltip: ((abil: IFace<T>) => string) = () => {return ''}
     private _lifeCost: ((abil: IFace<T>) => number) = () => {return 0}
     private _manaCost: ((abil: IFace<T>) => number) = () => {return 0}
@@ -56,7 +53,6 @@ export class TData<T extends TargetType> {
     private _chargeUsed: ((abil: IFace<T>) => number) = () => {return 1}
     private _chargeMax: ((abil: IFace<T>) => number) = () => {return 1}
     private _chargeCooldown: ((abil: IFace<T>) => number) = () => {return 5}
-    private _castingTime: ((abil: IFace<T>) => number) = () => {return 2}
     private _isAvailable: ((abil: IFace<T>) => boolean) = () => {return true}
     private _consume: ((abil: IFace<T>, target: T) => boolean) = () => {return true}
 }

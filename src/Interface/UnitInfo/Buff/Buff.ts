@@ -8,13 +8,13 @@ export class InterfaceBuff extends GlueTextButton {
     }
 
     get buff(){return this._buff}
-    set buff(buff: Buff.IFace | undefined){
+    set buff(buff: Buff.IFace<any> | undefined){
         this.visible = buff != undefined
         if (buff){
             let normal = this.getElement('NORMAL')
-            if (normal){normal.texture = buff.type.data.icon(buff)}
+            if (normal){normal.texture = buff.Data.icon}
         }
     }
 
-    private _buff: Buff.IFace | undefined
+    private _buff: Buff.IFace<any> | undefined
 }

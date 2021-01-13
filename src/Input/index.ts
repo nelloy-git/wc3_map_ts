@@ -1,11 +1,5 @@
-import {Keyboard} from './Keyboard'
-import {Mouse} from './Mouse'
-import {Selection} from './Selection'
-import {SyncData} from './SyncData'
-
-export {
-    Keyboard,
-    Mouse,
-    Selection,
-    SyncData
-}
+export { Camera } from './Camera'
+export { Keyboard } from './Keyboard'
+export { Mouse } from './Mouse'
+export { Selection } from './Selection'
+export { SyncData } from './SyncData'

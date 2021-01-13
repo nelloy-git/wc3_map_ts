@@ -22,12 +22,9 @@ export class Shield {
         let cur = Shield.getCur(shield_type, owner)
         cur = cur - dmg
 
-        if (cur <= 0){
-            Shield._setCur(shield_type, owner, 0)
-            return -cur
-        }
-        Shield._setCur(shield_type, owner, cur)
-        return 0
+        let left = cur >= 0 ? 0 : -cur
+        Shield._setCur(shield_type, owner, math.max(0, -left))
+        return left
     }
 
     static getCur(type: Shield.Type, owner: hUnit){

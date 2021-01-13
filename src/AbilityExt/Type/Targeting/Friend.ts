@@ -1,4 +1,4 @@
-import { Mouse, Selection } from '../../../Input'
+import { Selection } from '../../../Input'
 import { hTimer, hUnit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
 import { TTargeting } from '../Targeting'
@@ -65,7 +65,7 @@ function mouseTrack(this: void){
     }
 }
 
-function getTarget(this: void, pl: jplayer, abil: IFace<(hUnit)[]>): hUnit[]{
+function getTarget(this: void, pl: jplayer, abil: IFace<hUnit[]>): hUnit[]{
     if (abil != cur_abil){
         return Log.err(TTargeting.name + 
                        ': getTarget error.')

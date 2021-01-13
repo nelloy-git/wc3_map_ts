@@ -26,7 +26,6 @@ export class Data<T extends TargetType> implements DataIFace<T>{
     get charges_use(){return this._type.chargeUsed(this.abil)}
     get charges_max(){return this._type.chargeMax(this.abil)}
     get charge_cd(){return this._type.chargeCooldown(this.abil)}
-    get casting_time(){return this._type.castingTime(this.abil)}
     get is_available(){return this._type.isAvailable(this.abil)}
     consume(target: T){return this._type.consume(this.abil, target)}
 

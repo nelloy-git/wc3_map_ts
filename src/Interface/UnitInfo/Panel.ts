@@ -22,7 +22,9 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
         if (normal){normal.texture = 'ui\\widgets\\battlenet\\bnet-mainmenu-profile-up.dds'}
         let pushed = this._params_btn.getElement('PUSHED')
         if (pushed){pushed.texture = 'ui\\widgets\\battlenet\\bnet-mainmenu-profile-down.dds'}
-        this._params_btn.addAction('CLICK', ()=>{
+        this._params_btn.addAction('CLICK', (frame, event, pl)=>{
+            if (pl != GetLocalPlayer()){return}
+
             this._params_btn_pressed = !this._params_btn_pressed
             this._params.visible = this._unit != undefined && this._params_btn_pressed
             if (normal){normal.texture = this._params_btn_pressed ?

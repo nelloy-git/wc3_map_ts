@@ -35,7 +35,7 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         if (!u){return}
 
         let b = u.buffs
-        this._buffs_changed = b.addAction(b => {this._update(b)})
+        this._buffs_changed = b.addAction('LIST_CHANGED', b => {this._update(b)})
         this._update(b)
     }
 
@@ -89,7 +89,7 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     readonly rows: number
 
     private _unit: UnitExt | undefined;
-    private _buffs_changed: Action<[Buff.Container], void> | undefined
+    private _buffs_changed: Action<[Buff.Container, Buff.Container.Event], void> | undefined
     
     private _buttons: InterfaceBuff[][] = []
 }

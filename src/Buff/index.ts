@@ -1,9 +1,10 @@
-export { Buff } from './Buff'
-export { IFace } from './IFace'
+export { Buff, TBuff } from './Buff'
+export { IFace } from './Buff/IFace'
 export { Container } from './Container'
 
-export { Type } from './Type'
-export { TypeData } from './Type/Data'
-export { TypeProcess } from './Type/Process'
+export { TData } from './Type/Data'
+export { TDuration } from './Type/Duration'
 
 export { Stun } from './Preset/Stun'
+export { Push } from './Preset/Push'
+export { TossUp } from './Preset/TossUp'

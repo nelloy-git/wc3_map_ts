@@ -1,22 +1,13 @@
 import { Color, Log } from '../../Utils'
-import { hImagePixel } from "./Pixel";
+import { hPixel, hPixelList } from "./Pixel";
 
-export class hImageArc {
-    constructor(max_pixels: number,
-                pixel_size?: number,
+
+export class hImageArc<T extends hPixel> {
+    constructor(pixels: hPixelList<T>,
                 pixel_step?: number){
-
-        this._size = pixel_size ? pixel_size : 16
         this._step = pixel_step ? pixel_step : 8
         this._in_use = 0
-        this._pixels = []
-        
-        for (let i = 0; i < max_pixels; i++){
-            let pixel = new hImagePixel(this._size)
-            this._pixels.push(pixel)
-            pixel.renderAlways = true
-            pixel.visible = false
-        }
+        this._pixels = pixels
     }
 
     public setPolarPos(x1: number, y1: number, range: number, a1: number, a2: number){
@@ -43,14 +34,6 @@ export class hImageArc {
         }
     }
 
-    public get renderAlways(){return this._render_always}
-    public set renderAlways(flag: boolean){
-        this._render_always = flag
-        for (let pixel of this._pixels){
-            pixel.renderAlways = flag
-        }
-    }
-
     public get visible(){return this._visible}
     public set visible(flag: boolean){
         this._visible = flag
@@ -71,7 +54,7 @@ export class hImageArc {
 
         this._in_use = math.floor(arc_length / this._step) + 1
         if (this._in_use > this._pixels.length){
-            Log.wrn(hImageArc.toString() + 
+            Log.wrn(hImageArc.name + 
                     ': is not enought pixels to fill arc.')
         }
 
@@ -98,10 +81,9 @@ export class hImageArc {
     private _a1: number = 0;
     private _a2: number = 0;
 
-    private _size: number;
     private _step: number;
     private _in_use: number;
-    private _pixels: hImagePixel[];
+    private _pixels: hPixelList<T>;
 
     private _color = new Color(1, 1, 1, 1)
     private _render_always = true

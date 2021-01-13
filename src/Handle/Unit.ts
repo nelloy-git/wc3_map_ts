@@ -1,4 +1,4 @@
-import { Color, Log, wcType } from "../Utils";
+import { Color, id2int, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 export class hUnit extends Handle<junit>{
@@ -12,6 +12,10 @@ export class hUnit extends Handle<junit>{
 
         // Get default attack cooldown
         this._attack_cooldown_default = BlzGetUnitAttackCooldown(this.handle, 0)
+
+        // Enable Z coord
+        UnitAddAbility(this.handle, id2int('Arav'))
+        UnitRemoveAbility(this.handle, id2int('Arav'))
     }
     static get(id: junit | number){
         let instance = Handle.get(id)
@@ -22,54 +26,17 @@ export class hUnit extends Handle<junit>{
         return <hUnit> instance
     }
 
-    static getMouseFocus(){
-        let u = BlzGetMouseFocusUnit()
-        return u ? hUnit.get(u) : undefined
-    }
+    get x(){return GetUnitX(this.handle) - 16}
+    set x(x: number){SetUnitX(this.handle, x + 16)}
 
-    static getDamageSource(){
-        let u = GetEventDamageSource()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    static getDamageTarget(){
-        let u = BlzGetEventDamageTarget()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    static getEntering(){
-        let u = GetEnteringUnit()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    static getInRect(r: jrect){
-        let gr = CreateGroup()
-        GroupEnumUnitsInRect(gr, r)
-
-        let list: hUnit[] = []
-        let u = FirstOfGroup(gr)
-        while (u != undefined){
-            let hu = hUnit.get(u)
-            if (hu != undefined){list.push(hu)}
-            GroupRemoveUnit(gr, u)
-            u = FirstOfGroup(gr)
-        }
-        DestroyGroup(gr)
-
-        return list
-    }
-
-    get x(){return GetUnitX(this.handle)}
-    set x(x: number){SetUnitX(this.handle, x)}
-
-    get y(){return GetUnitY(this.handle)}
-    set y(y: number){SetUnitX(this.handle, y)}
+    get y(){return GetUnitY(this.handle) - 16}
+    set y(y: number){SetUnitY(this.handle, y + 16)}
 
     get z(){return GetUnitFlyHeight(this.handle)}
     set z(z: number){SetUnitFlyHeight(this.handle, z, 0)}
 
-    get angle(){return GetUnitFacing(this.handle)}
-    set angle(a: number){SetUnitFacing(this.handle, a)}
+    get angle(){return bj_DEGTORAD * GetUnitFacing(this.handle)}
+    set angle(a: number){SetUnitFacingTimed(this.handle, bj_RADTODEG * a, 0.01)}
 
     get life(){return GetUnitState(this.handle, UNIT_STATE_LIFE)}
     set life(val: number){SetUnitState(this.handle, UNIT_STATE_LIFE, val)}
@@ -94,7 +61,7 @@ export class hUnit extends Handle<junit>{
     set manaMax(val: number){
         let perc = GetUnitManaPercent(this.handle)
         BlzSetUnitMaxMana(this.handle, val < 1 ? 1 : val)
-        SetUnitState(this.handle, UNIT_STATE_LIFE, 0.01 * perc * val)
+        SetUnitState(this.handle, UNIT_STATE_MAX_MANA, 0.01 * perc * val)
     }
 
     get baseDamage(){return BlzGetUnitBaseDamage(this.handle, 0)}
@@ -123,8 +90,6 @@ export class hUnit extends Handle<junit>{
                                         math.floor(255 * color.a))
     }
 
-
-
     get owner(){return GetOwningPlayer(this.handle)}
     set owner(player: jplayer){SetUnitOwner(this.handle, player, true)}
 
@@ -134,8 +99,27 @@ export class hUnit extends Handle<junit>{
         SetUnitScale(this.handle, scale, scale, scale)
     }
 
+    get animation(){Log.wrn(hUnit.name + ': unavailable getter.'); return 0}
+    set animation(name_or_id: string|number){
+        if (typeof name_or_id == 'string'){
+            SetUnitAnimation(this.handle, name_or_id)
+        } else {
+            SetUnitAnimationByIndex(this.handle, name_or_id)
+        }
+    }
+
+    get animation_scale(){return this._animation_scale}
+    set animation_scale(scale: number){
+        this._animation_scale = scale
+        SetUnitTimeScale(this.handle, scale)
+    }
+
     get pause(){return IsUnitPaused(this.handle)}
-    set pause(flag: boolean){PauseUnit(this.handle, flag)}
+    set pause(flag: boolean){
+        this._pause_counter += flag ? 1 : -1
+        if (this._pause_counter < 0){this._pause_counter = 0}
+        PauseUnit(this.handle, this._pause_counter > 0)
+    }
 
     get typeId(){return this._type_id}
 
@@ -145,14 +129,81 @@ export class hUnit extends Handle<junit>{
     setAnimation(index: number){SetUnitAnimationByIndex(this.handle, index)}
     getCollisionSize(){return BlzGetUnitCollisionSize(this.handle)}
 
+    immediateOrder(order: string){IssueImmediateOrder(this.handle, order)}
+
     destroy(){
         RemoveUnit(this.handle)
         super.destroy()
     }
     
-    private _type_id: number;
-    private _color: Color = new Color(1, 1, 1, 1);
-    private _dispersion_damage: number = 0.3;
-    private _attack_cooldown_default: number;
-    private _modelScale: number = 1;
+    private _type_id: number
+    private _color: Color = new Color(1, 1, 1, 1)
+    private _dispersion_damage: number = 0.3
+    private _attack_cooldown_default: number
+    private _modelScale: number = 1
+    private _pause_counter: number = 0
+    private _animation_scale: number = 1
+}
+
+export namespace hUnit {
+
+    export function getTriggered(){
+        let u = GetTriggerUnit()
+        return u ? hUnit.get(u) : undefined
+    }
+
+    export function getMouseFocus(){
+        let u = BlzGetMouseFocusUnit()
+        return u ? hUnit.get(u) : undefined
+    }
+
+    export function getDamageSource(){
+        let u = GetEventDamageSource()
+        return u ? hUnit.get(u) : undefined
+    }
+
+    export function getDamageTarget(){
+        let u = BlzGetEventDamageTarget()
+        return u ? hUnit.get(u) : undefined
+    }
+
+    export function getEntering(){
+        let u = GetEnteringUnit()
+        return u ? hUnit.get(u) : undefined
+    }
+
+    export function getInRange(x: number, y: number, r: number){
+        GroupEnumUnitsInRange(_group, x, y, r)
+
+        let list: hUnit[] = []
+        let u = FirstOfGroup(_group)
+        while (u != undefined){
+            let hu = hUnit.get(u)
+            if (hu != undefined){list.push(hu)}
+            GroupRemoveUnit(_group, u)
+            u = FirstOfGroup(_group)
+        }
+
+        return list
+    }
+
+    export function getInRect(r: jrect){
+        GroupEnumUnitsInRect(_group, r)
+
+        let list: hUnit[] = []
+        let u = FirstOfGroup(_group)
+        while (u != undefined){
+            let hu = hUnit.get(u)
+            if (hu != undefined){list.push(hu)}
+            GroupRemoveUnit(_group, u)
+            u = FirstOfGroup(_group)
+        }
+
+        return list
+    }
+
+    let _group: jgroup = <jgroup><unknown> undefined
+    if (IsGame()){
+        _group = CreateGroup()
+    }
 }

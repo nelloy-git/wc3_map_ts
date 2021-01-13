@@ -36,7 +36,7 @@ export class TTargeting<T extends TargetType> {
 
         if (TTargeting._active[pl_id] != this || abil != TTargeting._abil[pl_id]){
             return Log.err(TTargeting.name + 
-                           ': can not cancel inactive ability.')
+                           ': can not cancel inactive ability.', 3)
         }
 
         this._stop_actions.run(this, pl, abil)

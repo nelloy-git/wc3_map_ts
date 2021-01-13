@@ -14,12 +14,6 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
         this._text.font = 'fonts\\nim_____.ttf'
     }
 
-    protected _set_size(size: [w: number, h: number]){
-        super._set_size(size)
-        this._text.size = size
-        this._text.fontSize = 0.8 * size[1]
-    }
-
     get ability(){return this._abil}
     set ability(abil: Abil.Ability<any> | undefined){
         if (this._abil){
@@ -27,6 +21,7 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
         }
 
         this._abil = abil
+        this._is_visible = false
         if (!abil){return}
 
         this._charged_action = abil.Data.Charges.addAction('CHARGE_CHANGED',
@@ -34,9 +29,20 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
         this._chargesChanged(abil.Data.Charges)
     }
 
+    protected _set_size(size: [w: number, h: number]){
+        super._set_size(size)
+        this._text.size = size
+        this._text.fontSize = 0.8 * size[1]
+    }
+
+    protected _set_visible(flag: boolean){
+        super._set_visible(flag && this._is_visible)
+    }
+
     private _chargesChanged(charges: Abil.Charges){
         let max = charges.countMax
-        this.visible = max > 1
+        this._is_visible = max > 1
+        this.visible = this.parent ? this.parent.visible : true
         
         if (max > 1){
             let left = Math.floor(charges.count).toString()
@@ -47,5 +53,6 @@ export class InterfaceAbilityCharges extends Frame.Backdrop {
     private _abil: Abil.Ability<any> | undefined;
     private _charged_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined;
 
+    private _is_visible = false
     private _text = new Frame.SimpleText()
 }

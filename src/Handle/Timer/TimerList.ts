@@ -18,9 +18,7 @@ export class hTimerList {
     get period(){return this._period}
 
     newTimerObj(){
-        let obj = new hTimerObj(this)
-        this._objects.push(obj)
-        return obj
+        return new hTimerObj(this)
     }
 
     addTimerObj(obj: hTimerObj){
@@ -28,29 +26,22 @@ export class hTimerList {
     }
 
     removeTimerObj(obj: hTimerObj){
-        let found = false
-        for (let i = 0; i < this._objects.length; i++){
-            if (obj == this._objects[i]){
-                this._objects.splice(i, 1)
-                found = true
-                break
-            }
-        }
-        return found
+        let i = this._objects.indexOf(obj)
+        if (i >= 0){this._objects.splice(i, 1)}
+        return i >= 0
     }
 
     private _runTimerObj(){
-        this._cur_time += this._period
-
-        for (let cur of this._objects){
-            if (cur.left < 0){continue}
+        this._objects.forEach(cur => {
+            if (cur.endTime < this._cur_time){return}
             if (cur.pause){
                 cur.left += this._period
-                continue
+                return
             }
 
             cur.period(false)
-        }
+        })
+        this._cur_time += this._period
     }
 
     private _cur_time = 0

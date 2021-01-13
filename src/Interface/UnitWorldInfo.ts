@@ -9,22 +9,37 @@ export namespace InterfaceUnitWorldInfo {
     export function Init(){
         EnablePreSelect(false, false)
 
-        let _trigger = new hTrigger()
-        _trigger.addAction(()=>{
-            let u = hUnit.getEntering()
-            if (u){_createBars(u)}
-        })
-
+        // Already existed units
         let map = CreateRegion()
         RegionAddRect(map, GetWorldBounds())
         let _trigger_event = hTriggerEvent.newEnterRegion(map)
-        _trigger_event.applyToTrigger(_trigger)
 
         hUnit.getInRect(GetWorldBounds()).forEach(u => {_createBars(u)})
 
+        // New bars
+        let _trigger_new = new hTrigger()
+        _trigger_new.addAction(()=>{
+            let u = hUnit.getEntering()
+            if (u){_createBars(u)}
+        })
+        _trigger_event.applyToTrigger(_trigger_new)
+
+        // Update
         let timer = new hTimer()
         timer.addAction(()=>{_update()})
         timer.start(0.02, true)
+
+        // Delete
+        let trigger_delete = new hTrigger()
+        trigger_delete.addAction(() => {
+            let u = hUnit.getTriggered()
+            if (u){_delete(u)}
+        })
+        for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
+            let pl = Player(i)
+            let event = hTriggerEvent.newPlayerUnitEvent(pl, EVENT_PLAYER_UNIT_DEATH)
+            event.applyToTrigger(trigger_delete)
+        }
     }
 
     function _createBars(u: hUnit){
@@ -86,7 +101,7 @@ export namespace InterfaceUnitWorldInfo {
         _unit2bars.set(u, bars)
     }
 
-    function _update(){
+    function _update(this: void){
         for (let [u, bars] of _unit2bars){
             let life = u.life
             let max_life = u.lifeMax
@@ -109,6 +124,25 @@ export namespace InterfaceUnitWorldInfo {
             bars[MSHIELD].fullness = m_shield / max
             bars[SHIELD].fullness = min / max
         }
+    }
+
+    function _hide(u: hUnit){
+        let bars = _unit2bars.get(u)
+        if (!bars){return}
+
+        bars.forEach(bar => {
+            // TODO
+        })
+    }
+
+    function _delete(this: void, u: hUnit){
+        let bars = _unit2bars.get(u)
+        if (!bars){return}
+
+        bars.forEach(bar => {
+            bar.destroy()
+        })
+        _unit2bars.delete(u)
     }
 
     let LIFE = 0

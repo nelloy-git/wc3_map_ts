@@ -25,11 +25,13 @@ import { UnitExt } from './UnitExt/UnitExt'
 
 import { id2int} from './Utils'
 import { Init } from './Interface/Init'
-import { LifeForceShield } from './Abilities/LifeForceShield'
+// import { LifeForceShield } from './Abilities/LifeForceShield'
 import { TerrainPreset } from './Binary/Cached/Terrain'
 import { id2byte } from './Binary/Utils'
 import { Ogre } from './UnitExt/Ogre/Ogre'
 import { Ability } from './AbilityExt'
+import { Breakthrough } from './UnitExt/Ogre/Abils/Breakthrough'
+import { hTimer } from './Handle'
 
 let w3u = Map.Map.w3u
 let unit_type = w3u.add(id2int('hfoo'))
@@ -38,7 +40,7 @@ unit_type.setInt(Map.FieldUnitList.ManaMaximum, 100)
 
 // let pref = 'TerrainPresets/MurlocLagoonHD.w3x/war3map.'
 // let murloc_lagoon = new TerrainPreset(pref + 'w3e', pref + 'w3d', pref + 'doo')
-// murloc_lagoon.enable(true)
+
 
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
@@ -50,24 +52,12 @@ if (IsGame()){
     let f = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(f)
 
-    let u1 = new UnitExt(unit_type, 0, 0, Player(0))
-    u1.params.set('LIFE', 'BASE', 1000)
-    u1.params.set('PATK', 'BASE', 10)
-    u1.params.set('PDEF', 'BASE', 5)
-    u1.params.set('RECO', 'BASE', 5)
+    let u1 = new Ogre(0, 0, Player(0))
+    let u3 = new Ogre(0, 0, Player(0))
 
-    u1.abils.set(0, TestAbil)
-    u1.abils.set(1, LifeForceShield)
+    let u2 = new Ogre(0, 0, Player(1))
 
-    let u2 = new UnitExt(unit_type, 0, 0, Player(0))
-    u2.params.set('LIFE', 'BASE', 500)
-    u2.params.set('PATK', 'BASE', 10)
-    u2.params.set('PDEF', 'BASE', 5)
-    u2.params.set('RECO', 'BASE', 5)
-
-    u2.abils.set(1, TestAbil)
-    u2.abils.set(2, LifeForceShield)
-    // u2.abils.set(1, LifeForceShield)
-
-    // let u3 = new Ogre(0, 0, Player(0))
+    // let t = new hTimer()
+    // t.addAction(()=>{murloc_lagoon.enable(true)})
+    // t.start(30, false)
 }

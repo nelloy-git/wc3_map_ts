@@ -27,13 +27,12 @@ export namespace Selection {
 
     let _actions = new ActionList<[jplayer, junit[]]>()
 
-    function _runActios(event: 'SELECT' | 'DESELECT'){
-        let pl = GetTriggerPlayer()
+    function _runActios(pl: jplayer, event: 'SELECT' | 'DESELECT'){
         let u = GetTriggerUnit()
         let gr = _groups.get(pl)
         if (!gr || !u){return}
 
-        let found = gr.findIndex((cur: junit, i:number, gr: junit[]): boolean => {return cur == u})
+        let found = gr.indexOf(u)
 
         if (_lock){
             if (found < 0 && pl == GetLocalPlayer()){
@@ -50,15 +49,26 @@ export namespace Selection {
         }
     }
 
+    function _checkDied(this: void){
+        let u = GetTriggerUnit()
+
+        for (let [pl, gr] of _groups){
+            if (gr.indexOf(u) >= 0){_runActios(pl, 'DESELECT')}
+        }
+    }
+
     let _lock = false
     let _groups = new Map<jplayer, junit[]>()
     let _trigger_select: jtrigger | undefined
     let _trigger_deselect: jtrigger | undefined
+    let _trigger_died: jtrigger | undefined
     if (IsGame()){
         _trigger_select = CreateTrigger()
         _trigger_deselect = CreateTrigger()
-        TriggerAddAction(_trigger_select, (():void => {_runActios('SELECT')}))
-        TriggerAddAction(_trigger_deselect, (():void => {_runActios('DESELECT')}))
+        _trigger_died = CreateTrigger()
+        TriggerAddAction(_trigger_select, (() => {_runActios(GetTriggerPlayer(), 'SELECT')}))
+        TriggerAddAction(_trigger_deselect, (() => {_runActios(GetTriggerPlayer(), 'DESELECT')}))
+        TriggerAddAction(_trigger_died, _checkDied)
 
         for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
             let pl = Player(i)
@@ -68,6 +78,7 @@ export namespace Selection {
                 _groups.set(pl, [])
                 TriggerRegisterPlayerUnitEvent(_trigger_select, pl, EVENT_PLAYER_UNIT_SELECTED)
                 TriggerRegisterPlayerUnitEvent(_trigger_deselect, pl, EVENT_PLAYER_UNIT_DESELECTED)
+                TriggerRegisterPlayerUnitEvent(_trigger_died, pl, EVENT_PLAYER_UNIT_DEATH)
             } 
         }
     }

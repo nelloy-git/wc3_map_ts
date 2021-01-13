@@ -1,32 +1,25 @@
-import { hTimerList, hTimerObj, hUnit } from "../Handle";
-import { IFace } from "./IFace";
-import { Type } from "./Type";
+import { hUnit } from "../Handle";
+import { Data } from "./Buff/Data";
+import { Duration } from "./Buff/Duration";
+import { IFace } from "./Buff/IFace";
+import { TData } from "./Type/Data";
+import { TDuration } from "./Type/Duration";
 
-export class Buff<T> extends hTimerObj implements IFace {
-    constructor(src: hUnit, targ: hUnit, type: Type<T>, data: T){
-        super(Buff._timer_list)
+export class TBuff<T> {
+    constructor(
+        public TData: TData<T>,
+        public TDuration: TDuration<T>
+    ){}
+}
 
-        this.src = src
-        this.dst = targ
-        this.type = type
-        this.data = data
+export class Buff<T> implements IFace<T> {
+    constructor(source: hUnit, owner: hUnit, type: TBuff<T>, user_data: T){
+        let id = IFace.register(this)
 
-        this.addAction('START', ()=>{this.type.process.start(this)})
-        this.addAction('PERIOD', ()=>{this.type.process.period(this)})
-        this.addAction('CANCEL', ()=>{this.type.process.cancel(this); this.destroy()})
-        this.addAction('FINISH', ()=>{this.type.process.finish(this); this.destroy()})
+        this.Data = new Data(this, id, owner, source, type.TData, user_data)
+        this.Dur = new Duration(this, type.TDuration)
     }
 
-    period(){super.period(false)}
-
-    destroy(){
-        Buff._timer_list.removeTimerObj(this)
-    }
-
-    readonly src: hUnit
-    readonly dst: hUnit
-    readonly type: Type<T>
-    readonly data: T
-
-    private static _timer_list = new hTimerList(0.05)
+    readonly Data: Data<T>
+    readonly Dur: Duration<T>
 }

@@ -1,10 +1,8 @@
 import * as Frame from "../../FrameExt";
 
-import { hTimerList, hTimerObj, hUnit } from "../../Handle";
+import { hTimerList, hTimerObj } from "../../Handle";
 import { Shield } from "../../Parameter";
 import { UnitExt } from "../../UnitExt/UnitExt";
-import { Color, float2str } from "../../Utils";
-import { InterfaceAutoBar } from "../Utils/AutoBar";
 import { InterfaceMultiBar } from "../Utils/MultiBar";
 
 export class InterfaceUnitBars extends Frame.SimpleEmpty {

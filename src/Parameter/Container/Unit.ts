@@ -16,6 +16,10 @@ export class Unit extends Container {
                            ': already exists.', 2)
         }
         Unit._owner2container.set(owner, this)
+
+        for (let [param, value] of this._values){
+            this.set(param, 'BASE', Type.defaultUnitBase(param))
+        }
     }
 
     static get(owner: hUnit){
@@ -23,13 +27,23 @@ export class Unit extends Container {
     }
 
     set(param: Type, type: ValueType, val: number){
+        let min = Type.unitMin(param)
+        let max = Type.unitMax(param)
+        val = val < min ? min : val > max ? max : val
+
         let res = super.set(param, type, val)
         this._applyParam(param, res)
         return res
     }
 
     add(param: Type, type: ValueType, val: number){
-        let res = super.add(param, type, val)
+        let min = Type.unitMin(param)
+        let max = Type.unitMax(param)
+        let cur = super.get(param, type)
+        val += cur
+        val = val < min ? min : val > max ? max : val
+
+        let res = super.set(param, type, val)
         this._applyParam(param, res)
         return res
     }
@@ -37,7 +51,10 @@ export class Unit extends Container {
     protected _applyParam(param: Type, val: number){
         switch (param){
             case 'PATK':{this.owner.baseDamage = val; break}
-            case 'PSPD':{this.owner.attackCooldown = (1 / val) * this.owner.attackCooldownDefault; break}
+            case 'PSPD':{
+                // 0.5 attacks per sec is default (PSPD = 1 (100%))
+                this.owner.attackCooldown = 2 / val
+                break}
             case 'LIFE':{this.owner.lifeMax = val; break}
             case 'REGE':{this.owner.lifeRegen = val; break}
             case 'MANA':{this.owner.manaMax = val; break}

@@ -1,130 +1,91 @@
-// import { Mouse, Selection } from '../../../Input'
-// import { hImageArc, hImageLine, hTimer, hUnit } from '../../../Handle'
-// import { Color, Log } from '../../../Utils'
-// import { TypeTargeting } from '../Targeting2'
-// import { Point } from '../../Point'
+import { Mouse, Selection } from '../../../Input'
+import { hImage, hLine, hTimer, hUnit } from '../../../Handle'
+import { GetTerrainZ, Log } from '../../../Utils'
+import { TTargeting } from '../Targeting'
+import { Point } from '../../Point'
+import { IFace } from '../../Ability/IFace'
 
-// export class TypeTargetingLine extends TypeTargeting<[Point]> {
-//     static readonly instance = new TypeTargetingLine()
+export let TTargetingLine = new TTargeting<[Point]>(getTarget)
 
-//     protected _start(){
-//         TypeTargetingLine.enable = true
-//     }
+let cur_abil: IFace<[hUnit]> | undefined
+let line_l = IsGame() ? new hLine(initPixels(200)) : <hLine<hImage>><unknown>undefined
+let line_r = IsGame() ? new hLine(initPixels(200)) : <hLine<hImage>><unknown>undefined
+let end_l = IsGame() ? new hLine(initPixels(100)) : <hLine<hImage>><unknown>undefined
+let end_r = IsGame() ? new hLine(initPixels(100)) : <hLine<hImage>><unknown>undefined
 
-//     protected _cancel(){
-//         TypeTargetingLine.enable = false
-//     }
+if (IsGame()){
+    let timer = new hTimer()
+    timer.addAction(mouseTrack)
+    timer.start(0.02, true)
+}
 
-//     protected _finish(target?: [Point]){
-//         TypeTargetingLine.enable = false
+TTargetingLine.addAction('START', (inst, pl, abil) => {enableDrawing(true, pl, abil)})
+TTargetingLine.addAction('STOP', (inst, pl, abil) => {enableDrawing(false, pl, abil)})
 
-//         let abil = TypeTargeting.getActiveAbility(GetLocalPlayer())
-//         if (!abil){
-//             return Log.err(TypeTargetingLine.name + 
-//                            ': to finish targeting start it first.', 2)
-//         }
-        
-//         let x
-//         let y
-//         if (target){
-//             x = target[0].x
-//             y = target[0].y
-//         } else {
-//             x = Mouse.getX()
-//             y = Mouse.getY()
-//         }
+function initPixels(count: number){
+    let list = []
+    for (let i = 0; i < count; i++){
+        list.push(new hImage())
+    }
+    return list
+}
 
-//         let caster = abil.owner
+function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[hUnit]>){
+    if (pl != GetLocalPlayer()){return}
+    
+    cur_abil = flag ? abil : undefined
+    Selection.lock(flag)
 
-//         let dx = x - caster.x
-//         let dy = y - caster.y
-//         let r = math.pow(math.pow(dx, 2) + math.pow(dy, 2), 0.5)
+    line_l.visible = flag
+    line_r.visible = flag
+    end_l.visible = flag
+    end_r.visible = flag
 
-//         let abil_r = abil.type.data.range(abil)
-//         if (r > abil_r){
-//             let cos = dx / r
-//             let sin = dy / r
+    if (flag){mouseTrack()}
+}
 
-//             dx = r * cos
-//             dy = r * sin
+function mouseTrack(this: void){
+    if (!cur_abil){return}
 
-//             x = caster.x + dx
-//             y = caster.y + dy
-//         }
+    let owner = cur_abil.Data.owner
+    let [end] = getTarget(GetLocalPlayer(), cur_abil)
 
-//         target = [new Point(x, y)]
+    let dx = end.x - owner.x
+    let dy = end.y - owner.y
+    let a = Atan2(dy, dx)
+    let w = cur_abil.Data.area / 2
+    let r = SquareRoot(dx * dx + dy * dy)
 
-//         return target
-//     }
+    end_l.setPolarPos(end.x, end.y, 2 * w, a + math.pi - math.pi / 3)
+    end_r.setPolarPos(end.x, end.y, 2 * w, a + math.pi + math.pi / 3)
+    line_l.setPolarPos(end_l.x2, end_l.y2, r - w, a + math.pi)
+    line_r.setPolarPos(end_r.x2, end_r.y2, r - w, a + math.pi)
+}
 
-//     private static get enable(){return TypeTargetingLine._enabled}
-//     private static set enable(flag: boolean){
-//         TypeTargetingLine._enabled = flag
-//         Selection.lock(flag)
+function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){
+    let owner = abil.Data.owner
 
-//         TypeTargetingLine._line_l.visible = flag
-//         TypeTargetingLine._line_r.visible = flag
-//         TypeTargetingLine._end_l.visible = flag
-//         TypeTargetingLine._end_r.visible = flag
-//     }
+    let start_x = owner.x
+    let start_y = owner.y
+    let end_x = Mouse.getX(pl)
+    let end_y = Mouse.getY(pl)
 
-//     // Mouse track
-//     private static _mouseTrack(this: void){
-//         if (!TypeTargetingLine._enabled){return}
+    let dx = end_x - start_x
+    let dy = end_y - start_y
+    let a = Atan2(dy, dx)
+    let w = abil.Data.area / 2
+    let r = SquareRoot(dx * dx + dy * dy)
+    
+    if (r < w){
+        r = w
+        end_x = r * Cos(a) + start_x
+        end_y = r * Sin(a) + start_y
+    } else if (r > abil.Data.range) {
+        r = abil.Data.range
+        end_x = r * Cos(a) + start_x
+        end_y = r * Sin(a) + start_y
+    }
 
-//         let abil = TypeTargeting.getActiveAbility(GetLocalPlayer())
-//         if (!abil){
-//             return Log.err(TypeTargetingLine.name + 
-//                            ': can not track mouse.', 2)
-//         }
-
-//         let start_x = abil.owner.x
-//         let start_y = abil.owner.y
-//         let end_x = Mouse.getX()
-//         let end_y = Mouse.getY()
-
-//         print(start_x, start_y, end_x, end_y)
-
-//         let dx = end_x - start_x
-//         let dy = end_y - start_y
-//         let a = math.atan2(dy, dx)
-//         let w = abil.type.data.area(abil)
-//         let r = math.pow(math.pow(dx, 2) + math.pow(dy, 2), 0.5)
-//         r = math.min(math.max(r, w), abil.type.data.range(abil))
-
-//         let end_l = TypeTargetingLine._end_l
-//         let end_r = TypeTargetingLine._end_r
-//         end_l.setPolarPos(end_x, end_y, 2 * w, a - math.pi / 6)
-//         end_r.setPolarPos(end_x, end_y, 2 * w, a + math.pi / 6)
-//         TypeTargetingLine._line_l.setPolarPos(end_l.x2, end_l.y2, a, r - w)
-//         TypeTargetingLine._line_r.setPolarPos(end_r.x2, end_r.y2, a, r - w)
-//     }
-
-//     private static _mouseClick(this: void, event: Mouse.Event, pl: jplayer, btn: jmousebuttontype){
-//         if (pl != GetLocalPlayer()){return}
-//         if (!TypeTargetingLine._enabled){return}
-
-//         let cur_instance = TypeTargeting.getActiveInstance(pl)
-//         if(!(cur_instance instanceof TypeTargetingLine)){return}
-
-//         if (btn == MOUSE_BUTTON_TYPE_LEFT){
-//             cur_instance.finish(pl)
-//         } else {
-//             cur_instance.cancel(pl)
-//         }
-//     }
-
-//     private static _mouseTimer = IsGame() ? (():hTimer=>{
-//         let t = new hTimer()
-//         t.addAction(TypeTargetingLine._mouseTrack)
-//         t.start(0.02, true)
-//         return t
-//     })() : undefined
-//     private static _mouseAction = Mouse.addAction('UP', TypeTargetingLine._mouseClick)
-
-//     private static _enabled = false
-//     private static _line_l = IsGame() ? new hImageLine(100) : <hImageLine><unknown>undefined
-//     private static _line_r = IsGame() ? new hImageLine(100) : <hImageLine><unknown>undefined
-//     private static _end_l = IsGame() ? new hImageLine(20) : <hImageLine><unknown>undefined
-//     private static _end_r = IsGame() ? new hImageLine(20) : <hImageLine><unknown>undefined
-// }
+    let res: [Point] = [new Point(end_x, end_y)]
+    return res
+}

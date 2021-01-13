@@ -1,4 +1,4 @@
-import { Action, ActionList, Log } from "../../Utils";
+import { Action, ActionList } from "../../Utils";
 import { hEffect } from '../Effect';
 import { hTimer } from '../Timer'
 
@@ -19,7 +19,7 @@ export class hProjectile extends hEffect {
         let [targ_x, targ_y] = targ
         let dx = this.x - targ_x
         let dy = this.y - targ_y
-        this.yaw = math.atan2(dy, dx)
+        this.yaw = Atan2(dy, dx)
 
         let r = math.sqrt(dx * dx + dy * dy)
         this._vel_x = hProjectile._update_period * this._vel * dx / r

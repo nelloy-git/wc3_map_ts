@@ -1,19 +1,29 @@
-import { Color, Log, wcType } from "../Utils";
+import { Color, GetTerrainZ, Import, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 export class hImage extends Handle<jimage> {
-    constructor(image: string,
-                size_x: number, size_y: number, size_z: number,
-                origin_x?: number, origin_y?: number, origin_z?: number){
+    constructor(image?: string,
+                size_x?: number, size_y?: number,
+                origin_x?: number, origin_y?: number){
+        image = image ? image : hImage._default_file.dst
+        size_x = size_x ? size_x : 16
+        size_y = size_y ? size_y : 16
+
         super(CreateImage(image,
-                          size_x, size_y, size_z,
+                          size_x, size_y, 0,
                           0, 0, -5000,
                           origin_x ? origin_x : size_x / 2,
                           origin_y ? origin_y : size_y / 2,
-                          origin_z ? origin_z : size_z / 2, 4))
+                          0, 4))
         this._x = 0
         this._y = 0
         this._z = 0
+        this._color = new Color(1, 1, 1, 1)
+        this._visible = true
+        this._render_always = false
+
+        this.renderAlways = true
+        this.z = 10
     }
     public static get(id: jimage | number){
         let instance = Handle.get(id)
@@ -25,18 +35,32 @@ export class hImage extends Handle<jimage> {
     }
 
     public get x(){return this._x}
-    public set x(x: number){this._x = x; SetImagePosition(this.handle, this._x, this._y, this._z)}
+    public set x(x: number){
+        this._x = x
+        SetImagePosition(this.handle, this._x, this._y, this._z)
+        SetImageConstantHeight(this.handle, true, GetTerrainZ(this._x, this._y) + this._z)
+    }
     
     public get y(){return this._y}
-    public set y(y: number){this._y = y; SetImagePosition(this.handle, this._x, this._y, this._z)}
+    public set y(y: number){
+        this._y = y
+        SetImagePosition(this.handle, this._x, this._y, this._z)
+        SetImageConstantHeight(this.handle, true, GetTerrainZ(this._x, this._y) + this._z)
+    }
     
     public get z(){return this._z}
-    public set z(z: number){this._z = z; SetImagePosition(this.handle, this._x, this._y, this._z)}
+    public set z(z: number){
+        this._z = z
+        SetImageConstantHeight(this.handle, true, GetTerrainZ(this._x, this._y) + this._z)
+    }
 
     public get color(){return new Color(this._color)}
     public set color(color: Color){
         this._color = new Color(color)
-        SetImageColor(this.handle, 255 * color.r, 255 *  color.g, 255 * color.b, 255 * color.a)
+        SetImageColor(this.handle, math.floor(255 * color.r),
+                                   math.floor(255 * color.g),
+                                   math.floor(255 * color.b),
+                                   math.floor(255 * color.a))
     }
     
     public get renderAlways(){return this._render_always}
@@ -50,10 +74,13 @@ export class hImage extends Handle<jimage> {
         super.destroy()
     }
 
-    private _x: number;
-    private _y: number;
-    private _z: number;
-    private _color: Color = new Color(1, 1, 1, 1);
-    private _render_always = false
-    private _visible = true
+    private _x: number
+    private _y: number
+    private _z: number
+    private _color: Color
+    private _render_always: boolean
+    private _visible: boolean
+    
+    private static _default_file = new Import(GetSrc() + '\\Handle\\Image\\Pixel\\Pixel.dds',
+                                              'war3mapImported\\Pixel\\Pixel.dds')
 }

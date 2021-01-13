@@ -1,7 +1,6 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
 import { Action } from '../../Utils'
-import { float2str } from '../../Utils';
 
 export class InterfaceAbilityCooldown extends Frame.SimpleImage {
     constructor(){
@@ -15,15 +14,6 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
         this._text.font = 'fonts\\nim_____.ttf'
         this._text.fontSize = 0.35 * this.size[1]
     }
-
-    protected _set_size(size: [number, number]){
-        this._size = size
-        super._set_size([this._cd_part * size[0], size[1]])
-
-        this._text.size = size
-        this._text.fontSize = 0.35 * size[1]
-    }
-
     get ability(){return this._abil}
     set ability(abil: Abil.Ability<any> | undefined){
         if (this._abil){
@@ -44,6 +34,14 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
         this._cooldownLoop(abil.Data.Charges)
     }
 
+    protected _set_size(size: [number, number]){
+        this._size = size
+        super._set_size([this._cd_part * size[0], size[1]])
+
+        this._text.size = size
+        this._text.fontSize = 0.35 * size[1]
+    }
+
     private _chargesChanged(charges: Abil.Charges){
         let color = this.color
         color.a = charges.count < 1 ? 0.85 : 0.35
@@ -60,7 +58,7 @@ export class InterfaceAbilityCooldown extends Frame.SimpleImage {
         this._cd_part = left / full
 
         super._set_size([this._cd_part * this._size[0], this._size[1]])
-        this._text.text = float2str(left, 1)
+        this._text.text = string.format('%.1f', left)
     }
 
     private _size: [number, number] = this._get_size()

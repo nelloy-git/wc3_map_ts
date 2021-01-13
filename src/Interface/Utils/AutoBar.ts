@@ -1,6 +1,6 @@
 import { SimpleStatusBarExt } from "../../FrameExt";
 import { hTimerList } from "../../Handle";
-import { Action, float2str } from "../../Utils";
+import { Action } from "../../Utils";
 
 export class InterfaceAutoBar extends SimpleStatusBarExt {
     constructor(){
@@ -45,16 +45,16 @@ export class InterfaceAutoBar extends SimpleStatusBarExt {
 
         let text = ' '
         if (this.printCur){
-            text += float2str(cur, 0) + ' '
+            text += string.format('%.0f ', cur)
             if (this.printMax){text += '/ '}
         }
 
         if (this.printMax){
-            text += float2str(max, 0) + ' '
+            text += string.format('%.0f ', max)
         }
 
         if (this.printPerc){
-            text += '(' + float2str(100 * part, 0) + '%) '
+            text += '(' + string.format('%.1f', part) + '%) '
         }
 
         this.fullness = part

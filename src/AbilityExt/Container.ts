@@ -8,7 +8,7 @@ export class Container {
         this.owner = owner
         if (Container._owner2container.get(owner)){
             return Log.err(Container.name + 
-                           ': already exists.', 2)
+                           ': already exists.')
         }
         Container._owner2container.set(owner, this)
     }
@@ -18,22 +18,22 @@ export class Container {
         return Container._owner2container.get(owner)
     }
 
-    get list(): ReadonlyArray<Ability<any> | undefined>{
+    get list(): ReadonlyMap<number, Ability<any>>{
         return this._list
     }
 
     set(i: number, type: TAbility<any>){
-        this._list[i] = new Ability(this.owner, type)
+        this._list.set(i, new Ability(this.owner, type))
         this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
 
     del(i: number){
-        this._list[i] = undefined
+        this._list.delete(i)
         this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
 
     get(i: number): Readonly<Ability<any>> | undefined{
-        return this._list[i]
+        return this._list.get(i)
     }
 
     addAction(event: Container.Event,
@@ -50,7 +50,7 @@ export class Container {
 
     readonly owner: hUnit;
 
-    private _list: (Ability<any> | undefined)[] = []
+    private _list = new Map<number, Ability<any>>()
     private _actions = new Map<Container.Event, ActionList<[Container, Container.Event]>>([
         ['LIST_CHANGED', new ActionList()],
     ])

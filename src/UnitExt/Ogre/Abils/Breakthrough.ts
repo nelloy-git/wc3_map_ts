@@ -1,110 +1,167 @@
-// import * as Abil from "../../../AbilityExt";
-// import * as Param from "../../../Parameter";
+import * as Abil from "../../../AbilityExt";
+import * as Buff from "../../../Buff";
+import * as Param from "../../../Parameter";
 
-// import { hItem, hUnit } from "../../../Handle";
-// import { id2int, Log } from "../../../Utils";
+import { hItem, hUnit } from "../../../Handle";
+import { id2int, Log } from "../../../Utils";
+import { BreakthroughData } from "./Data/Breakthrough";
 
-// let NAME = 'Breakthrough'
-// let ICON = 'ReplaceableTextures\\CommandButtons\\BTNStampede.blp'
-// let DIS_ICON = 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp'
-// let TOOLTIP = 'T\no\no\nl\nt\ni\np'
+let NAME = 'Breakthrough'
+let ICON = 'ReplaceableTextures\\CommandButtons\\BTNStampede.blp'
+let DIS_ICON = 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp'
+let TOOLTIP = 'T\no\no\nl\nt\ni\np'
+let ANIM_INDEX = 11
+let TURN_TIME = 0.5
+let PUSH_DUR = 1
+let DMG_MULT = 2
 
-// class Casting extends Abil.TCasting<[Abil.Point]> {
-//     static readonly instance = new Casting()
+let Casting = new Abil.TCasting<[Abil.Point]>()
 
-//     start(abil: Abil.Ability<[Abil.Point]>): void {
-//         let targ = abil.getTarget()[0]
+let pathChecker: hItem
+if (IsGame()){
+    pathChecker = new hItem(id2int('rat9'), 0, 0)
+    pathChecker.visible = false
+}
 
-//         let dx = targ.x - abil.owner.x
-//         let dy = targ.y - abil.owner.y
-//         let r = math.pow(math.pow(dx, 2) + math.pow(dy, 2), 0.5)
-//         let cos = dx / r
-//         let sin = dy / r
-//         let r_x = r * cos
-//         let r_y = r * sin
+Casting.start = (abil, target) => {
+    let targ = target[0]
+    let caster = abil.Data.owner
 
-//         let speed =  abil.type.data.range(abil) / abil.type.data.castingTime(abil)
-//         let sp_x = speed * cos
-//         let sp_y = speed * sin
+    let dx = targ.x - caster.x
+    let dy = targ.y - caster.y
+    let angle = Atan2(dy, dx)
+    angle = angle >= 0 ? angle : 2 * math.pi + angle
+    let range = SquareRoot(dx * dx + dy * dy)
 
-//         Casting._caster2speed.set(abil.owner, [sp_x, sp_y])
-//         Casting._caster2range.set(abil.owner, [r_x, r_y])
-//     };
+    let cast_time = abil.Casting.castingTime(target)
+    let turn_time = getTurnTime(abil, target)
+    let vel = range / (cast_time - turn_time)
 
-//     casting(abil: Abil.Ability<[Abil.Point]>, dt: number): void {
-//         let caster = abil.owner
+    caster.pause = true
+    caster.angle = angle
+    caster.animation = ANIM_INDEX
 
-//         let speed = Casting._caster2speed.get(caster)
-//         if (!speed){
-//             return Log.err(Casting.name + 
-//                            ': speed is undefined.')
-//         }
-//         let [sp_x, sp_y] = speed
+    new BreakthroughData(abil, angle, range, vel, Abil.Casting.period)
+}
 
-//         let x = caster.x + sp_x
-//         let y = caster.y + sp_y
-//         Casting._pathChecker.pos = [caster.x + sp_x, caster.y + sp_y]
-//         // Collision detected
-//         if (Casting._pathChecker.x == x || Casting._pathChecker.y == y){
-//             abil.castingFinish()
-//         }
+Casting.casting = (abil, target) => {
+    let data = BreakthroughData.get(abil)
+    if (!data){
+        return Log.err(abil.Data.name + 
+                       ': data is undefined.')
+    }
 
-//         let r = Casting._caster2range.get(caster)
-//         if (!r){
-//             return Log.err(Casting.name + 
-//                            ': range is undefined.')
-//         }
+    // Turning caster
+    let caster = abil.Data.owner
+    if (caster.angle < data.angle - 0.1 || caster.angle > data.angle + 0.1){
+        return
+    }
 
-//         let [r_x, r_y] = r
-//         r_x -= sp_x
-//         r_y -= sp_y
+    // Moving caster
+    let status = data.move()
+    // print(status, data.range, data.range_x, data.range_y)
+    if (status == 'COLLISION'){
+        abil.Casting.cancel()
+        return
+    } else if (status == 'FINISH'){
+        abil.Casting.finish()
+        return
+    }
 
-//         // Target point achieved.
-//         if (r_x <= 0 || r_y <= 0){
-//             abil.castingFinish()
-//         }
-//         Casting._caster2range.set(caster, [r_x, r_y])
-//     };
+    let x = caster.x
+    let y = caster.y
+    let params = Param.Unit.get(caster)
+    let in_range = hUnit.getInRange(x, y, abil.Data.area)
+    for (let target of in_range){
+        if (caster.isAlly(target)){continue}
+        if (data.targets.indexOf(target) >= 0){continue}
 
-//     cancel(abil: Abil.Ability<[Abil.Point]>): void {};
-//     interrupt(abil: Abil.Ability<[Abil.Point]>): void {};
-//     finish(abil: Abil.Ability<[Abil.Point]>): void {};
-//     isTargetValid(abil: Abil.Ability<[Abil.Point]>, target: [Abil.Point]): boolean {return true}
+        // Push
+        let buffs = Buff.Container.get(target)
+        if (buffs){
+            buffs.add(caster, PUSH_DUR, Buff.Push, getPushVelXY(caster, target, data.vel))
+        }
+        
+        // Damage
+        if (params){
+            let patk = params.get('PATK', 'RES')
+            Param.Damage.deal(caster, target, DMG_MULT * patk, 'PSPL', WEAPON_TYPE_WHOKNOWS)
+        }
+        data.targets.push(target)
+    }
+}
 
-//     private static _pathChecker = IsGame() ? (()=>{
-//         let it = new hItem(id2int('rat9'), 0, 0)
-//         it.visible = false
-//         return it
-//     })() : <hItem><unknown>undefined
-//     private static _caster2speed = new Map<hUnit, [x: number, y: number]>()
-//     private static _caster2range = new Map<hUnit, [x: number, y: number]>()
-// }
+function getPushVelXY(caster: hUnit, target: hUnit, vel: number): [vel_x: number, vel_y: number]{
+    let dx = target.x - caster.x
+    let dy = target.y - caster.y
+    let r = SquareRoot(dx * dx + dy * dy)
+    let vel_x = 1.5 * vel * dx / r
+    let vel_y = 1.5 * vel * dy / r
+    return [vel_x, vel_y]
+}
 
-// class Data extends Abil.TData {
-//     static readonly instance = new Data()
-//     name(abil: Abil.IFace): string {return NAME}
-//     iconNormal(abil: Abil.IFace): string {return ICON}
-//     iconDisabled(abil: Abil.IFace): string {return DIS_ICON}
-//     tooltip(abil: Abil.IFace): string {return TOOLTIP}
-//     lifeCost(abil: Abil.IFace): number {return 0}
-//     manaCost(abil: Abil.IFace): number {return 0}
-//     range(abil: Abil.IFace){return 650}
-//     area(abil: Abil.IFace){return 100}
-//     chargeUsed(abil: Abil.IFace): number {return 1}
-//     chargeMax(abil: Abil.IFace): number {return 1}
-//     chargeCooldown(abil: Abil.IFace): number {return 5}
-//     castingTime(abil: Abil.IFace): number {
-//         let owner = abil.owner
-//         let param = Param.Unit.get(abil.owner)
-//         let ms = param ? param.get('MOVE', 'RES') : 300
-//         let mspd = param ? param.get('MSPD', 'RES') : 1
+function getTurnTime(abil: Abil.IFace<[Abil.Point]>, target: [Abil.Point] | undefined){
+    let angle: number = math.pi
+    if (target){
+        let targ = target[0]
+        let caster = abil.Data.owner
+    
+        let dx = targ.x - caster.x
+        let dy = targ.y - caster.y
+        angle = Atan2(dy, dx)
+        angle = angle >= 0 ? angle : 2 * math.pi + angle
+    }
 
-//         return this.range(abil) / (mspd * ms)
-//     }
-//     isAvailable(abil: Abil.IFace): boolean {return abil.charges.count > 0}
-//     consume(abil: Abil.IFace): boolean {abil.charges.count -= 1; return true}
-// }
+    let caster = abil.Data.owner
+    return TURN_TIME * math.abs(angle - caster.angle) / math.pi
+}
 
-// export let Breakthrough = new Abil.Type(Casting.instance,
-//                                         Data.instance,
-//                                         Abil.TypeTargetingFriend.instance)
+function clear(abil: Abil.IFace<[Abil.Point]>){
+    let data = BreakthroughData.get(abil)
+    if (data){data.destroy()}
+
+    let caster = abil.Data.owner
+    caster.pause = false
+    caster.animation = 'stand'
+}
+
+Casting.cancel = (abil) => {clear(abil)}
+Casting.interrupt = (abil) => {clear(abil)}
+Casting.finish = (abil) => {clear(abil)}
+Casting.castingTime = (abil, target) => {
+    let owner = abil.Data.owner
+    let param = Param.Unit.get(owner)
+    let ms = param ? param.get('MOVE', 'RES') : 300
+    let mspd = param ? param.get('MSPD', 'RES') : 1
+
+    return getTurnTime(abil, target) + abil.Data.range / (mspd * ms)
+}
+Casting.isTargetValid = (abil, target) => {return true}
+
+let Data = new Abil.TData()
+
+Data.name = (abil) => {return NAME}
+Data.iconNormal = (abil) => {return ICON}
+Data.iconDisabled = (abil) => {return DIS_ICON}
+Data.tooltip = (abil) => {return TOOLTIP}
+Data.lifeCost = (abil) => {return 0}
+Data.manaCost = (abil) => {return 0}
+Data.range = (abil) => {return 650}
+Data.area = (abil) => {return 100}
+Data.chargeUsed = (abil) => {return 1}
+Data.chargeMax = (abil) => {return 1}
+Data.chargeCooldown = (abil) => {return 5}
+Data.isAvailable = (abil) => {
+    let controllable = !abil.Data.owner.pause
+    let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
+    let charges = abil.Data.Charges.count > 0
+    let casting = abil.Casting.Timer.left <= 0
+    return charges && casting && enough_mana && controllable
+}
+Data.consume = (abil) => {
+    abil.Data.Charges.count -= abil.Data.charges_use
+    abil.Data.owner.mana -= abil.Data.mana_cost
+    return true
+}
+
+export let Breakthrough = new Abil.TAbility(Casting, Data, Abil.TTargetingLine)

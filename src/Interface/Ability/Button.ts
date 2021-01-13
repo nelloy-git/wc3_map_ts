@@ -1,12 +1,12 @@
 import * as Abil from "../../AbilityExt";
 import { GlueTextButton } from '../../FrameExt'
 import { Frame } from "../../FrameExt";
-import { Action } from "../../Utils";
 import { hTimerList } from "../../Handle";
 
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
 import { InterfaceHotkey } from '../Utils/Hotkey'
+import { Mouse } from "../../Input";
 
 export class InterfaceAbilityButton extends GlueTextButton {
     constructor(){
@@ -51,6 +51,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
     set ability(abil: Abil.Ability<any> | undefined){
         this._clearAbility()
         this._applyAbility(abil)
+        this._checkEnable()
     }
 
     get key(){return this._hotkey.key}
@@ -87,7 +88,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     private _clicked(pl: jplayer){
-        if (!this._abil ){return}
+        if (!this._abil){return}
 
         let active = Abil.TTargeting.activeAbility(pl)
         if (active == undefined){
@@ -96,9 +97,11 @@ export class InterfaceAbilityButton extends GlueTextButton {
             this._abil.Targeting.finish(pl)
         } else {
             active.Targeting.cancel(pl)
+            this._abil.Targeting.start(pl)
         }
     }
 
+    // Async func
     private _hotkeyUsed(pl: jplayer, meta: number, is_down: boolean){
         if (!this._abil){return}
 
@@ -110,7 +113,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
                 this._abil.Targeting.finish(pl)
             }
         } else {
-            // TODO
+            // TODO use on self 
         }
     }
 

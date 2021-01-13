@@ -31,7 +31,9 @@ export function Init(){
     skills.setKey(5, 0, OSKEY_F)
 
     Screen.addAction(([x0, y0], [w, h])=>{
-        unit_info.pos = [x0, y0 + 0.03]
+        let x = math.max(x0, -0.22)
+        let y = x < -0.21 ? 0 : 0.03
+        unit_info.pos = [x, y]
         unit_info.size = [0.2, 0.2]
 
         skills.size = [0.05 * skills_cols, 0.05 * skills_rows]
