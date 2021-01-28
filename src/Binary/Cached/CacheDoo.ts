@@ -1,4 +1,4 @@
-import { Doodad } from "../Doo/Doodad";
+import { Doodad } from "../doo/Doodad";
 import { id2int, int2id, Log } from "../../Utils";
 import { dooFile } from "../doo/File";
 import { BinaryCache } from "./Cache";

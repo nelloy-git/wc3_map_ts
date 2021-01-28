@@ -1,0 +1,6 @@
+{
+    "Src": "src",
+    "Dst": "dst",
+    "Lang": "ts",
+    "Tstl": "./node_modules/typescript-to-lua/dist/tstl.js"
+}
