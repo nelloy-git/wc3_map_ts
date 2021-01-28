@@ -1,12 +1,12 @@
-import { Action, ActionList, Log } from '../../Utils/index'
-import { SyncData } from '../../Input/index'
-import { hUnit } from '../../Handle/index'
+import * as H from '../../Handle'
+import * as U from '../../Utils'
+import * as Input from '../../Input'
 
-import { Point } from '../Point'
-import { TargetType } from '../Utils'
 import { IFace } from '../Ability/IFace'
+import { TargetType } from '../Utils'
+import { Point } from '../Point'
 
-export class SyncTargets extends SyncData<[IFace<TargetType>, TargetType]> {
+export class SyncTargets extends Input.SyncData<[IFace<TargetType>, TargetType]> {
     
     protected data2raw(abil: IFace<TargetType>,
                        target: TargetType){
@@ -30,7 +30,7 @@ export class SyncTargets extends SyncData<[IFace<TargetType>, TargetType]> {
 
         let abil = IFace.get(abil_id)
         if (!abil){
-            return Log.err(SyncTargets.name + 
+            return U.Log.err(SyncTargets.name + 
                            ': got invalid ability id.')
         }
 
@@ -38,16 +38,16 @@ export class SyncTargets extends SyncData<[IFace<TargetType>, TargetType]> {
     }
 
     /* Can not be used with arrays. */
-    private _toRaw(obj: hUnit | Point){
+    private _toRaw(obj: H.hUnit | Point){
         let raw
-        if (obj instanceof hUnit){
+        if (obj instanceof H.hUnit){
             raw = SyncTargets._prefUnit + SyncTargets._prefSep + 
                   obj.id.toString()
         } else if (obj instanceof Point){
             raw = SyncTargets._prefPoint +SyncTargets._prefSep +
                   obj.toString()
         } else {
-            return Log.err(SyncTargets.name + 
+            return U.Log.err(SyncTargets.name + 
                            ': unknown target type.')
         }
         return raw
@@ -57,16 +57,16 @@ export class SyncTargets extends SyncData<[IFace<TargetType>, TargetType]> {
         let targ
         let [pref, val] = raw.split(SyncTargets._prefSep)
         if (pref == SyncTargets._prefUnit){
-            targ = hUnit.get(parseInt(val))
+            targ = H.hUnit.get(parseInt(val))
         } else if (pref == SyncTargets._prefPoint){
             targ = new Point(val)
         } else { 
-            return Log.err(SyncTargets.toString() + 
+            return U.Log.err(SyncTargets.toString() + 
                            ': unknown target type.')
         }
 
         if (!targ){
-            return Log.err(SyncTargets.toString() + 
+            return U.Log.err(SyncTargets.toString() + 
                            ': can not parse targets.')
         }
 

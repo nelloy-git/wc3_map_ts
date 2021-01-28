@@ -41,11 +41,10 @@ export namespace Selection {
         } else {
             if (event == 'SELECT' && found < 0){
                 gr.push(u)
-                _actions.run(pl, Object.assign([], gr))
             } else if (event == 'DESELECT' && found >= 0){
                 gr.splice(found, 1)
-                _actions.run(pl, Object.assign([], gr))
             }
+            _actions.run(pl, Object.assign([], gr))
         }
     }
 

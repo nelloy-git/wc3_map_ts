@@ -21,9 +21,11 @@ export namespace Damage {
     }
 
     export function deal(src: hUnit, dst: hUnit,
-                         amount: number, type: Damage.Type, sound: jweapontype){
+                         amount: number, type: Damage.Type, sound?: jweapontype){
         let wc_type = type2wc.get(type)
         if (!wc_type){return Log.err('Damage: unknown damage type.')}
+
+        sound = sound ? sound : WEAPON_TYPE_WHOKNOWS
         UnitDamageTarget(src.handle, dst.handle, amount, false, false, ATTACK_TYPE_CHAOS, wc_type, sound)
     }
 

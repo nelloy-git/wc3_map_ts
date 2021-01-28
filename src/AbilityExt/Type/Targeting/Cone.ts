@@ -1,5 +1,6 @@
 import { Mouse, Selection } from '../../../Input'
-import { hImage, hArc, hLine, hTimer, hUnit } from '../../../Handle'
+import { Arc, Line, newImageList } from '../../../Drawing'
+import { hImage, hTimer, hUnit } from '../../../Handle'
 import { TTargeting } from '../Targeting'
 import { Point } from '../../Point'
 import { IFace } from '../../Ability/IFace'
@@ -7,10 +8,10 @@ import { IFace } from '../../Ability/IFace'
 export let TTargetingCone = new TTargeting<[Point]>(getTarget)
 
 let cur_abil: IFace<[hUnit]> | undefined
-let line_l = IsGame() ? new hLine(initPixels(200)) : <hLine<hImage>><unknown>undefined
-let line_r = IsGame() ? new hLine(initPixels(200)) : <hLine<hImage>><unknown>undefined
-let arc_f = IsGame() ? new hArc(initPixels(200)) : <hLine<hImage>><unknown>undefined
-let arc_b = IsGame() ? new hArc(initPixels(200)) : <hLine<hImage>><unknown>undefined
+let line_l = IsGame() ? new Line(newImageList(200)) : <Line<hImage>><unknown>undefined
+let line_r = IsGame() ? new Line(newImageList(200)) : <Line<hImage>><unknown>undefined
+let arc_f = IsGame() ? new Arc(newImageList(200)) : <Arc<hImage>><unknown>undefined
+let arc_b = IsGame() ? new Arc(newImageList(200)) : <Arc<hImage>><unknown>undefined
 
 if (IsGame()){
     let timer = new hTimer()
@@ -20,14 +21,6 @@ if (IsGame()){
 
 TTargetingCone.addAction('START', (inst, pl, abil) => {enableDrawing(true, pl, abil)})
 TTargetingCone.addAction('STOP', (inst, pl, abil) => {enableDrawing(false, pl, abil)})
-
-function initPixels(count: number){
-    let list = []
-    for (let i = 0; i < count; i++){
-        list.push(new hImage())
-    }
-    return list
-}
 
 function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[hUnit]>){
     if (pl != GetLocalPlayer()){return}
@@ -53,10 +46,12 @@ function mouseTrack(this: void){
     let width_angle = cur_abil.Data.area / 2
     let range = cur_abil.Data.range
 
-    line_l.setPolarPos2(owner.x, owner.y, 48, a - width_angle, range, a - width_angle)
-    line_r.setPolarPos2(owner.x, owner.y, 48, a + width_angle, range, a + width_angle)
-    arc_f.setPolarPos(owner.x, owner.y, range, a - width_angle, a + width_angle)
-    arc_b.setPolarPos(owner.x, owner.y, 48, a - width_angle, a + width_angle)
+    let cx = owner.x
+    let cy = owner.y
+    line_l.setPolarPos(cx, cy, 48, a - width_angle, range, a - width_angle)
+    line_r.setPolarPos(cx, cy, 48, a + width_angle, range, a + width_angle)
+    arc_f.setPolarPos(cx, cy, range, a - width_angle, a + width_angle)
+    arc_b.setPolarPos(cx, cy, 48, a - width_angle, a + width_angle)
 }
 
 function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){

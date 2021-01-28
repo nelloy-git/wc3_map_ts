@@ -98,7 +98,7 @@ Casting.castingTime = (abil, target) => {
     }
 
     let caster = abil.Data.owner
-    let param = Param.Unit.get(caster)
+    let param = Param.UnitContainer.get(caster)
     let mspd = param ? param.get('MSPD', 'RES') : 1
 
     let turn_time = TURN_TIME * math.abs(angle - caster.angle) / math.pi
@@ -120,7 +120,7 @@ function dealDamage(abil: Abil.IFace<[Abil.Point]>){
     let a = caster.angle
     let w_a = abil.Data.area / 2
     let progr = data.progress
-    let params = Param.Unit.get(caster)
+    let params = Param.UnitContainer.get(caster)
 
     let in_range = hUnit.getInRange(x, y, abil.Data.range)
     for (let u of in_range){

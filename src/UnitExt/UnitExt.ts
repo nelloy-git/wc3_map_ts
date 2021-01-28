@@ -13,7 +13,7 @@ export class UnitExt {
         this.type = type
         this.abils = new Abil.Container(this.unit)
         this.buffs = new Buff.Container(this.unit)
-        this.params = new Param.Unit(this.unit)
+        this.params = new Param.UnitContainer(this.unit)
     }
 
     static get(id: number): UnitExt|undefined
@@ -34,7 +34,7 @@ export class UnitExt {
     readonly type: tUnit
     readonly abils: Abil.Container
     readonly buffs: Buff.Container
-    readonly params: Param.Unit
+    readonly params: Param.UnitContainer
 
     private static _junit2ext = new Map<hUnit, UnitExt>()
 }

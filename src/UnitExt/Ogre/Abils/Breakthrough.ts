@@ -17,12 +17,6 @@ let DMG_MULT = 2
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 
-let pathChecker: hItem
-if (IsGame()){
-    pathChecker = new hItem(id2int('rat9'), 0, 0)
-    pathChecker.visible = false
-}
-
 Casting.start = (abil, target) => {
     let targ = target[0]
     let caster = abil.Data.owner
@@ -70,7 +64,7 @@ Casting.casting = (abil, target) => {
 
     let x = caster.x
     let y = caster.y
-    let params = Param.Unit.get(caster)
+    let params = Param.UnitContainer.get(caster)
     let in_range = hUnit.getInRange(x, y, abil.Data.area)
     for (let target of in_range){
         if (caster.isAlly(target)){continue}
@@ -130,7 +124,7 @@ Casting.interrupt = (abil) => {clear(abil)}
 Casting.finish = (abil) => {clear(abil)}
 Casting.castingTime = (abil, target) => {
     let owner = abil.Data.owner
-    let param = Param.Unit.get(owner)
+    let param = Param.UnitContainer.get(owner)
     let ms = param ? param.get('MOVE', 'RES') : 300
     let mspd = param ? param.get('MSPD', 'RES') : 1
 

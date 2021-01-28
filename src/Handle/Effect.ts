@@ -21,19 +21,34 @@ export class hEffect extends Handle<jeffect> {
     }
 
     get x(){return this._x}
-    set x(x: number){this._x = x; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
+    set x(x: number){
+        this._x = x
+        BlzSetSpecialEffectPosition(this.handle, this._x,
+                                                 this._y,
+                                                 this._visible ? this._z : -10000)
+        this.visible = this.visible
+    }
     
     get y(){return this._y}
-    set y(y: number){this._y = y; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
+    set y(y: number){
+        this._y = y
+        BlzSetSpecialEffectPosition(this.handle, this._x,
+                                                 this._y,
+                                                 this._visible ? this._z : -10000)
+        this.visible = this.visible
+    }
     
     get z(){return this._z}
-    set z(z: number){this._z = z; BlzSetSpecialEffectPosition(this.handle, this._x, this._y, this._z)}
+    set z(z: number){
+        this._z = z
+        this.visible = this.visible
+    }
     
     get visible(){return this._visible}
     set visible(flag: boolean){
         this._visible = flag
-        let z = flag ? this.z : -100000
-        BlzSetSpecialEffectPosition(this.handle, this.x, this.y, z)
+        let z = flag ? this._z : -100000
+        BlzSetSpecialEffectHeight(this.handle, z)
     }
 
     get yaw(){return this._yaw}

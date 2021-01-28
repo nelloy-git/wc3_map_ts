@@ -88,7 +88,7 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     private _clicked(pl: jplayer){
-        if (!this._abil){return}
+        if (!this._abil || !this.visible){return}
 
         let active = Abil.TTargeting.activeAbility(pl)
         if (active == undefined){

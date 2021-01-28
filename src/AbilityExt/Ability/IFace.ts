@@ -3,8 +3,6 @@ import { hTimerObj, hUnit } from '../../Handle'
 import { Charges } from "./Charges";
 import { TargetType } from '../Utils'
 
-// export type Event = 'START' | 'CASTING' | 'CANCEL' | 'INTERRUPT' | 'FINISH'
-
 export interface DataIFace<T extends TargetType> {
     readonly id: number
     readonly owner: hUnit

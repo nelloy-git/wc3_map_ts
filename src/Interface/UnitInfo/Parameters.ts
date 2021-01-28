@@ -32,7 +32,7 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
         if (!u){return}
 
         let p = u.params
-        this._changed_action = p.addAction(p => {this._updateValues(p)})
+        this._changed_action = p.addAction((p) => {this._updateValues(p)})
         this._updateValues(p)
     }
 

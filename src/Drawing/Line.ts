@@ -1,11 +1,10 @@
-import { Color, Log} from '../../Utils'
-import { hPixel, hPixelList } from "./Pixel";
+import { hImage } from '../Handle';
+import { Color, Log} from '../Utils'
+import { Pixel, PixelList } from "./Pixel";
 
-export class hImageLine<T extends hPixel> {
-    constructor(pixels: hPixelList<T>,
-                pixel_step?: number){
-
-        this._step = pixel_step ? pixel_step : 8
+export class Line<T extends Pixel> {
+    constructor(pixels: PixelList<T>, step?: number){
+        this._step = step ? step : 8
         this._in_use = 0
         this._pixels = pixels
     }
@@ -24,18 +23,7 @@ export class hImageLine<T extends hPixel> {
         this.update()
     }
 
-    setPolarPos(x1: number, y1: number, length: number, angle: number){
-        this._x1 = x1
-        this._y1 = y1
-        this._x2 = x1 + length * Cos(angle)
-        this._y2 = y1 + length * Sin(angle)
-        this._length = length
-        this._angle = angle
-
-        this.update()
-    }
-
-    setPolarPos2(cx: number, cy: number, r1: number, a1: number, r2: number, a2: number){
+    setPolarPos(cx: number, cy: number, r1: number, a1: number, r2: number, a2: number){
         this._x1 = cx + r1 * Cos(a1)
         this._y1 = cy + r1 * Sin(a1)
         this._x2 = cx + r2 * Cos(a2)
@@ -55,6 +43,14 @@ export class hImageLine<T extends hPixel> {
     get y2(){return this._y2}
     get length(){return this._length}
     get angle(){return this._angle}
+
+    public get z(){return this._z}
+    public set z(z: number){
+        this._z = z
+        for (let pixel of this._pixels){
+            pixel.z = z
+        }
+    }
     
     get color(){return new Color(this._color)}
     set color(color: Color){
@@ -70,6 +66,9 @@ export class hImageLine<T extends hPixel> {
         for (let i = 0; i < math.min(this._in_use, this._pixels.length); i++){
             this._pixels[i].visible = flag
         }
+        for (let i = math.min(this._in_use, this._pixels.length); i < math.max(this._in_use, this._pixels.length); i++){
+            this._pixels[i].visible = false
+        }
     }
 
     destroy(){
@@ -81,7 +80,7 @@ export class hImageLine<T extends hPixel> {
     private update(){
         this._in_use = math.floor(this._length / this._step) + 1
         if (this._in_use > this._pixels.length){
-            Log.wrn(hImageLine.name + 
+            Log.wrn(Line.name + 
                     ': is not enought pixels to fill line.')
         }
 
@@ -111,12 +110,13 @@ export class hImageLine<T extends hPixel> {
     private _y2: number = 0
     private _length: number = 0
     private _angle: number = 0
+    private _z: number = 0
 
     private _step: number
     private _in_use: number
-    private _pixels: hPixelList<T>
+    private _pixels: PixelList<T>
 
     private _color = new Color(1, 1, 1, 1)
-    private _render_always = true
-    private _visible = false
+    // private _render_always = true
+    private _visible = true
 }

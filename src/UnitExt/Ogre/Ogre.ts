@@ -3,6 +3,7 @@ import { id2int, IsReforged } from "../../Utils";
 import { UnitExt } from "../UnitExt";
 import { Breakthrough } from './Abils/Breakthrough'
 import { HeavyHammer } from './Abils/HeavyHammer'
+import { VoodooPoison } from "./Abils/VoodooPoison";
 
 let type = Map.w3u.add(id2int('hfoo'))
 type.setInt(FieldUnitList.HitPointsMaximumBase, 100)
@@ -30,15 +31,16 @@ export class Ogre extends UnitExt {
         this.params.set('PDEF', 'BASE', 10)
         this.params.set('PRES', 'BASE', 0.1)
 
-        this.params.set('MATK', 'BASE', 0)
+        this.params.set('MATK', 'BASE', 10)
         this.params.set('MSPD', 'BASE', 1)
-        this.params.set('MDEF', 'BASE', 10)
+        this.params.set('MDEF', 'BASE', 5)
         this.params.set('MRES', 'BASE', 0.1)
 
         this.params.set('CRIT', 'BASE', 0)
         this.params.set('MOVE', 'BASE', 310)
 
         this.abils.set(0, HeavyHammer)
+        this.abils.set(1, VoodooPoison)
         this.abils.set(2, Breakthrough)
     }
 }

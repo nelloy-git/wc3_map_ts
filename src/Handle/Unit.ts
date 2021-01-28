@@ -123,6 +123,21 @@ export class hUnit extends Handle<junit>{
 
     get typeId(){return this._type_id}
 
+    getAngleTo(other: {x: number, y: number}): number
+    getAngleTo(x: number, y: number): number
+    getAngleTo(obj_or_x: {x: number, y: number}|number, y?: number){
+        let x: number
+        if (typeof obj_or_x == 'number'){
+            x = obj_or_x
+            y = <number>y
+        } else {
+            let obj = obj_or_x
+            x = obj.x
+            y = obj.y
+        } 
+        return Atan2(y - GetUnitY(this.handle), x - GetUnitX(this.handle))
+    }
+
     isEnemy(other: hUnit){return IsUnitEnemy(this.handle, other.owner)}
     isAlly(other: hUnit){return IsUnitAlly(this.handle, other.owner)}
 

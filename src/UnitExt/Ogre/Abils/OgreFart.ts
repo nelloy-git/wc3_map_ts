@@ -21,7 +21,10 @@ let Casting = new Abil.TCasting<[Abil.Point]>()
 Casting.start = (abil, target) => {
     let targ = target[0]
     let caster = abil.Data.owner
-    let angle = caster.getAngleTo(targ)
+
+    let dx = targ.x - caster.x
+    let dy = targ.y - caster.y
+    let angle = Atan2(dy, dx)
 
     caster.pause = true
     caster.angle = angle
@@ -30,7 +33,7 @@ Casting.start = (abil, target) => {
 
     new VoodooPoisonData(abil, MODEL,
                          targ.x, targ.y, -40,
-                         abil.Data.area, math.pi / 2 + angle, 16)
+                         abil.Data.area, math.pi / 2 + Atan2(dy, dx), 16)
 }
 
 Casting.casting = (abil, target) => {

@@ -9,6 +9,7 @@ export { TCasting } from './Type/Casting'
 export { TData } from './Type/Data'
 export { TTargeting } from './Type/Targeting'
 
+export { TTargetingArea } from './Type/Targeting/Area'
 export { TTargetingFriend } from './Type/Targeting/Friend'
 export { TTargetingLine } from './Type/Targeting/Line'
 export { TTargetingCone } from './Type/Targeting/Cone'

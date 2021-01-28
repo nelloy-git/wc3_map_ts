@@ -31,7 +31,8 @@ import { id2byte } from './Binary/Utils'
 import { Ogre } from './UnitExt/Ogre/Ogre'
 import { Ability } from './AbilityExt'
 import { Breakthrough } from './UnitExt/Ogre/Abils/Breakthrough'
-import { hTimer } from './Handle'
+import { hEffect, hTimer, hUnit } from './Handle'
+import { VoodooPoisonData } from './UnitExt/Ogre/Abils/Data/VoodooPoison'
 
 let w3u = Map.Map.w3u
 let unit_type = w3u.add(id2int('hfoo'))
@@ -56,6 +57,23 @@ if (IsGame()){
     let u3 = new Ogre(0, 0, Player(0))
 
     let u2 = new Ogre(0, 0, Player(1))
+
+    let eff = new hEffect('Abilities\\Spells\\Items\\OrbVenom\\OrbVenomMissile.mdl', 0, 0, 100)
+    // let eff = new hEffect('Units\\Creeps\\OgreLord\\OgreLord.mdl', 0, 0, 100)
+    
+    let t = new hTimer()
+    t.addAction(t => {
+        eff.visible = !eff.visible
+        eff.x += 10
+        eff.y += 20
+        // let c = eff.color
+        // if (c.a == 1){
+        //     eff.color = new Utils.Color(1, 1, 1, 0)
+        // } else {
+        //     eff.color = new Utils.Color(1, 1, 1, 1)
+        // }
+    })
+    t.start(1, true)
 
     // let t = new hTimer()
     // t.addAction(()=>{murloc_lagoon.enable(true)})

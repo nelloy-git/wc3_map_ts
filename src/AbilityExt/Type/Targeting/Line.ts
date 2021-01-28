@@ -1,6 +1,7 @@
 import { Mouse, Selection } from '../../../Input'
-import { hImage, hLine, hTimer, hUnit } from '../../../Handle'
-import { GetTerrainZ, Log } from '../../../Utils'
+import { hImage, hTimer, hUnit } from '../../../Handle'
+import { Line, newImageList} from '../../../Drawing'
+
 import { TTargeting } from '../Targeting'
 import { Point } from '../../Point'
 import { IFace } from '../../Ability/IFace'
@@ -8,10 +9,10 @@ import { IFace } from '../../Ability/IFace'
 export let TTargetingLine = new TTargeting<[Point]>(getTarget)
 
 let cur_abil: IFace<[hUnit]> | undefined
-let line_l = IsGame() ? new hLine(initPixels(200)) : <hLine<hImage>><unknown>undefined
-let line_r = IsGame() ? new hLine(initPixels(200)) : <hLine<hImage>><unknown>undefined
-let end_l = IsGame() ? new hLine(initPixels(100)) : <hLine<hImage>><unknown>undefined
-let end_r = IsGame() ? new hLine(initPixels(100)) : <hLine<hImage>><unknown>undefined
+let line_l = IsGame() ? new Line(newImageList(200)) : <Line<hImage>><unknown>undefined
+let line_r = IsGame() ? new Line(newImageList(200)) : <Line<hImage>><unknown>undefined
+let end_l = IsGame() ? new Line(newImageList(100)) : <Line<hImage>><unknown>undefined
+let end_r = IsGame() ? new Line(newImageList(100)) : <Line<hImage>><unknown>undefined
 
 if (IsGame()){
     let timer = new hTimer()
@@ -21,14 +22,6 @@ if (IsGame()){
 
 TTargetingLine.addAction('START', (inst, pl, abil) => {enableDrawing(true, pl, abil)})
 TTargetingLine.addAction('STOP', (inst, pl, abil) => {enableDrawing(false, pl, abil)})
-
-function initPixels(count: number){
-    let list = []
-    for (let i = 0; i < count; i++){
-        list.push(new hImage())
-    }
-    return list
-}
 
 function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[hUnit]>){
     if (pl != GetLocalPlayer()){return}
@@ -56,10 +49,12 @@ function mouseTrack(this: void){
     let w = cur_abil.Data.area / 2
     let r = SquareRoot(dx * dx + dy * dy)
 
-    end_l.setPolarPos(end.x, end.y, 2 * w, a + math.pi - math.pi / 3)
-    end_r.setPolarPos(end.x, end.y, 2 * w, a + math.pi + math.pi / 3)
-    line_l.setPolarPos(end_l.x2, end_l.y2, r - w, a + math.pi)
-    line_r.setPolarPos(end_r.x2, end_r.y2, r - w, a + math.pi)
+    let cx = end.x
+    let cy = end.y
+    end_l.setPolarPos(cx, cy, 0, 0, 2 * w, a - 5 / 6 * math.pi)
+    end_r.setPolarPos(cx, cy, 0, 0, 2 * w, a + 5 / 6 * math.pi)
+    line_l.setPolarPos(end_l.x2, end_l.y2, 0, 0, r - w, a + math.pi)
+    line_r.setPolarPos(end_r.x2, end_r.y2, 0, 0, r - w, a + math.pi)
 }
 
 function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){

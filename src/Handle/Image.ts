@@ -2,10 +2,9 @@ import { Color, GetTerrainZ, Import, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 export class hImage extends Handle<jimage> {
-    constructor(image?: string,
+    constructor(image: string,
                 size_x?: number, size_y?: number,
                 origin_x?: number, origin_y?: number){
-        image = image ? image : hImage._default_file.dst
         size_x = size_x ? size_x : 16
         size_y = size_y ? size_y : 16
 
@@ -80,7 +79,4 @@ export class hImage extends Handle<jimage> {
     private _color: Color
     private _render_always: boolean
     private _visible: boolean
-    
-    private static _default_file = new Import(GetSrc() + '\\Handle\\Image\\Pixel\\Pixel.dds',
-                                              'war3mapImported\\Pixel\\Pixel.dds')
 }

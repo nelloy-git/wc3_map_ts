@@ -1,15 +1,9 @@
 import { IFace } from "../../../../AbilityExt"
-import { hArc, hImage, hLine, hUnit } from "../../../../Handle"
+import { hImage, hUnit } from "../../../../Handle"
 import { Color } from "../../../../Utils"
-import { AbilData } from "../../../AbilityData"
+import { Arc, Line, newImageList } from '../../../../Drawing'
 
-function initPixels(count: number){
-    let list = []
-    for (let i = 0; i < count; i++){
-        list.push(new hImage())
-    }
-    return list
-}
+import { AbilData } from "../../../AbilityData"
 
 export class HeavyHammerData extends AbilData {
     constructor(abil: IFace<any>, animation: number|string, range: number, min_angle: number, max_angle: number){
@@ -18,15 +12,15 @@ export class HeavyHammerData extends AbilData {
         this._caster = abil.Data.owner
         this._animation = animation
 
-        this._line_l.visible = true
-        this._line_r.visible = true
-        this._arc_f.visible = true
-        this._arc_b.visible = true
+        this._line_l = new Line(newImageList(200))
+        this._line_r = new Line(newImageList(200))
+        this._arc_f = new Arc(newImageList(200))
+        this._arc_b = new Arc(newImageList(200))
 
         let x = this._caster.x
         let y = this._caster.y
-        this._line_l.setPolarPos2(x, y, 48, min_angle, range, min_angle)
-        this._line_r.setPolarPos2(x, y, 48, max_angle, range, max_angle)
+        this._line_l.setPolarPos(x, y, 48, min_angle, range, min_angle)
+        this._line_r.setPolarPos(x, y, 48, max_angle, range, max_angle)
         this._arc_f.setPolarPos(x, y, range, min_angle, max_angle)
         this._arc_b.setPolarPos(x, y, 48, min_angle, max_angle)
     }
@@ -73,8 +67,8 @@ export class HeavyHammerData extends AbilData {
     private _animation: number|string
     private _cur_anim: 'START'|'PAUSE'|'END' = 'END'
     private _progress = -1
-    private _line_l = new hLine(initPixels(200))
-    private _line_r = new hLine(initPixels(200))
-    private _arc_f = new hArc(initPixels(200))
-    private _arc_b = new hArc(initPixels(200))
+    private _line_l: Line<hImage>
+    private _line_r: Line<hImage>
+    private _arc_f: Arc<hImage>
+    private _arc_b: Arc<hImage>
 }
