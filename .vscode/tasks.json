@@ -11,12 +11,12 @@
         {
             "label": "Build Windows",
             "type": "shell",
-            "command": ".\\wc3-builder\\lua53.exe .\\wc3-builder\\main.lua src dst ts"
+            "command": ".\\wc3-builder\\lua53.exe .\\wc3-builder\\main.lua"
         },
         {
             "label": "Run Reforged",
             "type": "shell",
-            "command": "E:\\'Warcraft III'\\_retail_\\x86_64\\'Warcraft III.exe' -launch -loadfile ${workspaceFolder}\\dst\\map_dir -windowmode windowed"
+            "command": "E:\\'Warcraft III'\\_retail_\\x86_64\\'Warcraft III.exe' -launch -loadfile ${workspaceFolder}\\dst\\map -windowmode windowed"
         },
         {
             "label": "Run Linux Reforged",

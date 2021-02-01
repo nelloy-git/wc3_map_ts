@@ -1,17 +1,27 @@
 {
     "compilerOptions": {
       "target": "esnext",
-      "lib": ["esnext"],
+      "lib": [
+        "esnext"
+      ],
       "moduleResolution": "node",
       "types": [
           "lua-types/jit",
           "./wc3-builder/builder",
           "./wc3-builder/common"
         ],
-      "strict": true,
-      // "experimentalDecorators": true
+      "strict": true
     },
+
     "tstl": {
       "luaTarget": "5.3",
+    },
+
+    "wc3-builder": {
+      "Src": "src",
+      "Dst": "dst",
+      "Lang": "ts",
+      "Tstl": "./node_modules/typescript-to-lua/dist/tstl.js",
+      "include": ["include", "Json"]
     }
   }
