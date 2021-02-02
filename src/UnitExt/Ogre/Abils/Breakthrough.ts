@@ -2,18 +2,24 @@ import * as Abil from "../../../AbilityExt";
 import * as Buff from "../../../Buff";
 import * as Param from "../../../Parameter";
 
-import { hItem, hUnit } from "../../../Handle";
-import { id2int, Log } from "../../../Utils";
+import { hUnit } from "../../../Handle";
+import { Cache, deltaPos, getTurnTime, getFileDir, Json, Log, TextFile } from "../../../Utils";
 import { BreakthroughData } from "./Data/Breakthrough";
 
-let NAME = 'Breakthrough'
-let ICON = 'ReplaceableTextures\\CommandButtons\\BTNStampede.blp'
-let DIS_ICON = 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp'
-let TOOLTIP = 'T\no\no\nl\nt\ni\np'
-let ANIM_INDEX = 11
-let TURN_TIME = 0.5
-let PUSH_DUR = 1
-let DMG_MULT = 2
+let json_path = getFileDir() + '/json/Breakthrough.json'
+if (!IsGame()){
+    let f = new TextFile(json_path)
+    Cache.set(json_path, f.read())
+}
+let json = Json.decode(Cache.get(json_path))
+
+const NAME = json.name
+const ICON = json.icon
+const DIS_ICON = json.disIcon
+const TOOLTIP = json.tooltip
+const ANIMATION = json.animation
+const PUSH_DUR = json.pushTime
+const DMG_SCALE = json.dmgScale
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 
@@ -21,19 +27,18 @@ Casting.start = (abil, target) => {
     let targ = target[0]
     let caster = abil.Data.owner
 
-    let dx = targ.x - caster.x
-    let dy = targ.y - caster.y
+    let [dx, dy] = deltaPos(targ, caster)
     let angle = Atan2(dy, dx)
     angle = angle >= 0 ? angle : 2 * math.pi + angle
     let range = SquareRoot(dx * dx + dy * dy)
 
     let cast_time = abil.Casting.castingTime(target)
-    let turn_time = getTurnTime(abil, target)
+    let turn_time = getTurnTime(caster, targ)
     let vel = range / (cast_time - turn_time)
 
     caster.pause = true
     caster.angle = angle
-    caster.animation = ANIM_INDEX
+    caster.animation = ANIMATION
 
     new BreakthroughData(abil, angle, range, vel, Abil.Casting.period)
 }
@@ -79,7 +84,7 @@ Casting.casting = (abil, target) => {
         // Damage
         if (params){
             let patk = params.get('PATK', 'RES')
-            Param.Damage.deal(caster, target, DMG_MULT * patk, 'PSPL', WEAPON_TYPE_WHOKNOWS)
+            Param.Damage.deal(caster, target, DMG_SCALE * patk, 'PSPL', WEAPON_TYPE_WHOKNOWS)
         }
         data.targets.push(target)
     }
@@ -92,22 +97,6 @@ function getPushVelXY(caster: hUnit, target: hUnit, vel: number): [vel_x: number
     let vel_x = 1.5 * vel * dx / r
     let vel_y = 1.5 * vel * dy / r
     return [vel_x, vel_y]
-}
-
-function getTurnTime(abil: Abil.IFace<[Abil.Point]>, target: [Abil.Point] | undefined){
-    let angle: number = math.pi
-    if (target){
-        let targ = target[0]
-        let caster = abil.Data.owner
-    
-        let dx = targ.x - caster.x
-        let dy = targ.y - caster.y
-        angle = Atan2(dy, dx)
-        angle = angle >= 0 ? angle : 2 * math.pi + angle
-    }
-
-    let caster = abil.Data.owner
-    return TURN_TIME * math.abs(angle - caster.angle) / math.pi
 }
 
 function clear(abil: Abil.IFace<[Abil.Point]>){
@@ -128,7 +117,7 @@ Casting.castingTime = (abil, target) => {
     let ms = param ? param.get('MOVE', 'RES') : 300
     let mspd = param ? param.get('MSPD', 'RES') : 1
 
-    return getTurnTime(abil, target) + abil.Data.range / (mspd * ms)
+    return target ? getTurnTime(abil.Data.owner, target[0]) : 0.5 + abil.Data.range / (mspd * ms)
 }
 Casting.isTargetValid = (abil, target) => {return true}
 

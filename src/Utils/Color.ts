@@ -1,3 +1,5 @@
+let __filepath__ = Macro(<string>currentPackage(0))
+
 export class Color {
     constructor(color: Color);
     constructor(r: number, g: number, b: number, a: number)

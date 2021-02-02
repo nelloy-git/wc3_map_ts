@@ -48,8 +48,8 @@ export class BuilderCache <K extends BuilderData, V extends BuilderData> {
         let hash = 0
         let char
         for (let i = 0; i < str.length; i++) {
-          char = str.charCodeAt(i);
-          hash = ((hash << 5) - hash) + char;
+          char = str.charCodeAt(i)
+          hash = ((hash << 5) - hash) + char
           hash |= 0; // Convert to 32bit integer
         }
         return hash;
@@ -75,4 +75,8 @@ export class BuilderCache <K extends BuilderData, V extends BuilderData> {
         })
         return vals
     })()
+}
+
+export namespace BuilderCache {
+    export let Default = new BuilderCache<string, string>(BuilderCache.hash('BuilderCacheDefault'))
 }

@@ -6,7 +6,7 @@
         {
             "label": "Build Linux",
             "type": "shell",
-            "command": "lua5.3 ./wc3-builder/main.lua src dst ts"
+            "command": "lua5.3 ./wc3-builder/main.lua"
         },
         {
             "label": "Build Windows",

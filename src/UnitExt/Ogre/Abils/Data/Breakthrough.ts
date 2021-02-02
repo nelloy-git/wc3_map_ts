@@ -1,6 +1,6 @@
 import { IFace } from "../../../../AbilityExt"
 import { hUnit } from "../../../../Handle"
-import { IsWalkable } from "../../../../Utils"
+import { isWalkable } from "../../../../Utils"
 import { AbilData } from "../../../AbilityData"
 
 export class BreakthroughData extends AbilData{
@@ -27,7 +27,7 @@ export class BreakthroughData extends AbilData{
         let x = this.caster.x + this.vel_x
         let y = this.caster.y + this.vel_y
 
-        if (IsWalkable(x, y)){
+        if (isWalkable(x, y)){
             return 'COLLISION'
         }
 

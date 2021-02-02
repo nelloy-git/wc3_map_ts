@@ -1,4 +1,4 @@
-import { GetTerrainZ } from "../Utils"
+import { getTerrainZ } from "../Utils"
 
 export class Camera {
     private constructor(){}
@@ -11,11 +11,11 @@ export class Camera {
     private static _update(this: void){
         let targ_x = GetCameraTargetPositionX()
         let targ_y = GetCameraTargetPositionY()
-        let targ_z = GetTerrainZ(targ_x, targ_y)
+        let targ_z = getTerrainZ(targ_x, targ_y)
 
         let eye_x = GetCameraEyePositionX()
         let eye_y = GetCameraEyePositionY()
-        let eye_z = GetTerrainZ(eye_x, eye_y)
+        let eye_z = getTerrainZ(eye_x, eye_y)
 
         SetCameraFieldForPlayer(GetLocalPlayer(), CAMERA_FIELD_ZOFFSET,
                                 (targ_z + eye_z)/2 + Camera._height, 0.3)

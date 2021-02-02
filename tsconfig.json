@@ -10,7 +10,9 @@
           "./wc3-builder/builder",
           "./wc3-builder/common"
         ],
-      "strict": true
+      "strict": true,
+      "rootDir": "src",
+      "outDir": "dst",
     },
 
     "tstl": {
@@ -18,10 +20,7 @@
     },
 
     "wc3-builder": {
-      "Src": "src",
-      "Dst": "dst",
       "Lang": "ts",
       "Tstl": "./node_modules/typescript-to-lua/dist/tstl.js",
-      "include": ["include", "Json"]
     }
   }

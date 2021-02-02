@@ -1,5 +1,5 @@
 import { hUnit } from "../../../Handle"
-import { IsWalkable } from "../../../Utils"
+import { isWalkable } from "../../../Utils"
 import { IFace } from "../../Buff/IFace"
 import { BuffData } from "./Data"
 
@@ -21,7 +21,7 @@ export class PushData extends BuffData {
         let x = this.target.x + this._vel_x
         let y = this.target.y + this._vel_y
 
-        if (IsWalkable(x, y)){
+        if (isWalkable(x, y)){
             return 'COLLISION'
         }
 

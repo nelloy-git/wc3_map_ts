@@ -1,4 +1,4 @@
-import { Color, GetTerrainZ, Import, Log, wcType } from "../Utils";
+import { Color, getTerrainZ, Import, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 export class hImage extends Handle<jimage> {
@@ -37,20 +37,20 @@ export class hImage extends Handle<jimage> {
     public set x(x: number){
         this._x = x
         SetImagePosition(this.handle, this._x, this._y, this._z)
-        SetImageConstantHeight(this.handle, true, GetTerrainZ(this._x, this._y) + this._z)
+        SetImageConstantHeight(this.handle, true, getTerrainZ(this._x, this._y) + this._z)
     }
     
     public get y(){return this._y}
     public set y(y: number){
         this._y = y
         SetImagePosition(this.handle, this._x, this._y, this._z)
-        SetImageConstantHeight(this.handle, true, GetTerrainZ(this._x, this._y) + this._z)
+        SetImageConstantHeight(this.handle, true, getTerrainZ(this._x, this._y) + this._z)
     }
     
     public get z(){return this._z}
     public set z(z: number){
         this._z = z
-        SetImageConstantHeight(this.handle, true, GetTerrainZ(this._x, this._y) + this._z)
+        SetImageConstantHeight(this.handle, true, getTerrainZ(this._x, this._y) + this._z)
     }
 
     public get color(){return new Color(this._color)}

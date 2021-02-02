@@ -1,5 +1,5 @@
 import { Map, FieldUnitList } from "../../Binary";
-import { id2int, IsReforged } from "../../Utils";
+import { id2int, isReforged } from "../../Utils";
 import { UnitExt } from "../UnitExt";
 import { Breakthrough } from './Abils/Breakthrough'
 import { HeavyHammer } from './Abils/HeavyHammer'
@@ -14,7 +14,7 @@ export class Ogre extends UnitExt {
     constructor(x: number, y: number, pl: jplayer){
         super(type, x, y, pl)
 
-        if (IsReforged(GetLocalPlayer())){
+        if (isReforged(GetLocalPlayer())){
             this.unit.modelScale = 0.7
         } else {
             this.unit.modelScale = 1.2

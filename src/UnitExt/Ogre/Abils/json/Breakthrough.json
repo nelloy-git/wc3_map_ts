@@ -1,0 +1,12 @@
+{
+    "name": "Breakthrough",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNStampede.blp",
+    "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp",
+    "tooltip": "T\no\no\nl\nt\ni\np",
+    "animation": 11,
+    "pushTime": 1,
+
+    "dmgScale": {
+        "PATK": 2
+    }
+}
