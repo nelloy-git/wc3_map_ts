@@ -4,6 +4,11 @@ export type Type = 'PATK'|'PSPD'|'PDEF'|'PRES'|'MATK'|'MSPD'|'MDEF'|
                    'MRES'|'CRIT'|'LIFE'|'REGE'|'MANA'|'RECO'|'MOVE'
 
 export namespace Type {
+    export function list(): Type[]{
+        return ['PATK', 'PSPD', 'PDEF', 'PRES', 'MATK', 'MSPD', 'MDEF', 
+                'MRES', 'CRIT', 'LIFE', 'REGE', 'MANA', 'RECO', 'MOVE']
+    }
+
     export function defaultUnitBase(param: Type){
         if      (param == 'PATK'){return 1}
         else if (param == 'PSPD'){return 1}

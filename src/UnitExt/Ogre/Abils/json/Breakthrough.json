@@ -6,7 +6,15 @@
     "animation": 11,
     "pushTime": 1,
 
-    "dmgScale": {
-        "PATK": 2
+    "damage": {
+        "base": 50,
+        "baseMult": {
+        },
+        "baseAdd": {
+            "PATK": 2
+        },
+        "resultMult": {
+
+        }
     }
 }

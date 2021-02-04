@@ -14,5 +14,5 @@ export class Map {
 }
 
 if (!IsGame()){
-    BuildFinal(()=>{Map.save(<string>GetDst())})
+    MacroFinal(()=>{Map.save(<string>GetDst())})
 }

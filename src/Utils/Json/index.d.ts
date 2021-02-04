@@ -1,10 +1,6 @@
-/** @noSelfInFile */
-
-// export declare namespace Json {
-    type JsonHash = {
-        [key: string]: any
-    }
-
-    export function decode(this: void, str: string) : JsonHash 
-    export function encode(this: void, json: JsonHash) : string 
+// type JsonHash = {
+//     [key: string]: BuilderData
 // }
+
+export function decode(this: void, str: string) : BuilderData 
+export function encode(this: void, json: BuilderData) : string 

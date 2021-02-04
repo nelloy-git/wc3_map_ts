@@ -11,7 +11,7 @@ export class File {
         File._name2file.set(name, this)
 
         if (!IsGame()){
-            BuildFinal(()=>{this.save()})
+            MacroFinal(()=>{this.save()})
         } else {
             let toc_path = File._dst_dir + name + '.toc'
             if (!BlzLoadTOCFile(toc_path)){

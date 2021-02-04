@@ -62,17 +62,13 @@ export class BuilderCache <K extends BuilderData, V extends BuilderData> {
 
     private static _cached_keys: BuilderData[] = (()=>{
         let keys: BuilderData[] = []
-        BuildFinal(()=>{
-            keys = Macro(keys)
-        })
+        keys = MacroFinal(()=>{return keys})
         return keys
     })()
 
     private static _cached_vals: BuilderData[] = (()=>{
         let vals: BuilderData[] = []
-        BuildFinal(()=>{
-            vals = Macro(vals)
-        })
+        vals = MacroFinal(()=>{return vals})
         return vals
     })()
 }

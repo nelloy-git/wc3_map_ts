@@ -5,21 +5,18 @@ import * as Param from "../../../Parameter";
 import { hUnit } from "../../../Handle";
 import { Cache, deltaPos, getTurnTime, getFileDir, Json, Log, TextFile } from "../../../Utils";
 import { BreakthroughData } from "./Data/Breakthrough";
+import { AbilityJson } from "../../AbilityJson";
 
 let json_path = getFileDir() + '/json/Breakthrough.json'
-if (!IsGame()){
-    let f = new TextFile(json_path)
-    Cache.set(json_path, f.read())
-}
-let json = Json.decode(Cache.get(json_path))
+let json = new AbilityJson(json_path)
 
 const NAME = json.name
 const ICON = json.icon
-const DIS_ICON = json.disIcon
+const DIS_ICON = json.dis_icon
 const TOOLTIP = json.tooltip
-const ANIMATION = json.animation
-const PUSH_DUR = json.pushTime
-const DMG_SCALE = json.dmgScale
+const ANIMATION = json.get('animation')
+const PUSH_DUR = 0 //json.pushTime
+const DMG_SCALE = 0 //json.dmgScale
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 

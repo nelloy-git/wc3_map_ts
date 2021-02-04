@@ -20,7 +20,7 @@
     },
 
     "wc3-builder": {
-      "Lang": "ts",
-      "Tstl": "./node_modules/typescript-to-lua/dist/tstl.js",
+      "lang": "ts",
+      "tstl": "./node_modules/typescript-to-lua/dist/tstl.js",
     }
   }

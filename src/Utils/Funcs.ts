@@ -69,7 +69,7 @@ export function isReforged(pl: jplayer){
 }
 
 export function getFilePath(){
-    let cur = currentPackage(0)
+    let cur = getLoadingPackage()
 
     if (!cur){return error('')}
 
