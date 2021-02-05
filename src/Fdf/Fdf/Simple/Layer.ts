@@ -1,5 +1,7 @@
-import { Log } from "../../../Utils";
+import { getFilePath, Log } from "../../../Utils";
 import { Fdf } from "../../Fdf";
+
+let __path__ = Macro(getFilePath())
 
 type SimpleLayerType = 'ARTWORK'|'BACKGROUND'
 
@@ -10,23 +12,23 @@ export class SimpleLayer extends Fdf {
     }
 
     public set inherit(other: Fdf | undefined){
-        Log.err(SimpleLayer.name + 
-                ': can not inherit.', 2)
+        Log.err('can not inherit.',
+                __path__, SimpleLayer, 2)
     }
 
     protected _setParam(param: string, value?: string){
-        Log.err(SimpleLayer.name + 
-                ': can not contain params.', 2)
+        return Log.err('can not contain params.',
+                        __path__, SimpleLayer, 3)
     }
 
     protected _getParam(param: string){
-        return Log.err(SimpleLayer.name + 
-                       ': can not contain params.', 2)
+        return Log.err('can not contain params.',
+                       __path__, SimpleLayer, 3)
     }
 
     protected _removeParam(param: string){
-        return Log.err(SimpleLayer.name + 
-                       ': can not contain params.', 2)
+        return Log.err('can not contain params.',
+                       __path__, SimpleLayer, 3)
     }
 
     public serialize(){

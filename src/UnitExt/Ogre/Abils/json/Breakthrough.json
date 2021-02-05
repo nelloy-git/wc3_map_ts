@@ -3,18 +3,21 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNStampede.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp",
     "tooltip": "T\no\no\nl\nt\ni\np",
-    "animation": 11,
-    "pushTime": 1,
 
-    "damage": {
-        "base": 50,
-        "baseMult": {
-        },
-        "baseAdd": {
-            "PATK": 2
-        },
-        "resultMult": {
+    "animations": {
+        "walkOgre": 11
+    },
 
+    "scale": {
+        "dmg": {
+            "base": 50,
+            "baseAdd": {
+                "PATK": 2
+            }
+        },
+
+        "pushDur": {
+            "base": 1
         }
     }
 }

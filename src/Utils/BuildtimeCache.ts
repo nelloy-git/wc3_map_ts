@@ -1,27 +1,27 @@
 import { Logger } from "./Logger"
 let Log = Logger.Default
 
-export class BuilderCache <K extends BuilderData, V extends BuilderData> {
+export class BuildtimeCache <K extends BuilderData, V extends BuilderData> {
     constructor(id: number){
         this.id = id
-        let keys: K[] = <K[]>BuilderCache._cached_keys[id]
-        let vals: V[] = <V[]>BuilderCache._cached_vals[id]
+        let keys: K[] = <K[]>BuildtimeCache._cached_keys[id]
+        let vals: V[] = <V[]>BuildtimeCache._cached_vals[id]
 
         if (IsGame() && (!keys || !vals)){
-            Log.err(BuilderCache.name + 
+            Log.err(BuildtimeCache.name + 
                     ': can not load cache data for id: ' + this.id.toString())
         }
 
         if (!IsGame()){
             if (keys || vals){
-                Log.err(BuilderCache.name + 
+                Log.err(BuildtimeCache.name + 
                     ': id ' + this.id.toString() + ' is already used.')            
             }
             
             keys = []
             vals = []
-            BuilderCache._cached_keys[id] = keys
-            BuilderCache._cached_vals[id] = vals
+            BuildtimeCache._cached_keys[id] = keys
+            BuildtimeCache._cached_vals[id] = vals
         }
 
         this._keys = keys
@@ -35,7 +35,7 @@ export class BuilderCache <K extends BuilderData, V extends BuilderData> {
 
     set(key: K, val: V){
         if (IsGame()){
-            return Log.err(BuilderCache.name + 
+            return Log.err(BuildtimeCache.name + 
                            ': can be used in buildtime only.')
         }
 
@@ -61,18 +61,18 @@ export class BuilderCache <K extends BuilderData, V extends BuilderData> {
     private _vals: V[] = []
 
     private static _cached_keys: BuilderData[] = (()=>{
-        let keys: BuilderData[] = []
-        keys = MacroFinal(()=>{return keys})
+        let keys = MacroFinal(()=>{return BuildtimeCache._cached_keys})
+        keys = keys ? keys : []
         return keys
     })()
 
     private static _cached_vals: BuilderData[] = (()=>{
-        let vals: BuilderData[] = []
-        vals = MacroFinal(()=>{return vals})
+        let vals = MacroFinal(()=>{return BuildtimeCache._cached_vals})
+        vals = vals ? vals : []
         return vals
     })()
 }
 
-export namespace BuilderCache {
-    export let Default = new BuilderCache<string, string>(BuilderCache.hash('BuilderCacheDefault'))
+export namespace BuildtimeCache {
+    export let Default = new BuildtimeCache<string, string>(BuildtimeCache.hash(BuildtimeCache.name))
 }

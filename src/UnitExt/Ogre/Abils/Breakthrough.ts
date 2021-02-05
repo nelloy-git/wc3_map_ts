@@ -3,20 +3,14 @@ import * as Buff from "../../../Buff";
 import * as Param from "../../../Parameter";
 
 import { hUnit } from "../../../Handle";
-import { Cache, deltaPos, getTurnTime, getFileDir, Json, Log, TextFile } from "../../../Utils";
+import { deltaPos, getTurnTime, getFileDir, Log } from "../../../Utils";
 import { BreakthroughData } from "./Data/Breakthrough";
-import { AbilityJson } from "../../AbilityJson";
+import { AbilityJsonData } from "../../AbilUtils/Json/Data";
 
 let json_path = getFileDir() + '/json/Breakthrough.json'
-let json = new AbilityJson(json_path)
+let json = new AbilityJsonData(json_path)
 
-const NAME = json.name
-const ICON = json.icon
-const DIS_ICON = json.dis_icon
-const TOOLTIP = json.tooltip
-const ANIMATION = json.get('animation')
-const PUSH_DUR = 0 //json.pushTime
-const DMG_SCALE = 0 //json.dmgScale
+print(json.getValue('dmg'))
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 
@@ -35,7 +29,7 @@ Casting.start = (abil, target) => {
 
     caster.pause = true
     caster.angle = angle
-    caster.animation = ANIMATION
+    caster.animation = json.animations['walkOgre']
 
     new BreakthroughData(abil, angle, range, vel, Abil.Casting.period)
 }
@@ -75,14 +69,16 @@ Casting.casting = (abil, target) => {
         // Push
         let buffs = Buff.Container.get(target)
         if (buffs){
-            buffs.add(caster, PUSH_DUR, Buff.Push, getPushVelXY(caster, target, data.vel))
+            buffs.add(caster, json.getValue('pushDur'),
+                      Buff.Push, getPushVelXY(caster, target, data.vel))
         }
         
         // Damage
         if (params){
-            let patk = params.get('PATK', 'RES')
-            Param.Damage.deal(caster, target, DMG_SCALE * patk, 'PSPL', WEAPON_TYPE_WHOKNOWS)
+            Param.Damage.deal(caster, target,
+                              json.getValue('dmg', params), 'PSPL', WEAPON_TYPE_WHOKNOWS)
         }
+
         data.targets.push(target)
     }
 }
@@ -120,10 +116,10 @@ Casting.isTargetValid = (abil, target) => {return true}
 
 let Data = new Abil.TData()
 
-Data.name = (abil) => {return NAME}
-Data.iconNormal = (abil) => {return ICON}
-Data.iconDisabled = (abil) => {return DIS_ICON}
-Data.tooltip = (abil) => {return TOOLTIP}
+Data.name = (abil) => {return json.name}
+Data.iconNormal = (abil) => {return json.icon}
+Data.iconDisabled = (abil) => {return json.dis_icon}
+Data.tooltip = (abil) => {return json.tooltip}
 Data.lifeCost = (abil) => {return 0}
 Data.manaCost = (abil) => {return 0}
 Data.range = (abil) => {return 650}

@@ -23,6 +23,6 @@ import { Logger } from './Logger'
 export { Logger }
 export let Log = Logger.Default
 
-import { BuilderCache } from './BuilderCache'
-export { BuilderCache }
-export let Cache = BuilderCache.Default
+import { BuildtimeCache } from './BuildtimeCache'
+export { BuildtimeCache as BuildtimeCache }
+export let Cache = BuildtimeCache.Default

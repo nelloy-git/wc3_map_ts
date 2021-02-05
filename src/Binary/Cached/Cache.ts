@@ -1,4 +1,4 @@
-import { BuilderCache, Log } from "../../Utils"
+import { BuildtimeCache, Log } from "../../Utils"
 
 export abstract class BinaryCache<T> {
     constructor(id: string){
@@ -35,6 +35,6 @@ export abstract class BinaryCache<T> {
 
     readonly id: string
     
-    protected static _cache_id = Macro(BuilderCache.hash(BinaryCache.name))
-    protected static _cache = new BuilderCache<string, string>(BinaryCache._cache_id)
+    protected static _cache_id = Macro(BuildtimeCache.hash(BinaryCache.name))
+    protected static _cache = new BuildtimeCache<string, string>(BinaryCache._cache_id)
 }

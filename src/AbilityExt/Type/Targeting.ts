@@ -1,8 +1,10 @@
-import { ActionList, Log } from '../../Utils'
+import { getFilePath, ActionList, Log } from '../../Utils'
 
 import { IFace } from '../Ability/IFace'
 import { SyncTargets } from './SyncTargets'
 import { TargetType } from '../Utils'
+
+let __path__ = Macro(getFilePath())
 
 export class TTargeting<T extends TargetType> {
     constructor(target_getter: (this: void, pl: jplayer, abil: IFace<T>)=>T){
@@ -21,8 +23,8 @@ export class TTargeting<T extends TargetType> {
         let pl_id = GetPlayerId(pl)
 
         if (TTargeting._active[pl_id] != undefined || TTargeting._abil[pl_id] != undefined){
-            return Log.err(TTargeting.name + 
-                           ': can not start ability targeting. Another one is active.')
+            return Log.err('can not start ability targeting. Another one is active.',
+                            __path__, TTargeting, 2)
         }
 
         TTargeting._active[pl_id] = this
@@ -35,8 +37,8 @@ export class TTargeting<T extends TargetType> {
         let pl_id = GetPlayerId(pl)
 
         if (TTargeting._active[pl_id] != this || abil != TTargeting._abil[pl_id]){
-            return Log.err(TTargeting.name + 
-                           ': can not cancel inactive ability.', 3)
+            return Log.err('can not cancel inactive ability.',
+                            __path__, TTargeting, 2)
         }
 
         this._stop_actions.run(this, pl, abil)

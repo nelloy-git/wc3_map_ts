@@ -1,4 +1,6 @@
-import { Log } from "../Utils";
+import { getFilePath, Log } from "../Utils";
+
+let __path__ = Macro(getFilePath())
 
 export class Point {
     constructor(str: string)
@@ -27,8 +29,7 @@ export class Point {
         if (str.charAt(0) != Point._l_border ||
             str.charAt(str.length - 1) != Point._r_border){
 
-            return Log.err(Point.toString() + 
-                           ': can not parse string', 3)
+            return Log.err('can not parse string.', __path__, Point, 3)
         }
 
         str = str.slice(1, str.length - 1)

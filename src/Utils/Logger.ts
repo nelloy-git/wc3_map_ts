@@ -29,7 +29,7 @@ export class Logger {
             return
         }
 
-        let msg = this.format('msg', text)
+        let msg = this._format('msg', text)
         if (this.show_msg){
             print(msg)
         }
@@ -46,7 +46,7 @@ export class Logger {
             return
         }
 
-        let msg = this.format('Wrn', text)
+        let msg = this._format('Wrn', text)
         if (this.show_wrn){
             print(msg)
         }
@@ -58,8 +58,10 @@ export class Logger {
         }
     }
 
-    public err(text: string, lvl?: number | undefined): never{
-        let msg = this.format('ERROR', text)
+    public err(msg: string, path?: string, obj?: {name: string}, lvl?: number): never{
+        path = path ? path : ''
+        let name = obj ? obj.name + ': ' : ''
+        msg = this._format('ERROR', path + '\n' + name + msg + '\n')
         
         if (this.show_err){
             print(msg)
@@ -71,7 +73,7 @@ export class Logger {
             }
         }
 
-        error('', lvl ? lvl + 1 : 1)
+        error('', lvl ? lvl + 1 : 2)
     }
 
     public save(){
@@ -100,7 +102,7 @@ export class Logger {
         }
     }
 
-    private format(pref: string, text:string){
+    private _format(pref: string, text:string){
         return Logger.fmt("[%.3f] {%s} %s",
                           os.clock() - Logger.start_time,
                           pref, text)

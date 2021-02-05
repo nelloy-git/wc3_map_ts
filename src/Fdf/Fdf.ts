@@ -1,6 +1,8 @@
-import { Log } from '../Utils';
+import { getFilePath, Log } from '../Utils';
 import { File } from './File';
 import { IFace } from './IFace'
+
+let __path__ = Macro(getFilePath())
 
 export abstract class Fdf implements IFace{
     constructor(name: string, base_type: string, is_simple: boolean, file?: File) {
@@ -10,8 +12,8 @@ export abstract class Fdf implements IFace{
         this.file = file ? file : Fdf._file
 
         if (Fdf._name2fdf.get(name)){
-            return Log.err(Fdf.name + 
-                           ': frame with the same name already exists.')
+            return Log.err('frame with the same name already exists.',
+                            __path__, Fdf, 2)
         }
         Fdf._name2fdf.set(name, this)
 
@@ -21,16 +23,16 @@ export abstract class Fdf implements IFace{
     public get inherit(){return this._inherit}
     public set inherit(other: Fdf | undefined){
         if (other && other.base_type != this.base_type){
-            Log.err(Fdf.name + 
-                    ': can not inherit from different base type.', 2)
+            Log.err('can not inherit from different base type.',
+                    __path__, Fdf, 2)
         }
         this._inherit = other
     }
 
     public addSubframe(fdf: Fdf){
         if (fdf.is_simple != this.is_simple){
-            Log.err(Fdf.name + 
-                    ': simple and normal frames can not be combined.', 2)
+            Log.err('simple and normal frames can not be combined.',
+                    __path__, Fdf, 2)
         }
         this._subframes.set(fdf.name, fdf)
         this.file.remove(fdf)
