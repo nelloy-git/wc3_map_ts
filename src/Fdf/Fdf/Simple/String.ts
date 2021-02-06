@@ -1,5 +1,7 @@
-import { Color, Log } from "../../../Utils";
+import { getFilePath, Color, Log } from "../../../Utils";
 import { Fdf } from "../../Fdf";
+
+let __path__ = Macro(getFilePath())
 
 export class SimpleString extends Fdf {
     constructor(name: string){
@@ -31,16 +33,16 @@ export class SimpleString extends Fdf {
     }
 
     public addSubframe(){
-        return Log.err(SimpleString.name + 
-                       ': can not have subframes.', 2)
+        return Log.err('can not have subframes.',
+                       __path__, SimpleString, 2)
     }
     public getSubframe(){
-        return Log.err(SimpleString.name + 
-                       ': can not have subframes.', 2)
+        return Log.err('can not have subframes.',
+                       __path__, SimpleString, 2)
     }
     public removeSubframe(){
-        return Log.err(SimpleString.name + 
-                       ': can not have subframes.', 2)
+        return Log.err('can not have subframes.',
+                       __path__, SimpleString, 2)
     }
 
     public serialize(){

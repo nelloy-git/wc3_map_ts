@@ -1,5 +1,7 @@
-import { Color, Log, wcType } from "../Utils";
+import { Color, getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hTextTag extends Handle<jtexttag> {
     constructor(){
@@ -9,7 +11,8 @@ export class hTextTag extends Handle<jtexttag> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'textjtexttag'){
-            Log.err('TextTag: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hTextTag, 2)
         }
         return instance as hTextTag
     }

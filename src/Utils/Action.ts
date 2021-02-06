@@ -1,6 +1,8 @@
-/** @noSelfInFile */
 import { Logger } from './Logger'
+import { getFilePath } from './Funcs'
 let Log = Logger.Default
+
+let __path__ = Macro(getFilePath())
 
 export class Action<In extends any[], Out> {
 
@@ -16,7 +18,8 @@ export class Action<In extends any[], Out> {
             [success, res] = pcall(this._callback, ...args);
 
             if (!success) {
-                return Log.err(Action.toString() + ': ' + (res as string), 2);
+                return Log.err(<string>res,
+                                __path__, Action, 2);
             }
 
             Action.inside = false;

@@ -1,5 +1,7 @@
-import { Log, wcType } from "../Utils";
+import { getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hItem extends Handle<jitem> {
     constructor(id: number, x: number, y: number){
@@ -13,8 +15,8 @@ export class hItem extends Handle<jitem> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'item'){
-            return Log.err(hItem.name + 
-                           ': got wrong type of handle.')
+            return Log.err('got wrong type of handle.',
+                            __path__, hItem, 2)
         }
         return instance as hItem
     }

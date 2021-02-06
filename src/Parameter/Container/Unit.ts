@@ -1,4 +1,4 @@
-import { Log } from "../../Utils";
+import { getFilePath, Log } from "../../Utils";
 import { ValueType } from "../Value";
 import { hUnit } from "../../Handle";
 
@@ -6,18 +6,20 @@ import { Container } from "../Container"
 import { Damage } from "../Damage/Damage";
 import { Type } from "../Type";
 
+let __path__ = Macro(getFilePath())
+
 export class UnitContainer extends Container {
     constructor(owner: hUnit){
         super()
         this.owner = owner
         
         if (UnitContainer._owner2container.get(owner)){
-            return Log.err(UnitContainer.name + 
-                           ': already exists.', 2)
+            return Log.err('already exists.',
+                            __path__, UnitContainer, 2)
         }
         UnitContainer._owner2container.set(owner, this)
 
-        for (let [param, value] of this._values){
+        for (let [param, value] of this._values){                       
             this.set(param, 'BASE', Type.defaultUnitBase(param))
         }
     }

@@ -1,5 +1,7 @@
-import { Color, Log, wcType } from "../Utils";
+import { Color, getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 function createFramehandle(name: string, is_simple: boolean){
     let handle: jframehandle|undefined
@@ -11,8 +13,8 @@ function createFramehandle(name: string, is_simple: boolean){
     if (tostring(handle) == tostring(test)){
         BlzDestroyFrame(handle)
         BlzDestroyFrame(test)
-        return Log.err(hFrame.toString() +
-                       ': can not create framehandle with name ' + name)
+        return Log.err('can not create framehandle with name ' + name,
+                        __path__, hFrame, 2)
     }
     BlzDestroyFrame(test)
     return handle
@@ -34,7 +36,8 @@ export class hFrame extends Handle<jframehandle> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'framehandle'){
-            Log.err('Frame: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hFrame, 2)
         }
         return <hFrame>instance
     }

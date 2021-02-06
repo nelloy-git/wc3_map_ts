@@ -1,7 +1,7 @@
-/** @noSelfInFile */
-
-import { Action, ActionList, Log, wcType } from "../Utils";
+import { Action, ActionList, getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hTimer extends Handle<jtimer> {
     constructor(){super(CreateTimer())}
@@ -10,7 +10,8 @@ export class hTimer extends Handle<jtimer> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'timer'){
-            Log.err('Timer: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hTimer, 2)
         }
         return instance as hTimer
     }
@@ -27,7 +28,7 @@ export class hTimer extends Handle<jtimer> {
     public pause(){PauseTimer(this.handle)}
     public resume(){ResumeTimer(this.handle)}
 
-    public addAction(callback: (timer: hTimer)=>void){
+    public addAction(callback: (this: void, timer: hTimer)=>void){
         return this._actions.add(callback)
     }
     public removeAction(action: Action<[hTimer], void> | undefined){

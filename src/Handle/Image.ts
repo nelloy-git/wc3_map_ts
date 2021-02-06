@@ -1,5 +1,7 @@
-import { Color, getTerrainZ, Import, Log, wcType } from "../Utils";
+import { Color, getFilePath, getTerrainZ, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hImage extends Handle<jimage> {
     constructor(image: string,
@@ -28,7 +30,8 @@ export class hImage extends Handle<jimage> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'image'){
-            Log.err('Image: got wrong type of handle.', 2)
+            Log.err('Image: got wrong type of handle.',
+                    __path__, hImage, 2)
         }
         return instance as hImage
     }

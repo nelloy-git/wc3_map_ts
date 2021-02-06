@@ -1,5 +1,7 @@
-import { Color, id2int, Log, wcType } from "../Utils";
+import { Color, getFilePath, id2int, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hUnit extends Handle<junit>{
     constructor(unit_id: number, x: number, y: number, owner: jplayer){
@@ -21,7 +23,8 @@ export class hUnit extends Handle<junit>{
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'unit'){
-            Log.err('Unit: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hUnit, 2)
         }
         return <hUnit> instance
     }

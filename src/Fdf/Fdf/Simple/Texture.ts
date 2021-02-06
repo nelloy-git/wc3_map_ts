@@ -1,5 +1,7 @@
-import { Log } from "../../../Utils";
+import { getFilePath, Log } from "../../../Utils";
 import { Fdf } from "../../Fdf";
+
+let __path__ = Macro(getFilePath())
 
 export class SimpleTexture extends Fdf {
     constructor(name: string){
@@ -13,16 +15,16 @@ export class SimpleTexture extends Fdf {
     }
 
     public addSubframe(){
-        return Log.err(SimpleTexture.name + 
-                       ': can not have subframes.', 2)
+        return Log.err('can not have subframes.',
+                        __path__, SimpleTexture, 2)
     }
     public getSubframe(){
-        return Log.err(SimpleTexture.name + 
-                       ': can not have subframes.', 2)
+        return Log.err('can not have subframes.',
+                        __path__, SimpleTexture, 2)
     }
     public removeSubframe(){
-        return Log.err(SimpleTexture.name + 
-                       ': can not have subframes.', 2)
+        return Log.err('can not have subframes.',
+                        __path__, SimpleTexture, 2)
     }
 
     public serialize(){

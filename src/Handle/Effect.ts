@@ -1,6 +1,8 @@
 import { hUnit } from "./Unit";
-import { Color, Log, wcType } from "../Utils";
+import { Color, getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hEffect extends Handle<jeffect> {
     constructor(model: string, x: number, y:number, z: number){
@@ -15,7 +17,8 @@ export class hEffect extends Handle<jeffect> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'effect'){
-            Log.err('Effect: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hEffect, 2)
         }
         return instance as hEffect
     }
@@ -132,7 +135,8 @@ export class hEffectAttached extends Handle<jeffect> {
         if (!instance){return}
 
         if (wcType(instance.handle) != 'effect'){
-            Log.err('Effect: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hEffect, 2)
         }
 
         if (!hEffectAttached._is_attached.get(instance)){

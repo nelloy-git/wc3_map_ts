@@ -1,4 +1,6 @@
-import {Log} from '../Utils'
+import { getFilePath, Log } from '../Utils'
+
+let __path__ = Macro(getFilePath())
 
 export abstract class Handle<T extends jhandle> {
     constructor(handle: T){
@@ -18,24 +20,24 @@ export abstract class Handle<T extends jhandle> {
 
     get id(){
         if (!this._id){
-            return Log.err(Handle.name +
-                           ': can not get id from destroyed instance.', 2)
+            return Log.err('can not get id from destroyed instance.',
+                            __path__, Handle, 2)
         }
         return this._id
     }
     
     get handle(){
         if (!this._handle){
-            return Log.err(Handle.name +
-                           ': can not get handle from destroyed instance.', 2)
+            return Log.err('can not get handle from destroyed instance.',
+                            __path__, Handle, 2)
         }
         return this._handle
     }
 
     destroy(){
         if (!this._handle || !this._id){
-            Log.err(Handle.name +
-                    ': can not destroy instance. Already destroyed.', 2)
+            Log.err('can not destroy instance. Already destroyed.',
+                    __path__, Handle, 2)
             return
         }
         

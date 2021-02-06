@@ -1,6 +1,8 @@
 import * as Fdf from "../Fdf";
 import { Handle, hTrigger, hTriggerEvent } from "../Handle";
-import { Action, ActionList, Color, Log, wcType } from "../Utils";
+import { Action, ActionList, getFilePath, Color, Log, wcType } from "../Utils";
+
+let __path__ = Macro(getFilePath())
 
 export class Frame extends Handle<jframehandle> {
     constructor(fdf: Fdf.Fdf)
@@ -46,7 +48,8 @@ export class Frame extends Handle<jframehandle> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'framehandle'){
-            Log.err('Frame: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, Frame, 2)
         }
         return <Frame>instance
     }
@@ -54,24 +57,24 @@ export class Frame extends Handle<jframehandle> {
 
     initEvents(events: Frame.Event[]){
         if (this._trig_events){
-            Log.err(Frame.name + 
-                    ': events are already initialized.')
+            Log.err('events are already initialized.',
+                    __path__, Frame, 2)
         }
 
         if (!Frame._wc2event){
-            return Log.err(Frame.name + 
-                           ': static event list has not been initialized.')
+            return Log.err('static event list has not been initialized.',
+                            __path__, Frame, 2)
         }
         
         if (!Frame._trigger){
-            return Log.err(Frame.name + 
-                           ': static event trigger has not been initialized.')
+            return Log.err('static event trigger has not been initialized.',
+                            __path__, Frame, 2)
         }
         
         events.forEach(event => {
             if (this._actions.get(event) != undefined){
-                Log.err(Frame.name + 
-                        ': events in list can be used only once per type.')
+                Log.err('events in list can be used only once per type.',
+                        __path__, Frame, 2)
             }
             this._actions.set(event, new ActionList())
         })

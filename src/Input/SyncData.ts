@@ -1,4 +1,6 @@
-import { Action, ActionList, Log } from '../Utils'
+import { Action, ActionList, getFilePath, Log } from '../Utils'
+
+let __path__ = Macro(getFilePath())
 
 export abstract class SyncData<T extends any[]> {
     constructor(){
@@ -72,7 +74,8 @@ export abstract class SyncData<T extends any[]> {
                 p3++
             }
         } else {
-            return Log.err('No valid ids left.', 2)
+            return Log.err('no valid ids left.',
+                            __path__, undefined, 2)
         }
         SyncData._last_id = string.char(p4) + 
                             string.char(p3) + 

@@ -1,5 +1,7 @@
-import { Color, Log, wcType } from "../Utils";
+import { getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hDestructable extends Handle<jdestructable> {
     constructor(id: number, x: number, y:number, z: number, a: number,
@@ -10,8 +12,8 @@ export class hDestructable extends Handle<jdestructable> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'destructable'){
-            Log.err(hDestructable.name + 
-                    ': got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hDestructable, 2)
         }
         return instance as hDestructable
     }

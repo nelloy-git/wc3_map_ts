@@ -1,8 +1,10 @@
-import { Action, ActionList, Log, wcType } from "../Utils";
+import { Action, ActionList, getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
 import { hTrigger } from './Trigger'
 import { hTriggerEvent } from './TriggerEvent'
 import { hUnit } from './Unit'
+
+let __path__ = Macro(getFilePath())
 
 type AbilityEvent = 'CAST'|'CHANNEL'|'EFFECT'|'FINISH'|'ENDCAST'
 
@@ -20,7 +22,8 @@ export class hAbility extends Handle<jability> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'ability'){
-            Log.err('Ability: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hAbility, 2)
         }
         return instance as hAbility
     }

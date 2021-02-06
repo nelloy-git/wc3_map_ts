@@ -1,5 +1,7 @@
-import { Action, ActionList, Log, wcType } from "../Utils";
+import { Action, ActionList, getFilePath, Log, wcType } from "../Utils";
 import { Handle } from "./Handle";
+
+let __path__ = Macro(getFilePath())
 
 export class hTrigger extends Handle<jtrigger> {
     constructor(){
@@ -10,7 +12,8 @@ export class hTrigger extends Handle<jtrigger> {
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'trigger'){
-            Log.err('Trigger: got wrong type of handle.', 2)
+            Log.err('got wrong type of handle.',
+                    __path__, hTrigger, 2)
         }
         return instance as hTrigger
     }
