@@ -3,14 +3,14 @@ import * as Buff from "../../../Buff";
 import * as Param from "../../../Parameter";
 
 import { hUnit } from "../../../Handle";
-import { deltaPos, getTurnTime, getFileDir, Log } from "../../../Utils";
+import { deltaPos, getTurnTime, getFileDir, Log, getFilePath } from "../../../Utils";
 import { BreakthroughData } from "./Data/Breakthrough";
 import { AbilityJsonData } from "../../AbilUtils/Json/Data";
 
-let json_path = getFileDir() + '/json/Breakthrough.json'
-let json = new AbilityJsonData(json_path)
+let __path__ = Macro(getFilePath())
+let __dir__ = Macro(getFileDir())
 
-print(json.getValue('dmg'))
+let json = new AbilityJsonData(__dir__ + '/json/Breakthrough.json')
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 
@@ -37,8 +37,8 @@ Casting.start = (abil, target) => {
 Casting.casting = (abil, target) => {
     let data = BreakthroughData.get(abil)
     if (!data){
-        return Log.err(abil.Data.name + 
-                       ': data is undefined.')
+        return Log.err('data is undefined.',
+                        __path__, abil.Data, 2)
     }
 
     // Turning caster
@@ -49,7 +49,6 @@ Casting.casting = (abil, target) => {
 
     // Moving caster
     let status = data.move()
-    // print(status, data.range, data.range_x, data.range_y)
     if (status == 'COLLISION'){
         abil.Casting.cancel()
         return

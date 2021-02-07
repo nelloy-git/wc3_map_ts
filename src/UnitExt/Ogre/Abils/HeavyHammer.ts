@@ -3,21 +3,27 @@ import * as Buff from "../../../Buff";
 import * as Param from "../../../Parameter";
 
 import { hTimer, hUnit } from "../../../Handle";
-import { Log } from "../../../Utils";
+import { deltaPos, getTurnTime, getFileDir, Log, getFilePath } from "../../../Utils";
 import { HeavyHammerData } from "./Data/HeavyHammer";
+import { AbilityJsonData } from "../../AbilUtils/Json/Data";
 
-let NAME = 'Heavy hammer'
-let ICON = 'ReplaceableTextures\\CommandButtons\\BTNThunderclap.blp'
-let DIS_ICON = 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp'
-let TOOLTIP = 'T\no\no\nl\nt\ni\np'
-let ANIM_INDEX = 6
-let ANIM_START_TIME = 0.3
-let ANIM_END_TIME = 0.4
-let TURN_TIME = 0.5
-let CAST_TIME = 1.5
-let TOSS_HEIGHT = 300
-let TOSS_DUR = 1.5
-let DMG_MULT = 2
+let __path__ = Macro(getFilePath())
+let __dir__ = Macro(getFileDir())
+
+let json = new AbilityJsonData(__dir__ + '/json/HeavyHammer.json')
+
+// let NAME = 'Heavy hammer'
+// let ICON = 'ReplaceableTextures\\CommandButtons\\BTNThunderclap.blp'
+// let DIS_ICON = 'ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp'
+// let TOOLTIP = 'T\no\no\nl\nt\ni\np'
+// let ANIM_INDEX = 6
+// let ANIM_START_TIME = 0.3
+// let ANIM_END_TIME = 0.4
+// let TURN_TIME = 0.5
+// let CAST_TIME = 1.5
+// let TOSS_HEIGHT = 300
+// let TOSS_DUR = 1.5
+// let DMG_MULT = 2
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 
@@ -33,29 +39,29 @@ Casting.start = (abil, target) => {
     caster.angle = angle
 
     let area = abil.Data.area / 2
-    let data = new HeavyHammerData(abil, ANIM_INDEX, abil.Data.range, angle - area, angle + area)
+    let data = new HeavyHammerData(abil, json.animations['strike_Ogre'], abil.Data.range, angle - area, angle + area)
     data.animation = 'START'
 }
 
 Casting.casting = (abil, target) => {
     let data = HeavyHammerData.get(abil)
     if (!data){
-        return Log.err(NAME + 
-                       ': data is undefined.')
+        return Log.err('data is undefined.',
+                        __path__, abil.Data, 2)
     }
     let left = abil.Casting.Timer.left
     let full = abil.Casting.Timer.fullTime
     data.progress = 1 - (left / full)
 
     // Animation start
-    if (left < full - ANIM_START_TIME && data.animation == 'START'){
-        print('Pause')
+    let startTime = <number>json.animations['strike_Ogre_startTime']
+    if (left < full - startTime && data.animation == 'START'){
         data.animation = 'PAUSE'
     }
 
     // Animation end
-    if (left < ANIM_END_TIME && data.animation == 'PAUSE'){
-        print('End')
+    let endTime = <number>json.animations['strike_Ogre_endTime']
+    if (left < endTime && data.animation == 'PAUSE'){
         data.animation = 'END'
     }
 }
