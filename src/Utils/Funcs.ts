@@ -108,7 +108,9 @@ interface ObjectWithAngle extends ObjectWithPosition {
 }
 
 const FULL_TURN_TIME = 0.5
-export function getTurnTime(obj1: ObjectWithAngle, obj2: ObjectWithPosition){
+export function getTurnTime(obj1: ObjectWithAngle, obj2?: ObjectWithPosition){
+    if (!obj2){return FULL_TURN_TIME}
+
     let [dx, dy] = deltaPos(obj1, obj2)
     let ta = Atan2(dy, dx)
     ta = ta >= 0 ? ta : 2 * math.pi + ta

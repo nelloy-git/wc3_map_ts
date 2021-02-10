@@ -3,6 +3,7 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNStampede.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp",
     "tooltip": "T\no\no\nl\nt\ni\np",
+    "castTime": 0,
 
     "animations": {
         "walkOgre": 11

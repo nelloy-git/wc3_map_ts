@@ -19,6 +19,7 @@ export class AbilityJsonData {
         this.icon = this._readField('icon', this._json, 'string')
         this.dis_icon = this._readField('disIcon', this._json, 'string')
         this.tooltip = this._readField('tooltip', this._json, 'string')
+        this.cast_time = this._readField('castTime', this._json, 'number')
         this.animations = this._readField('animations', this._json, 'object')
 
         this.scales = {}
@@ -65,6 +66,7 @@ export class AbilityJsonData {
     readonly icon: string
     readonly dis_icon: string
     readonly tooltip: string
+    readonly cast_time: number
 
     readonly animations: {[k: string]: number | string}
     readonly scales: {[key: string]: ReadonlyAbilityScale}

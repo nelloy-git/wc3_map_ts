@@ -69,10 +69,11 @@ Casting.casting = (abil, target) => {
 Casting.cancel = (abil, target) => {
     let data = HeavyHammerData.get(abil)
     if (!data){
-        return Log.err(NAME + 
-                       ': data is undefined.')
+        return Log.err('data is undefined.',
+                        __path__, abil.Data, 2)
     }
-    let prog = data.progress + (ANIM_END_TIME / abil.Casting.Timer.fullTime)
+
+    let prog = data.progress + (<number>json.animations['strike_Ogre_startTime'] / abil.Casting.Timer.fullTime)
     data.progress = prog < 1 ? prog : 1
     data.animation = 'END'
     
@@ -81,7 +82,7 @@ Casting.cancel = (abil, target) => {
         Casting.finish(abil, target)
         t.destroy()
     })
-    t.start(ANIM_END_TIME, false)
+    t.start(<number>json.animations['strike_Ogre_endTime'], false)
 }
 
 Casting.interrupt = clearCasting
@@ -92,6 +93,7 @@ Casting.finish = (abil, target) => {
 }
 
 Casting.castingTime = (abil, target) => {
+    // let turn_time = 
     let angle: number = math.pi
     if (target){
         let targ = target[0]
@@ -107,17 +109,17 @@ Casting.castingTime = (abil, target) => {
     let param = Param.UnitContainer.get(caster)
     let mspd = param ? param.get('MSPD', 'RES') : 1
 
-    let turn_time = TURN_TIME * math.abs(angle - caster.angle) / math.pi
+    let turn_time = getTurnTime(caster, target ? target[0] : undefined)
 
-    return math.max(turn_time, ANIM_START_TIME) + CAST_TIME / mspd
+    return math.max(turn_time, <number>json.animations['strike_Ogre_startTime']) + json.cast_time / mspd
 }
 Casting.isTargetValid = (abil, target) => {return true}
 
 function dealDamage(abil: Abil.IFace<[Abil.Point]>){
     let data = HeavyHammerData.get(abil)
     if (!data){
-        return Log.err(NAME + 
-                       ': data is undefined.')
+        return Log.err('data is undefined.',
+                        __path__, abil.Data, 2)
     }
 
     let caster = abil.Data.owner
