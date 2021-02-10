@@ -144,51 +144,51 @@ function dealDamage(abil: Abil.IFace<[Abil.Point]>){
                 buffs.add(caster, progr * TOSS_DUR, Buff.TossUp, [progr * TOSS_HEIGHT])
             }
             
-            // Damage
-            if (params){
-                let patk = params.get('PATK', 'RES')
-                Param.Damage.deal(caster, u, progr * DMG_MULT * patk, 'PSPL', WEAPON_TYPE_METAL_HEAVY_BASH)
-            }
-        }
-    }
-}
+//             // Damage
+//             if (params){
+//                 let patk = params.get('PATK', 'RES')
+//                 Param.Damage.deal(caster, u, progr * DMG_MULT * patk, 'PSPL', WEAPON_TYPE_METAL_HEAVY_BASH)
+//             }
+//         }
+//     }
+// }
 
-function clearCasting(abil: Abil.IFace<[Abil.Point]>){
-    let data = HeavyHammerData.get(abil)
-    if (!data){
-        return Log.err(NAME + 
-                       ': data is undefined.')
-    }
-    data.destroy()
+// function clearCasting(abil: Abil.IFace<[Abil.Point]>){
+//     let data = HeavyHammerData.get(abil)
+//     if (!data){
+//         return Log.err(NAME + 
+//                        ': data is undefined.')
+//     }
+//     data.destroy()
 
-    let caster = abil.Data.owner
-    caster.pause = false
-}
+//     let caster = abil.Data.owner
+//     caster.pause = false
+// }
 
-let Data = new Abil.TData()
+// let Data = new Abil.TData()
 
-Data.name = (abil) => {return NAME}
-Data.iconNormal = (abil) => {return ICON}
-Data.iconDisabled = (abil) => {return DIS_ICON}
-Data.tooltip = (abil) => {return TOOLTIP}
-Data.lifeCost = (abil) => {return 0}
-Data.manaCost = (abil) => {return 0}
-Data.range = (abil) => {return 250}
-Data.area = (abil) => {return math.pi / 2}
-Data.chargeUsed = (abil) => {return 1}
-Data.chargeMax = (abil) => {return 1}
-Data.chargeCooldown = (abil) => {return 5}
-Data.isAvailable = (abil) => {
-    let controllable = !abil.Data.owner.pause
-    let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
-    let charges = abil.Data.Charges.count > 0
-    let casting = abil.Casting.Timer.left <= 0
-    return charges && casting && enough_mana && controllable
-}
-Data.consume = (abil) => {
-    abil.Data.Charges.count -= abil.Data.charges_use
-    abil.Data.owner.mana -= abil.Data.mana_cost
-    return true
-}
+// Data.name = (abil) => {return NAME}
+// Data.iconNormal = (abil) => {return ICON}
+// Data.iconDisabled = (abil) => {return DIS_ICON}
+// Data.tooltip = (abil) => {return TOOLTIP}
+// Data.lifeCost = (abil) => {return 0}
+// Data.manaCost = (abil) => {return 0}
+// Data.range = (abil) => {return 250}
+// Data.area = (abil) => {return math.pi / 2}
+// Data.chargeUsed = (abil) => {return 1}
+// Data.chargeMax = (abil) => {return 1}
+// Data.chargeCooldown = (abil) => {return 5}
+// Data.isAvailable = (abil) => {
+//     let controllable = !abil.Data.owner.pause
+//     let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
+//     let charges = abil.Data.Charges.count > 0
+//     let casting = abil.Casting.Timer.left <= 0
+//     return charges && casting && enough_mana && controllable
+// }
+// Data.consume = (abil) => {
+//     abil.Data.Charges.count -= abil.Data.charges_use
+//     abil.Data.owner.mana -= abil.Data.mana_cost
+//     return true
+// }
 
-export let HeavyHammer = new Abil.TAbility(Casting, Data, Abil.TTargetingCone )
+// export let HeavyHammer = new Abil.TAbility(Casting, Data, Abil.TTargetingCone )

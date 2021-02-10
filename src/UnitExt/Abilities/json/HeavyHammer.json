@@ -1,0 +1,25 @@
+{
+    "name": "Heavy hammer",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNThunderclap.blp",
+    "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp",
+    "tooltip": "T\no\no\nl\nt\ni\np",
+
+    "animations": {
+        "strike_Ogre": 6,
+        "strike_Ogre_startTime": 0.3,
+        "strike_Ogre_endTime": 0.4
+    },
+
+    "scale": {
+        "dmg": {
+            "base": 50,
+            "baseAdd": {
+                "PATK": 2
+            }
+        },
+
+        "tossDur": {
+            "base": 1.5
+        }
+    }
+}

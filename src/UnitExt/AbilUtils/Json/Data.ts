@@ -9,7 +9,9 @@ export class AbilityJsonData {
     constructor(path: string){
         if (!IsGame()){
             let f = new TextFile(path)
-            Cache.set(path, f.read())
+            // Optimize .json format
+            let json = Json.decode(f.read())
+            Cache.set(path, Json.encode(json))
         }
         let raw = Cache.get(path)
 
