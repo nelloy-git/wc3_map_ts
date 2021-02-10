@@ -1,0 +1,27 @@
+{
+    "name": "Ogre",
+    "model": "Units\\Creeps\\OgreLord\\OgreLord.mdl",
+    "size_new": 0.7,
+    "size_old": 1.2,
+    
+    "params": {
+        "LIFE": 800,
+        "REGE": 4,
+
+        "MANA": 100,
+        "RECO": 0.5,
+
+        "PATK": 35,
+        "PSPD": 1,
+        "PDEF": 10,
+        "PRES": 0.1,
+
+        "MATK": 10,
+        "MSPD": 1,
+        "MDEF": 5,
+        "MRES": 0.1,
+
+        "CRIT": 0,
+        "MOVE": 310
+    }
+}

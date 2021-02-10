@@ -1,9 +1,9 @@
 import * as Param from "../../../Parameter";
-import { Cache, getFilePath, Json, Log, TextFile } from "../../../Utils";
+import { BCache, getFilePath, Json, Log, TextFile } from "../../../Utils";
 
 import {ReadonlyAbilityScale, readScales} from './Scales'
 
-let __path__ = getFilePath()
+let __path__ = Macro(getFilePath())
 
 export class AbilityJsonData {
     constructor(path: string){
@@ -11,9 +11,9 @@ export class AbilityJsonData {
             let f = new TextFile(path)
             // Optimize .json format
             let json = Json.decode(f.read())
-            Cache.set(path, Json.encode(json))
+            BCache.set(path, Json.encode(json))
         }
-        let raw = Cache.get(path)
+        let raw = BCache.get(path)
 
         this._path = path
         this._json = Json.decode(raw)

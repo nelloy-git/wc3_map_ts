@@ -35,6 +35,5 @@ export abstract class BinaryCache<T> {
 
     readonly id: string
     
-    protected static _cache_id = Macro(BuildtimeCache.hash(BinaryCache.name))
-    protected static _cache = new BuildtimeCache<string, string>(BinaryCache._cache_id)
+    protected static _cache = new BuildtimeCache<string>(BinaryCache.name)
 }

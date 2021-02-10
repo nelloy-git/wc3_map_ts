@@ -1,9 +1,9 @@
-import { IFace } from "../../../../AbilityExt"
-import { hImage, hUnit } from "../../../../Handle"
-import { Color } from "../../../../Utils"
-import { Arc, Line, newImageList } from '../../../../Drawing'
+import { IFace } from "../../../AbilityExt"
+import { hImage, hUnit } from "../../../Handle"
+import { Color } from "../../../Utils"
+import { Arc, Line, newImageList } from '../../../Drawing'
 
-import { AbilData } from "../../../AbilityData"
+import { AbilData } from "../../../UnitExt/AbilityData"
 
 export class HeavyHammerData extends AbilData {
     constructor(abil: IFace<any>, animation: number|string, range: number, min_angle: number, max_angle: number){

@@ -25,4 +25,4 @@ export let Log = Logger.Default
 
 import { BuildtimeCache } from './BuildtimeCache'
 export { BuildtimeCache as BuildtimeCache }
-export let Cache = BuildtimeCache.Default
+export let BCache = BuildtimeCache.Default

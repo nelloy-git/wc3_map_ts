@@ -1,78 +1,52 @@
+import { getFilePath } from './Funcs'
 import { Logger } from "./Logger"
 let Log = Logger.Default
 
-export class BuildtimeCache <K extends BuilderData, V extends BuilderData> {
-    constructor(id: number){
-        this.id = id
-        let keys: K[] = <K[]>BuildtimeCache._cached_keys[id]
-        let vals: V[] = <V[]>BuildtimeCache._cached_vals[id]
+let __path__ = Macro(getFilePath())
 
-        if (IsGame() && (!keys || !vals)){
-            Log.err(BuildtimeCache.name + 
-                    ': can not load cache data for id: ' + this.id.toString())
+export class BuildtimeCache <T extends BuildtimeData> {
+    constructor(id: number | string){
+        this.id = id
+        this._cache = (<LuaTable>BuildtimeCache._global_cache)[id]
+
+        if (IsGame() && (!this._cache)){
+            Log.err('can not load cache data for id: ' + this.id.toString(),
+                    __path__, BuildtimeCache, 3)
         }
 
         if (!IsGame()){
-            if (keys || vals){
-                Log.err(BuildtimeCache.name + 
-                    ': id ' + this.id.toString() + ' is already used.')            
+            if (this._cache){
+                Log.err('id ' + this.id.toString() + ' is already used.',
+                        __path__, BuildtimeCache, 3)
             }
             
-            keys = []
-            vals = []
-            BuildtimeCache._cached_keys[id] = keys
-            BuildtimeCache._cached_vals[id] = vals
+            this._cache = {};
+            (<LuaTable>BuildtimeCache._global_cache)[id] = this._cache
         }
-
-        this._keys = keys
-        this._vals = vals
     }
 
-    get(key: K){
-        let index = this._keys.indexOf(key)
-        return this._vals[index]
+    get(key: string): T{
+        return <T>(<LuaTable>this._cache)[key]
     }
 
-    set(key: K, val: V){
+    set(key: string, val: T){
         if (IsGame()){
-            return Log.err(BuildtimeCache.name + 
-                           ': can be used in buildtime only.')
+            return Log.err('can be used in buildtime only.',
+                            __path__, BuildtimeCache, 2)
         }
-
-        let index = this._keys.indexOf(key)
-        if (index < 0){this._keys.push(key); index = this._keys.length - 1}
-        this._vals[index] = val
+        (<LuaTable>this._cache)[key] = val
     }
 
-    static hash(str: string){
-        let hash = 0
-        let char
-        for (let i = 0; i < str.length; i++) {
-          char = str.charCodeAt(i)
-          hash = ((hash << 5) - hash) + char
-          hash |= 0; // Convert to 32bit integer
-        }
-        return hash;
-    }
+    readonly id: string | number
+    private _cache: BuildtimeData
 
-    readonly id: number
-
-    private _keys: K[] = []
-    private _vals: V[] = []
-
-    private static _cached_keys: BuilderData[] = (()=>{
-        let keys = MacroFinal(()=>{return BuildtimeCache._cached_keys})
-        keys = keys ? keys : []
-        return keys
-    })()
-
-    private static _cached_vals: BuilderData[] = (()=>{
-        let vals = MacroFinal(()=>{return BuildtimeCache._cached_vals})
-        vals = vals ? vals : []
-        return vals
+    private static _global_cache: BuildtimeData = (()=>{
+        let cache = MacroFinal(()=>{return BuildtimeCache._global_cache})
+        cache = cache ? cache : {}
+        return cache
     })()
 }
 
 export namespace BuildtimeCache {
-    export let Default = new BuildtimeCache<string, string>(BuildtimeCache.hash(BuildtimeCache.name))
+    export let Default = new BuildtimeCache<string>(BuildtimeCache.name)
 }

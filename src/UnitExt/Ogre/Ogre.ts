@@ -2,7 +2,7 @@ import { Map, FieldUnitList } from "../../Binary";
 import { id2int, isReforged } from "../../Utils";
 import { UnitExt } from "../UnitExt";
 import { Breakthrough } from './Abils/Breakthrough'
-import { HeavyHammer } from './Abils/HeavyHammer'
+// import { HeavyHammer } from './Abils/HeavyHammer'
 import { VoodooPoison } from "./Abils/VoodooPoison";
 
 let type = Map.w3u.add(id2int('hfoo'))
@@ -39,7 +39,7 @@ export class Ogre extends UnitExt {
         this.params.set('CRIT', 'BASE', 0)
         this.params.set('MOVE', 'BASE', 310)
 
-        this.abils.set(0, HeavyHammer)
+        // this.abils.set(0, HeavyHammer)
         this.abils.set(1, VoodooPoison)
         this.abils.set(2, Breakthrough)
     }

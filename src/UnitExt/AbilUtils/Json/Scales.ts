@@ -1,7 +1,7 @@
 import { getFilePath, Json, Log } from "../../../Utils";
 import { AbilityParams, ReadonlyAbilityParams, readParams } from "./Params"
 
-let __path__ = getFilePath()
+let __path__ = Macro(getFilePath())
 
 export type AbilityScale = {
     base: number

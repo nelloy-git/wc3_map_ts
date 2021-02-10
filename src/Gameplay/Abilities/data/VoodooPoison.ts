@@ -1,10 +1,10 @@
-import * as Param from "../../../../Parameter";
-import { IFace } from "../../../../AbilityExt"
-import { hEffect, hUnit} from "../../../../Handle"
-import { Arc, Line, newEffectList } from '../../../../Drawing'
+import * as Param from "../../../Parameter";
+import { IFace } from "../../../AbilityExt"
+import { hEffect, hUnit} from "../../../Handle"
+import { Arc, Line, newEffectList } from '../../../Drawing'
 
-import { AbilData } from "../../../AbilityData"
-import { TBuff } from "../../../../Buff";
+import { AbilData } from "../../../UnitExt/AbilityData"
+import { TBuff } from "../../../Buff";
 
 export class VoodooPoisonData extends AbilData{
     constructor(abil: IFace<any>, model: string,

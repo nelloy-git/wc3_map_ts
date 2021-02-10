@@ -69,6 +69,10 @@ export function isReforged(pl: jplayer){
 }
 
 export function getFilePath(){
+    if (IsGame()){
+        Log.err('function \'getFilePath\' is available in buildtime only.',
+                undefined, undefined, 2)
+    }
     let cur = getLoadingPackage()
 
     if (!cur){return error('')}
@@ -82,6 +86,11 @@ export function getFilePath(){
 }
 
 export function getFileDir(){
+    if (IsGame()){
+        Log.err('function \'getFileDir\' is available in buildtime only.',
+                undefined, undefined, 2)
+    }
+
     let path = getFilePath()
 
     let last = -1

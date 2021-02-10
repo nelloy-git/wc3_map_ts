@@ -1,7 +1,7 @@
-import { IFace } from "../../../../AbilityExt"
-import { hUnit } from "../../../../Handle"
-import { isWalkable } from "../../../../Utils"
-import { AbilData } from "../../../AbilityData"
+import { IFace } from "../../../AbilityExt"
+import { hUnit } from "../../../Handle"
+import { isWalkable } from "../../../Utils"
+import { AbilData } from "../../../UnitExt/AbilityData"
 
 export class BreakthroughData extends AbilData{
     constructor(abil: IFace<any>, angle: number, range: number, vel: number, dt: number){
