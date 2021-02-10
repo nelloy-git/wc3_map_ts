@@ -1,10 +1,8 @@
 {
     "name": "Ogre",
     "model": "Units\\Creeps\\OgreLord\\OgreLord.mdl",
-    "size": {
-        "new": 0.7,
-        "old": 1.2
-    },
+    "size_new": 0.7,
+    "size_old": 1.2,
     
     "params": {
         "LIFE": [800, 1, 0],
