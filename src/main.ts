@@ -74,8 +74,8 @@ if (IsGame()){
     t.start(1, true)
 
     let test = new IO.File('test.txt')
-    test.save('Some string data here.')
-    print(test.load())
+    test.write('Some string data here.')
+    print(test.read())
 
     // let t = new hTimer()
     // t.addAction(()=>{murloc_lagoon.enable(true)})

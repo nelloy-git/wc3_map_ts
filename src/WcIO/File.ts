@@ -5,7 +5,15 @@ export class File {
         this.path = path
     }
 
-    save(str: string){
+    read(){
+        BlzSetAbilityTooltip(1097690227, '', 0)
+        Preloader(this.path)
+        let str: string | undefined = BlzGetAbilityTooltip(1097690227, 0)
+
+        return str == '' ? str : undefined
+    }
+
+    write(str: string){
         PreloadGenClear()
         if (str.indexOf('\"') >= 0 || str.indexOf('\n' || str.indexOf('\\') >= 0) >= 0){
             return Log.err('can not save string with \\n, \" or \\ symbols',
@@ -18,12 +26,6 @@ export class File {
 
         Preload(msg)
         PreloadGenEnd(this.path)
-    }
-
-    load(){
-        Preloader(this.path)
-        let str = BlzGetAbilityTooltip(1097690227, 0)
-        return str
     }
 
     readonly path: string

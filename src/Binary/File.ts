@@ -16,7 +16,8 @@ function readFileData<T1, T2 = undefined, T3 = undefined, T4 = undefined>(fmt:st
     return <[T1, T2, T3, T4]><unknown>res
 }
 
-export class File {
+export abstract class File<T> {
+    get data(){return <ReadonlyArray<T>>this._data}
     get path(){return this._path}
 
     open(path: string){
@@ -26,6 +27,7 @@ export class File {
                     ': can not open file ' + path)
             return
         };
+
         [this._raw_data] = f.read('*a')
         if (!this._raw_data){
             Log.err(File.name +
@@ -34,6 +36,8 @@ export class File {
         f.close()
 
         this._path = path
+        this._file_pos = 0
+        this._data = this._parse()
     }
 
     save(path: string){
@@ -46,37 +50,57 @@ export class File {
         f.close()
     }
 
-    protected _parseData(type: 'char', pos: number, size: number): string
-    protected _parseData(type: 'int', pos: number, size: number): number
-    protected _parseData(type: 'float', pos: number, size: number): number
-    protected _parseData(type: 'char'|'int'|'float', pos: number, size: number){
+    protected abstract _parse(): T[]
+
+    protected _parseNext(type: 'char', size: number): string
+    protected _parseNext(type: 'int', size: number): number
+    protected _parseNext(type: 'float', size: number): number
+    protected _parseNext(type: 'char'|'int'|'float', size: number){
+        let val = this._parseData(type, this._file_pos, size)
+        this._file_pos += size
+        if (type == 'char'){
+            return <string>val
+        } else if (type == 'int' || type == 'float'){
+            return <number>val
+        }
+    }
+
+    private _parseData(type: 'char', pos: number, size: number): string
+    private _parseData(type: 'int', pos: number, size: number): number
+    private _parseData(type: 'float', pos: number, size: number): number
+    private _parseData(type: 'char'|'int'|'float', pos: number, size: number): string | number
+    private _parseData(type: 'char'|'int'|'float', pos: number, size: number){
         if (!this._raw_data){
             return Log.err(File.name + 
                            ': not data to parse.')
         }
 
-        if (type == 'float' && size != 4){
-            return Log.err(File.name +
-                           ': float type can be only of size 4.')
-        }
-
         let fmt
-        switch (type) {
-            case 'char': {fmt = 'c' + size.toString(); break}
-            case 'int': {fmt = 'I' + size.toString(); break}
-            case 'float': {fmt = 'f'; break}
+        if (type == 'char'){
+            fmt = 'c' + size.toString()
+        } else if (type == 'int'){
+            fmt = 'I' + size.toString()
+        } else { // if (type == 'float'){
+            if (size != 4){
+                return Log.err(File.name +
+                               ': float type can be only of size 4.')
+            }
+            fmt = 'f'
         }
 
         let [val]: [string|number] = <[string|number]><unknown>readFileData(fmt, this._raw_data.slice(pos))
 
-        switch (type) {
-            case 'char': {return <string>val}
-            case 'int': {return <number>val}
-            case 'float': {return <number>val}
+        if (type == 'char'){
+            return <string>val
+        } else if (type == 'int'){
+            return <number>val
+        } else { // if (type == 'float'){
+            return <number>val
         }
     }
 
-    protected _raw_data: string | undefined
-    
+    private _data: T[] = []
     private _path: string | undefined
+    private _raw_data: string | undefined
+    private _file_pos: number = 0
 }

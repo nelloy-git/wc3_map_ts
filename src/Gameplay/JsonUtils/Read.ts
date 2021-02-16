@@ -2,6 +2,10 @@ import { getFilePath, Log, Json } from "../../Utils";
 
 let __path__ = Macro(getFilePath())
 
+export function readJson(str: string) {
+    return Json.decode(str)
+}
+
 export function readNumber(json: LuaTable, key: string, path?: string){
     let val = json[key]
     if (typeof val !== 'number'){
