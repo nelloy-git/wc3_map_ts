@@ -5,7 +5,7 @@ import { hUnit } from "../../Handle";
 import { Action } from "../../Utils";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
-import { UnitExt } from "../../UnitExt/UnitExt";
+import { UnitInst } from "../../Gameplay/Units/UnitType";
 
 export class InterfaceUnitParameters extends Frame.Backdrop {
     constructor(){
@@ -23,7 +23,7 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
     }
 
     get unit(){return this._unit}
-    set unit(u: UnitExt | undefined){
+    set unit(u: UnitInst | undefined){
         if (this._unit){
             this._unit.params.removeAction(this._changed_action)
         }
@@ -83,6 +83,6 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
         ['MOVE', [new Frame.SimpleText(), new Frame.SimpleText()]],
     ])
 
-    private _unit: UnitExt | undefined
+    private _unit: UnitInst | undefined
     private _changed_action: Action<[Param.Container, Param.Type], void> | undefined
 }

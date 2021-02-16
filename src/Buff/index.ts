@@ -5,6 +5,5 @@ export { Container } from './Container'
 export { TData } from './Type/Data'
 export { TDuration } from './Type/Duration'
 
-export { Stun } from './Preset/Stun'
-export { Push } from './Preset/Push'
-export { TossUp } from './Preset/TossUp'
+import { Duration } from './Buff/Duration'
+export let period = Duration.period

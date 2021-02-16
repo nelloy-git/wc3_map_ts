@@ -2,8 +2,8 @@ import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
 
 import { hUnit } from "../../Handle";
-import { Mouse } from "../../Input";
-import { UnitExt } from "../../UnitExt/UnitExt";
+import { Mouse } from "../../WcIO";
+import { UnitInst } from "../../Gameplay/Units/UnitType";
 import { Action } from "../../Utils";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
@@ -37,7 +37,7 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     }
 
     get unit(){return this._unit}
-    set unit(u: UnitExt | undefined){
+    set unit(u: UnitInst | undefined){
         if (this._unit){
             this._unit.abils.removeAction(this._abils_changed)
         }
@@ -90,7 +90,7 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     readonly cols: number
     readonly rows: number
 
-    private _unit: UnitExt | undefined
+    private _unit: UnitInst | undefined
     private _abils_changed: Action<[Abil.Container], void> | undefined
 
     private _casting_bar: InterfaceCastingBar

@@ -1,6 +1,6 @@
 import * as H from '../../Handle'
 import * as U from '../../Utils'
-import * as Input from '../../Input'
+import * as Input from '../../WcIO'
 
 import { IFace } from '../Ability/IFace'
 import { TargetType } from '../Utils'

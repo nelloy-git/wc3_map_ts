@@ -1,12 +1,11 @@
 import * as Param from "../../../Parameter";
+
 import { IFace } from "../../../AbilityExt"
 import { hEffect, hUnit} from "../../../Handle"
 import { Arc, Line, newEffectList } from '../../../Drawing'
+import { AbilityData } from "./AbilityData"
 
-import { AbilData } from "../../../UnitExt/AbilityData"
-import { TBuff } from "../../../Buff";
-
-export class VoodooPoisonData extends AbilData{
+export class VoodooPoisonData extends AbilityData{
     constructor(abil: IFace<any>, model: string,
                 cx: number, cy: number, cz: number,
                 r?: number, a?: number, step?: number){
@@ -43,7 +42,7 @@ export class VoodooPoisonData extends AbilData{
         this.progress = 0
     }
 
-    static get = <(abil: IFace<any>) => VoodooPoisonData|undefined>AbilData.get
+    static get = <(abil: IFace<any>) => VoodooPoisonData>AbilityData.get
 
     get progress(){return this._progress}
     set progress(p: number){

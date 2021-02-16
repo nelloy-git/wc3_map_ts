@@ -1,4 +1,4 @@
-import { Mouse, Selection } from '../../../Input'
+import { Mouse, Selection } from '../../../WcIO'
 import { hImage, hTimer, hUnit } from '../../../Handle'
 import { Line, newImageList} from '../../../Drawing'
 

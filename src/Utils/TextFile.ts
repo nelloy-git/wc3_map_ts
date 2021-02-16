@@ -1,5 +1,8 @@
 import { Logger } from './Logger'
+import { getFilePath } from './Funcs'
 let Log = Logger.Default
+
+let __path__ = Macro(getFilePath())
 
 export class TextFile {
     constructor(path: string){
@@ -20,8 +23,8 @@ export class TextFile {
     read(){
         let [f] = io.open(this.path)
         if (!f){
-            return Log.err(TextFile.name +
-                           ':can not find ' + this.path)
+            return Log.err('can not find ' + this.path,
+                            __path__, TextFile, 2)
         }
         let [context] = f.read('*a')
         f.close()

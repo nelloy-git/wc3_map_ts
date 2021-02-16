@@ -1,9 +1,10 @@
+import * as Buff from '../../../Buff'
+
 import { hEffect, hUnit } from "../../../Handle"
-import { IFace } from "../../Buff/IFace"
-import { BuffData } from "./Data"
+import { BuffData } from "./BuffData"
 
 export class StunData extends BuffData {
-    constructor(buff: IFace<any>, model: string){
+    constructor(buff: Buff.IFace<any>, model: string){
         super(buff)
 
         this.target = buff.Data.owner
@@ -13,9 +14,9 @@ export class StunData extends BuffData {
         this._eff.scaleZ = this.target.modelScale / 2
     }
 
-    static get = <(buff: IFace<any>) => StunData|undefined>BuffData.get
+    static get = <(buff: Buff.IFace<any>) => StunData>BuffData.get
 
-    move(){
+    period(){
         this._eff.x = this.target.x
         this._eff.y = this.target.y
         this._eff.z = this.target.z

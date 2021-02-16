@@ -2,12 +2,14 @@ export {
     int2id,
     id2int,
     wcType,
+    getAngle,
     getFileDir,
     getFilePath,
     getTerrainZ,
     isWalkable,
     isReforged,
     deltaPos,
+    deltaAngle,
     getTurnTime
 } from'./Funcs'
 

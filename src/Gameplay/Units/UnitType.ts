@@ -1,13 +1,15 @@
-import { id2int, isReforged, Json } from "../../Utils";
+import { id2int, isReforged, Log} from "../../Utils";
 import { Map as Wc3Map, FieldUnitList, tUnit } from "../../Binary"
 import { hUnit } from "../../Handle"
-import { JsonCache } from "./Cache";
-import { readJsonParams, ReadonlyJsonParams } from "./Params";
-import { readNumber, readString, readTable } from "./Read";
+import { JsonCache } from "../JsonUtils/Cache";
+import { readJsonParams, ReadonlyJsonParams } from "../JsonUtils/Params";
+import { readNumber, readString, readStringArray, readTable } from "../JsonUtils/Read";
 
 import * as Abil from '../../AbilityExt'
 import * as Buff from '../../Buff'
 import * as Param from '../../Parameter'
+
+import * as AbilityList from '../Abilities'
 
 class UnitInstHidden {
     constructor(id: number, x: number, y: number, owner: jplayer){
@@ -54,7 +56,7 @@ export class UnitInst extends UnitInstHidden {
     }
 }
 
-export class UnitType extends JsonCache {
+export class UnitTypeJsonData extends JsonCache {
     constructor(path: string){
         super(path)
 
@@ -63,6 +65,7 @@ export class UnitType extends JsonCache {
         this.size_new = readNumber(this._raw, 'size_new', path)
         this.size_old = readNumber(this._raw, 'size_old', path)
         this.params = readJsonParams(readTable(this._raw, 'params', path), path)
+        this.abils = this._readAbilities()
 
         this.type = Wc3Map.w3u.add(id2int('hfoo'))
         this.type.setInt(FieldUnitList.HitPointsMaximumBase, 100)
@@ -78,8 +81,42 @@ export class UnitType extends JsonCache {
         for (let param of Param.Type.list()){
             u.params.set(param, 'BASE', this.params[param])
         }
+
+        let i = 0
+        for (let cur of this.abils){
+            if (cur){u.abils.set(i, cur)}
+            i++
+        }
         
         return <UnitInst>u
+    }
+
+    private _readAbilities(){
+        let abils: Abil.TAbility<any>[] = []
+        let abil_str = readStringArray(this._raw, 'abils', this.path)
+        
+        let i = 0
+        for (let abil of abil_str){
+            let found: Abil.TAbility<any> | undefined
+            for (let k in AbilityList){
+                let cur = (<{[k:string]: any}><unknown>AbilityList)[k]
+
+                if (abil == k && cur instanceof Abil.TAbility){
+                    found = cur
+                    break
+                }
+            }
+
+            if (!found){
+                Log.wrn('Can not find ability \"' + abil + '\"')
+                continue
+            }
+
+            abils[i] = found
+            i++
+        }
+
+        return abils
     }
 
     readonly name: string
@@ -87,6 +124,7 @@ export class UnitType extends JsonCache {
     readonly size_new: number
     readonly size_old: number
     readonly params: ReadonlyJsonParams
+    readonly abils: (Abil.TAbility<any> | undefined)[]
 
     protected readonly type: tUnit
 }

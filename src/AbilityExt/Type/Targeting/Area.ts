@@ -1,4 +1,4 @@
-import { Mouse, Selection } from '../../../Input'
+import { Mouse, Selection } from '../../../WcIO'
 import { Arc, newImageList } from '../../../Drawing'
 import { TTargeting } from '../Targeting'
 import { Point } from '../../Point'

@@ -1,8 +1,7 @@
 import * as Buff from "../../../Buff";
 import * as Frame from "../../../FrameExt";
 
-import { hUnit } from "../../../Handle";
-import { UnitExt } from "../../../UnitExt/UnitExt";
+import { UnitInst } from "../../../Gameplay/Units/UnitType";
 import { Action } from "../../../Utils";
 import { InterfaceBuff } from "./Buff";
 
@@ -26,7 +25,7 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     }
 
     get unit(){return this._unit}
-    set unit(u: UnitExt | undefined){
+    set unit(u: UnitInst | undefined){
         if (this._unit){
             this._unit.buffs.removeAction(this._buffs_changed)
         }
@@ -88,7 +87,7 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     readonly cols: number
     readonly rows: number
 
-    private _unit: UnitExt | undefined;
+    private _unit: UnitInst | undefined;
     private _buffs_changed: Action<[Buff.Container, Buff.Container.Event], void> | undefined
     
     private _buttons: InterfaceBuff[][] = []

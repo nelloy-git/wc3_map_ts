@@ -3,9 +3,9 @@ import { hImage, hUnit } from "../../../Handle"
 import { Color } from "../../../Utils"
 import { Arc, Line, newImageList } from '../../../Drawing'
 
-import { AbilData } from "../../../UnitExt/AbilityData"
+import { AbilityData } from "./AbilityData"
 
-export class HeavyHammerData extends AbilData {
+export class HeavyHammerData extends AbilityData {
     constructor(abil: IFace<any>, animation: number|string, range: number, min_angle: number, max_angle: number){
         super(abil)
 
@@ -25,7 +25,7 @@ export class HeavyHammerData extends AbilData {
         this._arc_b.setPolarPos(x, y, 48, min_angle, max_angle)
     }
 
-    static get = <(buff: IFace<any>) => HeavyHammerData|undefined>AbilData.get
+    static get = <(buff: IFace<any>) => HeavyHammerData>AbilityData.get
 
     get progress(){return this._progress}
     set progress(p: number){

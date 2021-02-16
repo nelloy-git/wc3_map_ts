@@ -1,6 +1,6 @@
 import { getFileDir } from "../../Utils";
-import { UnitType } from "../JsonUtils/UnitType";
+import { UnitTypeJsonData } from "./UnitType";
 
 let __dir__ = Macro(getFileDir())
 
-export let OgreType = new UnitType(__dir__ + '/json/Ogre.json')
+export let Ogre = new UnitTypeJsonData(__dir__ + '/json/Ogre.json')

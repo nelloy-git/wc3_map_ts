@@ -6,7 +6,7 @@ import { hTimerList } from "../../Handle";
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
 import { InterfaceHotkey } from '../Utils/Hotkey'
-import { Mouse } from "../../Input";
+import { Mouse } from "../../WcIO";
 
 export class InterfaceAbilityButton extends GlueTextButton {
     constructor(){

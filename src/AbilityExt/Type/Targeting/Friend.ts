@@ -1,4 +1,4 @@
-import { Selection } from '../../../Input'
+import { Selection } from '../../../WcIO'
 import { hTimer, hUnit } from '../../../Handle'
 import { Color, Log } from '../../../Utils'
 

@@ -23,5 +23,9 @@
 
         "CRIT": 0,
         "MOVE": 310
-    }
+    },
+
+    "abils": [
+        "Breakthrough"
+    ]
 }

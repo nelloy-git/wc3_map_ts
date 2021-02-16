@@ -4,7 +4,7 @@ import { InterfaceBuffPanel } from "./Buff/Panel";
 import { InterfaceUnitBars } from "./Bars";
 import { InterfaceUnitParameters } from "./Parameters";
 import { InterfacePortrait } from "./Portrait";
-import { UnitExt } from "../../UnitExt/UnitExt";
+import { UnitInst } from "../../Gameplay/Units/UnitType";
 
 export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
     private constructor(){
@@ -43,7 +43,7 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
     static get instance(){return InterfaceUnitInfoPanel._instance as InterfaceUnitInfoPanel}
 
     get unit(){return this._unit}
-    set unit(u: UnitExt | undefined){
+    set unit(u: UnitInst | undefined){
         this._unit = u
 
         let is_visible = u != undefined
@@ -82,7 +82,7 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
         this._params.size = [p_s, h - p_s]
     }
 
-    private _unit: UnitExt | undefined
+    private _unit: UnitInst | undefined
 
     private _bars = new InterfaceUnitBars()
     private _buffs = new InterfaceBuffPanel(10, 2)

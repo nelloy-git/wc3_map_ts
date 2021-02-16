@@ -1,16 +1,15 @@
-import * as Abil from "../../../AbilityExt";
-import * as Buff from "../../../Buff";
-import * as Param from "../../../Parameter";
+import * as Abil from "../../AbilityExt";
+import * as Buff from "../../Buff";
+import * as Param from "../../Parameter";
 
-import { hUnit } from "../../../Handle";
-import { deltaPos, getTurnTime, getFileDir, Log, getFilePath } from "../../../Utils";
+import * as BuffList from '../Buffs'
+
+import { hUnit } from "../../Handle";
+import { deltaPos, deltaAngle, getTurnTime, getFileDir, Log, getFilePath, getAngle } from "../../Utils";
 import { BreakthroughData } from "./Data/Breakthrough";
-import { AbilityJsonData } from "../../AbilUtils/Json/Data";
+import { AbilityJsonData } from "../JsonUtils";
 
-let __path__ = Macro(getFilePath())
-let __dir__ = Macro(getFileDir())
-
-let json = new AbilityJsonData(__dir__ + '/json/Breakthrough.json')
+let json = new AbilityJsonData(Macro(getFileDir()) + '/json/Breakthrough.json')
 
 let Casting = new Abil.TCasting<[Abil.Point]>()
 
@@ -19,40 +18,36 @@ Casting.start = (abil, target) => {
     let caster = abil.Data.owner
 
     let [dx, dy] = deltaPos(targ, caster)
-    let angle = Atan2(dy, dx)
-    angle = angle >= 0 ? angle : 2 * math.pi + angle
-    let range = SquareRoot(dx * dx + dy * dy)
+    let a = getAngle(caster, targ)
+    let r = SquareRoot(dx * dx + dy * dy)
 
     let cast_time = abil.Casting.castingTime(target)
     let turn_time = getTurnTime(caster, targ)
-    let vel = range / (cast_time - turn_time)
+    let run_time = cast_time - turn_time
+    let vel = r / run_time
 
     caster.pause = true
-    caster.angle = angle
-    caster.animation = json.animations['walkOgre']
+    caster.angle = a
+    caster.animation = json.getAnimation('Ogre', 'walk')
 
-    new BreakthroughData(abil, angle, range, vel, Abil.Casting.period)
+    new BreakthroughData(abil, a, r, vel)
 }
 
 Casting.casting = (abil, target) => {
-    let data = BreakthroughData.get(abil)
-    if (!data){
-        return Log.err('data is undefined.',
-                        __path__, abil.Data, 2)
-    }
-
-    // Turning caster
     let caster = abil.Data.owner
+    let data = BreakthroughData.get(abil)
+
+    // Wait caster turning
     if (caster.angle < data.angle - 0.1 || caster.angle > data.angle + 0.1){
         return
     }
 
     // Moving caster
-    let status = data.move()
-    if (status == 'COLLISION'){
+    data.period()
+    if (data.status == 'COLLISION'){
         abil.Casting.cancel()
         return
-    } else if (status == 'FINISH'){
+    } else if (data.status == 'FINISH'){
         abil.Casting.finish()
         return
     }
@@ -68,14 +63,14 @@ Casting.casting = (abil, target) => {
         // Push
         let buffs = Buff.Container.get(target)
         if (buffs){
-            buffs.add(caster, json.getValue('pushDur'),
-                      Buff.Push, getPushVelXY(caster, target, data.vel))
+            buffs.add(caster, json.getScaledValue('pushDur', params),
+                      BuffList.Push, getPushVelXY(caster, target, data.vel))
         }
         
         // Damage
         if (params){
             Param.Damage.deal(caster, target,
-                              json.getValue('dmg', params), 'PSPL', WEAPON_TYPE_WHOKNOWS)
+                              json.getScaledValue('dmg', params), 'PSPL', WEAPON_TYPE_WHOKNOWS)
         }
 
         data.targets.push(target)
@@ -83,8 +78,7 @@ Casting.casting = (abil, target) => {
 }
 
 function getPushVelXY(caster: hUnit, target: hUnit, vel: number): [vel_x: number, vel_y: number]{
-    let dx = target.x - caster.x
-    let dy = target.y - caster.y
+    let [dx, dy] = deltaPos(caster, target)
     let r = SquareRoot(dx * dx + dy * dy)
     let vel_x = 1.5 * vel * dx / r
     let vel_y = 1.5 * vel * dy / r
@@ -92,8 +86,7 @@ function getPushVelXY(caster: hUnit, target: hUnit, vel: number): [vel_x: number
 }
 
 function clear(abil: Abil.IFace<[Abil.Point]>){
-    let data = BreakthroughData.get(abil)
-    if (data){data.destroy()}
+    BreakthroughData.get(abil).destroy()
 
     let caster = abil.Data.owner
     caster.pause = false
@@ -104,12 +97,20 @@ Casting.cancel = (abil) => {clear(abil)}
 Casting.interrupt = (abil) => {clear(abil)}
 Casting.finish = (abil) => {clear(abil)}
 Casting.castingTime = (abil, target) => {
-    let owner = abil.Data.owner
-    let param = Param.UnitContainer.get(owner)
+    let caster = abil.Data.owner
+    let param = Param.UnitContainer.get(caster)
     let ms = param ? param.get('MOVE', 'RES') : 300
     let mspd = param ? param.get('MSPD', 'RES') : 1
 
-    return target ? getTurnTime(abil.Data.owner, target[0]) : 0.5 + abil.Data.range / (mspd * ms)
+    let targ = undefined
+    let range = abil.Data.range
+    if (target){
+        targ = target[0]
+        let [dx, dy] = deltaPos(caster, targ)
+        range = SquareRoot(dx * dx + dy * dy)
+    }
+
+    return getTurnTime(abil.Data.owner, targ) + range / (mspd * ms)
 }
 Casting.isTargetValid = (abil, target) => {return true}
 
@@ -131,6 +132,7 @@ Data.isAvailable = (abil) => {
     let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
     let charges = abil.Data.Charges.count > 0
     let casting = abil.Casting.Timer.left <= 0
+
     return charges && casting && enough_mana && controllable
 }
 Data.consume = (abil) => {

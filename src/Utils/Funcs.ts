@@ -116,13 +116,18 @@ interface ObjectWithAngle extends ObjectWithPosition {
     angle: number
 }
 
+export function getAngle(obj1: ObjectWithAngle, obj2: ObjectWithPosition){
+    let [dx, dy] = deltaPos(obj1, obj2)
+    let ta = Atan2(dy, dx)
+    return ta >= 0 ? ta : 2 * math.pi + ta
+}
+
+export function deltaAngle(obj1: ObjectWithAngle, obj2: ObjectWithPosition){
+    return math.abs(getAngle(obj1, obj2) - obj1.angle)
+}
+
 const FULL_TURN_TIME = 0.5
 export function getTurnTime(obj1: ObjectWithAngle, obj2?: ObjectWithPosition){
     if (!obj2){return FULL_TURN_TIME}
-
-    let [dx, dy] = deltaPos(obj1, obj2)
-    let ta = Atan2(dy, dx)
-    ta = ta >= 0 ? ta : 2 * math.pi + ta
-
-    return FULL_TURN_TIME * math.abs(ta - obj1.angle) / math.pi
+    return FULL_TURN_TIME * deltaAngle(obj1, obj2)
 }

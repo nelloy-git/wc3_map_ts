@@ -1,5 +1,5 @@
 import { Backdrop, Frame, SimpleText } from "../../FrameExt";
-import { Keyboard } from "../../Input";
+import { Keyboard } from "../../WcIO";
 import { Action } from "../../Utils";
 
 export class InterfaceHotkey extends Backdrop {

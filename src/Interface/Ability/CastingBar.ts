@@ -1,7 +1,7 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
 import { hTimer, hTimerList, hTimerObj } from "../../Handle";
-import { UnitExt } from "../../UnitExt/UnitExt";
+import { UnitInst } from "../../Gameplay/Units/UnitType";
 import { Action, Log } from "../../Utils";
 
 type CastAction = Action<[Abil.IFace<any>, Abil.Casting.Event, any], void>
@@ -17,7 +17,7 @@ export class InterfaceCastingBar extends Frame.SimpleStatusBarExt {
     }
 
     get unit(){return this._unit}
-    set unit(u: UnitExt | undefined){
+    set unit(u: UnitInst | undefined){
         if (this._unit){
             this._unit.abils.removeAction(this._update_list_act)
         }
@@ -67,7 +67,7 @@ export class InterfaceCastingBar extends Frame.SimpleStatusBarExt {
     }
     
     private _is_visible = false
-    private _unit: UnitExt | undefined
+    private _unit: UnitInst | undefined
     private _update_list_act: Action<[Abil.Container, Abil.Container.Event], void> | undefined
 
     private _hide_timer: hTimerObj
