@@ -9,7 +9,7 @@ export type ReadonlyJsonParams = {
     readonly [param in Param.Type]: number
 }
 
-export function readJsonParams(json: LuaTable | undefined, path?: string){
+export function readJsonParams(json: LuaHash | undefined, path?: string){
     let res = <ParamsJsonData>{}
 
     let params_list = Param.Type.list()

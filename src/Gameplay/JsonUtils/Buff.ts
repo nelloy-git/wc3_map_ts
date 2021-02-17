@@ -11,7 +11,7 @@ export class BuffJsonData extends JsonCache {
     }
 
     get<T>(field: string){
-        return <T><unknown>this._raw[field]
+        return <T><unknown>(<LuaHash>this._raw)[field]
     }
 
     readonly name: string

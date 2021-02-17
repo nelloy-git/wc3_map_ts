@@ -8,11 +8,6 @@ export class dooFile extends File<Doodad> {
     get head(){return this._head}
     get version(){return this._version}
     get subversion(){return this._subversion}
-    
-    open(path: string){
-        super.open(path)
-        this._parse()
-    }
 
     protected _parse(){
         let list: Doodad[] = []

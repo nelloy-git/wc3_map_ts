@@ -1,25 +1,66 @@
 import { Field, FieldBool, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
+import { float2byte, int2byte, str2byte } from "../Utils"
 
-export interface FieldDecor<T extends Field.ValueType> extends Field<T> {}
-export class FieldDecorBool extends FieldBool implements FieldDecor<boolean> {}
-export class FieldDecorInt extends FieldInt implements FieldDecor<number> {}
-export class FieldDecorReal extends FieldReal implements FieldDecor<number> {}
-export class FieldDecorUnreal extends FieldUnreal implements FieldDecor<number> {}
-export class FieldDecorString extends FieldString implements FieldDecor<string> {}
+export interface DoodadField<T extends Field.ValueType> extends Field<T> {}
 
-export namespace FieldDecorList {
-    export let ShowInFog = new FieldDecorBool('dshf')
-    export let EditorUseList = new FieldDecorBool('dusr')
+export class DoodadFieldBool extends FieldBool implements DoodadField<boolean> {
+    serialize(val: boolean){
+        return this.id + '\0\0\0\0' + '\0\0\0\0' +
+                Field.type2byte('bool') + int2byte(val ? 1 : 0) + '\0\0\0\0'
+    }
+}
 
-    export let ColorRed = new FieldDecorInt('dvr1')
-    export let ColorGreen = new FieldDecorInt('dvg1')
-    export let ColorBlue = new FieldDecorInt('dvb1')
-    export let Variations = new FieldDecorInt('dvar')
+export class DoodadFieldInt extends FieldInt implements DoodadField<number> {
+    serialize(val: number){
+        return this.id + '\0\0\0\0' + '\0\0\0\0' +
+                Field.type2byte('int') + int2byte(val) + '\0\0\0\0'
+    }
+}
 
-    export let MinScale = new FieldDecorReal('dmas')
-    export let MaxScale = new FieldDecorReal('dmis')
+export class DoodadFieldReal extends FieldReal implements DoodadField<number> {
+    serialize(val: number){
+        return this.id + '\0\0\0\0' + '\0\0\0\0' +
+                Field.type2byte('real') + float2byte(val) + '\0\0\0\0'
+    }
+}
 
-    export let Model = new FieldDecorString('dfil')
-    export let Name = new FieldDecorString('dnam')
-    export let PathingTexture = new FieldDecorString('dptx')
+export class DoodadFieldUnreal extends FieldUnreal implements DoodadField<number> {
+    serialize(val: number){
+        return this.id + '\0\0\0\0' + '\0\0\0\0' +
+                Field.type2byte('unreal') + float2byte(val) + '\0\0\0\0'
+    }
+}
+
+export class DoodadFieldString extends FieldString implements DoodadField<string> {
+    serialize(val: string){
+        return this.id + '\0\0\0\0' + '\0\0\0\0' +
+                Field.type2byte('string') + str2byte(val) + '\0\0\0\0'
+    }
+}
+
+export namespace DoodadField {
+    export let ShowInFog = new DoodadFieldBool('dshf')
+    export let EditorUseList = new DoodadFieldBool('dusr')
+
+    export let ColorRed = new DoodadFieldInt('dvr1')
+    export let ColorGreen = new DoodadFieldInt('dvg1')
+    export let ColorBlue = new DoodadFieldInt('dvb1')
+    export let Variations = new DoodadFieldInt('dvar')
+
+    export let MinScale = new DoodadFieldReal('dmas')
+    export let MaxScale = new DoodadFieldReal('dmis')
+
+    export let Model = new DoodadFieldString('dfil')
+    export let Name = new DoodadFieldString('dnam')
+    export let PathingTexture = new DoodadFieldString('dptx')
+}
+
+let all_fields = Object.values(DoodadField)
+export function findDoodadField(code: string){
+    for (let field of all_fields){
+        if (code == field.id){
+            return field
+        }
+    }
+    return undefined
 }

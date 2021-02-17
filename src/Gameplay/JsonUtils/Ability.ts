@@ -27,7 +27,7 @@ export class AbilityJsonData extends JsonCache {
     }
 
     get(field: string){
-        return this._raw[field]
+        return (<LuaHash>this._raw)[field]
     }
 
     getAnimation(key: string, anim: string){
@@ -37,7 +37,7 @@ export class AbilityJsonData extends JsonCache {
                             __path__, AbilityJsonData, 2)
         }
         
-        let res = anim_list[anim]
+        let res = (<LuaHash>anim_list)[anim]
         if (!(typeof res === 'number' || typeof res === 'string')){
             return Log.err('animation \"' + key + '.' + anim + '\" is not declared in ' + this.path,
                             __path__, AbilityJsonData, 2)
@@ -76,6 +76,6 @@ export class AbilityJsonData extends JsonCache {
     readonly tooltip: string
     readonly cast_time: number
 
-    private readonly _animations: LuaTable
+    private readonly _animations: LuaHash
     private readonly _scales: {[key: string]: ReadonlyScaleJsonData | undefined}
 }

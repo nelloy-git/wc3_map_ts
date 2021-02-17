@@ -67,10 +67,11 @@ export class UnitTypeJsonData extends JsonCache {
         this.params = readJsonParams(readTable(this._raw, 'params', path), path)
         this.abils = this._readAbilities()
 
-        this.type = Wc3Map.w3u.add(id2int('hfoo'))
-        this.type.setInt(FieldUnitList.HitPointsMaximumBase, 100)
-        this.type.setInt(FieldUnitList.ManaMaximum, 100)
-        this.type.setString(FieldUnitList.ModelFile, this.model)
+        this.type = <tUnit><unknown>null
+        // this.type = Wc3Map.w3u.add(id2int('hfoo'))
+        // this.type.setInt(FieldUnitList.HitPointsMaximumBase, 100)
+        // this.type.setInt(FieldUnitList.ManaMaximum, 100)
+        // this.type.setString(FieldUnitList.ModelFile, this.model)
     }
 
     new(x: number, y: number, owner: jplayer){

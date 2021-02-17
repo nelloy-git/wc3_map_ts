@@ -6,48 +6,37 @@ export abstract class Field<T extends Field.ValueType> {
         this.type = type
     }
 
-    serialize(){
-        return this.id + this._type2byte(this.type)
-    }
+    abstract serialize(val: T): string
 
     readonly id;
     readonly type;
-
-    private _type2byte(type: Field.WcType){
-        let code
-        if (type == 'bool' || type == 'int') {code = 0}
-        else if (type == 'real') {code = 1}
-        else if (type == 'unreal') {code = 2}
-        else {code = 3}
-        return int2byte(code)
-    }
 }
 
-export class FieldBool extends Field<boolean> {
+export abstract class FieldBool extends Field<boolean> {
     constructor(id: string){
         super(id, 'bool')
     }
 }
 
-export class FieldInt extends Field<number> {
+export abstract class FieldInt extends Field<number> {
     constructor(id: string){
         super(id, 'int')
     }
 }
 
-export class FieldReal extends Field<number> {
+export abstract class FieldReal extends Field<number> {
     constructor(id: string){
         super(id, 'real')
     }
 }
 
-export class FieldUnreal extends Field<number> {
+export abstract class FieldUnreal extends Field<number> {
     constructor(id: string){
         super(id, 'unreal')
     }
 }
 
-export class FieldString extends Field<string> {
+export abstract class FieldString extends Field<string> {
     constructor(id: string){
         super(id, 'string')
     }
@@ -57,4 +46,13 @@ export class FieldString extends Field<string> {
 export namespace Field {
     export type ValueType = boolean|number|string
     export type WcType = 'bool'|'int'|'real'|'unreal'|'string'
+
+    export function type2byte(type: Field.WcType){
+        let code
+        if (type == 'bool' || type == 'int') {code = 0}
+        else if (type == 'real') {code = 1}
+        else if (type == 'unreal') {code = 2}
+        else {code = 3}
+        return int2byte(code)
+    }
 }

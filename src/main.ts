@@ -27,15 +27,18 @@ import * as UnitType from "./Gameplay/Units/init";
 import { id2int} from './Utils'
 import { Init } from './Interface/Init'
 // import { LifeForceShield } from './Abilities/LifeForceShield'
-import { TerrainPreset } from './Binary/Cached/Terrain'
+// import { TerrainPreset } from './Binary/Cached/Terrain'
 import { id2byte } from './Binary/Utils'
 import { Ability } from './AbilityExt'
 import { hEffect, hTimer, hUnit } from './Handle'
 
-let w3u = Map.Map.w3u
-let unit_type = w3u.add(id2int('hfoo'))
-unit_type.setInt(Map.FieldUnitList.HitPointsMaximumBase, 100)
-unit_type.setInt(Map.FieldUnitList.ManaMaximum, 100)
+import { newDoodad } from './Binary/doo/Doodad'
+newDoodad(0,0,0,0,0,0,0,0,0)
+
+// let w3u = Map.Map.w3u
+// let unit_type = w3u.add(id2int('hfoo'))
+// unit_type.setInt(Map.FieldUnitList.HitPointsMaximumBase, 100)
+// unit_type.setInt(Map.FieldUnitList.ManaMaximum, 100)
 
 // let pref = 'TerrainPresets/MurlocLagoonHD.w3x/war3map.'
 // let murloc_lagoon = new TerrainPreset(pref + 'w3e', pref + 'w3d', pref + 'doo')

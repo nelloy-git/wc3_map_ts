@@ -3,10 +3,9 @@ import { JsonFileGame } from './FileGame'
 import { JsonFileIface } from './FileIface'
 
 export class JsonFile {
-    constructor(root: string, path: string, use_custom?: boolean){
+    constructor(root: string, path: string, use_custom: boolean = false){
         this.__root = root
         this.__path = path
-        use_custom = use_custom ? true : false
 
         this.__file = new JsonFileCached(root + '/' + path)
         if (IsGame() && use_custom){
@@ -16,15 +15,20 @@ export class JsonFile {
             }
         }
 
-        let data = this.__file.read()
-        this._data = data ? data : {}
+        this._data = this.__file.read()
     }
 
-    save(){
-        this.__file.write(this._data)
+    set(data?: LuaTable){
+        this._data = data
+    }
+
+    write(){
+        if (this._data){
+            this.__file.write(this._data)
+        }
     }
     
-    protected _data: LuaTable
+    protected _data: LuaTable | undefined
 
     private __root: string
     private __path: string

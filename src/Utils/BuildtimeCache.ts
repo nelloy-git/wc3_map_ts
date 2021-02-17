@@ -7,7 +7,7 @@ let __path__ = Macro(getFilePath())
 export class BuildtimeCache <T extends BuildtimeData> {
     constructor(id: number | string){
         this.id = id
-        this._cache = (<LuaTable>BuildtimeCache._global_cache)[id]
+        this._cache = (<LuaHash>BuildtimeCache._global_cache)[id]
 
         if (IsGame() && (!this._cache)){
             Log.err('can not load cache data for id: ' + this.id.toString(),
@@ -21,12 +21,12 @@ export class BuildtimeCache <T extends BuildtimeData> {
             }
             
             this._cache = {};
-            (<LuaTable>BuildtimeCache._global_cache)[id] = this._cache
+            (<LuaHash>BuildtimeCache._global_cache)[id] = this._cache
         }
     }
 
     get(key: string): T{
-        return <T>(<LuaTable>this._cache)[key]
+        return <T>(<LuaHash>this._cache)[key]
     }
 
     set(key: string, val: T){
@@ -34,7 +34,7 @@ export class BuildtimeCache <T extends BuildtimeData> {
             return Log.err('can be used in buildtime only.',
                             __path__, BuildtimeCache, 2)
         }
-        (<LuaTable>this._cache)[key] = val
+        (<LuaHash>this._cache)[key] = val
     }
 
     readonly id: string | number

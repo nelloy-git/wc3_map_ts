@@ -15,7 +15,7 @@ export type ReadonlyScaleJsonData = {
     readonly resultMult: ReadonlyJsonParams
 }
 
-export function readScale(json: LuaTable, path?: string){
+export function readScale(json: LuaHash, path?: string){
     let scale = <ScaleJsonData>{}
 
     if (typeof json['base'] === 'undefined'){

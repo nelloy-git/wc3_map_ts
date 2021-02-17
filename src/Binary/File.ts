@@ -1,5 +1,6 @@
-import { Log } from "../Utils";
-import { byte2id } from "./Utils";
+import { getFilePath, Log } from "../Utils";
+
+let __path__ = Macro(getFilePath)
 
 declare namespace string {
     function pack(this: void, fmt: string, ...data: any[]): string;
@@ -16,35 +17,37 @@ function readFileData<T1, T2 = undefined, T3 = undefined, T4 = undefined>(fmt:st
     return <[T1, T2, T3, T4]><unknown>res
 }
 
-export abstract class File<T> {
-    get data(){return <ReadonlyArray<T>>this._data}
-    get path(){return this._path}
+export abstract class File<T extends LuaTable> {
+    constructor(path: string){
+        this.path = path
+        this.__file_pos = 0
+        this._data = this._parse()
 
-    open(path: string){
         let [f] = io.open(GetSrc() + '/' + path, 'rb')
         if (!f){
-            Log.err(File.name +
-                    ': can not open file ' + path)
+            Log.err('can not open file ' + path,
+                    __path__, File, 2)
             return
         };
 
         [this._raw_data] = f.read('*a')
         if (!this._raw_data){
-            Log.err(File.name +
-                    ': can not open file ' + path)
+            Log.err('can not read file ' + path,
+                    __path__, File, 2)
+            return
         }
         f.close()
-
-        this._path = path
-        this._file_pos = 0
-        this._data = this._parse()
     }
 
-    save(path: string){
+    get data(){return <ReadonlyArray<T>>this._data}
+
+    save(path?: string){
+        path = path ? path : this.path
+
         let [f] = io.open(path, 'wb')
         if (!f){
-            return Log.err(File.name +
-                           ': can not open file ' + path)
+            return Log.err('can not save file ' + path,
+                            __path__, File, 2)
         }
         f.write(this._raw_data ? this._raw_data : '')
         f.close()
@@ -57,7 +60,7 @@ export abstract class File<T> {
     protected _parseNext(type: 'float', size: number): number
     protected _parseNext(type: 'char'|'int'|'float', size: number){
         let val = this._parseData(type, this._file_pos, size)
-        this._file_pos += size
+        this.__file_pos += size
         if (type == 'char'){
             return <string>val
         } else if (type == 'int' || type == 'float'){
@@ -71,8 +74,8 @@ export abstract class File<T> {
     private _parseData(type: 'char'|'int'|'float', pos: number, size: number): string | number
     private _parseData(type: 'char'|'int'|'float', pos: number, size: number){
         if (!this._raw_data){
-            return Log.err(File.name + 
-                           ': not data to parse.')
+            return Log.err('no data to parse. Open file first.',
+                            __path__, File, 2)
         }
 
         let fmt
@@ -82,8 +85,8 @@ export abstract class File<T> {
             fmt = 'I' + size.toString()
         } else { // if (type == 'float'){
             if (size != 4){
-                return Log.err(File.name +
-                               ': float type can be only of size 4.')
+                return Log.err('float type can be only of size 4 bytes',
+                                __path__, File, 2)
             }
             fmt = 'f'
         }
@@ -99,8 +102,11 @@ export abstract class File<T> {
         }
     }
 
-    private _data: T[] = []
-    private _path: string | undefined
-    private _raw_data: string | undefined
-    private _file_pos: number = 0
+    readonly path: string
+
+    protected _data: T[] = []
+    protected _raw_data: string | undefined
+    protected get _file_pos(){return this.__file_pos}
+
+    private __file_pos: number
 }
