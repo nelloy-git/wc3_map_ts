@@ -1,15 +1,13 @@
-import { id2int, int2id, Log } from "../../Utils";
+import { id2int, Log } from "../../Utils";
 import { Field } from "../Field";
 import { File } from "../File";
 import { byte2id, getFirstId, int2byte, nextId } from "../Utils";
-import { DoodadField, findDoodadField, DoodadFieldBool, DoodadFieldInt, DoodadFieldReal, DoodadFieldString, DoodadFieldUnreal } from "./Field";
+
+import { findDoodadField, DoodadFieldBool, DoodadFieldInt, DoodadFieldReal, DoodadFieldString, DoodadFieldUnreal } from "./Field";
 import { TDoodad } from "./TDoodad";
 
 export class w3dFile extends File<TDoodad> {
     get version(){return this._version}
-    get data(): ReadonlyArray<TDoodad>{
-        return this._data
-    }
 
     add(origin_id: number){
         let doodad = TDoodad.create(this._getNextId(), origin_id)

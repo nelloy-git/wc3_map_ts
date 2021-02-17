@@ -7,4 +7,4 @@ export { dooFile } from './doo/File'
 export { Doodad } from './doo/Doodad'
 
 export { w3dFile } from './w3d/File'
-export { tDoodad } from './w3d/DoodadOld'
+export { TDoodad } from './w3d/TDoodad'

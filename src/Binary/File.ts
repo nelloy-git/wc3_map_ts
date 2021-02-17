@@ -18,10 +18,16 @@ function readFileData<T1, T2 = undefined, T3 = undefined, T4 = undefined>(fmt:st
 }
 
 export abstract class File<T extends LuaTable> {
-    constructor(path: string){
-        this.path = path
+    constructor(path?: string){
         this.__file_pos = 0
-        this._data = this._parse()
+        this._data = []
+        
+        if (!path){
+            this.path = ''
+            return
+        }
+
+        this.path = path
 
         let [f] = io.open(GetSrc() + '/' + path, 'rb')
         if (!f){
@@ -37,6 +43,8 @@ export abstract class File<T extends LuaTable> {
             return
         }
         f.close()
+
+        this._data = this._parse()
     }
 
     get data(){return <ReadonlyArray<T>>this._data}
