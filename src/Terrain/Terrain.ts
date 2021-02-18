@@ -48,7 +48,7 @@ export namespace Terrain {
     }
 
     export function createFromJson(path: string){
-        let f = new Json.JsonFile(path, GetSrc(), false)
+        let f = new Json.JsonFile(path, GetSrc())
         let json = <LuaHash | undefined>f.data
 
         if (!json){

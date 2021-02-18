@@ -48,15 +48,19 @@ if (!IsGame()){
                                         '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.w3d',
                                         '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.doo')
 
-    let json = new Json.JsonFile('HungryMercenaries/TEST.json', GetSrc())
-    json.data = test
-    json.write()
+    // let json = new Json.JsonFile('HungryMercenaries/TEST.json', GetSrc())
+    // json.data = test
+    // json.write()
 }
-// let test2 = Terrain.createFromJson('HungryMercenaries/test.json')
-// print(test.types.length, test2.types.length)
-// print(test.doodads.length, test2.doodads.length)
+
+let test2 = Terrain.createFromJson('HungryMercenaries/test.json')
+print(test2.types.length, test2.doodads.length)
 
 if (IsGame()){
+    let test3 = new Json.JsonFile('HungryMercenaries/test.txt')
+    test3.data = test2
+    test3.write()
+
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()

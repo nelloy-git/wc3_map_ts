@@ -6,9 +6,9 @@ import { JsonFileIface } from './FileIface'
 export class JsonFileCached implements JsonFileIface {
     constructor(path: string){
         if (!IsGame()){
-            let f = new TextFile(path)
+            let f = new TextFile(GetSrc() + '/' + path)
             // Optimize json format
-            if (TextFile.isExist(path)){
+            if (TextFile.isExist(GetSrc() + '/' + path)){
                 let data = f.read()
                 JsonFileCached._cache.set(path, encode(decode(data)))
             }

@@ -15,10 +15,14 @@ export class File {
 
     write(str: string){
         PreloadGenClear()
-        if (str.indexOf('\"') >= 0 || str.indexOf('\n' || str.indexOf('\\') >= 0) >= 0){
-            return Log.err('can not save string with \\n, \" or \\ symbols',
-                            undefined, File, 2)
-        }
+
+        let _
+        [str, _] = string.gsub(str, '\\', '\\\\');
+        [str, _] = string.gsub(str, '\"', '\\\"');
+        [str, _] = string.gsub(str, '\n', '\\\n');
+        // str = str.replaceAll('\"', '\\\"')
+        // str = str.replaceAll('\n', '\\\n')
+        // str = str.replaceAll('\\', '\\\\')
 
         let msg = 'Start\" )\n\t'
         msg += 'call BlzSetAbilityTooltip(1097690227, \"' + str + '\", 0)\n\t'
