@@ -40,7 +40,7 @@ export class DoodadFieldString extends FieldString implements DoodadField<string
 
 export namespace DoodadField {
     export let ShowInFog = new DoodadFieldBool('dshf')
-    export let EditorUseList = new DoodadFieldBool('dusr')
+    export let EditorUserList = new DoodadFieldBool('dusr')
 
     export let ColorRed = new DoodadFieldInt('dvr1')
     export let ColorGreen = new DoodadFieldInt('dvg1')

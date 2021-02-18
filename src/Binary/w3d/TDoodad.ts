@@ -12,6 +12,13 @@ export type TDoodad = {
     }
 }
 
+let ignore: DoodadField<any>[] = [
+    DoodadField.Name,
+    DoodadField.MinScale,
+    DoodadField.MaxScale,
+    DoodadField.EditorUserList,
+]
+
 export namespace TDoodad {
     export function create(id: string, origin_id: string): TDoodad{
         return {
@@ -67,6 +74,8 @@ export namespace TDoodad {
     export function setField(dood: TDoodad, field: DoodadFieldUnreal, val: number | undefined): void
     export function setField(dood: TDoodad, field: DoodadFieldBool | DoodadFieldInt | DoodadFieldReal | DoodadFieldUnreal | DoodadFieldString, val: boolean | number | string | undefined): void
     export function setField<T extends Field.ValueType>(dood: TDoodad, field: DoodadField<T>, val: T){
+        if (ignore.includes(field)){return}
+
         let field_id = field.id;
         (<{[k: string]: T}>dood.fields)[field_id] = val
     }
