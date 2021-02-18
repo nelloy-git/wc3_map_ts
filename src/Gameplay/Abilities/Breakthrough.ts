@@ -6,7 +6,7 @@ import * as BuffList from '../Buffs'
 
 import { hUnit } from "../../Handle";
 import { deltaPos, deltaAngle, getTurnTime, getFileDir, Log, getFilePath, getAngle } from "../../Utils";
-import { BreakthroughData } from "./Data/Breakthrough";
+import { BreakthroughData } from "./data/Breakthrough";
 import { AbilityJsonData } from "../JsonUtils";
 
 let json = new AbilityJsonData(Macro(getFileDir()) + '/json/Breakthrough.json')

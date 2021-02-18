@@ -1,5 +1,5 @@
 import { w3dFile } from "./w3d/File";
-import { w3uFile } from "./w3u/File";
+// import { w3uFile } from "./w3u/File";
 
 export class Map {
     private constructor(){}

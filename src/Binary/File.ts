@@ -31,7 +31,7 @@ export abstract class File<T extends LuaTable> {
 
         let [f] = io.open(GetSrc() + '/' + path, 'rb')
         if (!f){
-            Log.err('can not open file ' + path,
+            Log.err('can not open file ' + GetSrc() + '/' + path,
                     __path__, File, 2)
             return
         };
@@ -69,6 +69,7 @@ export abstract class File<T extends LuaTable> {
     protected _parseNext(type: 'char'|'int'|'float', size: number){
         let val = this._parseData(type, this._file_pos, size)
         this.__file_pos += size
+        // print(this.__file_pos)
         if (type == 'char'){
             return <string>val
         } else if (type == 'int' || type == 'float'){

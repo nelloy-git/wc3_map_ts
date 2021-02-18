@@ -32,9 +32,6 @@ import { id2byte } from './Binary/Utils'
 import { Ability } from './AbilityExt'
 import { hEffect, hTimer, hUnit } from './Handle'
 
-import { newDoodad } from './Binary/doo/Doodad'
-newDoodad(0,0,0,0,0,0,0,0,0)
-
 // let w3u = Map.Map.w3u
 // let unit_type = w3u.add(id2int('hfoo'))
 // unit_type.setInt(Map.FieldUnitList.HitPointsMaximumBase, 100)
@@ -43,6 +40,21 @@ newDoodad(0,0,0,0,0,0,0,0,0)
 // let pref = 'TerrainPresets/MurlocLagoonHD.w3x/war3map.'
 // let murloc_lagoon = new TerrainPreset(pref + 'w3e', pref + 'w3d', pref + 'doo')
 
+import { Terrain } from './Terrain'
+import * as Json from './Json'
+
+if (!IsGame()){
+    let test = Terrain.createFromBinary('TEST', '',
+                                        '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.w3d',
+                                        '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.doo')
+
+    let json = new Json.JsonFile('HungryMercenaries/TEST.json', GetSrc())
+    json.data = test
+    json.write()
+}
+// let test2 = Terrain.createFromJson('HungryMercenaries/test.json')
+// print(test.types.length, test2.types.length)
+// print(test.doodads.length, test2.doodads.length)
 
 if (IsGame()){
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))

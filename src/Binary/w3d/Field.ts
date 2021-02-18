@@ -4,35 +4,35 @@ import { float2byte, int2byte, str2byte } from "../Utils"
 export interface DoodadField<T extends Field.ValueType> extends Field<T> {}
 
 export class DoodadFieldBool extends FieldBool implements DoodadField<boolean> {
-    serialize(val: boolean){
+    toBinary(val: boolean){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('bool') + int2byte(val ? 1 : 0) + '\0\0\0\0'
     }
 }
 
 export class DoodadFieldInt extends FieldInt implements DoodadField<number> {
-    serialize(val: number){
+    toBinary(val: number){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('int') + int2byte(val) + '\0\0\0\0'
     }
 }
 
 export class DoodadFieldReal extends FieldReal implements DoodadField<number> {
-    serialize(val: number){
+    toBinary(val: number){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('real') + float2byte(val) + '\0\0\0\0'
     }
 }
 
 export class DoodadFieldUnreal extends FieldUnreal implements DoodadField<number> {
-    serialize(val: number){
+    toBinary(val: number){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('unreal') + float2byte(val) + '\0\0\0\0'
     }
 }
 
 export class DoodadFieldString extends FieldString implements DoodadField<string> {
-    serialize(val: string){
+    toBinary(val: string){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('string') + str2byte(val) + '\0\0\0\0'
     }
@@ -47,8 +47,8 @@ export namespace DoodadField {
     export let ColorBlue = new DoodadFieldInt('dvb1')
     export let Variations = new DoodadFieldInt('dvar')
 
-    export let MinScale = new DoodadFieldReal('dmas')
-    export let MaxScale = new DoodadFieldReal('dmis')
+    export let MinScale = new DoodadFieldUnreal('dmas')
+    export let MaxScale = new DoodadFieldUnreal('dmis')
 
     export let Model = new DoodadFieldString('dfil')
     export let Name = new DoodadFieldString('dnam')

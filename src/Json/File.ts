@@ -2,24 +2,38 @@ import { JsonFileCached } from './FileCached'
 import { JsonFileGame } from './FileGame'
 import { JsonFileIface } from './FileIface'
 
+function precisionRound(number: number, precision: number)
+{
+    if (precision < 0){
+        let factor = Math.pow(10, precision);
+        return Math.round(number * factor) / factor;
+    }
+    return +(Math.round(Number(number + "e+" + precision)) + "e-" + precision);
+}
+
 export class JsonFile {
-    constructor(root: string, path: string, use_custom: boolean = false){
-        this.__root = root
-        this.__path = path
+    constructor(path: string, root: string = '', use_custom: boolean = false){
+        this.root = root
+        this.path = path
 
         this.__file = new JsonFileCached(root + '/' + path)
         if (IsGame() && use_custom){
             let f = new JsonFileGame(path)
-            if (f.read()){
+            let d = f.read()
+            if (d){
                 this.__file = f
+                this._data = d
             }
         }
 
-        this._data = this.__file.read()
+        if (!this._data){
+            this._data = this.__file.read()
+        }
     }
 
-    set(data?: LuaTable){
-        this._data = data
+    get data(){return this._data}
+    set data(d: LuaTable | undefined){
+        this._data = d
     }
 
     write(){
@@ -28,9 +42,10 @@ export class JsonFile {
         }
     }
     
+    readonly root: string
+    readonly path: string
+
     protected _data: LuaTable | undefined
 
-    private __root: string
-    private __path: string
     private __file: JsonFileIface
 }

@@ -1,5 +1,5 @@
 import { id2int, isReforged, Log} from "../../Utils";
-import { Map as Wc3Map, FieldUnitList, tUnit } from "../../Binary"
+// import { Map as Wc3Map, FieldUnitList, tUnit } from "../../Binary"
 import { hUnit } from "../../Handle"
 import { JsonCache } from "../JsonUtils/Cache";
 import { readJsonParams, ReadonlyJsonParams } from "../JsonUtils/Params";
@@ -67,7 +67,7 @@ export class UnitTypeJsonData extends JsonCache {
         this.params = readJsonParams(readTable(this._raw, 'params', path), path)
         this.abils = this._readAbilities()
 
-        this.type = <tUnit><unknown>null
+        // this.type = <tUnit><unknown>null
         // this.type = Wc3Map.w3u.add(id2int('hfoo'))
         // this.type.setInt(FieldUnitList.HitPointsMaximumBase, 100)
         // this.type.setInt(FieldUnitList.ManaMaximum, 100)
@@ -75,7 +75,8 @@ export class UnitTypeJsonData extends JsonCache {
     }
 
     new(x: number, y: number, owner: jplayer){
-        let u = new UnitInstHidden(this.type.id, x, y, owner)
+        // let u = new UnitInstHidden(this.type.id, x, y, owner)
+        let u = new UnitInstHidden(0, x, y, owner)
 
         u.unit.modelScale = isReforged(GetLocalPlayer()) ? this.size_new : this.size_old
 
@@ -127,5 +128,5 @@ export class UnitTypeJsonData extends JsonCache {
     readonly params: ReadonlyJsonParams
     readonly abils: (Abil.TAbility<any> | undefined)[]
 
-    protected readonly type: tUnit
+    // protected readonly type: tUnit
 }

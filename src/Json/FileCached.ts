@@ -8,7 +8,10 @@ export class JsonFileCached implements JsonFileIface {
         if (!IsGame()){
             let f = new TextFile(path)
             // Optimize json format
-            JsonFileCached._cache.set(path, encode(decode(f.read())))
+            if (TextFile.isExist(path)){
+                let data = f.read()
+                JsonFileCached._cache.set(path, encode(decode(data)))
+            }
         }
         this.path = path
     }

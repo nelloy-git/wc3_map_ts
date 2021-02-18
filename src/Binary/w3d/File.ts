@@ -1,7 +1,7 @@
 import { id2int, Log } from "../../Utils";
 import { Field } from "../Field";
 import { File } from "../File";
-import { byte2id, getFirstId, int2byte, nextId } from "../Utils";
+import { byte2id, byte2int, getFirstId, int2byte, nextId } from "../Utils";
 
 import { findDoodadField, DoodadFieldBool, DoodadFieldInt, DoodadFieldReal, DoodadFieldString, DoodadFieldUnreal } from "./Field";
 import { TDoodad } from "./TDoodad";
@@ -9,7 +9,7 @@ import { TDoodad } from "./TDoodad";
 export class w3dFile extends File<TDoodad> {
     get version(){return this._version}
 
-    add(origin_id: number){
+    add(origin_id: string){
         let doodad = TDoodad.create(this._getNextId(), origin_id)
         this._data.push(doodad)
         return doodad
@@ -29,8 +29,8 @@ export class w3dFile extends File<TDoodad> {
 
         let count = this._parseNext('int', 4)
         for (let i = 0; i < count; i++){
-            let origin_id = byte2id(this._parseNext('char', 4))
-            let id = byte2id(this._parseNext('char', 4))
+            let origin_id = this._parseNext('char', 4)
+            let id = this._parseNext('char', 4)
             let doodad = TDoodad.create(id, origin_id)
 
             let changes_count = this._parseNext('int', 4)
@@ -38,34 +38,34 @@ export class w3dFile extends File<TDoodad> {
                 let code = this._parseNext('char', 4)
                 let field = findDoodadField(code)
                 if (!field){
-                    Log.wrn(w3dFile.name + ': unknown field ' + code)
-                    continue
+                    Log.wrn(w3dFile.name + ': unknown field \"' + code + '\"')
                 }
 
                 let type_bytes = this._parseNext('char', 4)
-                if (Field.type2byte(field.type) != type_bytes){
-                    Log.wrn(w3dFile.name + ': wrong field value type ' + code)
-                    continue
+                if (field && Field.type2byte(field.type) != type_bytes){
+                    Log.wrn(w3dFile.name + ': wrong field value type ' + code + '\n' +
+                            byte2int(Field.type2byte(field.type)) + ' != ' + byte2int(type_bytes))
                 }
 
                 let variation = this._parseNext('int', 4) // Ignored
                 let data_pointer = this._parseNext('int', 4) // Ignored
 
                 let val
-                // let field = this._findField(code)
-                if (field instanceof DoodadFieldBool){
-                    let val = this._parseNext('int', 4)
-                    TDoodad.setField(doodad, field, val == 1)
-                } else if (field instanceof DoodadFieldInt){
+                if (type_bytes == Field.type2byte('bool') || type_bytes == Field.type2byte('int')){
                     val = this._parseNext('int', 4)
-                    TDoodad.setField(doodad, field, val)
-                } else if (field instanceof DoodadFieldReal){
+
+                    if (field instanceof DoodadFieldBool){
+                        TDoodad.setField(doodad, field, val == 1)
+                    } else if (field instanceof DoodadFieldInt){
+                        TDoodad.setField(doodad, field, val)
+                    }
+                } else if (type_bytes == Field.type2byte('real') || type_bytes == Field.type2byte('unreal')){
                     val = this._parseNext('float', 4)
-                    TDoodad.setField(doodad, field, val)
-                } else if (field instanceof DoodadFieldUnreal){
-                    val = this._parseNext('float', 4)
-                    TDoodad.setField(doodad, field, val)
-                } else if (field instanceof DoodadFieldString){
+
+                    if (field instanceof DoodadFieldReal || field instanceof DoodadFieldUnreal){
+                        TDoodad.setField(doodad, field, val)
+                    }
+                } else { // string
                     // Strings are nullterminated
                     // TODO TRIGSTR
                     val = ''
@@ -75,8 +75,12 @@ export class w3dFile extends File<TDoodad> {
                         if (c == '\0'){break}
                         val += c
                     }
-                    TDoodad.setField(doodad, field, val)
-                } 
+
+                    if (field instanceof DoodadFieldString){
+                        TDoodad.setField(doodad, field, val)
+                    }
+                }
+
                 unknown = this._parseNext('int', 4) // Pass end bytes
             }
 
@@ -107,12 +111,12 @@ export class w3dFile extends File<TDoodad> {
 
             for (let i = 0; i < this._data.length; i++){
                 let unit = this._data[i]
-                if (unit.id == id2int(this._last_id)){
+                if (unit.id == this._last_id){
                     found = true
                     break
                 }
             }
         }
-        return id2int(this._last_id)
+        return this._last_id
     }
 }

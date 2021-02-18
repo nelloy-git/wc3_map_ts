@@ -1,12 +1,12 @@
 import { int2byte } from "./Utils";
 
 export abstract class Field<T extends Field.ValueType> {
-    constructor(id: string, type: Field.WcType){
+    protected constructor(id: string, type: Field.WcType){
         this.id = id
         this.type = type
     }
 
-    abstract serialize(val: T): string
+    abstract toBinary(val: T): string
 
     readonly id;
     readonly type;

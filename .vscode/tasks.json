@@ -24,7 +24,7 @@
             "command":[
                 //"wineserver -k &&",
                 "rm -r /home/bugrov/lua/wc3/drive_c/dst &&",
-                "cp -r ${workspaceFolder}/dst/map_dir /home/bugrov/lua/wc3/drive_c/dst &&",
+                "cp -r ${workspaceFolder}/dst/map /home/bugrov/lua/wc3/drive_c/dst &&",
                 "export WINEPREFIX=/home/bugrov/lua/wc3 &&",
                 "export WINEESYNC=1  &&",
                 "export WINE=/home/bugrov/.local/share/lutris/runners/wine/lutris-5.7-3-x86_64/bin/wine  &&",
