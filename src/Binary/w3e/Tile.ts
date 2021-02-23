@@ -1,13 +1,13 @@
-export class Tile {
-    constructor(id: number, x: number, y: number, z: number){
-        this.id = id
-        this.x = x
-        this.y = y
-        this.z = z
-    }
+export type Tile = {
+    readonly id: string
+    readonly pos: [x: number, y: number, z: number]
+}
 
-    readonly id: number
-    readonly x: number
-    readonly y: number
-    readonly z: number
+export namespace Tile {
+    export function create(id: string, x: number, y: number, z: number): Tile{
+        return {
+            id: id,
+            pos: [x, y, z]
+        }
+    }
 }

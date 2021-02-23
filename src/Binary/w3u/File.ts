@@ -1,122 +1,119 @@
-// import { getFilePath, id2int, Log } from "../../Utils";
-// import { File } from "../File";
-// import { byte2id, getFirstId, int2byte, nextId } from "../Utils";
-// import { UnitChange } from "./Change";
-// import { FieldUnitBool, FieldUnitInt, FieldUnitList, FieldUnitReal, FieldUnitString, FieldUnitUnreal } from "./Field";
-// import { tUnit } from "./Unit";
+import { Log } from "../../Utils";
+import { Field } from "../Field";
+import { File } from "../File";
+import { byte2int, getFirstId, int2byte, nextId } from "../Utils";
 
-// let __path__ = Macro(getFilePath())
+import { findTUnitField, TUnitFieldBool, TUnitFieldInt, TUnitFieldReal, TUnitFieldString, TUnitFieldUnreal } from "./Field";
+import { TUnit } from "./TUnit";
 
-// export class w3uFile extends File<tUnit> {
+export class w3uFile extends File<TUnit> {
+    get version(){return this._version}
 
-//     get version(){return this._version}
+    add(origin_id: string){
+        let u = TUnit.create(this._getNextId(), origin_id)
+        this._data.push(u)
+        return u
+    }
 
-//     add(base_id: number){
-//         let u = new tUnit(base_id, this._getNextId(), [])
-//         this._data.push(u)
-//         return u
-//     }
+    save(path: string){
+        this._serialize()
+        return super.save(path)
+    }
 
-//     save(path: string){
-//         this._serialize()
-//         return super.save(path)
-//     }
+    protected _parse(){
+        let list: TUnit[] = []
+        let unknown
 
-//     protected _parse(){
-//         let list: tUnit[] = []
-//         let unknown
+        this._version = this._parseNext('int', 4)
+        unknown = this._parseNext('int', 4) // Pass original table
 
-//         this._version = this._parseNext('int', 4)
-//         unknown = this._parseNext('int', 4) // Pass original table
+        let count = this._parseNext('int', 4)
+        for (let i = 0; i < count; i++){
+            let origin_id = this._parseNext('char', 4)
+            let id = this._parseNext('char', 4)
+            let unit = TUnit.create(id, origin_id)
 
-//         let count = this._parseNext('int', 4)
-//         for (let i = 0; i < count; i++){
-//             let base = byte2id(this._parseNext('char', 4))
-//             let id = byte2id(this._parseNext('char', 4))
-//             let changes_count = this._parseNext('int', 4)
-//             let changes: UnitChange<any>[] = []
+            let changes_count = this._parseNext('int', 4)
+            for (let j = 0; j < changes_count; j++){
+                let code = this._parseNext('char', 4)
+                let field = findTUnitField(code)
+                if (!field){
+                    Log.wrn(w3uFile.name + ': unknown field \"' + code + '\"')
+                }
 
-//             for (let j = 0; j < changes_count; j++){
-//                 let change_id = this._parseNext('char', 4)
-//                 let val_type = this._parseNext('int', 4)
+                let type_bytes = this._parseNext('char', 4)
+                if (field && Field.type2byte(field.type) != type_bytes){
+                    Log.wrn(w3uFile.name + ': wrong field value type ' + code + '\n' +
+                            byte2int(Field.type2byte(field.type)) + ' != ' + byte2int(type_bytes))
+                }
 
-//                 // Parse changed value
-//                 let val
-//                 let field = this._findField(change_id)
-//                 if (field instanceof FieldUnitBool){
-//                     val = this._parseNext('int', 4)
-//                 } else if (field instanceof FieldUnitInt){
-//                     val = this._parseNext('int', 4)
-//                 } else if (field instanceof FieldUnitReal){
-//                     val = this._parseNext('float', 4)
-//                 } else if (field instanceof FieldUnitUnreal){
-//                     val = this._parseNext('float', 4)
-//                 } else if (field instanceof FieldUnitString){
-//                     // Strings are nullterminated
-//                     // TODO TRIGSTR
-//                     val = ''
-//                     let c: string
-//                     while (true){
-//                         c = this._parseNext('char', 1)
-//                         if (c == '\0'){break}
-//                         val += c
-//                     }
-//                 } else {
-//                     return Log.err('can not find field \'' + change_id + '\' in the list.',
-//                                     __path__, File, 3)
-//                 }
-//                 let change = new UnitChange<any>(field, val)
-//                 changes.push(change)
+                let val
+                if (type_bytes == Field.type2byte('bool') || type_bytes == Field.type2byte('int')){
+                    val = this._parseNext('int', 4)
 
-//                 unknown = this._parseNext('int', 4) // Pass end bytes
-//             }
+                    if (field instanceof TUnitFieldBool){
+                        TUnit.setField(unit, field, val == 1)
+                    } else if (field instanceof TUnitFieldInt){
+                        TUnit.setField(unit, field, val)
+                    }
+                } else if (type_bytes == Field.type2byte('real') || type_bytes == Field.type2byte('unreal')){
+                    val = this._parseNext('float', 4)
 
-//             let unit = new tUnit(base, id, changes)
-//             list.push(unit)
-//         }
+                    if (field instanceof TUnitFieldReal || field instanceof TUnitFieldUnreal){
+                        TUnit.setField(unit, field, val)
+                    }
+                } else { // string
+                    // Strings are nullterminated
+                    // TODO TRIGSTR
+                    val = ''
+                    let c: string
+                    while (true){
+                        c = this._parseNext('char', 1)
+                        if (c == '\0'){break}
+                        val += c
+                    }
 
-//         return list
-//     }
+                    if (field instanceof TUnitFieldString){
+                        TUnit.setField(unit, field, val)
+                    }
+                }
 
-//     private _serialize(){
-//         this._raw_data = '\2\0\0\0' + 
-//                          '\0\0\0\0' +
-//                          int2byte(this._data.length)
-//         this._data.forEach(cur => {
-//             this._raw_data += cur.serialize()
-//         })
-//     }
+                unknown = this._parseNext('int', 4) // Pass end bytes
+            }
 
-//     private _findField(id: string){
-//         let available_fields = Object.values(FieldUnitList)
-//         for (let i = 0; i < available_fields.length; i++){
-//             if (available_fields[i].id == id){
-//                 return available_fields[i]
-//             }
-//         }
+            list.push(unit)
+        }
 
-//         return Log.err('can not find field \'' + id + '\' in the list.',
-//                         __path__, File, 3)
-//     }
+        return list
+    }
 
-//     private _version: number = 0
+    private _serialize(){
+        this._raw_data = '\2\0\0\0' + 
+                         '\0\0\0\0' +
+                         int2byte(this._data.length)
+        this._data.forEach(cur => {
+            this._raw_data += TUnit.serialize(cur)
+        })
+    }
 
-//     private _last_id = getFirstId('UNIT')
-//     private _getNextId(){
-//         // Is id in use?
-//         let found = true
-//         while (found){
-//             found = false
-//             this._last_id = nextId(this._last_id)
+    private _version: number = 0
 
-//             for (let i = 0; i < this._data.length; i++){
-//                 let unit = this._data[i]
-//                 if (unit.id == id2int(this._last_id)){
-//                     found = true
-//                     break
-//                 }
-//             }
-//         }
-//         return id2int(this._last_id)
-//     }
-// }
+    private _last_id = getFirstId('UNIT')
+    private _getNextId(){
+        // Is id in use?
+        let found = true
+        while (found){
+            found = false
+            this._last_id = nextId(this._last_id)
+
+            for (let i = 0; i < this._data.length; i++){
+                let unit = this._data[i]
+                if (unit.id == this._last_id){
+                    found = true
+                    break
+                }
+            }
+        }
+        return this._last_id
+    }
+}

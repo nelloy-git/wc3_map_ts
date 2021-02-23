@@ -15,10 +15,10 @@ export class Action<In extends any[], Out> {
         if (!Action.inside) {
             Action.inside = true;
             let success
-            [success, res] = pcall(this._callback, ...args);
+            [success, res] = xpcall(this._callback, (err)=>{Log.msg(err)}, ...args);
 
             if (!success) {
-                return Log.err(<string>res,
+                return Log.err(<string><unknown>res,
                                 __path__, Action, 2);
             }
 

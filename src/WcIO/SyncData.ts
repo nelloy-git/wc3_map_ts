@@ -42,8 +42,7 @@ export abstract class SyncData<T extends any[]> {
         let raw = BlzGetTriggerSyncData()
         let data = sync.raw2data(raw)
 
-        sync._actions.run(GetTriggerPlayer(),
-                          ...data)
+        sync._actions.run(pl, ...data)
     }
 
     private static _id2sync = new Map<string, SyncData<any>>()

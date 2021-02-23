@@ -1,9 +1,9 @@
 export type Doodad = {
     readonly id: string
     readonly pos: [number, number, number]
-    readonly angle: number
-    readonly variation: number
-    readonly scale: [number, number, number]
+    readonly a: number
+    readonly var: number
+    readonly sc: [number, number, number]
 }
 
 export namespace Doodad {
@@ -12,9 +12,9 @@ export namespace Doodad {
         return {
             id: id,
             pos: [x, y, z],
-            angle: a,
-            variation: variation,
-            scale: [scale_x, scale_y, scale_z],
+            a: a,
+            var: variation,
+            sc: [scale_x, scale_y, scale_z],
         }
     }
 }

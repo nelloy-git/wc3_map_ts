@@ -1,22 +1,22 @@
-import { id2byte, int2byte } from "../Utils";
-import { id2int, Log } from "../../Utils";
+import { int2byte } from "../Utils";
+import { Log } from "../../Utils";
 
-import { findDoodadField, DoodadField, DoodadFieldBool, DoodadFieldInt, DoodadFieldReal, DoodadFieldString, DoodadFieldUnreal } from './Field'
 import { Field } from '../Field'
+import { findTDoodadField, TDoodadField, TDoodadFieldBool, TDoodadFieldInt, TDoodadFieldReal, TDoodadFieldString, TDoodadFieldUnreal } from './Field'
 
 export type TDoodad = {
     readonly id: string
     readonly origin_id: string
     readonly fields: {
-        [key: string]: Field.ValueType
+        readonly [key: string]: Field.ValueType
     }
 }
 
-let ignore: DoodadField<any>[] = [
-    DoodadField.Name,
-    DoodadField.MinScale,
-    DoodadField.MaxScale,
-    DoodadField.EditorUserList,
+let ignore: TDoodadField<any>[] = [
+    TDoodadField.Name,
+    TDoodadField.MinScale,
+    TDoodadField.MaxScale,
+    TDoodadField.EditorUserList,
 ]
 
 export namespace TDoodad {
@@ -47,7 +47,7 @@ export namespace TDoodad {
         }
 
         for (let code in jfields){
-            let field = <DoodadField<any> | undefined>findDoodadField(code)
+            let field = <TDoodadField<any> | undefined>findTDoodadField(code)
             if (!field){
                 Log.wrn('TDoodad: unknown field ' + code)
                 continue
@@ -61,31 +61,30 @@ export namespace TDoodad {
                 return Log.err('value type is not valid')    
             }
 
-            dood.fields[code] = <Field.ValueType>val
+            (<{[k: string]: Field.ValueType}>dood.fields)[code] = <Field.ValueType>val
         }
 
         return dood
     }
 
-    export function setField(dood: TDoodad, field: DoodadFieldBool, val: boolean | undefined): void
-    export function setField(dood: TDoodad, field: DoodadFieldInt, val: number | undefined): void
-    export function setField(dood: TDoodad, field: DoodadFieldReal, val: number | undefined): void
-    export function setField(dood: TDoodad, field: DoodadFieldString, val: string | undefined): void
-    export function setField(dood: TDoodad, field: DoodadFieldUnreal, val: number | undefined): void
-    export function setField(dood: TDoodad, field: DoodadFieldBool | DoodadFieldInt | DoodadFieldReal | DoodadFieldUnreal | DoodadFieldString, val: boolean | number | string | undefined): void
-    export function setField<T extends Field.ValueType>(dood: TDoodad, field: DoodadField<T>, val: T){
-        if (ignore.includes(field)){return}
-
+    export function setField(dood: TDoodad, field: TDoodadFieldBool, val: boolean | undefined): void
+    export function setField(dood: TDoodad, field: TDoodadFieldInt, val: number | undefined): void
+    export function setField(dood: TDoodad, field: TDoodadFieldReal, val: number | undefined): void
+    export function setField(dood: TDoodad, field: TDoodadFieldString, val: string | undefined): void
+    export function setField(dood: TDoodad, field: TDoodadFieldUnreal, val: number | undefined): void
+    export function setField(dood: TDoodad, field: TDoodadFieldBool | TDoodadFieldInt | TDoodadFieldReal | TDoodadFieldUnreal | TDoodadFieldString, val: boolean | number | string | undefined): void
+    export function setField<T extends Field.ValueType>(dood: TDoodad, field: TDoodadField<T>, val: T){
+        // if (ignore.includes(field)){return}
         let field_id = field.id;
         (<{[k: string]: T}>dood.fields)[field_id] = val
     }
     
-    export function getField(dood: TDoodad, field: DoodadFieldBool): boolean | undefined
-    export function getField(dood: TDoodad, field: DoodadFieldInt): number | undefined
-    export function getField(dood: TDoodad, field: DoodadFieldReal): number | undefined
-    export function getField(dood: TDoodad, field: DoodadFieldString): string | undefined
-    export function getField(dood: TDoodad, field: DoodadFieldUnreal): number | undefined
-    export function getField<T extends Field.ValueType>(dood: TDoodad, field: DoodadField<T>): T | undefined {
+    export function getField(dood: TDoodad, field: TDoodadFieldBool): boolean | undefined
+    export function getField(dood: TDoodad, field: TDoodadFieldInt): number | undefined
+    export function getField(dood: TDoodad, field: TDoodadFieldReal): number | undefined
+    export function getField(dood: TDoodad, field: TDoodadFieldString): string | undefined
+    export function getField(dood: TDoodad, field: TDoodadFieldUnreal): number | undefined
+    export function getField<T extends Field.ValueType>(dood: TDoodad, field: TDoodadField<T>): T | undefined {
         return <T | undefined>dood.fields[field.id]
     }
 
@@ -97,7 +96,7 @@ export namespace TDoodad {
         for (let code in dood.fields){
             count++
 
-            let field = <DoodadField<any> | undefined>findDoodadField(code)
+            let field = <TDoodadField<any> | undefined>findTDoodadField(code)
             if (!field){
                 Log.wrn('TDoodad: unknown field ' + code)
                 continue

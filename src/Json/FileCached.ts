@@ -1,9 +1,8 @@
 import { BuildtimeCache, TextFile } from "../Utils";
 
 import { encode, decode } from './JsonLua/index'
-import { JsonFileIface } from './FileIface'
 
-export class JsonFileCached implements JsonFileIface {
+export class JsonFileCached {
     constructor(path: string){
         if (!IsGame()){
             let f = new TextFile(GetSrc() + '/' + path)
@@ -23,10 +22,10 @@ export class JsonFileCached implements JsonFileIface {
 
     write(data: LuaTable){
         let str = encode(data)
-        JsonFileCached._cache.set(this.path, data)
+        JsonFileCached._cache.set(this.path, str)
 
         if (!IsGame()){
-            let f = new TextFile(this.path)
+            let f = new TextFile(GetSrc() + '/' + this.path)
             f.write(str)
         }
     }

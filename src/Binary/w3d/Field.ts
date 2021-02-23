@@ -1,62 +1,62 @@
 import { Field, FieldBool, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
 import { float2byte, int2byte, str2byte } from "../Utils"
 
-export interface DoodadField<T extends Field.ValueType> extends Field<T> {}
+export interface TDoodadField<T extends Field.ValueType> extends Field<T> {}
 
-export class DoodadFieldBool extends FieldBool implements DoodadField<boolean> {
+export class TDoodadFieldBool extends FieldBool implements TDoodadField<boolean> {
     toBinary(val: boolean){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('bool') + int2byte(val ? 1 : 0) + '\0\0\0\0'
     }
 }
 
-export class DoodadFieldInt extends FieldInt implements DoodadField<number> {
+export class TDoodadFieldInt extends FieldInt implements TDoodadField<number> {
     toBinary(val: number){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('int') + int2byte(val) + '\0\0\0\0'
     }
 }
 
-export class DoodadFieldReal extends FieldReal implements DoodadField<number> {
+export class TDoodadFieldReal extends FieldReal implements TDoodadField<number> {
     toBinary(val: number){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('real') + float2byte(val) + '\0\0\0\0'
     }
 }
 
-export class DoodadFieldUnreal extends FieldUnreal implements DoodadField<number> {
+export class TDoodadFieldUnreal extends FieldUnreal implements TDoodadField<number> {
     toBinary(val: number){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('unreal') + float2byte(val) + '\0\0\0\0'
     }
 }
 
-export class DoodadFieldString extends FieldString implements DoodadField<string> {
+export class TDoodadFieldString extends FieldString implements TDoodadField<string> {
     toBinary(val: string){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
                 Field.type2byte('string') + str2byte(val) + '\0\0\0\0'
     }
 }
 
-export namespace DoodadField {
-    export let ShowInFog = new DoodadFieldBool('dshf')
-    export let EditorUserList = new DoodadFieldBool('dusr')
+export namespace TDoodadField {
+    export let ShowInFog = new TDoodadFieldBool('dshf')
+    export let EditorUserList = new TDoodadFieldBool('dusr')
 
-    export let ColorRed = new DoodadFieldInt('dvr1')
-    export let ColorGreen = new DoodadFieldInt('dvg1')
-    export let ColorBlue = new DoodadFieldInt('dvb1')
-    export let Variations = new DoodadFieldInt('dvar')
+    export let ColorRed = new TDoodadFieldInt('dvr1')
+    export let ColorGreen = new TDoodadFieldInt('dvg1')
+    export let ColorBlue = new TDoodadFieldInt('dvb1')
+    export let Variations = new TDoodadFieldInt('dvar')
 
-    export let MinScale = new DoodadFieldUnreal('dmas')
-    export let MaxScale = new DoodadFieldUnreal('dmis')
+    export let MinScale = new TDoodadFieldUnreal('dmas')
+    export let MaxScale = new TDoodadFieldUnreal('dmis')
 
-    export let Model = new DoodadFieldString('dfil')
-    export let Name = new DoodadFieldString('dnam')
-    export let PathingTexture = new DoodadFieldString('dptx')
+    export let Model = new TDoodadFieldString('dfil')
+    export let Name = new TDoodadFieldString('dnam')
+    export let PathingTexture = new TDoodadFieldString('dptx')
 }
 
-let all_fields = Object.values(DoodadField)
-export function findDoodadField(code: string){
+let all_fields = Object.values(TDoodadField)
+export function findTDoodadField(code: string){
     for (let field of all_fields){
         if (code == field.id){
             return field

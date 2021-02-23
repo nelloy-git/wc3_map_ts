@@ -1,9 +1,9 @@
-import { id2int, Log } from "../../Utils";
+import { Log } from "../../Utils";
 import { Field } from "../Field";
 import { File } from "../File";
-import { byte2id, byte2int, getFirstId, int2byte, nextId } from "../Utils";
+import { byte2int, getFirstId, int2byte, nextId } from "../Utils";
 
-import { findDoodadField, DoodadFieldBool, DoodadFieldInt, DoodadFieldReal, DoodadFieldString, DoodadFieldUnreal } from "./Field";
+import { findTDoodadField, TDoodadFieldBool, TDoodadFieldInt, TDoodadFieldReal, TDoodadFieldString, TDoodadFieldUnreal } from "./Field";
 import { TDoodad } from "./TDoodad";
 
 export class w3dFile extends File<TDoodad> {
@@ -36,7 +36,7 @@ export class w3dFile extends File<TDoodad> {
             let changes_count = this._parseNext('int', 4)
             for (let j = 0; j < changes_count; j++){
                 let code = this._parseNext('char', 4)
-                let field = findDoodadField(code)
+                let field = findTDoodadField(code)
                 if (!field){
                     Log.wrn(w3dFile.name + ': unknown field \"' + code + '\"')
                 }
@@ -54,15 +54,15 @@ export class w3dFile extends File<TDoodad> {
                 if (type_bytes == Field.type2byte('bool') || type_bytes == Field.type2byte('int')){
                     val = this._parseNext('int', 4)
 
-                    if (field instanceof DoodadFieldBool){
+                    if (field instanceof TDoodadFieldBool){
                         TDoodad.setField(doodad, field, val == 1)
-                    } else if (field instanceof DoodadFieldInt){
+                    } else if (field instanceof TDoodadFieldInt){
                         TDoodad.setField(doodad, field, val)
                     }
                 } else if (type_bytes == Field.type2byte('real') || type_bytes == Field.type2byte('unreal')){
                     val = this._parseNext('float', 4)
 
-                    if (field instanceof DoodadFieldReal || field instanceof DoodadFieldUnreal){
+                    if (field instanceof TDoodadFieldReal || field instanceof TDoodadFieldUnreal){
                         TDoodad.setField(doodad, field, val)
                     }
                 } else { // string
@@ -76,7 +76,7 @@ export class w3dFile extends File<TDoodad> {
                         val += c
                     }
 
-                    if (field instanceof DoodadFieldString){
+                    if (field instanceof TDoodadFieldString){
                         TDoodad.setField(doodad, field, val)
                     }
                 }

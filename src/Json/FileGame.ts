@@ -2,11 +2,10 @@ import { getFilePath, Log} from "../Utils";
 import { File } from '../WcIO'
 
 import { encode, decode } from './JsonLua/index'
-import { JsonFileIface } from './FileIface'
 
 let __path__ = Macro(getFilePath())
 
-export class JsonFileGame implements JsonFileIface {
+export class JsonFileGame {
     constructor(path: string){
         if (!IsGame()){
             Log.err('can not be used in buildtime.',
@@ -15,18 +14,17 @@ export class JsonFileGame implements JsonFileIface {
         this.path = path
     }
 
-    read(){
-        let f = new File(this.path)
-        let raw = f.read()
-
-        return (typeof raw === 'string') ? decode(raw) : undefined
+    read(pl: jplayer, callback: (this: void, f: JsonFileGame)=>void){
+        File.read(this.path, pl, (path, pl, data)=>{this.__data = decode(data); callback(this)})
     }
 
-    write(data: LuaTable){
+    write(pl: jplayer, data: LuaTable){
         let str = encode(data)
-        let f = new File(this.path)
-        f.write(str)
+        File.write(this.path, pl, str)
     }
+
+    get data(){return this.__data}
 
     readonly path: string
+    private __data: LuaTable | undefined
 }

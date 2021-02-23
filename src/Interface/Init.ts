@@ -21,11 +21,11 @@ export function Init(){
     Screen.addAction(([x0, y0], [w, h])=>{
         let x = math.max(x0, -0.22)
 
-        map.pos = [x, y0 + h - map.size[1]]
         map.size = [0.12, 0.12]
+        map.pos = [x, y0 + h - map.size[1]]
 
-        unit_info.pos = [x, x < -0.21 ? 0 : 0.03]
         unit_info.size = [0.2, 0.2]
+        unit_info.pos = [x, x < -0.21 ? 0 : 0.03]
 
         skills.size = [0.05 * skills_cols, 0.05 * skills_rows]
         let [skills_w, skill_h] = skills.size

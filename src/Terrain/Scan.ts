@@ -21,10 +21,10 @@ export function scan(dir: string){
     print('Scanning ' + dir)
 
     let prog_next = 10
-    let list: Json.JsonFile[] = []
+    let list: Json.JsonFileGame[] = []
     while (_4 < end){
         let name = String.fromCharCode(_1, _2, _3, _4)
-        let f = new Json.JsonFile(dir + '/' + name + '.json', GetSrc());
+        let f = new Json.JsonFileGame(dir + '/' + name + '.json');
         if (typeof f.data !== 'undefined'){
             list.push(f)
         }
