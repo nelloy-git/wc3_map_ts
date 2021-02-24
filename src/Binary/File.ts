@@ -63,10 +63,25 @@ export abstract class File<T extends LuaTable> {
 
     protected abstract _parse(): T[]
 
-    protected _parseNext(type: 'char', size: number): string
-    protected _parseNext(type: 'int', size: number): number
-    protected _parseNext(type: 'float', size: number): number
-    protected _parseNext(type: 'char'|'int'|'float', size: number){
+    protected _readBool(size: number){return this._parseNext('int', size) == 1}
+    protected _readInt(size: number){return this._parseNext('int', size)}
+    protected _readChar(size: number){return this._parseNext('char', size)}
+    protected _readFloat(){return this._parseNext('float', 4)}
+    protected _readString(){
+        let val = ''
+        let c: string
+        while (true){
+            c = this._parseNext('char', 1)
+            if (c == '\0'){break}
+            val += c
+        }
+        return val
+    }
+
+    private _parseNext(type: 'char', size: number): string
+    private _parseNext(type: 'int', size: number): number
+    private _parseNext(type: 'float', size: number): number
+    private _parseNext(type: 'char'|'int'|'float', size: number){
         let val = this._parseData(type, this._file_pos, size)
         this.__file_pos += size
         // print(this.__file_pos)

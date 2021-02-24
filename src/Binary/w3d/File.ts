@@ -3,7 +3,7 @@ import { Field } from "../Field";
 import { File } from "../File";
 import { byte2int, getFirstId, int2byte, nextId } from "../Utils";
 
-import { findTDoodadField, TDoodadFieldBool, TDoodadFieldInt, TDoodadFieldReal, TDoodadFieldString, TDoodadFieldUnreal } from "./Field";
+import { findTDoodadField } from "./Field";
 import { TDoodad } from "./TDoodad";
 
 export class w3dFile extends File<TDoodad> {
@@ -22,66 +22,49 @@ export class w3dFile extends File<TDoodad> {
 
     protected _parse(){
         let list: TDoodad[] = []
-        let unknown
 
-        this._version = this._parseNext('int', 4)
-        unknown = this._parseNext('int', 4) // Pass original table
+        this._version = this._readInt(4)
+        this._readChar(4) // Pass original table
 
-        let count = this._parseNext('int', 4)
+        let count = this._readInt(4)
         for (let i = 0; i < count; i++){
-            let origin_id = this._parseNext('char', 4)
-            let id = this._parseNext('char', 4)
+            let origin_id = this._readChar(4)
+            let id = this._readChar(4)
             let doodad = TDoodad.create(id, origin_id)
 
-            let changes_count = this._parseNext('int', 4)
+            let changes_count = this._readInt(4)
             for (let j = 0; j < changes_count; j++){
-                let code = this._parseNext('char', 4)
+                let code = this._readChar(4)
                 let field = findTDoodadField(code)
                 if (!field){
                     Log.wrn(w3dFile.name + ': unknown field \"' + code + '\"')
                 }
 
-                let type_bytes = this._parseNext('char', 4)
+                let type_bytes = this._readChar(4)
                 if (field && Field.type2byte(field.type) != type_bytes){
                     Log.wrn(w3dFile.name + ': wrong field value type ' + code + '\n' +
                             byte2int(Field.type2byte(field.type)) + ' != ' + byte2int(type_bytes))
                 }
 
-                let variation = this._parseNext('int', 4) // Ignored
-                let data_pointer = this._parseNext('int', 4) // Ignored
+                let variation = this._readInt(4) // Ignored
+                let data_pointer = this._readInt(4) // Ignored
 
                 let val
-                if (type_bytes == Field.type2byte('bool') || type_bytes == Field.type2byte('int')){
-                    val = this._parseNext('int', 4)
-
-                    if (field instanceof TDoodadFieldBool){
-                        TDoodad.setField(doodad, field, val == 1)
-                    } else if (field instanceof TDoodadFieldInt){
-                        TDoodad.setField(doodad, field, val)
-                    }
+                if (type_bytes == Field.type2byte('bool')){
+                    val = this._readBool(4)
+                } else if(type_bytes == Field.type2byte('int')){
+                    val = this._readInt(4)
                 } else if (type_bytes == Field.type2byte('real') || type_bytes == Field.type2byte('unreal')){
-                    val = this._parseNext('float', 4)
-
-                    if (field instanceof TDoodadFieldReal || field instanceof TDoodadFieldUnreal){
-                        TDoodad.setField(doodad, field, val)
-                    }
-                } else { // string
-                    // Strings are nullterminated
-                    // TODO TRIGSTR
-                    val = ''
-                    let c: string
-                    while (true){
-                        c = this._parseNext('char', 1)
-                        if (c == '\0'){break}
-                        val += c
-                    }
-
-                    if (field instanceof TDoodadFieldString){
-                        TDoodad.setField(doodad, field, val)
-                    }
+                    val = this._readFloat()
+                } else {
+                    val = this._readString()
                 }
 
-                unknown = this._parseNext('int', 4) // Pass end bytes
+                if (field){
+                    TDoodad.setField(doodad, field, val)
+                }
+
+                this._readChar(4) // Pass end bytes
             }
 
             list.push(doodad)

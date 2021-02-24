@@ -1,6 +1,4 @@
-import { id2int, int2id, Log } from "../../Utils";
 import { File } from "../File";
-import { byte2id } from "../Utils";
 import { Tile } from "./Tile";
 
 export class w3eFile extends File<Tile> {
@@ -13,27 +11,27 @@ export class w3eFile extends File<Tile> {
     get usedCliffs(){return <ReadonlyArray<string>>this._used_cliffs}
 
     protected _parse(){
-        this._head = this._parseNext('char', 4)
-        this._version = this._parseNext('int', 4)
-        this._main_tile = this._parseNext('char', 1)
-        this._is_custom = this._parseNext('int', 4)
+        this._head = this._readChar(4)
+        this._version = this._readInt(4)
+        this._main_tile = this._readChar(1)
+        this._is_custom = this._readInt(4)
 
         this._used_tiles = []
-        let tiles_count = this._parseNext('int', 4)
+        let tiles_count = this._readInt(4)
         for (let i = 0; i < tiles_count; i++){
-            this._used_tiles[i] = this._parseNext('char', 4)
+            this._used_tiles[i] = this._readChar(4)
         }
 
         this._used_cliffs = []
-        let cliffs_count = this._parseNext('int', 4)
+        let cliffs_count = this._readInt(4)
         for (let i = 0; i < cliffs_count; i++){
-            this._used_cliffs[i] = this._parseNext('char', 4)
+            this._used_cliffs[i] = this._readChar(4)
         }
 
-        this._mx = this._parseNext('int', 4)
-        this._my = this._parseNext('int', 4)
-        this._cx = this._parseNext('float', 4)
-        this._cy = this._parseNext('float', 4)
+        this._mx = this._readInt(4)
+        this._my = this._readInt(4)
+        this._cx = this._readFloat()
+        this._cy = this._readFloat()
 
         let count = this._mx * this._my
         let cur_x = 0
@@ -43,12 +41,12 @@ export class w3eFile extends File<Tile> {
         for (let i = 0; i < count; i ++){
             let x = this._cx + 128 * cur_x;
             let y = this._cy + 128 * cur_y;
-            let h = this._parseNext('int', 2)
+            let h = this._readInt(2)
             // Pass 2 bytes
-            let unknown = this._parseNext('char', 2)
-            let tile_id = this._used_tiles[this._parseNext('char', 1).charCodeAt(0) & 15]
+            let unknown = this._readChar(2)
+            let tile_id = this._used_tiles[this._readChar(1).charCodeAt(0) & 15]
             // Pass 2 bytes
-            unknown = this._parseNext('char', 2)
+            unknown = this._readChar(2)
 
             let tile = Tile.create(tile_id, x, y, h)
             list.push(tile)
