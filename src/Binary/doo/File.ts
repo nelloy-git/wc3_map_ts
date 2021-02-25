@@ -36,7 +36,7 @@ export class dooFile extends File<Doodad> {
             list.push(data)
         }
 
-        // print(this._file_pos, this._raw_data.length)
+        print(list.length)
         return list
     }
     

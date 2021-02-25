@@ -72,7 +72,7 @@ export namespace TDoodad {
     export function setField(dood: TDoodad, field: TDoodadFieldReal, val: number | undefined): void
     export function setField(dood: TDoodad, field: TDoodadFieldString, val: string | undefined): void
     export function setField(dood: TDoodad, field: TDoodadFieldUnreal, val: number | undefined): void
-    export function setField(dood: TDoodad, field: TDoodadFieldBool | TDoodadFieldInt | TDoodadFieldReal | TDoodadFieldUnreal | TDoodadFieldString, val: boolean | number | string | undefined): void
+    export function setField<T extends Field.ValueType>(dood: TDoodad, field: TDoodadField<T>, val: T): void
     export function setField<T extends Field.ValueType>(dood: TDoodad, field: TDoodadField<T>, val: T){
         // if (ignore.includes(field)){return}
         let field_id = field.id;
@@ -84,6 +84,7 @@ export namespace TDoodad {
     export function getField(dood: TDoodad, field: TDoodadFieldReal): number | undefined
     export function getField(dood: TDoodad, field: TDoodadFieldString): string | undefined
     export function getField(dood: TDoodad, field: TDoodadFieldUnreal): number | undefined
+    export function getField<T extends Field.ValueType>(dood: TDoodad, field: TDoodadField<T>): T | undefined
     export function getField<T extends Field.ValueType>(dood: TDoodad, field: TDoodadField<T>): T | undefined {
         return <T | undefined>dood.fields[field.id]
     }
@@ -108,3 +109,4 @@ export namespace TDoodad {
         return head + int2byte(count) + s_fields
     }
 }
+

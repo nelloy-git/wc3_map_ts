@@ -49,6 +49,9 @@ export namespace TDoodadField {
 
     export let MinScale = new TDoodadFieldUnreal('dmas')
     export let MaxScale = new TDoodadFieldUnreal('dmis')
+    
+    export let MaxRoll = new TDoodadFieldUnreal('dmar')
+    export let MaxPitch = new TDoodadFieldUnreal('dmap')
 
     export let Model = new TDoodadFieldString('dfil')
     export let Name = new TDoodadFieldString('dnam')

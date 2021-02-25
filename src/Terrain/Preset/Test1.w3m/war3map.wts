@@ -1,0 +1,238 @@
+﻿STRING 1
+{
+Just another Warcraft III map
+}
+
+STRING 2
+{
+Any
+}
+
+STRING 3
+{
+Nondescript
+}
+
+STRING 4
+{
+Unknown
+}
+
+STRING 5
+{
+Player 1
+}
+
+STRING 6
+{
+Force 1
+}
+
+STRING 7
+// Doodads: D000 (Wall Stone2), Name (Name)
+{
+Wall Stone2
+}
+
+STRING 8
+// Doodads: D001 (Wall Stone3), Name (Name)
+{
+Wall Stone3
+}
+
+STRING 9
+// Doodads: D002 (Wall Straight (Short)2), Name (Name)
+{
+Wall Straight (Short)2
+}
+
+STRING 10
+// Doodads: D003 (Crates Empty2), Name (Name)
+{
+Crates Empty2
+}
+
+STRING 11
+// Doodads: D004 (Crates Empty3), Name (Name)
+{
+Crates Empty3
+}
+
+STRING 12
+// Doodads: D005 (barrel), Name (Name)
+{
+barrel
+}
+
+STRING 13
+// Doodads: D006 (barrel2), Name (Name)
+{
+barrel2
+}
+
+STRING 14
+// Doodads: D007 (balk), Name (Name)
+{
+balk
+}
+
+STRING 15
+// Doodads: D008 (tr), Name (Name)
+{
+tr
+}
+
+STRING 16
+// Doodads: D009 (Корабль2), Name (Name)
+{
+Корабль2
+}
+
+STRING 17
+// Doodads: D00A (Корабль3), Name (Name)
+{
+Корабль3
+}
+
+STRING 18
+// Doodads: D00B (Корабль4), Name (Name)
+{
+Корабль4
+}
+
+STRING 19
+// Doodads: D00C (Archway Angled Natural2), Name (Name)
+{
+Archway Angled Natural2
+}
+
+STRING 20
+// Doodads: D00D (palatka1), Name (Name)
+{
+palatka1
+}
+
+STRING 21
+// Doodads: D00E (palatka2), Name (Name)
+{
+palatka2
+}
+
+STRING 22
+// Doodads: D00F (palatka3), Name (Name)
+{
+palatka3
+}
+
+STRING 23
+// Doodads: D00G (palatka4), Name (Name)
+{
+palatka4
+}
+
+STRING 24
+{
+Player 10
+}
+
+STRING 25
+// Doodads: D00H (frm1), Name (Name)
+{
+frm1
+}
+
+STRING 26
+// Doodads: D00I (tower1), Name (Name)
+{
+tower1
+}
+
+STRING 27
+// Doodads: D00J (barak1), Name (Name)
+{
+barak1
+}
+
+STRING 28
+// Doodads: D00K (palatka1b), Name (Name)
+{
+palatka1b
+}
+
+STRING 29
+// Doodads: D00L (nagaStr), Name (Name)
+{
+nagaStr
+}
+
+STRING 30
+// Doodads: D00M (stena1), Name (Name)
+{
+stena1
+}
+
+STRING 31
+// Doodads: D00N (stena2), Name (Name)
+{
+stena2
+}
+
+STRING 32
+// Doodads: D00O (stena3), Name (Name)
+{
+stena3
+}
+
+STRING 33
+// Doodads: D00P (stena4), Name (Name)
+{
+stena4
+}
+
+STRING 34
+// Doodads: D00Q (stena5), Name (Name)
+{
+stena5
+}
+
+STRING 35
+// Doodads: D00R (stenaHum5), Name (Name)
+{
+stenaHum5
+}
+
+STRING 36
+// Doodads: D00S (stenaHum1), Name (Name)
+{
+stenaHum1
+}
+
+STRING 37
+// Doodads: D00T (stenaHum2), Name (Name)
+{
+stenaHum2
+}
+
+STRING 38
+// Doodads: D00U (stenaHum3), Name (Name)
+{
+stenaHum3
+}
+
+STRING 39
+// Doodads: D00V (stenaHum4), Name (Name)
+{
+stenaHum4
+}
+
+STRING 40
+// Doodads: D00W (wood), Name (Name)
+{
+wood
+}
+
+STRING 41
+{
+Player 17
+}
+

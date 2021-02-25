@@ -1,15 +1,17 @@
-import { BuildtimeCache, TextFile } from "../Utils";
+import { BuildtimeCache, Log, TextFile } from "../Utils";
 
 import { encode, decode } from './JsonLua/index'
 
 export class JsonFileCached {
     constructor(path: string){
         if (!IsGame()){
-            let f = new TextFile(GetSrc() + '/' + path)
             // Optimize json format
             if (TextFile.isExist(GetSrc() + '/' + path)){
+                let f = new TextFile(GetSrc() + '/' + path)
                 let data = f.read()
                 JsonFileCached._cache.set(path, encode(decode(data)))
+            } else {
+                Log.err('can not find file ' + path)
             }
         }
         this.path = path

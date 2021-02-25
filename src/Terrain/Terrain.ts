@@ -2,13 +2,15 @@ import * as Binary from '../Binary'
 import { hDestructable, hEffect } from '../Handle'
 import * as Json from '../Json'
 
-import { getFilePath, getTerrainZ, id2int, Log } from '../Utils'
+import { getFilePath, getTerrainZ, id2int, isReforged, Log } from '../Utils'
 
 let __path__ = Macro(getFilePath())
 
 export type Terrain = {
     readonly name: string
     readonly icon: string
+    readonly cx: number
+    readonly cy: number
 
     readonly tiles_used: ReadonlyArray<string>
     readonly tiles: ReadonlyArray<Binary.Tile>
@@ -19,6 +21,7 @@ export type Terrain = {
 export namespace Terrain {
 
     function create(name: string, icon: string,
+                    cx: number, cy: number,
                     tiles_used: ReadonlyArray<string>,
                     tiles: ReadonlyArray<Binary.Tile>,
                     doodads_used: ReadonlyArray<Binary.TDoodad>,
@@ -26,6 +29,8 @@ export namespace Terrain {
         return {
             name: name,
             icon: icon,
+            cx: cx,
+            cy: cy,
 
             tiles_used: tiles_used,
             tiles: tiles,
@@ -55,12 +60,15 @@ export namespace Terrain {
             }
         }
     
-        return create(name, icon, w3e.usedTiles, w3e.data, w3d.data, doo.data)
+        print(w3e.cx, w3e.cy)
+        return create(name, icon, w3e.cx, w3e.cy, w3e.usedTiles, w3e.data, w3d.data, doo.data)
     }
 
     export function createFromJson(json: LuaHash){
         let name = Json.Read.String(json, 'name')
         let icon = Json.Read.String(json, 'icon')
+        let cx = Json.Read.Number(json, 'cx')
+        let cy = Json.Read.Number(json, 'cy')
         let json_tiles = Json.Read.TableArray(json, 'tiles')
         let json_types = Json.Read.TableArray(json, 'doodads_used')
         let json_doodads = Json.Read.TableArray(json, 'doodads')
@@ -70,7 +78,7 @@ export namespace Terrain {
         let [used_id, doodads] = getJsonDoodads(json_doodads)
         let types = getJsonDoodadTypes(json_types, used_id)
         
-        return create(name, icon, tiles_used, tiles, types, doodads)
+        return create(name, icon, cx, cy, tiles_used, tiles, types, doodads)
     }
 
     function getJsonTiles(json: LuaTable[]){
@@ -123,7 +131,7 @@ export namespace Terrain {
             for (let code in json_fields){
                 let field = Binary.findTDoodadField(code)
                 if (!field){
-                    return Log.err('')
+                    return Log.err('can not file field ' + code + ' of doodad ' + id)
                 }
 
                 let val = json_fields[code]
@@ -132,7 +140,8 @@ export namespace Terrain {
                                (typeof val === 'string' && field.type == 'string')     
 
                 if (!is_valid){
-                    return Log.err('')
+                    return Log.err('invalid data of field ' + code + ' of doodad ' + id + '\n' + 
+                                    typeof val + '(' + field.type + ')')
                 }
                 
                 Binary.TDoodad.setField(tdood, field, <any>json_fields[code])
@@ -159,50 +168,69 @@ export namespace Terrain {
 
     export function apply(terrain: Terrain){
         clear()
+        let cx = terrain.cx
+        let cy = terrain.cy
 
         for (let tile of terrain.tiles){
             let [x, y, z] = tile.pos
-            SetTerrainType(x, y, FourCC(tile.id), -1, 1, 1)
-            TerrainDeformCrater(x, y, 128, (8192 - z) / 4 + 160, 1, true)
+
+            SetTerrainType(min_x + x, min_y + y, FourCC(tile.id), -1, 1, 1)
+            TerrainDeformCrater(min_x + x, min_y + y, 128, -z - 224, 1, true)
         }
 
         for (let dood of terrain.doodads){
             if (blockers.includes(dood.id)){
-                print(dood.id, dood.a)
                 let dest = new hDestructable(id2int(dood.id),
-                                             dood.pos[0], dood.pos[1], dood.pos[2],
+                                             dood.pos[0] - cx, dood.pos[1] - cy, dood.pos[2],
                                              dood.a, dood.sc[0], dood.var)
                 doods.push(dest)
                 continue
             }
 
             let type: Binary.TDoodad | undefined
-            for (type of terrain.doodads_used){
-                if (dood.id == type.id){
+            for (let t of terrain.doodads_used){
+                if (dood.id == t.id){
+                    type = t
                     break
                 }
             }
 
-            if (type == undefined){
-                continue
+            let model
+            if (type){
+                model = Binary.TDoodad.getField(type, Binary.TDoodadField.Model)
             }
 
-            let model = Binary.TDoodad.getField(type, Binary.TDoodadField.Model)
+            let hd = isReforged(GetLocalPlayer())
+            if (!model){model = Binary.DoodadsSLK.getModel(dood.id, hd)}
+            if (!model){continue}
 
-            if (model == undefined){
-                continue
+            let scale = 1
+            if (type){
+                let s = Binary.DoodadsSLK.getScale(type.origin_id, hd)
+                scale = s ? s : scale
+            } else if (Binary.DoodadsSLK.isDefault(dood.id)){
+                let s = Binary.DoodadsSLK.getScale(dood.id, hd)
+                scale = s ? s : scale
+            }
+
+            if (Binary.DoodadsSLK.isDefault(dood.id) && Binary.DoodadsSLK.hasVariations(dood.id, hd)){
+                model += dood.var
+            }
+
+            if (dood.id == 'ZRrk'){
+                print(Binary.DoodadsSLK.hasVariations(dood.id, hd), model)
             }
 
             let [x, y, z] = dood.pos
-            let eff = new hEffect(model, x, y, z)
+            let eff = new hEffect(model, x - cx + 64, y - cy + 64, z)
             eff.yaw = dood.a
-            eff.scaleX = 1.0975 * dood.sc[0]
-            eff.scaleY = 1.0975 * dood.sc[1]
-            eff.scaleZ = 1.0975 * dood.sc[2]
+            eff.scaleX = scale * dood.sc[0]
+            eff.scaleY = scale * dood.sc[1]
+            eff.scaleZ = scale * dood.sc[2]
 
             doods.push(eff)
         }
-        print(terrain.doodads.length)
+        print(terrain.doodads.length, doods.length)
     }
 
     export function clear(){

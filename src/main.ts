@@ -44,20 +44,25 @@ import { Terrain } from './Terrain'
 import * as Json from './Json'
 
 let json = new Json.JsonFileCached('/HungryMercenaries/test.json')
-// if (!IsGame()){
-//     let test = Terrain.createFromBinary('TEST', '',
-//                                         '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.w3e',
-//                                         '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.w3d',
-//                                         '/Terrain/Preset/MurlocLagoonHD.w3x/war3map.doo')
+if (!IsGame()){
+    let test = Terrain.createFromBinary('TEST', '',
+                                        '/Terrain/Preset/Test1.w3m/war3map.w3e',
+                                        '/Terrain/Preset/Test1.w3m/war3map.w3d',
+                                        '/Terrain/Preset/Test1.w3m/war3map.doo')
 
-//     json.write(test)
-// }
-
-// let test2 = Terrain.createFromJson(<LuaHash>json.read())
-// print(test2.doodads_used.length, test2.doodads.length)
+    json.write(test)
+}
 
 if (IsGame()){
-    SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
+
+    SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT),
+                    -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+                    3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT),
+                    3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP),
+                    -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT),
+                    3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP),
+                    3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT),
+                    -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()
 
@@ -66,8 +71,8 @@ if (IsGame()){
     let fog = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(fog)
 
-    let MurlocLagoon = Terrain.createFromJson(<LuaHash>json.read())
-    Terrain.apply(MurlocLagoon)
+    let TestTerrain = Terrain.createFromJson(<LuaHash>json.read())
+    Terrain.apply(TestTerrain)
 
     // SetTerrainType(4 * 128, 0, FourCC('Adrg'), -1, 2, 1)
     // Preloader('TerrainArt\\Ashenvale\\Ashen_DirtGrass.blp')
