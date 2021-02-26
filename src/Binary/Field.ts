@@ -1,4 +1,5 @@
-import { int2byte } from "./Utils";
+import { FileBinary, Log } from "../Utils";
+import { byte2float, byte2int, byte2str, float2byte, int2byte, str2byte } from "./Utils";
 
 export abstract class Field<T extends Field.ValueType> {
     protected constructor(id: string, type: Field.WcType){
@@ -7,6 +8,10 @@ export abstract class Field<T extends Field.ValueType> {
     }
 
     abstract toBinary(val: T): string
+    abstract fromBinary(file: FileBinary): T
+
+    abstract toJson(val: T): LuaTable
+    abstract fromJson(Json: LuaTable): T
 
     readonly id;
     readonly type;
@@ -42,7 +47,6 @@ export abstract class FieldString extends Field<string> {
     }
 }
 
-
 export namespace Field {
     export type ValueType = boolean|number|string
     export type WcType = 'bool'|'int'|'real'|'unreal'|'string'
@@ -54,5 +58,33 @@ export namespace Field {
         else if (type == 'unreal') {code = 2}
         else {code = 3}
         return int2byte(code)
+    }
+
+    export function val2byte(t: WcType, val: ValueType){
+        if (t == 'bool' && typeof val === "boolean"){
+            return int2byte(<boolean>val ? 1 : 0)
+        } else if (t == 'int' && typeof val === 'number'){
+            return int2byte(<number>val)
+        } else if ((t == 'real' || t == 'unreal') && typeof val === 'number'){
+            return float2byte(<number>val)
+        } else if (t == 'string' && typeof val === 'string'){
+            return str2byte(<string>val)
+        } else {
+            return Log.err('unknown value type.')
+        }
+    }
+
+    export function byte2val(t: WcType, b: string){
+        if (t == 'bool'){
+            return byte2int(b) == 1 ? true : false
+        } else if (t == 'int'){
+            return byte2int(b)
+        } else if (t == 'real' || t == 'unreal'){
+            return byte2float(b)
+        } else if (t == 'string'){
+            return byte2str(b)
+        } else {
+            return Log.err('unknown value type.')
+        }
     }
 }

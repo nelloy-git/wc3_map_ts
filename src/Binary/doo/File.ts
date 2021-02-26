@@ -1,46 +1,84 @@
+import * as Json from '../../Json'
+
 import { File } from "../File";
+import { int2byte } from "../Utils";
 import { Doodad } from "./Doodad";
 
-export class dooFile extends File<Doodad> {
+export class File_doo extends File<Doodad> {
 
-    get head(){return this._head}
-    get version(){return this._version}
-    get subversion(){return this._subversion}
+    writeBinary(path: string){
+        let f = this._file_bin
+        let raw = ''
 
-    protected _parse(){
-        let list: Doodad[] = []
+        raw += this.__head.slice(0, 4)
+        raw += int2byte(this.__version).slice(0, 4)
+        raw += int2byte(this.__subversion).slice(0, 4)
+        raw += int2byte(this.objects.length).slice(0, 4)
 
-        this._head = this._readChar(4)
-        this._version = this._readInt(4)
-        this._subversion = this._readInt(4)
-
-        let count = this._readInt(4)
-        for (let i = 0; i < count; i++){
-            let id = this._readChar(4)
-            let variation = this._readInt(4)
-            let x = this._readFloat()
-            let y = this._readFloat()
-            let z = this._readFloat()
-            let a = this._readFloat()
-            let scale_x = this._readFloat()
-            let scale_y = this._readFloat()
-            let scale_z = this._readFloat()
-            let flags = this._readChar(1)
-            let life = this._readChar(1)
-            let unknown = this._readInt(4) // Pass 4 unknown bytes
-            let drop_table_size = this._readInt(4) // Pass drop tables
-            unknown = this._readInt(8) // Pass 8 unknown bytes
-
-            // print(scale_x, scale_y, scale_z)
-            let data = Doodad.create(id, x, y, z, a, variation, scale_x, scale_y, scale_z)
-            list.push(data)
+        for (const dood of this.objects){
+            raw += dood.toBinary()
         }
 
-        print(list.length)
-        return list
+        f.write(path)
+    }
+
+    readBinary(path: string){
+        let f = this._file_bin
+        f.read(path)
+        f.startReading()
+
+        this.__head = f.readChar(4)
+        this.__version = f.readInt(4)
+        this.__subversion = f.readInt(4)
+        this.objects = []
+
+        let count = f.readInt(4)
+        for (let i = 0; i < count; i++){
+            let dood = new Doodad()
+            dood.fromBinary(f)
+            this.objects.push(dood)
+        }
+
+        f.finishReading()
+    }
+
+    writeJson(path: string){
+        let f = this._file_text
+        let json: LuaHash = {}
+
+        json['head'] = this.__head
+        json['version'] = this.__version
+        json['subversion'] = this.__subversion
+        
+        let list: LuaTable[] = []
+        for (const dood of this.objects){
+            list.push(dood.toJson())
+        }
+        json['objects'] = []
+
+        f.write(Json.encode(json))
+    }
+
+    readJson(path: string){
+        let f = this._file_text
+        f.read(path)
+        if (!f.data){ return }
+
+        let json = Json.decode(f.data)
+        this.__head = Json.Read.String(json, 'head')
+        this.__version = Json.Read.Number(json, 'version')
+        this.__subversion = Json.Read.Number(json, 'subversion')
+        this.objects = []
+
+        let list = Json.Read.TableArray(json, 'objects')
+        for (const json_dood of list){
+            let dood = new Doodad()
+            dood.fromJson(json_dood)
+            this.objects.push(dood)
+        }
     }
     
-    private _head: string = ''
-    private _version: number = 0
-    private _subversion: number = 0
+    private __head: string = ''
+    private __version: number = 0
+    private __subversion: number = 0
 }

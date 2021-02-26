@@ -41,6 +41,8 @@ export class w3eFile extends File<Tile> {
     get cy(){return this._cy}
 
     protected _parse(){
+        let list: Tile[] = []
+
         __head = this._readChar(4)
         __version = this._readInt(4)
         __main_tile = this._readChar(1)
@@ -58,34 +60,22 @@ export class w3eFile extends File<Tile> {
             __used_cliffs[i] = this._readChar(4)
         }
 
-        __mx = this._readInt(4)
-        __my = this._readInt(4)
-        __cx = this._readFloat() + __mx * 64
-        __cy = this._readFloat() + __my * 64
+        __mx = 128 * this._readInt(4)
+        __my = 128 * this._readInt(4)
+        __cx = this._readFloat() + __mx / 2
+        __cy = this._readFloat() + __my / 2
 
-        let count = __mx * __my
-        let cur_x = 0
-        let cur_y = 0
+        for (let y = 0; y < __my; y += 128){
+            for (let x = 0; x < __mx; x += 128){
+                let h = this._readInt(2)
+                this._readChar(2) // Pass 2 bytes
+                let tile_id = __used_tiles[this._readChar(1).charCodeAt(0) & 15]
+                this._readChar(1) // Pass 1 bytes
+                let layer = this._readChar(1).charCodeAt(0) & 0x0F
 
-        let list: Tile[] = []
-        for (let i = 0; i < count; i ++){
-            let x = 128 * cur_x;
-            let y = 128 * cur_y;
-            let h = this._readInt(2)
-            
-            this._readChar(2) // Pass 2 bytes
-            let tile_id = __used_tiles[this._readChar(1).charCodeAt(0) & 15]
-            this._readChar(1) // Pass 1 bytes
-            let layer = this._readChar(1).charCodeAt(0) & 0x0F
-
-            let z = (h - 8192 + (layer - 2) * 256) / 4
-            let tile = Tile.create(tile_id, x, y, z)
-            list.push(tile)
-            
-            cur_x += 1
-            if (cur_x >= __mx){
-                cur_y += 1
-                cur_x = 0
+                let z = (h - 8192 + (layer - 2) * 256) / 4
+                let tile = Tile.create(tile_id, x, y, z)
+                list.push(tile)
             }
         }
 

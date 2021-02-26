@@ -14,6 +14,7 @@ export type Terrain = {
 
     readonly tiles_used: ReadonlyArray<string>
     readonly tiles: ReadonlyArray<Binary.Tile>
+    readonly pathing: ReadonlyArray<Binary.Path>
     readonly doodads_used: ReadonlyArray<Binary.TDoodad>
     readonly doodads: ReadonlyArray<Binary.Doodad>
 }
@@ -24,6 +25,7 @@ export namespace Terrain {
                     cx: number, cy: number,
                     tiles_used: ReadonlyArray<string>,
                     tiles: ReadonlyArray<Binary.Tile>,
+                    pathing: ReadonlyArray<Binary.Path>,
                     doodads_used: ReadonlyArray<Binary.TDoodad>,
                     doodads: ReadonlyArray<Binary.Doodad>): Terrain{
         return {
@@ -35,23 +37,24 @@ export namespace Terrain {
             tiles_used: tiles_used,
             tiles: tiles,
 
+            pathing: pathing,
+
             doodads_used: doodads_used,
             doodads: doodads
         }
     }
 
     export function createFromBinary(name: string, icon: string,
-                                     w3e_path: string,
-                                     w3d_path: string,
-                                     doo_path: string): Terrain{
+                                     dir_path: string): Terrain{
         if (IsGame()){
             return Log.err('Terrain: function can not be used in runtime.',
                             __path__, undefined, 2)
         }
 
-        let w3d = new Binary.w3dFile(w3d_path)
-        let doo = new Binary.dooFile(doo_path)
-        let w3e = new Binary.w3eFile(w3e_path)
+        let wmp = new Binary.wmpFile(dir_path + '/war3map.wmp')
+        let w3d = new Binary.w3dFile(dir_path + '/war3map.w3d')
+        let doo = new Binary.dooFile(dir_path + '/war3map.doo')
+        let w3e = new Binary.w3eFile(dir_path + '/war3map.w3e')
 
         let used_id: string[] = []
         for (let dood of doo.data){
@@ -61,7 +64,11 @@ export namespace Terrain {
         }
     
         print(w3e.cx, w3e.cy)
-        return create(name, icon, w3e.cx, w3e.cy, w3e.usedTiles, w3e.data, w3d.data, doo.data)
+        return create(name, icon,
+                      w3e.cx, w3e.cy,
+                      w3e.usedTiles, w3e.data,
+                      wmp.data,
+                      w3d.data, doo.data)
     }
 
     export function createFromJson(json: LuaHash){
@@ -69,16 +76,18 @@ export namespace Terrain {
         let icon = Json.Read.String(json, 'icon')
         let cx = Json.Read.Number(json, 'cx')
         let cy = Json.Read.Number(json, 'cy')
+        let json_pathing = Json.Read.TableArray(json, 'pathing')
         let json_tiles = Json.Read.TableArray(json, 'tiles')
         let json_types = Json.Read.TableArray(json, 'doodads_used')
         let json_doodads = Json.Read.TableArray(json, 'doodads')
 
         let tiles_used = Json.Read.StringArray(json, 'tiles_used')
         let tiles = getJsonTiles(json_tiles)
+        let pathing = getJsonPathing(json_pathing)
         let [used_id, doodads] = getJsonDoodads(json_doodads)
         let types = getJsonDoodadTypes(json_types, used_id)
         
-        return create(name, icon, cx, cy, tiles_used, tiles, types, doodads)
+        return create(name, icon, cx, cy, tiles_used, tiles, pathing, types, doodads)
     }
 
     function getJsonTiles(json: LuaTable[]){
@@ -91,6 +100,19 @@ export namespace Terrain {
         }
 
         return tiles
+    }
+
+    function getJsonPathing(json: LuaTable[]){
+        let paths: Binary.Path[] = []
+        for(let json_path of json){
+            let x = Json.Read.Number(json_path, 'x')
+            let y = Json.Read.Number(json_path, 'y')
+            let f = Json.Read.Number(json_path, 'f')
+
+            paths.push(Binary.Path.create(x, y, f))
+        }
+
+        return paths
     }
 
     function getJsonDoodads(json: LuaTable[]): [string[], Binary.Doodad[]]{

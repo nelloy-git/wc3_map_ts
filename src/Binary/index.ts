@@ -4,10 +4,13 @@ export { w3eFile } from './w3e/File'
 export { Tile } from './w3e/Tile'
 
 export { dooFile } from './doo/File'
-export { Doodad } from './doo/Doodad'
+export { Doodad } from './doo/DoodadOld'
+
+export { wmpFile } from './wmp/File'
+export { Path } from './wmp/Path'
 
 export { w3dFile } from './w3d/File'
-export { TDoodad } from './w3d/TDoodad'
+export { TDoodad } from './w3d/TDoodadOld'
 export { TDoodadField, findTDoodadField } from './w3d/Field'
 export { DoodadsSLK } from './w3d/DoodadsSLK'
 

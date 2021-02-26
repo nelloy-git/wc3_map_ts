@@ -1,41 +1,40 @@
+import { FileBinary } from "../../Utils"
 import { Field, FieldBool, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
 import { float2byte, int2byte, str2byte } from "../Utils"
 
-export interface TDoodadField<T extends Field.ValueType> extends Field<T> {}
-
-export class TDoodadFieldBool extends FieldBool implements TDoodadField<boolean> {
-    toBinary(val: boolean){
+export abstract class TDoodadField<T extends Field.ValueType> extends Field<T> {
+    toBinary(val: T){
         return this.id + '\0\0\0\0' + '\0\0\0\0' +
-                Field.type2byte('bool') + int2byte(val ? 1 : 0) + '\0\0\0\0'
+                Field.type2byte(this.type) + Field.val2byte(this.type, val) + '\0\0\0\0'
+    }
+
+    fromBinary(file: FileBinary){
+        let code = file.readChar(4)
+        let type = file.readInt(4)
+        let variation = file.readInt(4)
+        let pointer = file.readInt(4)
+        let val = Field.byte2val(this.type, file.re)
     }
 }
 
-export class TDoodadFieldInt extends FieldInt implements TDoodadField<number> {
-    toBinary(val: number){
-        return this.id + '\0\0\0\0' + '\0\0\0\0' +
-                Field.type2byte('int') + int2byte(val) + '\0\0\0\0'
-    }
+export class TDoodadFieldBool extends TDoodadField<boolean> {
+    constructor(id: string){super(id, 'bool')}
 }
 
-export class TDoodadFieldReal extends FieldReal implements TDoodadField<number> {
-    toBinary(val: number){
-        return this.id + '\0\0\0\0' + '\0\0\0\0' +
-                Field.type2byte('real') + float2byte(val) + '\0\0\0\0'
-    }
+export class TDoodadFieldInt extends TDoodadField<number> {
+    constructor(id: string){super(id, 'int')}
 }
 
-export class TDoodadFieldUnreal extends FieldUnreal implements TDoodadField<number> {
-    toBinary(val: number){
-        return this.id + '\0\0\0\0' + '\0\0\0\0' +
-                Field.type2byte('unreal') + float2byte(val) + '\0\0\0\0'
-    }
+export class TDoodadFieldReal extends TDoodadField<number> {
+    constructor(id: string){super(id, 'real')}
 }
 
-export class TDoodadFieldString extends FieldString implements TDoodadField<string> {
-    toBinary(val: string){
-        return this.id + '\0\0\0\0' + '\0\0\0\0' +
-                Field.type2byte('string') + str2byte(val) + '\0\0\0\0'
-    }
+export class TDoodadFieldUnreal extends TDoodadField<number> {
+    constructor(id: string){super(id, 'unreal')}
+}
+
+export class TDoodadFieldString extends TDoodadField<string> {
+    constructor(id: string){super(id, 'string')}
 }
 
 export namespace TDoodadField {

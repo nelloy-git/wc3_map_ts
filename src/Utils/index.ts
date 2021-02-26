@@ -17,9 +17,8 @@ export { Action } from './Action'
 export { ActionList } from './ActionList'
 export { Color } from './Color'
 export { Import } from './Import'
-export * as Json from './Json'
 export { Mat } from './Mat'
-export { TextFile } from './TextFile'
+export { FileBinary, FileText } from './File'
 
 import { Logger } from './Logger'
 export { Logger }

@@ -4,7 +4,7 @@ import { File } from "../File";
 import { byte2int, getFirstId, int2byte, nextId } from "../Utils";
 
 import { findTDoodadField, TDoodadFieldBool, TDoodadFieldInt, TDoodadFieldReal, TDoodadFieldString, TDoodadFieldUnreal } from "./Field";
-import { TDoodad } from "./TDoodad";
+import { TDoodad } from "./TDoodadOld";
 
 export class w3dFile extends File<TDoodad> {
     get version(){return this._version}
