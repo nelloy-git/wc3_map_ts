@@ -62,21 +62,15 @@ if (IsGame()){
     let fog = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(fog)
 
-    let t1 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
-    t1.x = 0
-    t1.y = 0
+    let tile_type = AshenvaleDirt.tile_00_00
 
-    let t2 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
-    t2.x = 128
-    t2.y = 0
-
-    let t3 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
-    t3.x = 0
-    t3.y = 128
-
-    let t4 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
-    t4.x = 128
-    t4.y = 128
+    for (let x = -256; x <= 256; x += 128){
+        for (let y = -256; y <= 256; y += 128){
+            let t = new TerrainTile(tile_type, tile_type)
+            t.x = x
+            t.y = y
+        }
+    }
 
     TerrainDeformCrater(128, 128, 128, -400, 1, true)
 
