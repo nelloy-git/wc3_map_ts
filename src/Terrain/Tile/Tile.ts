@@ -1,17 +1,8 @@
 import { hImage } from '../../Handle'
-import { Color, getFileDir, getFilePath, Import } from '../../Utils'
+import { Import } from '../../Utils'
 
-const __dir__ = Macro(getFileDir())
-
-const dstAshenvaleDirtSD = '/SD/Ashenvale/Dirt'
-const srcAshenvaleDirtSD = __dir__ + dstAshenvaleDirtSD
-export const tile_00_00 = new Import(srcAshenvaleDirtSD + '/00_00.dds', dstAshenvaleDirtSD + '/00_00.dds')
-export const tile_00_01 = new Import(srcAshenvaleDirtSD + '/00_01.dds', dstAshenvaleDirtSD + '/00_01.dds')
-export const tile_00_02 = new Import(srcAshenvaleDirtSD + '/00_02.dds', dstAshenvaleDirtSD + '/00_02.dds')
-export const tile_01_00 = new Import(srcAshenvaleDirtSD + '/01_00.dds', dstAshenvaleDirtSD + '/01_00.dds')
-export const tile_1 = new Import(srcAshenvaleDirtSD + '/1.dds', dstAshenvaleDirtSD + '/1.dds')
-// export const tile_01_01 = new Import(srcAshenvaleDirtSD + '/01_01.dds', dstAshenvaleDirtSD + '/01_01.dds')
-
+import * as AshenvaleDirt from './SD/Ashenvale/Dirt'
+export {AshenvaleDirt}
 
 export class TerrainTile {
     constructor(top: Import, bot: Import){
@@ -22,8 +13,8 @@ export class TerrainTile {
         this.__top.z = 12
         this.__top.renderAlways = true
         this.__top.visible = true
-        this.__top.color = new Color(1, 1, 1, 0.1)
-        SetImageAboveWater(this.__top.handle, true, false)
+        // this.__top.color = new Color(1, 1, 1, 0.1)
+        // SetImageAboveWater(this.__top.handle, true, false)
 
         // this.__bot = new hImage(bot.dst, 133, 133, 0, 0)
         // this.__bot.constantHeight = false

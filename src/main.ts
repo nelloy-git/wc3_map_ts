@@ -26,7 +26,7 @@ import { TestType as TestAbil } from './AbilityExt/TestType'
 // import * as UnitType from "./Gameplay/Units/init";
 
 import { Init } from './Interface/Init'
-import { TerrainTile, tile_00_00, tile_00_01, tile_00_02, tile_01_00, tile_1 } from './Terrain/Tile/Tile'
+import { TerrainTile, AshenvaleDirt } from './Terrain/Tile/Tile'
 
 if (!IsGame()){
     let f = new Utils.FileBinary()
@@ -62,19 +62,19 @@ if (IsGame()){
     let fog = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(fog)
 
-    let t1 = new TerrainTile(tile_1, tile_1)
+    let t1 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
     t1.x = 0
     t1.y = 0
 
-    let t2 = new TerrainTile(tile_1, tile_1)
+    let t2 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
     t2.x = 128
     t2.y = 0
 
-    let t3 = new TerrainTile(tile_1, tile_1)
+    let t3 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
     t3.x = 0
     t3.y = 128
 
-    let t4 = new TerrainTile(tile_1, tile_1)
+    let t4 = new TerrainTile(AshenvaleDirt.tile_1, AshenvaleDirt.tile_1)
     t4.x = 128
     t4.y = 128
 
