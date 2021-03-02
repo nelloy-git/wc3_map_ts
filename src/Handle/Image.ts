@@ -22,11 +22,12 @@ export class hImage extends Handle<jimage> {
         this._color = new Color(1, 1, 1, 1)
         this._visible = true
         this._render_always = false
+        this._constant_height = true
 
         this.renderAlways = true
         this.z = 10
     }
-    public static get(id: jimage | number){
+    static get(id: jimage | number){
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'image'){
@@ -36,28 +37,28 @@ export class hImage extends Handle<jimage> {
         return instance as hImage
     }
 
-    public get x(){return this._x}
-    public set x(x: number){
+    get x(){return this._x}
+    set x(x: number){
         this._x = x
         SetImagePosition(this.handle, this._x, this._y, this._z)
-        SetImageConstantHeight(this.handle, true, getTerrainZ(this._x, this._y) + this._z)
+        SetImageConstantHeight(this.handle, this._constant_height, getTerrainZ(this._x, this._y) + this._z)
     }
     
-    public get y(){return this._y}
-    public set y(y: number){
+    get y(){return this._y}
+    set y(y: number){
         this._y = y
         SetImagePosition(this.handle, this._x, this._y, this._z)
-        SetImageConstantHeight(this.handle, true, getTerrainZ(this._x, this._y) + this._z)
+        SetImageConstantHeight(this.handle, this._constant_height, getTerrainZ(this._x, this._y) + this._z)
     }
     
-    public get z(){return this._z}
-    public set z(z: number){
+    get z(){return this._z}
+    set z(z: number){
         this._z = z
-        SetImageConstantHeight(this.handle, true, getTerrainZ(this._x, this._y) + this._z)
+        SetImageConstantHeight(this.handle, this._constant_height, getTerrainZ(this._x, this._y) + this._z)
     }
 
-    public get color(){return new Color(this._color)}
-    public set color(color: Color){
+    get color(){return new Color(this._color)}
+    set color(color: Color){
         this._color = new Color(color)
         SetImageColor(this.handle, math.floor(255 * color.r),
                                    math.floor(255 * color.g),
@@ -65,11 +66,17 @@ export class hImage extends Handle<jimage> {
                                    math.floor(255 * color.a))
     }
     
-    public get renderAlways(){return this._render_always}
-    public set renderAlways(flag: boolean){this._render_always; SetImageRenderAlways(this.handle, flag)}
+    get renderAlways(){return this._render_always}
+    set renderAlways(flag: boolean){this._render_always; SetImageRenderAlways(this.handle, flag)}
 
-    public get visible(){return this._visible}
-    public set visible(flag: boolean){this._visible = flag; ShowImage(this.handle, flag)}
+    get visible(){return this._visible}
+    set visible(flag: boolean){this._visible = flag; ShowImage(this.handle, flag)}
+
+    get constantHeight(){return this._constant_height}
+    set constantHeight(f: boolean){
+        this._constant_height = f
+        SetImageConstantHeight(this.handle, f, getTerrainZ(this._x, this._y) + this._z)
+    }
 
     destroy(){
         DestroyImage(this.handle)
@@ -82,4 +89,5 @@ export class hImage extends Handle<jimage> {
     private _color: Color
     private _render_always: boolean
     private _visible: boolean
+    private _constant_height: boolean
 }

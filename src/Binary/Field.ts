@@ -2,49 +2,43 @@ import { FileBinary, Log } from "../Utils";
 import { byte2float, byte2int, byte2str, float2byte, int2byte, str2byte } from "./Utils";
 
 export abstract class Field<T extends Field.ValueType> {
-    protected constructor(id: string, type: Field.WcType){
-        this.id = id
-        this.type = type
-    }
-
-    abstract toBinary(val: T): string
-    abstract fromBinary(file: FileBinary): T
-
-    abstract toJson(val: T): LuaTable
-    abstract fromJson(Json: LuaTable): T
-
-    readonly id;
-    readonly type;
-}
-
-export abstract class FieldBool extends Field<boolean> {
-    constructor(id: string){
-        super(id, 'bool')
+    protected constructor(
+        public readonly id: string,
+        public readonly type: Field.WcType){
     }
 }
 
-export abstract class FieldInt extends Field<number> {
-    constructor(id: string){
-        super(id, 'int')
-    }
+export class FieldBool extends Field<boolean> {
+    constructor(id: string){ super(id, 'bool') }
 }
 
-export abstract class FieldReal extends Field<number> {
-    constructor(id: string){
-        super(id, 'real')
-    }
+export class FieldInt extends Field<number> {
+    constructor(id: string){ super(id, 'int') }
 }
 
-export abstract class FieldUnreal extends Field<number> {
-    constructor(id: string){
-        super(id, 'unreal')
-    }
+export class FieldReal extends Field<number> {
+    constructor(id: string){ super(id, 'real') }
 }
 
-export abstract class FieldString extends Field<string> {
-    constructor(id: string){
-        super(id, 'string')
+export class FieldUnreal extends Field<number> {
+    constructor(id: string){ super(id, 'unreal') }
+}
+
+export class FieldString extends Field<string> {
+    constructor(id: string){ super(id, 'string') }
+}
+
+export abstract class FieldChange<T extends Field.ValueType> {
+    constructor(
+        public field: Field<T>,
+        public val: T){
     }
+
+    static fromBinary: (file: FileBinary)=> FieldChange<Field.ValueType>
+    static fromJson: (json: LuaTable)=> FieldChange<Field.ValueType>
+
+    abstract toBinary(): string
+    abstract toJson(): LuaTable
 }
 
 export namespace Field {
@@ -74,15 +68,15 @@ export namespace Field {
         }
     }
 
-    export function byte2val(t: WcType, b: string){
+    export function byte2val(t: WcType, file: FileBinary){
         if (t == 'bool'){
-            return byte2int(b) == 1 ? true : false
+            return file.readInt(4) == 1 ? true : false
         } else if (t == 'int'){
-            return byte2int(b)
+            return file.readInt(4)
         } else if (t == 'real' || t == 'unreal'){
-            return byte2float(b)
+            return file.readFloat()
         } else if (t == 'string'){
-            return byte2str(b)
+            return file.readString()
         } else {
             return Log.err('unknown value type.')
         }

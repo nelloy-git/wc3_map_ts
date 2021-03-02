@@ -1,135 +1,87 @@
-import { Log } from "../../Utils";
-import { Field } from "../Field";
-import { File } from "../File";
-import { byte2int, getFirstId, int2byte, nextId } from "../Utils";
+import * as Json from '../../Json'
 
-import { findTDoodadField, TDoodadFieldBool, TDoodadFieldInt, TDoodadFieldReal, TDoodadFieldString, TDoodadFieldUnreal } from "./Field";
-import { TDoodad } from "./TDoodadOld";
+import { FileBinary } from "../../Utils";
+import { File } from "../File";
+import { getFirstId, int2byte, nextId } from "../Utils";
+
+import { TDoodad } from "./TDoodad";
 
 export class w3dFile extends File<TDoodad> {
-    get version(){return this._version}
+    get version(){return this.__version}
 
-    add(origin_id: string){
-        let doodad = TDoodad.create(this._getNextId(), origin_id)
-        this._data.push(doodad)
-        return doodad
-    }
+    static fromBinary(file: FileBinary){
+        file.startReading()
 
-    save(path: string){
-        this._serialize()
-        return super.save(path)
-    }
-
-    protected _parse(){
-        let list: TDoodad[] = []
-        this._version = this._readInt(4)
-
-        let origin_count = this._readInt(4)
+        let w3d = new w3dFile()
+        w3d.__version = file.readInt(4)
+        w3d.objects = []
+        
+        let origin_count = file.readInt(4)
         for (let i = 0; i < origin_count; i++){
-            let doodad = this._parseDoodad()
-            list.push(doodad)
+            w3d.objects.push(TDoodad.fromBinary(file))
         }
 
-        let count = this._readInt(4)
-        for (let i = 0; i < count; i++){
-            let doodad = this._parseDoodad()
-            list.push(doodad)
+        let new_count = file.readInt(4)
+        for (let i = 0; i < new_count; i++){
+            w3d.objects.push(TDoodad.fromBinary(file))
         }
 
-        return list
+        file.finishReading()
+        return w3d
     }
 
-    private _parseDoodad(){
-        let origin_id = this._readChar(4)
-        let id = this._readChar(4)
-        let no_id = id.charCodeAt(0) == 0 &&
-                    id.charCodeAt(1) == 0 &&
-                    id.charCodeAt(2) == 0 &&
-                    id.charCodeAt(3) == 0
-        if (no_id){
-            id = origin_id
-        }
-        let doodad = TDoodad.create(id, origin_id)
+    static fromJson(json: LuaTable){
+        let w3d = new w3dFile()
+        w3d.__version = Json.Read.Number(json, 'ver')
 
-        let changes_count = this._readInt(4)
-        for (let j = 0; j < changes_count; j++){
-            let change = this._parseChange()
-            if (change){
-                let [field, val] = change
-                TDoodad.setField(doodad, field, val)
-            }
+        let list = Json.Read.TableArray(json, 'objects')
+        for (const json_obj of list){
+            w3d.objects.push(TDoodad.fromJson(json_obj))
         }
 
-        return doodad
+        return w3d
     }
 
-    private _parseChange(){
-        let code = this._readChar(4)
-        let field = findTDoodadField(code)
-        if (!field){
-            Log.wrn(w3dFile.name + ': unknown field \"' + code + '\" - ' + this._file_pos)
+    toBinary(){
+        let raw = ''
+
+        raw += int2byte(this.version)
+        for (const tdood of this.objects){
+            raw += tdood.toBinary()
         }
 
-        let type_bytes = this._readChar(4)
-        if (field && Field.type2byte(field.type) != type_bytes){
-            Log.wrn(w3dFile.name + ': wrong field value type ' + code + '\n' +
-                    byte2int(Field.type2byte(field.type)) + ' != ' + byte2int(type_bytes))
+        return raw
+    }
+
+    toJson(){
+        let list = []
+        for (const tdood of this.objects){
+            list.push(tdood.toJson())
         }
 
-        let variation = this._readInt(4) // Ignored
-        let data_pointer = this._readInt(4) // Ignored
-
-        let val
-        if (field && field.type == 'bool' && type_bytes == Field.type2byte('bool')){
-            val = this._readBool(4)
-        } else if(type_bytes == Field.type2byte('int')){
-            val = this._readInt(4)
-        } else if (type_bytes == Field.type2byte('real') || type_bytes == Field.type2byte('unreal')){
-            val = this._readFloat()
-        } else {
-            val = this._readString()
-        }
-
-        this._readChar(4) // Pass end bytes
-
-        if (field){
-            return <[TDoodadFieldBool, boolean] |
-                    [TDoodadFieldInt | TDoodadFieldReal | TDoodadFieldUnreal, number] |
-                    [TDoodadFieldString, string]> [field, val]
+        return {
+            ver: this.__version,
+            objects: list,
         }
     }
 
-    private _serialize(){
-        this._raw_data = '\2\0\0\0' + 
-                         '\0\0\0\0' +
-                         int2byte(this._data.length)
-        this._data.forEach(cur => {
-            this._raw_data += TDoodad.serialize(cur)
-        })
-    }
-    
-    private _version: number = 0
-
-    private _last_id = getFirstId('DECO')
-    private _getNextId(){
+    getFreeId(){
         // Is id in use?
         let found = true
         while (found){
             found = false
-            this._last_id = nextId(this._last_id)
+            this.__last_id = nextId(this.__last_id)
 
-            for (let i = 0; i < this._data.length; i++){
-                let unit = this._data[i]
-                if (unit.id == this._last_id){
+            for (const tdood of this.objects){
+                if (tdood.id == this.__last_id){
                     found = true
                     break
                 }
             }
         }
-        return this._last_id
+        return this.__last_id
     }
-}
 
-import { DoodadsSLK } from './DoodadsSLK'
-let t = DoodadsSLK.getModel('LSeb', true)
-print(t)
+    private __version: number = 0
+    private __last_id = getFirstId('DECO')
+}

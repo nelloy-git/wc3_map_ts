@@ -2,7 +2,7 @@ import * as Frame from "../../FrameExt";
 
 import { hTimerList, hTimerObj } from "../../Handle";
 import { Shield } from "../../Parameter";
-import { UnitInst } from "../../Gameplay/Units/UnitType";
+// import { UnitInst } from "../../Gameplay/Units/UnitType";
 import { InterfaceMultiBar } from "../Utils/MultiBar";
 
 export class InterfaceUnitBars extends Frame.SimpleEmpty {
@@ -32,7 +32,7 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
     }
 
     get unit(){return this._unit}
-    set unit(u: UnitInst | undefined){
+    set unit(u: any){ // UnitInst | undefined){
         this._unit = u
         this.update()
     }
@@ -92,7 +92,7 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
         }
     }
 
-    private _unit: UnitInst | undefined
+    private _unit: any //UnitInst | undefined
 
     private _timer: hTimerObj
     private _life: InterfaceMultiBar

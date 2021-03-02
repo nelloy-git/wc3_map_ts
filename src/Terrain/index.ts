@@ -1,4 +1,4 @@
-export { Terrain } from './Terrain'
+// export { Terrain } from './Terrain'
 
 import { scan } from './Scan'
 

@@ -1,60 +1,112 @@
-import { FileBinary } from "../../Utils"
-import { Field, FieldBool, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
-import { float2byte, int2byte, str2byte } from "../Utils"
+import * as Json from '../../Json'
 
-export abstract class TDoodadField<T extends Field.ValueType> extends Field<T> {
-    toBinary(val: T){
-        return this.id + '\0\0\0\0' + '\0\0\0\0' +
-                Field.type2byte(this.type) + Field.val2byte(this.type, val) + '\0\0\0\0'
+import { FileBinary, Log } from "../../Utils"
+import { Field, FieldBool, FieldChange, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
+import { int2byte } from '../Utils'
+import { DoodadsMeta } from './DoodadMeta'
+
+export class TDoodadFieldChange<T extends Field.ValueType> extends FieldChange<T>{
+    constructor(field: Field<T>, val: T, variation: number){
+        super(field, val)
+        this.variation = variation
     }
 
-    fromBinary(file: FileBinary){
+    static fromBinary(file: FileBinary){
         let code = file.readChar(4)
-        let type = file.readInt(4)
-        let variation = file.readInt(4)
-        let pointer = file.readInt(4)
-        let val = Field.byte2val(this.type, file.re)
+        let field = findTDoodadField(code)
+        if (!field){
+            return Log.err('unknown field ' + code)
+        }
+
+        let b_type = file.readChar(4)
+        let variation =  file.readInt(4)
+        file.readInt(4) // data pointer unused
+
+        if (Field.type2byte(field.type) != b_type){
+            return Log.err(code + ' field.type != typeof(value)\n' +
+                            'field: ' + Field.type2byte(field.type).charCodeAt(0) + '\n' +
+                            'value: ' + b_type.charCodeAt(0))
+        }
+
+        let val = Field.byte2val(field.type, file)
+
+        file.readChar(4) // Pass 4 bytes
+
+        return new TDoodadFieldChange<Field.ValueType>(field, val, variation)
     }
-}
 
-export class TDoodadFieldBool extends TDoodadField<boolean> {
-    constructor(id: string){super(id, 'bool')}
-}
+    static fromJson(json: LuaTable){
+        let code = Json.Read.String(json, 'id')
+        let field = findTDoodadField(code)
+        if (!field){
+            return Log.err('unknown field')
+        }
 
-export class TDoodadFieldInt extends TDoodadField<number> {
-    constructor(id: string){super(id, 'int')}
-}
+        let variation = Json.Read.Number(json, 'v')
 
-export class TDoodadFieldReal extends TDoodadField<number> {
-    constructor(id: string){super(id, 'real')}
-}
+        let val 
+        if (field.type == 'bool'){
+            val = Json.Read.Bool(json, 'val')
+        } else if (field.type == 'int' || field.type == 'real' || field.type == 'unreal'){
+            val = Json.Read.Number(json, 'val')
+        } else if (field.type == 'string'){
+            val = Json.Read.String(json, 'val')
+        } else {
+            return Log.err('unknown field type')
+        }
 
-export class TDoodadFieldUnreal extends TDoodadField<number> {
-    constructor(id: string){super(id, 'unreal')}
-}
+        return new TDoodadFieldChange<Field.ValueType>(field, val, variation)
+    }
 
-export class TDoodadFieldString extends TDoodadField<string> {
-    constructor(id: string){super(id, 'string')}
+    toBinary(){
+        return this.field.id + '\0\0\0\0' + int2byte(this.variation) +
+                Field.type2byte(this.field.type) + Field.val2byte(this.field.type, this.val) + '\0\0\0\0'
+    }
+
+    toJson(){
+        return {
+            id: this.field.id,
+            v: this.variation,
+            val: this.val,
+        }
+    }
+
+    variation: number = 0
 }
 
 export namespace TDoodadField {
-    export let ShowInFog = new TDoodadFieldBool('dshf')
-    export let EditorUserList = new TDoodadFieldBool('dusr')
+    export let ShowInFog = new FieldBool('dshf')
+    export let EditorUserList = new FieldBool('dusr')
 
-    export let ColorRed = new TDoodadFieldInt('dvr1')
-    export let ColorGreen = new TDoodadFieldInt('dvg1')
-    export let ColorBlue = new TDoodadFieldInt('dvb1')
-    export let Variations = new TDoodadFieldInt('dvar')
+    export let ColorRed = new FieldInt('dvr1')
+    export let ColorGreen = new FieldInt('dvg1')
+    export let ColorBlue = new FieldInt('dvb1')
+    export let Variations = new FieldInt('dvar')
 
-    export let MinScale = new TDoodadFieldUnreal('dmas')
-    export let MaxScale = new TDoodadFieldUnreal('dmis')
+    export let DefaultSize = new FieldUnreal('ddes')
+    export let MinScale = new FieldUnreal('dmas')
+    export let MaxScale = new FieldUnreal('dmis')
     
-    export let MaxRoll = new TDoodadFieldUnreal('dmar')
-    export let MaxPitch = new TDoodadFieldUnreal('dmap')
+    export let MaxRoll = new FieldUnreal('dmar')
+    export let MaxPitch = new FieldUnreal('dmap')
 
-    export let Model = new TDoodadFieldString('dfil')
-    export let Name = new TDoodadFieldString('dnam')
-    export let PathingTexture = new TDoodadFieldString('dptx')
+    export let Model = new FieldString('dfil')
+    export let Name = new FieldString('dnam')
+    export let PathingTexture = new FieldString('dptx')
+
+    export let Sound = new FieldString('dsnd')
+    export let SelSize = new FieldUnreal('dsel')
+    export let VisibleRadius = new FieldUnreal('dvis')
+    export let Walkable = new FieldBool('dwlk')
+    export let Floats = new FieldBool('dflt')
+    export let ShownInFog = new FieldBool('dshd')
+    export let AnimationInFog = new FieldBool('danf')
+    export let FixedRot = new FieldBool('dfxr')
+    export let ShownInMM = new FieldBool('dsmm')
+    export let UseMMColor = new FieldBool('dumc')
+    export let MMRed = new FieldInt('dmmr')
+    export let MMGreen = new FieldInt('dmmg')
+    export let MMBlue = new FieldInt('dmmb')
 }
 
 let all_fields = Object.values(TDoodadField)
@@ -65,4 +117,15 @@ export function findTDoodadField(code: string){
         }
     }
     return undefined
+}
+
+// Verify fields
+if (!IsGame()){
+    let meta = DoodadsMeta.getFields()
+    for (const id of meta){
+        let field = findTDoodadField(id)
+        if (!field){
+            Log.wrn('id "' + id + '" is not registered')
+        }
+    }
 }

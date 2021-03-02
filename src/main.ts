@@ -16,41 +16,32 @@ if (!IsGame()){
 }
 
 import * as Abil from './AbilityExt'
+import * as Binary from './Binary'
 import * as IO from './WcIO'
-import * as Map from './Binary'
+import * as Json from './Json'
 import * as Utils from "./Utils"
-
+                                                                            
 import { TestType as TestAbil } from './AbilityExt/TestType'
 
-import * as UnitType from "./Gameplay/Units/init";
+// import * as UnitType from "./Gameplay/Units/init";
 
-import { id2int} from './Utils'
 import { Init } from './Interface/Init'
-// import { LifeForceShield } from './Abilities/LifeForceShield'
-// import { TerrainPreset } from './Binary/Cached/Terrain'
-import { id2byte } from './Binary/Utils'
-import { Ability } from './AbilityExt'
-import { hEffect, hTimer, hUnit } from './Handle'
+import { TerrainTile, tile_00_00, tile_00_01, tile_00_02, tile_01_00, tile_1 } from './Terrain/Tile/Tile'
 
-// let w3u = Map.Map.w3u
-// let unit_type = w3u.add(id2int('hfoo'))
-// unit_type.setInt(Map.FieldUnitList.HitPointsMaximumBase, 100)
-// unit_type.setInt(Map.FieldUnitList.ManaMaximum, 100)
-
-// let pref = 'TerrainPresets/MurlocLagoonHD.w3x/war3map.'
-// let murloc_lagoon = new TerrainPreset(pref + 'w3e', pref + 'w3d', pref + 'doo')
-
-import { Terrain } from './Terrain'
-import * as Json from './Json'
-
-let json = new Json.JsonFileCached('/HungryMercenaries/test.json')
 if (!IsGame()){
-    let test = Terrain.createFromBinary('TEST', '',
-                                        '/Terrain/Preset/Test1.w3m/war3map.w3e',
-                                        '/Terrain/Preset/Test1.w3m/war3map.w3d',
-                                        '/Terrain/Preset/Test1.w3m/war3map.doo')
+    let f = new Utils.FileBinary()
+    f.read(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.w3e')
+    let w3e = Binary.w3eFile.fromBinary(f)
 
-    json.write(test)
+    f.read(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.w3d')
+    let w3d = Binary.w3dFile.fromBinary(f)
+
+    f.read(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.doo')
+    let doo = Binary.dooFile.fromBinary(f)
+
+    let ft = new Utils.FileText()
+    ft.data = Json.encode(doo.toJson())
+    ft.write(GetSrc() + '/test.json')
 }
 
 if (IsGame()){
@@ -71,8 +62,26 @@ if (IsGame()){
     let fog = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(fog)
 
-    let TestTerrain = Terrain.createFromJson(<LuaHash>json.read())
-    Terrain.apply(TestTerrain)
+    let t1 = new TerrainTile(tile_1, tile_1)
+    t1.x = 0
+    t1.y = 0
+
+    let t2 = new TerrainTile(tile_1, tile_1)
+    t2.x = 128
+    t2.y = 0
+
+    let t3 = new TerrainTile(tile_1, tile_1)
+    t3.x = 0
+    t3.y = 128
+
+    let t4 = new TerrainTile(tile_1, tile_1)
+    t4.x = 128
+    t4.y = 128
+
+    TerrainDeformCrater(128, 128, 128, -400, 1, true)
+
+    // let TestTerrain = Terrain.createFromJson(<LuaHash>json.read())
+    // Terrain.apply(TestTerrain)
 
     // SetTerrainType(4 * 128, 0, FourCC('Adrg'), -1, 2, 1)
     // Preloader('TerrainArt\\Ashenvale\\Ashen_DirtGrass.blp')

@@ -1,15 +1,18 @@
-import { BuildtimeCache, getFileDir, isReforged, Log, TextFile } from "../../Utils";
+import { BuildtimeCache, getFileDir, Log, FileText } from "../../Utils";
 
 const __dir__ = Macro(getFileDir())
 
-export namespace DoodadsSLK {
+export namespace DoodadSkins {
     let path = __dir__ + '/doodadskins.txt'
     let cache = new BuildtimeCache<string>('DoodadsSLK')
 
     if (!IsGame()){
-        if (TextFile.isExist(path)){
-            let f = new TextFile(path)
-            cache.set(path, f.read())
+        if (FileText.isExist(path)){
+            let f = new FileText()
+            f.read(path)
+            if (f.data){
+                cache.set(path, f.data)
+            }
         } else {
             Log.err('can not find file ' + path)
         }

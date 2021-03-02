@@ -1,9 +1,9 @@
 import { FileBinary } from "../Utils";
 
 export abstract class Obj {
-    abstract toBinary(): string
-    abstract fromBinary(file: FileBinary): void
+    static fromBinary: (file: FileBinary)=>Obj
+    static fromJson: (json: LuaTable)=>Obj
 
+    abstract toBinary(): string
     abstract toJson(): LuaTable
-    abstract fromJson(json: LuaTable): void
 }

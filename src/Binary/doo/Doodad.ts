@@ -6,6 +6,37 @@ import { float2byte, int2byte } from "../Utils"
 
 export class Doodad extends Obj {
 
+    static fromBinary(file: FileBinary){
+        let dood = new Doodad()
+        dood.id = file.readChar(4)
+        dood.var = file.readInt(4)
+        dood.pos = [file.readFloat(), file.readFloat(), file.readFloat()]
+        dood.yaw = file.readFloat()
+        dood.scale = [file.readFloat(), file.readFloat(), file.readFloat()]
+        dood.flags = file.readChar(1)
+        dood.life = file.readChar(1).charCodeAt(0) / 256
+        
+        file.readInt(4) // Pass 4 unknown bytes
+        file.readInt(4) // Pass drop tables
+        file.readInt(4) // Pass 4 unknown bytes
+        file.readInt(4) // Pass 4 unknown bytes
+
+        return dood
+    }
+
+    static fromJson(json: LuaTable){
+        let dood = new Doodad()
+        dood.id = Json.Read.String(json, 'id')
+        dood.var = Json.Read.Number(json, 'v')
+        dood.pos = <[number, number, number]>Json.Read.NumberArray(json, 'p')
+        dood.yaw = Json.Read.Number(json, 'a')
+        dood.scale = <[number, number, number]>Json.Read.NumberArray(json, 's')
+        dood.flags = Json.Read.String(json, 'f')
+        dood.life = Json.Read.Number(json, 'l')
+        
+        return dood
+    }
+
     toBinary(){
         let raw = ''
 
@@ -25,21 +56,6 @@ export class Doodad extends Obj {
         return raw
     }
 
-    fromBinary(file: FileBinary){
-        this.id = file.readChar(4)
-        this.var = file.readInt(4)
-        this.pos = [file.readFloat(), file.readFloat(), file.readFloat()]
-        this.yaw = file.readFloat()
-        this.scale = [file.readFloat(), file.readFloat(), file.readFloat()]
-        this.flags = file.readChar(1)
-        this.life = file.readChar(1).charCodeAt(0) / 256
-        
-        file.readInt(4) // Pass 4 unknown bytes
-        file.readInt(4) // Pass drop tables
-        file.readInt(4) // Pass 4 unknown bytes
-        file.readInt(4) // Pass 4 unknown bytes
-    }
-
     toJson(){
         let json = {
             id: this.id,
@@ -54,24 +70,14 @@ export class Doodad extends Obj {
         return json
     }
 
-    fromJson(json: LuaTable){
-        this.id = Json.Read.String(json, 'id')
-        this.var = Json.Read.Number(json, 'v')
-        this.pos = <[number, number, number]>Json.Read.NumberArray(json, 'p')
-        this.yaw = Json.Read.Number(json, 'a')
-        this.scale = <[number, number, number]>Json.Read.NumberArray(json, 's')
-        this.flags = Json.Read.String(json, 'f')
-        this.life = Json.Read.Number(json, 'l')
-    }
-
-    get id(){ return this._id }
+    get id(){ return this.__id }
     set id(id: string){
-        this._id = id.slice(0, 4)
+        this.__id = id.slice(0, 4)
     }
 
-    get flags(){ return this._flags }
+    get flags(){ return this.__flags }
     set flags(flags: string){
-        this._flags = flags.slice(0, 1)
+        this.__flags = flags.slice(0, 1)
     }
 
     var: number = 0
@@ -80,6 +86,6 @@ export class Doodad extends Obj {
     scale: [number, number, number] = [0, 0, 0]
     life: number = 0
 
-    private _id: string = ''
-    private _flags: string = ''
+    private __id: string = ''
+    private __flags: string = ''
 }

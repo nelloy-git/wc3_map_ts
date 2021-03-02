@@ -22,7 +22,7 @@ export function id2byte(int: number): bytes{
     return string.pack('>I4', int)
 }
 
-export function int2byte(int: number): bytes{
+export function int2byte(int: number, size: number = 4): bytes{
     return string.pack('<I4', int)
 }
 

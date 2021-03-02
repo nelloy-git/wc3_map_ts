@@ -1,17 +1,23 @@
-import { BuildtimeCache, Log, TextFile } from "../Utils";
+import { BuildtimeCache, Log, FileText, getFilePath } from "../Utils";
+import { File } from "../WcIO";
 
 import { encode, decode } from './JsonLua/index'
+
+const __path__ = Macro(getFilePath())
 
 export class JsonFileCached {
     constructor(path: string){
         if (!IsGame()){
             // Optimize json format
-            if (TextFile.isExist(GetSrc() + '/' + path)){
-                let f = new TextFile(GetSrc() + '/' + path)
-                let data = f.read()
-                JsonFileCached._cache.set(path, encode(decode(data)))
+            if (FileText.isExist(GetSrc() + '/' + path)){
+                let f = new FileText()
+                f.read(GetSrc() + '/' + path)
+                if (f.data){
+                    JsonFileCached._cache.set(path, encode(decode(f.data)))
+                }
             } else {
-                Log.err('can not find file ' + path)
+                Log.err('can not find file ' + GetSrc() + path,
+                        __path__, JsonFileCached, 2)
             }
         }
         this.path = path
@@ -27,7 +33,7 @@ export class JsonFileCached {
         JsonFileCached._cache.set(this.path, str)
 
         if (!IsGame()){
-            let f = new TextFile(GetSrc() + '/' + this.path)
+            let f = new FileText()
             f.write(str)
         }
     }

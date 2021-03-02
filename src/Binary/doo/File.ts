@@ -1,84 +1,73 @@
 import * as Json from '../../Json'
 
+import { FileBinary } from '../../Utils';
 import { File } from "../File";
 import { int2byte } from "../Utils";
 import { Doodad } from "./Doodad";
 
-export class File_doo extends File<Doodad> {
+export class dooFile extends File<Doodad> {
 
-    writeBinary(path: string){
-        let f = this._file_bin
+    static fromBinary(file: FileBinary){
+        file.startReading()
+
+        let doo = new dooFile()
+        doo.head = file.readChar(4)
+        doo.version = file.readInt(4)
+        doo.subversion = file.readInt(4)
+        doo.objects = []
+
+        let count = file.readInt(4)
+        for (let i = 0; i < count; i++){
+            doo.objects.push(Doodad.fromBinary(file))
+        }
+
+        file.finishReading()
+        return doo
+    }
+
+    static readJson(json: LuaTable){
+        let doo = new dooFile()
+        doo.head = Json.Read.String(json, 'head')
+        doo.version = Json.Read.Number(json, 'ver')
+        doo.subversion = Json.Read.Number(json, 'subv')
+        doo.objects = []
+
+        let list = Json.Read.TableArray(json, 'objects')
+        for (const cur_dood of list){
+            doo.objects.push(Doodad.fromJson(cur_dood))
+        }
+        return doo
+    }
+
+    toBinary(){
         let raw = ''
-
-        raw += this.__head.slice(0, 4)
-        raw += int2byte(this.__version).slice(0, 4)
-        raw += int2byte(this.__subversion).slice(0, 4)
+        raw += this.head.slice(0, 4)
+        raw += int2byte(this.version).slice(0, 4)
+        raw += int2byte(this.subversion).slice(0, 4)
         raw += int2byte(this.objects.length).slice(0, 4)
 
         for (const dood of this.objects){
             raw += dood.toBinary()
         }
 
-        f.write(path)
+        return raw
     }
 
-    readBinary(path: string){
-        let f = this._file_bin
-        f.read(path)
-        f.startReading()
-
-        this.__head = f.readChar(4)
-        this.__version = f.readInt(4)
-        this.__subversion = f.readInt(4)
-        this.objects = []
-
-        let count = f.readInt(4)
-        for (let i = 0; i < count; i++){
-            let dood = new Doodad()
-            dood.fromBinary(f)
-            this.objects.push(dood)
-        }
-
-        f.finishReading()
-    }
-
-    writeJson(path: string){
-        let f = this._file_text
-        let json: LuaHash = {}
-
-        json['head'] = this.__head
-        json['version'] = this.__version
-        json['subversion'] = this.__subversion
-        
+    toJson(){
         let list: LuaTable[] = []
         for (const dood of this.objects){
             list.push(dood.toJson())
         }
-        json['objects'] = []
 
-        f.write(Json.encode(json))
-    }
-
-    readJson(path: string){
-        let f = this._file_text
-        f.read(path)
-        if (!f.data){ return }
-
-        let json = Json.decode(f.data)
-        this.__head = Json.Read.String(json, 'head')
-        this.__version = Json.Read.Number(json, 'version')
-        this.__subversion = Json.Read.Number(json, 'subversion')
-        this.objects = []
-
-        let list = Json.Read.TableArray(json, 'objects')
-        for (const json_dood of list){
-            let dood = new Doodad()
-            dood.fromJson(json_dood)
-            this.objects.push(dood)
+        return {
+            head: this.head,
+            ver: this.version,
+            subv: this.subversion,
+            objects: list
         }
     }
     
-    private __head: string = ''
-    private __version: number = 0
-    private __subversion: number = 0
+    head: string = ''
+    version: number = 0
+    subversion: number = 0
 }
