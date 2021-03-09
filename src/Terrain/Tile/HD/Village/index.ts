@@ -1,0 +1,8 @@
+export { Tile as CobblePath } from './CobblePath'
+export { Tile as Crops } from './Crops'
+export { Tile as Dirt } from './Dirt'
+export { Tile as DirtRough } from './DirtRough'
+export { Tile as GrassShort } from './GrassShort'
+export { Tile as GrassThick } from './GrassThick'
+export { Tile as Rocks } from './Rocks'
+export { Tile as StonePath } from './StonePath'

@@ -1,10 +1,119 @@
-// import * as Binary from '../Binary'
-// import { hDestructable, hEffect } from '../Handle'
-// import * as Json from '../Json'
+import * as Binary from '../Binary'
+import { hDestructable, hEffect } from '../Handle'
+import * as Json from '../Json'
 
-// import { getFilePath, getTerrainZ, id2int, isReforged, Log } from '../Utils'
+import * as Utils from "../Utils"
+import { TileMap } from './TileMap'
 
-// let __path__ = Macro(getFilePath())
+let __path__ = Macro(Utils.getFilePath())
+
+export class Terrain {
+    constructor(name: string, icon: string,
+                w3e: Binary.w3eFile, w3d: Binary.w3dFile, doo: Binary.dooFile){
+        this.name = name
+        this.icon = icon
+        this.w3e = w3e
+        this.w3d = w3d
+        this.doo = doo
+        this.__effects = []
+    }
+
+    apply(cx: number, cy: number, cz: number){
+        this.__tile_map = new TileMap(this.w3e.mx, this.w3e.my, cx, cy)
+        this.__tile_map.load(this.w3e)
+
+        this.__applyHeight(cx, cy)
+        this.__applyDoodads(cx, cy, cz)
+    }
+
+    private __applyHeight(cx: number, cy: number){
+        for (let y = 0; y < this.w3e.my; y++){
+            for (let x = 0; x < this.w3e.mx; x++){
+                let tile = this.w3e.get(x, y)
+                if (!tile){continue}
+
+                let px = 128 * x + cx
+                let py = 128 * y + cy
+                TerrainDeformCrater(px, py, 128, Utils.getTerrainZ(px, py), 1, true)
+                TerrainDeformCrater(px, py, 128, -tile.z, 1, true)
+            }
+        }
+    }
+
+    private __applyDoodads(cx: number, cy: number, cz: number){
+        for (let eff of this.__effects){
+            eff.destroy()
+        }
+        this.__effects = []
+
+        for (let dood of  this.doo.objects){
+            // if (blockers.includes(dood.id)){
+            //     let dest = new hDestructable(id2int(dood.id),
+            //                                  dood.pos[0] - cx, dood.pos[1] - cy, dood.pos[2],
+            //                                  dood.a, dood.sc[0], dood.var)
+            //     doods.push(dest)
+            //     continue
+            // }
+
+            let type: Binary.TDoodad | undefined
+            for (let t of this.w3d.objects){
+                if (dood.id == t.id){
+                    type = t
+                    break
+                }
+            }
+
+            let hd = Utils.isReforged(GetLocalPlayer())
+            let model: string | undefined
+            if (type){
+                let change = type.findChange(Binary.TDoodadField.Model)
+                model = change ? change.val : undefined
+            }
+            if (!model){
+                model = Binary.DoodadsSLK.getModel(dood.id, hd)
+            }
+            if (!model){
+                continue
+            }
+
+            let scale = 1
+            if (type){
+                let s = Binary.DoodadsSLK.getScale(type.origin_id, hd)
+                scale = s ? s : scale
+            } else if (Binary.DoodadsSLK.isDefault(dood.id)){
+                let s = Binary.DoodadsSLK.getScale(dood.id, hd)
+                scale = s ? s : scale
+            }
+
+            if (Binary.DoodadsSLK.isDefault(dood.id) && Binary.DoodadsSLK.hasVariations(dood.id, hd)){
+                model += dood.var
+            }
+
+            if (dood.id == 'ZRrk'){
+                // print(Binary.DoodadsSLK.hasVariations(dood.id, hd), model)
+            }
+
+            let [x, y, z] = dood.pos
+            let eff = new hEffect(model, x - this.w3e.cx + cx, y - this.w3e.cy + cy, z + cz)
+            eff.yaw = dood.yaw
+            eff.scaleX = scale * dood.scale[0]
+            eff.scaleY = scale * dood.scale[1]
+            eff.scaleZ = scale * dood.scale[2]
+
+            this.__effects.push(eff)
+        } 
+    }
+    
+    readonly name: string
+    readonly icon: string
+
+    readonly w3e: Binary.w3eFile
+    readonly w3d: Binary.w3dFile
+    readonly doo: Binary.dooFile
+
+    private __tile_map: TileMap | undefined
+    private __effects: hEffect[]
+}
 
 // export type Terrain = {
 //     readonly name: string

@@ -3,6 +3,7 @@ import * as Json from '../../Json'
 import { FileBinary } from "../../Utils"
 import { Obj } from "../Obj"
 import { TDoodadFieldChange } from './Field'
+import { Field } from '../Field'
 
 export class TDoodad extends Obj {
 
@@ -59,6 +60,14 @@ export class TDoodad extends Obj {
             id: this.id,
             origin_id: this.origin_id,
             changes: changes
+        }
+    }
+
+    findChange(field: Field<any>){
+        for (let change of this.changes){
+            if (change.field == field){
+                return change
+            }
         }
     }
 

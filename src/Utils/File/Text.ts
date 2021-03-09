@@ -5,7 +5,7 @@ let Log = Logger.Default
 
 let __path__ = Macro(getFilePath())
 
-export class FileText extends FileIFace<string> {
+export class FileText extends FileIFace {
 
     read(path: string){
         let [f] = io.open(path, 'r')

@@ -27,3 +27,5 @@ export let Log = Logger.Default
 import { BuildtimeCache } from './BuildtimeCache'
 export { BuildtimeCache as BuildtimeCache }
 export let BCache = BuildtimeCache.Default
+
+export { encode64, decode64 } from './Encode64'

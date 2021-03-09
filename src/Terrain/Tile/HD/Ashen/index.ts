@@ -1,0 +1,7 @@
+export { Tile as Dirt } from './Dirt'
+export { Tile as DirtGrass } from './DirtGrass'
+export { Tile as DirtRough } from './DirtRough'
+export { Tile as Grass } from './Grass'
+export { Tile as GrassLumpy } from './GrassLumpy'
+export { Tile as Rock } from './Rock'
+export { Tile as Vines } from './Vines'

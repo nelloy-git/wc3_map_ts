@@ -4,25 +4,27 @@ import { Handle } from "./Handle";
 let __path__ = Macro(getFilePath())
 
 export class hImage extends Handle<jimage> {
-    constructor(image: string,
+    constructor(path: string,
                 size_x?: number, size_y?: number,
                 origin_x?: number, origin_y?: number){
         size_x = size_x ? size_x : 16
         size_y = size_y ? size_y : 16
 
-        super(CreateImage(image,
+        super(CreateImage(path,
                           size_x, size_y, 0,
                           0, 0, -5000,
                           origin_x ? origin_x : size_x / 2,
                           origin_y ? origin_y : size_y / 2,
                           0, 4))
-        this._x = 0
-        this._y = 0
-        this._z = 0
-        this._color = new Color(1, 1, 1, 1)
-        this._visible = true
-        this._render_always = false
-        this._constant_height = true
+
+        this.path = path
+        this.__x = 0
+        this.__y = 0
+        this.__z = 0
+        this.__color = new Color(1, 1, 1, 1)
+        this.__visible = true
+        this.__render_always = false
+        this.__constant_height = true
 
         this.renderAlways = true
         this.z = 10
@@ -37,45 +39,45 @@ export class hImage extends Handle<jimage> {
         return instance as hImage
     }
 
-    get x(){return this._x}
+    get x(){return this.__x}
     set x(x: number){
-        this._x = x
-        SetImagePosition(this.handle, this._x, this._y, this._z)
-        SetImageConstantHeight(this.handle, this._constant_height, getTerrainZ(this._x, this._y) + this._z)
+        this.__x = x
+        SetImagePosition(this.handle, this.__x, this.__y, this.__z)
+        SetImageConstantHeight(this.handle, this.__constant_height, getTerrainZ(this.__x, this.__y) + this.__z)
     }
     
-    get y(){return this._y}
+    get y(){return this.__y}
     set y(y: number){
-        this._y = y
-        SetImagePosition(this.handle, this._x, this._y, this._z)
-        SetImageConstantHeight(this.handle, this._constant_height, getTerrainZ(this._x, this._y) + this._z)
+        this.__y = y
+        SetImagePosition(this.handle, this.__x, this.__y, this.__z)
+        SetImageConstantHeight(this.handle, this.__constant_height, getTerrainZ(this.__x, this.__y) + this.__z)
     }
     
-    get z(){return this._z}
+    get z(){return this.__z}
     set z(z: number){
-        this._z = z
-        SetImageConstantHeight(this.handle, this._constant_height, getTerrainZ(this._x, this._y) + this._z)
+        this.__z = z
+        SetImageConstantHeight(this.handle, this.__constant_height, getTerrainZ(this.__x, this.__y) + this.__z)
     }
 
-    get color(){return new Color(this._color)}
+    get color(){return new Color(this.__color)}
     set color(color: Color){
-        this._color = new Color(color)
+        this.__color = new Color(color)
         SetImageColor(this.handle, math.floor(255 * color.r),
                                    math.floor(255 * color.g),
                                    math.floor(255 * color.b),
                                    math.floor(255 * color.a))
     }
     
-    get renderAlways(){return this._render_always}
-    set renderAlways(flag: boolean){this._render_always; SetImageRenderAlways(this.handle, flag)}
+    get renderAlways(){return this.__render_always}
+    set renderAlways(flag: boolean){this.__render_always; SetImageRenderAlways(this.handle, flag)}
 
-    get visible(){return this._visible}
-    set visible(flag: boolean){this._visible = flag; ShowImage(this.handle, flag)}
+    get visible(){return this.__visible}
+    set visible(flag: boolean){this.__visible = flag; ShowImage(this.handle, flag)}
 
-    get constantHeight(){return this._constant_height}
+    get constantHeight(){return this.__constant_height}
     set constantHeight(f: boolean){
-        this._constant_height = f
-        SetImageConstantHeight(this.handle, f, getTerrainZ(this._x, this._y) + this._z)
+        this.__constant_height = f
+        SetImageConstantHeight(this.handle, f, getTerrainZ(this.__x, this.__y) + this.__z)
     }
 
     destroy(){
@@ -83,11 +85,12 @@ export class hImage extends Handle<jimage> {
         super.destroy()
     }
 
-    private _x: number
-    private _y: number
-    private _z: number
-    private _color: Color
-    private _render_always: boolean
-    private _visible: boolean
-    private _constant_height: boolean
+    readonly path: string
+    private __x: number
+    private __y: number
+    private __z: number
+    private __color: Color
+    private __render_always: boolean
+    private __visible: boolean
+    private __constant_height: boolean
 }

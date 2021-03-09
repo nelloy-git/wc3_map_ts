@@ -1,5 +1,5 @@
 import { Logger } from '../Logger'
-import { getFilePath} from "../Funcs";
+import { getFilePath } from "../Funcs";
 import { FileIFace } from "./IFace";
 let Log = Logger.Default
 
@@ -20,7 +20,7 @@ function readRawData<T1, T2 = undefined, T3 = undefined, T4 = undefined>(fmt:str
     return <[T1, T2, T3, T4]><unknown>res
 }
 
-export class FileBinary extends FileIFace<string> {
+export class FileBinary extends FileIFace {
 
     read(path: string){
         let [f] = io.open(path, 'rb')
@@ -124,7 +124,6 @@ export class FileBinary extends FileIFace<string> {
         let [data] = readRawData<string|number>(fmt, (<string>this.data).slice(pos))
         return data
     }
-
-    data: string | undefined
+    
     private __file_pos: number = -1
 }

@@ -20,32 +20,34 @@ import * as Binary from './Binary'
 import * as IO from './WcIO'
 import * as Json from './Json'
 import * as Utils from "./Utils"
-                                                                            
-import { TestType as TestAbil } from './AbilityExt/TestType'
+
+import { Terrain } from './Terrain'
 
 // import * as UnitType from "./Gameplay/Units/init";
 
 import { Init } from './Interface/Init'
-import { TerrainTile, AshenvaleDirt } from './Terrain/Tile/Tile'
 import { hTimer } from './Handle'
 
+let w3e_path = Macro(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.w3e')
+let w3d_path = Macro(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.w3d')
+let doo_path = Macro(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.doo')
+
+let w3e_bin = new Utils.FileBinary()
+let w3d_bin = new Utils.FileBinary()
+let doo_bin = new Utils.FileBinary()
 if (!IsGame()){
-    let f = new Utils.FileBinary()
-    f.read(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.w3e')
-    let w3e = Binary.w3eFile.fromBinary(f)
+    w3e_bin.read(w3e_path)
+    w3d_bin.read(w3d_path)
+    doo_bin.read(doo_path)
 
-    f.read(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.w3d')
-    let w3d = Binary.w3dFile.fromBinary(f)
-
-    f.read(GetSrc() + '/Terrain/Preset/Test1.w3m/war3map.doo')
-    let doo = Binary.dooFile.fromBinary(f)
-
-    let ft = new Utils.FileText()
-    ft.data = Json.encode(doo.toJson())
-    ft.write(GetSrc() + '/test.json')
+    w3e_bin.saveCache(w3e_path)
+    w3d_bin.saveCache(w3d_path)
+    doo_bin.saveCache(doo_path)
+} else {
+    w3e_bin.loadCache(w3e_path)
+    w3d_bin.loadCache(w3d_path)
+    doo_bin.loadCache(doo_path)
 }
-
-let im = new Utils.Import(GetSrc() + '/Pavement.blp', './war3mapImported/Pavement.blp')
 
 if (IsGame()){
 
@@ -65,19 +67,22 @@ if (IsGame()){
     let fog = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(fog)
 
-    let tile_top = AshenvaleDirt.tile_01_00
-    let tile_bot = AshenvaleDirt.tile_rock
+    let tm = new hTimer()
+    tm.addAction(()=>{
 
-    for (let x = -256; x <= 256; x += 128){
-        for (let y = -256; y <= 256; y += 128){
-            let t = new TerrainTile(tile_top, tile_bot)
-            t.x = x
-            t.y = y
-        }
-    }
+        let w3e = Binary.w3eFile.fromBinary(w3e_bin)
+        let w3d = Binary.w3dFile.fromBinary(w3d_bin)
+        let doo = Binary.dooFile.fromBinary(doo_bin)
 
-    TerrainDeformCrater(128, 128, 128, -400, 1, true)
+        let t = new Terrain('Test', 'Test', w3e, w3d, doo)
+        let map_rect = GetEntireMapRect()
+        let cx = GetRectMinX(map_rect)
+        let cy = GetRectMinY(map_rect)
 
+        t.apply(cx, cy, -256)
+    })
+    tm.start(3, false)
+ 
     // let x = 0
     // let t = new hTimer()
     // Preloader('terrainart\\ashenvale\\ashen_dirt.dds')

@@ -48,7 +48,7 @@ export class Import{
 
     private static copyFile(src: string, dst: string){
         if (!Import.isExist(src)){
-            error("Import: file " + src + " does not exist.")
+            error("Import: file " + src + " does not exist.", 2)
         }
 
         let [infile] = io.open(src, "rb")

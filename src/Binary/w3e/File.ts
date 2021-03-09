@@ -109,8 +109,15 @@ export class w3eFile extends File<Tile> {
         }
     }
 
-    get(x: number, y: number){
+    get(x: number, y: number): Tile | undefined {
         return this.objects[y * this.my + x]
+    }
+
+    getIdPos(x: number, y: number): number | undefined {
+        let tile = this.get(x, y)
+        if (tile) {
+            return tile.id_pos
+        }
     }
 
     head: string = 'W3E!'
