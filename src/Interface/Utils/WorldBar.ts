@@ -10,6 +10,14 @@ export class WorldBar extends hEffect {
         super(WorldBar._import_bar.dst, 0, 0, 1000)
     }
 
+    get offset(): [number, number, number]{return [this._offset_x, this._offset_y, this._offset_z]}
+    set offset(v: [number, number, number]){
+        this._offset_x = v[0]
+        this._offset_y = v[1]
+        this._offset_z = v[2]
+        this._update()
+    }
+
     get offsetX(){return this._offset_x}
     set offsetX(x: number){this._offset_x = x; this._update()}
 

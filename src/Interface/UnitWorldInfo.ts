@@ -1,176 +1,142 @@
 import { hTimer, hTrigger, hTriggerEvent, hUnit } from "../Handle";
 import { Shield } from "../Parameter";
-import { Color } from "../Utils";
+import { Action, Color } from "../Utils";
 import { WorldBar } from "./Utils/WorldBar";
 
-type BAR_TYPE = {
-    LIFE: 0,
-    MANA: 1,
-    PSHIELD: 2,
-    MSHELD: 3,
-    SHIELD: 4,
-    LIFE_BACK: 5,
-    MANA_BACK: 6
+enum BAR_TYPE {
+    LIFE,
+    MANA,
+    PSHIELD,
+    MSHELD,
+    SHIELD,
+    LIFE_BACK,
+    MANA_BACK,
+}
+
+const BAR_COLOR = {
+    [BAR_TYPE.LIFE]: new Color(33 / 255, 191 / 255, 0, 0.5),
+    [BAR_TYPE.MANA]: new Color(0, 66 / 255, 1, 0.5),
+    [BAR_TYPE.PSHIELD]: new Color(247 / 255, 165 / 255, 139 / 255, 0.5),
+    [BAR_TYPE.MSHELD]: new Color(189 / 255, 0, 1, 0.5),
+    [BAR_TYPE.SHIELD]: new Color(27 / 255, 231 / 255, 186 / 255, 0.5),
+    [BAR_TYPE.LIFE_BACK]: new Color(0, 0, 0, 0.5),
+    [BAR_TYPE.MANA_BACK]: new Color(0, 0, 0, 0.5),
+}
+
+const BAR_OFFSET = {
+    [BAR_TYPE.LIFE]: <[number, number, number]>[0, 5, 150],
+    [BAR_TYPE.MANA]: <[number, number, number]>[0, -5, 145],
+    [BAR_TYPE.PSHIELD]: <[number, number, number]>[0, 16.1, 155],
+    [BAR_TYPE.MSHELD]: <[number, number, number]>[0, 16.1, 155],
+    [BAR_TYPE.SHIELD]: <[number, number, number]>[0, 16, 155],
+    [BAR_TYPE.LIFE_BACK]: <[number, number, number]>[0, 5, 149.9],
+    [BAR_TYPE.MANA_BACK]: <[number, number, number]>[0, -5, 144.9],
+}
+
+function getShieldMax(u: hUnit){
+    return Math.max(Shield.getMax('PHYS', u), Shield.getMax('MAGIC', u), u.life)
+}
+
+const BAR_FULLNESS = {
+    [BAR_TYPE.LIFE]: (u: hUnit) => {return u.life / u.lifeMax},
+    [BAR_TYPE.MANA]: (u: hUnit) => {return u.mana / u.manaMax},
+    [BAR_TYPE.PSHIELD]: (u: hUnit) => {return Shield.getCur('PHYS', u) / getShieldMax(u)},
+    [BAR_TYPE.MSHELD]: (u: hUnit) => {return Shield.getCur('MAGIC', u) / getShieldMax(u)},
+    [BAR_TYPE.SHIELD]: (u: hUnit) => {return Math.min(Shield.getCur('PHYS', u), Shield.getCur('MAGIC', u)) / getShieldMax(u)},
+    [BAR_TYPE.LIFE_BACK]: (u: hUnit) => {return 1},
+    [BAR_TYPE.MANA_BACK]: (u: hUnit) => {return 1},
 }
 
 export class UnitWorldBars {
-    constructor(){
 
+    constructor(target: hUnit){
+        this.__target = target
+        this.__upd_action = UnitWorldBars.__update_timer.addAction(()=>{this.__update()})
+        UnitWorldBars.__unit2bars.set(target, this)
+
+        this.__bars = []
+        for (let t of Object.values(BAR_TYPE)){
+            if (typeof t === 'string'){continue}
+            this.__bars.push(this.__createBar(t))
+        }
     }
-
-    private __createBar(target: hUnit, type: keyof(BAR_TYPE)){
-        
-    }
-}
-
-export namespace InterfaceUnitWorldInfo {
-    export function Init(){
+    
+    static Init(){
+        // Disable default bars
         EnablePreSelect(false, false)
 
         // Already existed units
         let map = CreateRegion()
         RegionAddRect(map, GetWorldBounds())
-        let _trigger_event = hTriggerEvent.newEnterRegion(map)
-
-        hUnit.getInRect(GetWorldBounds()).forEach(u => {_createBars(u)})
+        hUnit.getInRect(GetWorldBounds()).forEach(u => {new UnitWorldBars(u)})
 
         // New bars
-        let _trigger_new = new hTrigger()
-        _trigger_new.addAction(()=>{
+        let trigger_new = new hTrigger()
+        hTriggerEvent.newEnterRegion(map).applyToTrigger(trigger_new)
+        trigger_new.addAction(()=>{
             let u = hUnit.getEntering()
-            if (u){_createBars(u)}
+            if (u){new UnitWorldBars(u)}
         })
-        _trigger_event.applyToTrigger(_trigger_new)
 
-        // Update
-        let timer = new hTimer()
-        timer.addAction(()=>{_update()})
-        timer.start(0.02, true)
+        // Start update timer
+        UnitWorldBars.__update_timer.start(0.02, true)
 
-        // Delete
-        let trigger_delete = new hTrigger()
-        trigger_delete.addAction(() => {
-            let u = hUnit.getTriggered()
-            if (u){_delete(u)}
-        })
+        // Delete bars
+        let trigger_hide = new hTrigger()
         for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
-            let pl = Player(i)
-            let event = hTriggerEvent.newPlayerUnitEvent(pl, EVENT_PLAYER_UNIT_DEATH)
-            event.applyToTrigger(trigger_delete)
+            let event = hTriggerEvent.newPlayerUnitEvent(Player(i), EVENT_PLAYER_UNIT_DEATH)
+            event.applyToTrigger(trigger_hide)
         }
-    }
-
-    function _createBars(u: hUnit){
-        let bars = []
-
-        let life = new WorldBar()
-        life.target = u
-        life.color = new Color(33 / 255, 191 / 255, 0, 0.5)
-        life.offsetY = 5
-        life.offsetZ = 150
-
-        let life_back = new WorldBar()
-        life_back.target = u
-        life_back.color = new Color(0, 0, 0, 0.5)
-        life_back.offsetY = 5
-        life_back.offsetZ = 149.9
-
-        let pshield = new WorldBar()
-        pshield.target = u
-        pshield.color = new Color(247 / 255, 165 / 255, 139 / 255, 0.5)
-        // pshield.scaleY = 0.7
-        pshield.offsetY = 16.1
-        pshield.offsetZ = 155
-
-        let mshield = new WorldBar()
-        mshield.target = u
-        mshield.color = new Color(189 / 255, 0, 1, 0.5)
-        // mshield.scaleY = 0.7
-        mshield.offsetY = 16.1
-        mshield.offsetZ = 155
-
-        let shield = new WorldBar()
-        shield.target = u
-        shield.color = new Color(27 / 255, 231 / 255, 186 / 255, 0.5)
-        // shield.scaleY = 0.7
-        shield.offsetY = 16
-        shield.offsetZ = 155
-
-        let mana = new WorldBar()
-        mana.target = u
-        mana.color = new Color(0, 66 / 255, 1, 0.5)
-        mana.offsetY = -5
-        mana.offsetZ = 145
-
-        let mana_back = new WorldBar()
-        mana_back.target = u
-        mana_back.color = new Color(0, 0, 0, 0.5)
-        mana_back.offsetY = -5
-        mana_back.offsetZ = 144.9
-
-        bars[LIFE] = life
-        bars[MANA] = mana
-        bars[PSHIELD] = pshield
-        bars[MSHIELD] = mshield
-        bars[SHIELD] = shield
-        bars[LIFE_BACK] = life_back
-        bars[MANA_BACK] = mana_back
-
-        _unit2bars.set(u, bars)
-    }
-
-    // function __
-
-    function _update(this: void){
-        for (let [u, bars] of _unit2bars){
-            let life = u.life
-            let max_life = u.lifeMax
-
-            let mana = u.mana
-            let max_mana = u.manaMax
-
-            let p_shield = Shield.getCur('PHYS', u)
-            let max_p_shield = Shield.getMax('PHYS', u)
-
-            let m_shield = Shield.getCur('MAGIC', u)
-            let max_m_shield = Shield.getMax('MAGIC', u)
-
-            let min = Math.min(p_shield, m_shield)
-            let max = Math.max(max_p_shield, max_m_shield, max_life)
-
-            bars[LIFE].fullness = life / max_life
-            bars[MANA].fullness = mana / max_mana
-            bars[PSHIELD].fullness = p_shield / max
-            bars[MSHIELD].fullness = m_shield / max
-            bars[SHIELD].fullness = min / max
-        }
-    }
-
-    function _hide(u: hUnit){
-        let bars = _unit2bars.get(u)
-        if (!bars){return}
-
-        bars.forEach(bar => {
-            // TODO
+        trigger_hide.addAction(() => {
+            let u = hUnit.getTriggered()
+            let bars = UnitWorldBars.get(u)
+            if (bars){bars.destroy()}
         })
+
     }
 
-    function _delete(this: void, u: hUnit){
-        let bars = _unit2bars.get(u)
-        if (!bars){return}
+    static get(u: hUnit | undefined){
+        if (!u){return undefined}
+        return UnitWorldBars.__unit2bars.get(u)
+    }
 
-        bars.forEach(bar => {
+    destroy(){
+        for (let bar of this.__bars){
             bar.destroy()
-        })
-        _unit2bars.delete(u)
+        }
+        UnitWorldBars.__update_timer.removeAction(this.__upd_action)
+        UnitWorldBars.__unit2bars.delete(this.__target)
     }
 
-    let LIFE = 0
-    let MANA = 1
-    let PSHIELD = 2
-    let MSHIELD = 3
-    let SHIELD = 4
-    let LIFE_BACK = 5
-    let MANA_BACK = 6
-    let _unit2bars = new Map<hUnit, WorldBar[]>()
+    get visible(){return this.__visible}
+    set visible(f: boolean){
+        this.__visible = f
+        for (let bar of this.__bars){
+            bar.visible = f
+        }
+    }
+
+    private __createBar(type: BAR_TYPE){
+        let bar = new WorldBar()
+        bar.target = this.__target
+        bar.color = BAR_COLOR[type]
+        bar.offset = BAR_OFFSET[type]
+        return bar
+    }
+
+    private __update(){
+        for (let t: BAR_TYPE = 0; t < this.__bars.length; t++){
+            let bar = this.__bars[t]
+            bar.fullness = BAR_FULLNESS[t](this.__target)
+        }
+    }
+
+    private __target: hUnit
+    private __visible = true
+    private __bars: WorldBar[]
+
+    private __upd_action: Action<[hTimer], void>
+
+    private static __update_timer: hTimer = IsGame() ? new hTimer() : <hTimer><unknown>undefined
+    private static __unit2bars = new Map<hUnit, UnitWorldBars>()
 }

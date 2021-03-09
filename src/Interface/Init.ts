@@ -5,14 +5,14 @@ import { InterfaceAbilityPanel } from "./Ability/Panel";
 import { InterfaceDamage } from "./Damage";
 import { InterfaceMinimap } from "./Minimap";
 import { InterfaceUnitInfoPanel } from './UnitInfo/Panel'
-import { InterfaceUnitWorldInfo } from "./UnitWorldInfo";
+import { UnitWorldBars } from "./UnitWorldInfo";
 
 const skills_cols = 6
 const skills_rows = 1
 
 export function Init(){
     InterfaceDamage.Init()
-    InterfaceUnitWorldInfo.Init()
+    UnitWorldBars.Init()
 
     let map = InterfaceMinimap.instance
     let unit_info = InterfaceUnitInfoPanel.instance
