@@ -3,7 +3,25 @@ import { Shield } from "../Parameter";
 import { Color } from "../Utils";
 import { WorldBar } from "./Utils/WorldBar";
 
-// TODO camera depency
+type BAR_TYPE = {
+    LIFE: 0,
+    MANA: 1,
+    PSHIELD: 2,
+    MSHELD: 3,
+    SHIELD: 4,
+    LIFE_BACK: 5,
+    MANA_BACK: 6
+}
+
+export class UnitWorldBars {
+    constructor(){
+
+    }
+
+    private __createBar(target: hUnit, type: keyof(BAR_TYPE)){
+        
+    }
+}
 
 export namespace InterfaceUnitWorldInfo {
     export function Init(){
@@ -100,6 +118,8 @@ export namespace InterfaceUnitWorldInfo {
 
         _unit2bars.set(u, bars)
     }
+
+    // function __
 
     function _update(this: void){
         for (let [u, bars] of _unit2bars){
