@@ -1,29 +1,62 @@
 import * as Binary from '../Binary'
-import { hDestructable, hEffect } from '../Handle'
-import * as Json from '../Json'
-
 import * as Utils from "../Utils"
+import { hDestructable, hEffect } from '../Handle'
+
+import { HeightMap } from './HeightMap'
 import { TileMap } from './TileMap'
 
 let __path__ = Macro(Utils.getFilePath())
 
+let blockers: string[] = [
+    'YTfb', //2x2 Unflyable
+    'YTfc', //4x4 Unflyable
+    'YTlb', //2x2 Default
+    'Ytlc', //4x4 Default
+    'YTpb', //2x2 Default
+    'YTpc', //4x4 Default
+    'YTab', //2x2 Cyan
+    'YTac', //4x4 Cyan
+    'OTis', //2x2 Platform 
+    'OTip', //4x4 Platform
+]
+
 export class Terrain {
-    constructor(name: string, icon: string,
+    constructor(name: string, icon: string, offset: [number, number, number],
                 w3e: Binary.w3eFile, w3d: Binary.w3dFile, doo: Binary.dooFile){
         this.name = name
         this.icon = icon
-        this.w3e = w3e
-        this.w3d = w3d
-        this.doo = doo
-        this.__effects = []
+        this.offset = offset
+
+        this.__height_map = new HeightMap(w3e, offset)
+        this.__tile_map = new TileMap(w3e, offset)
     }
 
-    apply(cx: number, cy: number, cz: number){
-        this.__tile_map = new TileMap(this.w3e.mx, this.w3e.my, cx, cy)
-        this.__tile_map.load(this.w3e)
+    apply(){
+        if (Terrain.__active){
+            Terrain.__active.clear()
+        }
+        Terrain.__active = this
 
-        this.__applyHeight(cx, cy)
-        this.__applyDoodads(cx, cy, cz)
+        this.__tile_map.apply()
+        this.__height_map.apply()
+
+        this.__applyDoodads(this.cx, this.cy, this.cz)
+    }
+
+    clear(){
+        if (Terrain.__active != this){
+            Utils.Log.wrn(Terrain.name + ': can not clear inactive instance.')
+            return
+        }
+        Terrain.__active = undefined
+        
+        for (let y = 0; y < this.w3e.my; y++){
+            for (let x = 0; x < this.w3e.mx; x++){
+                let px = 128 * x + cx
+                let py = 128 * y + cy
+                TerrainDeformCrater(px, py, 128, Utils.getTerrainZ(px, py), 1, true)
+            }
+        }
     }
 
     private __applyHeight(cx: number, cy: number){
@@ -47,13 +80,13 @@ export class Terrain {
         this.__effects = []
 
         for (let dood of  this.doo.objects){
-            // if (blockers.includes(dood.id)){
-            //     let dest = new hDestructable(id2int(dood.id),
-            //                                  dood.pos[0] - cx, dood.pos[1] - cy, dood.pos[2],
-            //                                  dood.a, dood.sc[0], dood.var)
-            //     doods.push(dest)
-            //     continue
-            // }
+            if (blockers.includes(dood.id)){
+                let dest = new hDestructable(id2int(dood.id),
+                                             dood.pos[0] - cx, dood.pos[1] - cy, dood.pos[2],
+                                             dood.a, dood.sc[0], dood.var)
+                doods.push(dest)
+                continue
+            }
 
             let type: Binary.TDoodad | undefined
             for (let t of this.w3d.objects){
@@ -106,13 +139,15 @@ export class Terrain {
     
     readonly name: string
     readonly icon: string
+    readonly offset: [number, number, number]
 
-    readonly w3e: Binary.w3eFile
-    readonly w3d: Binary.w3dFile
-    readonly doo: Binary.dooFile
+    private __tile_map: TileMap
+    private __height_map: HeightMap
 
-    private __tile_map: TileMap | undefined
-    private __effects: hEffect[]
+    // private __effects: hEffect[]
+    // private __blockers: hDestructable[]
+    
+    private static __active: Terrain | undefined
 }
 
 // export type Terrain = {

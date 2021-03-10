@@ -5,11 +5,15 @@ import { hImage } from '../../Handle'
 const SIZE = 256
 const OFFSET = -SIZE / 4
 
-export class Tile {
-    constructor(){
-        this.__tiles_list = []
+export class TileTexture {
+    constructor(layer_ids: string[]){
+        this.__layer_ids = layer_ids
         this.__layers = []
-        this.__update()
+
+        this.__corners = [layer_ids.length - 1,
+                          layer_ids.length - 1,
+                          layer_ids.length - 1,
+                          layer_ids.length - 1]
     }
 
     get x(){return this.__x}
@@ -28,20 +32,23 @@ export class Tile {
         } 
     }
 
-    setCorners(topleft: string | undefined,
-               topright: string | undefined,
-               botright: string | undefined,
-               botleft: string | undefined){
-        this.__top_left = topleft
-        this.__top_right = topright
-        this.__bot_right = botright
-        this.__bot_left = botleft
+    // Positions in layer_ids
+    setCorners(topleft: number | undefined,
+               topright: number | undefined,
+               botright: number | undefined,
+               botleft: number | undefined){
+        this.__corners = [topleft ? topleft : this.__layer_ids.length - 1,
+                          topright ? topright : this.__layer_ids.length - 1,
+                          botright ? botright : this.__layer_ids.length - 1,
+                          botleft ? botleft : this.__layer_ids.length - 1]
         this.__update()
     }
 
-    set id_list(list: string[]){
-        this.__tiles_list = list
-        this.__update()
+    destroy(){
+        for (let im of this.__layers){
+            im.destroy()
+        }
+        this.__layers = []
     }
 
     private __update(){
@@ -50,22 +57,16 @@ export class Tile {
         }
         this.__layers = []
 
-        let order: string[] = []
-        if (this.__top_left && !order.includes(this.__top_left)){order.push(this.__top_left)}
-        if (this.__top_right && !order.includes(this.__top_right)){order.push(this.__top_right)}
-        if (this.__bot_right && !order.includes(this.__bot_right)){order.push(this.__bot_right)}
-        if (this.__bot_left && !order.includes(this.__bot_left)){order.push(this.__bot_left)}
-        order.sort((a: string, b: string) => {
-            let a_pos = this.__tiles_list.indexOf(a)
-            let b_pos = this.__tiles_list.indexOf(b)
-            return a_pos - b_pos
-        })
+        let order = Object.assign([], this.__corners)
+        order.sort((a, b) => {return a - b})
 
-        for (let id of order){
-            let br = (!this.__bot_right || this.__tiles_list.indexOf(this.__bot_right) >= this.__tiles_list.indexOf(id)) ? 1 : 0
-            let bl = (!this.__bot_left || this.__tiles_list.indexOf(this.__bot_left) >= this.__tiles_list.indexOf(id)) ? 2 : 0
-            let tr = (!this.__top_right || this.__tiles_list.indexOf(this.__top_right) >= this.__tiles_list.indexOf(id)) ? 4 : 0
-            let tl = (!this.__top_left || this.__tiles_list.indexOf(this.__top_left) >= this.__tiles_list.indexOf(id)) ? 8 : 0
+        for (let id_pos of order){
+            let id = this.__layer_ids[id_pos]
+
+            let tl = this.__corners[0] > id_pos ? 8 : 0
+            let tr = this.__corners[1] > id_pos ? 4 : 0
+            let br = this.__corners[2] > id_pos ? 1 : 0
+            let bl = this.__corners[3] > id_pos ? 2 : 0
             let pos = tl + tr + br + bl
 
             this.__layers.push(this.__newImg(getById(id)[pos]))
@@ -84,10 +85,7 @@ export class Tile {
 
     private __x = 0
     private __y = 0
-    private __tiles_list: string[]
-    private __top_left: string | undefined
-    private __top_right: string | undefined
-    private __bot_right: string | undefined
-    private __bot_left: string | undefined
+    private __layer_ids: string[]
+    private __corners: [tl: number, tr: number, br: number, bl: number]
     private __layers: hImage[]
 }
