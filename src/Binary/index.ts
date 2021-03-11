@@ -12,7 +12,7 @@ export { Doodad } from './doo/Doodad'
 export { w3dFile } from './w3d/File'
 export { TDoodad } from './w3d/TDoodad'
 export { TDoodadField, findTDoodadField } from './w3d/Field'
-export { DoodadSkins as DoodadsSLK } from './w3d/DoodadSkins'
+export { DoodadSkins as TDoodadsSLK } from './w3d/DoodadSkins'
 
 // export { w3uFile } from './w3u/File'
 // export { TUnit } from './w3u/TUnit'

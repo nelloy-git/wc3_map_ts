@@ -57,16 +57,23 @@ export class TileTexture {
         }
         this.__layers = []
 
-        let order = Object.assign([], this.__corners)
-        order.sort((a, b) => {return a - b})
+        for (let id_pos = this.__layer_ids.length - 1; id_pos >= 0; id_pos--){
+            let found = false
+            for (let corn of this.__corners){
+                if (corn == id_pos){
+                    found = true
+                    break
+                }
+            }
 
-        for (let id_pos of order){
+            if (!found){continue}
+
             let id = this.__layer_ids[id_pos]
 
-            let tl = this.__corners[0] > id_pos ? 8 : 0
-            let tr = this.__corners[1] > id_pos ? 4 : 0
-            let br = this.__corners[2] > id_pos ? 1 : 0
-            let bl = this.__corners[3] > id_pos ? 2 : 0
+            let tl = this.__corners[0] <= id_pos ? 8 : 0
+            let tr = this.__corners[1] <= id_pos ? 4 : 0
+            let br = this.__corners[2] <= id_pos ? 1 : 0
+            let bl = this.__corners[3] <= id_pos ? 2 : 0
             let pos = tl + tr + br + bl
 
             this.__layers.push(this.__newImg(getById(id)[pos]))

@@ -74,12 +74,12 @@ if (IsGame()){
         let w3d = Binary.w3dFile.fromBinary(w3d_bin)
         let doo = Binary.dooFile.fromBinary(doo_bin)
 
-        let t = new Terrain('Test', 'Test', w3e, w3d, doo)
         let map_rect = GetEntireMapRect()
         let cx = GetRectMinX(map_rect)
         let cy = GetRectMinY(map_rect)
+        let t = new Terrain('Test', 'Test', [cx, cy, 256], w3e, w3d, doo)
 
-        t.apply(cx, cy, -256)
+        t.apply()
     })
     tm.start(3, false)
  

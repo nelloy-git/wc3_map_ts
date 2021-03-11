@@ -5,14 +5,33 @@ import { Handle } from "./Handle";
 let __path__ = Macro(getFilePath())
 
 export class hEffect extends Handle<jeffect> {
-    constructor(model: string, x: number, y:number, z: number){
+    constructor(model: string, pos: [number, number, number])
+    constructor(model: string, x: number, y:number, z: number)
+    constructor(model: string, x_or_pos: number | [number, number, number], y?:number, z?: number){
+        let x
+        if (typeof x_or_pos !== 'number'){
+            x = x_or_pos[0]
+            y = x_or_pos[1]
+            z = x_or_pos[2]
+        } else {
+            x = x_or_pos
+            y = <number> y
+            z = <number> z
+        }
+
         super(AddSpecialEffect(model, x, y))
         BlzSetSpecialEffectHeight(this.handle, z)
+        BlzPlaySpecialEffect(this.handle, ANIM_TYPE_STAND)
         
-        this._x = x
-        this._y = y
-        this._z = z
+        this.__pos = [x, y, z]
+        this.__visible = true
+        this.__yaw = 0
+        this.__pitch = 0
+        this.__roll = 0
+        this.__scale = [1, 1, 1]
+        this.__color = new Color(1, 1, 1, 1)
     }
+
     static get(id: jeffect | number){
         let instance = Handle.get(id)
         if (!instance){return}
@@ -23,79 +42,90 @@ export class hEffect extends Handle<jeffect> {
         return instance as hEffect
     }
 
-    get x(){return this._x}
+    get pos(){return [this.__pos[0], this.__pos[1], this.__pos[2]]}
+    set pos(p: [number, number, number]){
+        this.__pos = [p[0], p[1], p[2]]
+        this.__updPos()
+    }
+
+    get x(){return this.__pos[0]}
     set x(x: number){
-        this._x = x
-        BlzSetSpecialEffectPosition(this.handle, this._x,
-                                                 this._y,
-                                                 this._visible ? this._z : -10000)
-        this.visible = this.visible
+        this.__pos[0] = x
+        this.__updPos()
     }
     
-    get y(){return this._y}
+    get y(){return this.__pos[1]}
     set y(y: number){
-        this._y = y
-        BlzSetSpecialEffectPosition(this.handle, this._x,
-                                                 this._y,
-                                                 this._visible ? this._z : -10000)
-        this.visible = this.visible
+        this.__pos[1] = y
+        this.__updPos()
     }
     
-    get z(){return this._z}
+    get z(){return this.__pos[2]}
     set z(z: number){
-        this._z = z
-        this.visible = this.visible
+        this.__pos[2] = z
+        this.__updPos()
     }
     
-    get visible(){return this._visible}
+    get visible(){return this.__visible}
     set visible(flag: boolean){
-        this._visible = flag
-        let z = flag ? this._z : -100000
-        BlzSetSpecialEffectHeight(this.handle, z)
+        this.__visible = flag
+        let true_z = flag ? this.z : -100000
+        BlzSetSpecialEffectHeight(this.handle, true_z)
     }
 
-    get yaw(){return this._yaw}
+    get yaw(){return this.__yaw}
     set yaw(yaw: number){
-        this._yaw = yaw
-        BlzSetSpecialEffectYaw(this.handle, this._yaw)
+        this.__yaw = yaw
+        BlzSetSpecialEffectYaw(this.handle, this.__yaw)
     }
 
-    get pitch(){return this._pitch}
+    get pitch(){return this.__pitch}
     set pitch(pitch: number){
-        this._pitch = pitch
-        BlzSetSpecialEffectPitch(this.handle, this._pitch)
+        this.__pitch = pitch
+        BlzSetSpecialEffectPitch(this.handle, this.__pitch)
     }
 
-    get roll(){return this._roll}
+    get roll(){return this.__roll}
     set roll(roll: number){
-        this._roll = roll
-        BlzSetSpecialEffectRoll(this.handle, this._roll)
+        this.__roll = roll
+        BlzSetSpecialEffectRoll(this.handle, this.__roll)
     }
 
-    get scaleX(){return this._scale_x}
+    get scale(){return [this.__scale[0], this.__scale[1], this.__scale[2]]}
+    set scale(s: [number, number, number]){
+        let s_x = s[0] <= 0.001 ? 0.001 : s[0]
+        let s_y = s[1] <= 0.001 ? 0.001 : s[1]
+        let s_z = s[2] <= 0.001 ? 0.001 : s[2]
+        BlzSetSpecialEffectMatrixScale(this.handle, s_x / this.__scale[0], 
+                                                    s_y / this.__scale[1],
+                                                    s_z / this.__scale[2])
+        this.__scale = [s_x, s_y, s_z]
+    }
+
+    get scaleX(){return this.__scale[0]}
     set scaleX(scale: number){
-        scale = scale < 0 ? 0 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, scale / this._scale_x, 1, 1)
-        this._scale_x = scale
+        scale = scale <= 0.001 ? 0.001 : scale
+        BlzSetSpecialEffectMatrixScale(this.handle, scale / this.__scale[0], 1, 1)
+        this.__scale[0] = scale
     }
 
-    get scaleY(){return this._scale_y}
+    get scaleY(){return this.__scale[1]}
     set scaleY(scale: number){
-        scale = scale < 0 ? 0 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, 1, scale / this._scale_y, 1)
-        this._scale_y = scale
+        scale = scale <= 0.001 ? 0.001 : scale
+        BlzSetSpecialEffectMatrixScale(this.handle, 1, scale / this.__scale[1], 1)
+        this.__scale[1] = scale
     }
 
-    get scaleZ(){return this._scale_z}
+    get scaleZ(){return this.__scale[2]}
     set scaleZ(scale: number){
-        scale = scale < 0 ? 0 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, 1, 1, scale / this._scale_z)
-        this._scale_z = scale
+        scale = scale <= 0.001 ? 0.001 : scale
+        BlzSetSpecialEffectMatrixScale(this.handle, 1, 1, scale / this.__scale[2])
+        this.__scale[2] = scale
     }
 
-    get color(){return new Color(this._color)}
+    get color(){return new Color(this.__color)}
     set color(color: Color){
-        this._color = new Color(color)
+        this.__color = new Color(color)
         BlzSetSpecialEffectColor(this.handle, Math.floor(255 * color.r),
                                               Math.floor(255 * color.g),
                                               Math.floor(255 * color.b))
@@ -108,17 +138,19 @@ export class hEffect extends Handle<jeffect> {
         super.destroy()
     }
 
-    private _x: number
-    private _y: number
-    private _z: number
-    private _visible: boolean = true
-    private _yaw: number = 0;
-    private _pitch: number = 0;
-    private _roll: number = 0;
-    private _scale_x: number = 1;
-    private _scale_y: number = 1;
-    private _scale_z: number = 1;
-    private _color: Color = new Color(1, 1, 1, 1);
+    private __updPos(){
+        BlzSetSpecialEffectPosition(this.handle, this.__pos[0],
+                                                 this.__pos[1],
+                                                 this.__visible ? this.__pos[2] : -10000)
+    }
+
+    private __pos: [number, number, number]
+    private __visible: boolean
+    private __yaw: number
+    private __pitch: number
+    private __roll: number
+    private __scale: [number, number, number]
+    private __color: Color
 }
 
 type AttachPoint = 'overhead'|'head'|'chest'|'origin'|'hand'|'foot'|'weapon'|'sprite'|'medium'|'large'|'right hand'|'left hand'|'right foot'|'left foot'

@@ -39,7 +39,6 @@ export namespace DoodadSkins {
 
     export function hasVariations(id: string, hd: boolean){
         let count = tonumber(getByKey('numVar', id, hd))
-        print(getByKey('numVar', id, hd))
         return count ? count > 1 : false
     }
 

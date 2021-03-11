@@ -2,19 +2,12 @@ import * as Binary from '../Binary'
 import * as Utils from "../Utils"
 
 export class HeightMap {
-    static get active(){return this.__active}
-
     constructor(w3e: Binary.w3eFile, offset: [number, number, number]){
         this.w3e = w3e
         this.offset = offset
     }
 
     apply(){
-        if (HeightMap.__active){
-            HeightMap.__active.clear()
-        }
-        HeightMap.__active = this
-
         for (let y = 0; y < this.w3e.my; y++){
             for (let x = 0; x < this.w3e.mx; x++){
                 let data = this.w3e.get(x, y)
@@ -30,12 +23,6 @@ export class HeightMap {
     }
 
     clear(){
-        if (HeightMap.__active != this){
-            Utils.Log.wrn(HeightMap.name + ': can not clear inactive instance.')
-            return
-        }
-        HeightMap.__active = undefined
-        
         for (let y = 0; y < this.w3e.my; y++){
             for (let x = 0; x < this.w3e.mx; x++){
                 let px = 128 * x + this.offset[0]
@@ -47,6 +34,4 @@ export class HeightMap {
     
     readonly w3e: Binary.w3eFile
     readonly offset: [number, number, number]
-
-    private static __active: HeightMap | undefined
 }
