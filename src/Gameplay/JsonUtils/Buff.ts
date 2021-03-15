@@ -1,20 +1,25 @@
-// import { JsonCache } from "./Cache";
-// import { readString} from "./Read";
+import * as Utils from '../../Utils'
+import * as Json from '../../Json'
 
-// export class BuffJsonData extends JsonCache {
-//     constructor(path: string){
-//         super(path)
+let __path__ = Macro(Utils.getFilePath())
 
-//         this.name = readString(this._raw, 'name', path)
-//         this.icon = readString(this._raw, 'icon', path)
-//         this.tooltip = readString(this._raw, 'tooltip', path)
-//     }
+export class BuffJson extends Json.FileCached {
+    constructor(path: string){
+        super(path)
+        
+        let data = this._file.data
+        if (!data){
+            Utils.Log.err(path + ' is empty', __path__, BuffJson)
+        }
 
-//     get<T>(field: string){
-//         return <T><unknown>(<LuaHash>this._raw)[field]
-//     }
+        let raw = Json.decode(<string>data)
 
-//     readonly name: string
-//     readonly icon: string
-//     readonly tooltip: string
-// }
+        this.name = Json.Read.String(raw, 'name', 'undefined', path)
+        this.icon = Json.Read.String(raw, 'icon', 'undefined', path)
+        this.tooltip = Json.Read.String(raw, 'tooltip', 'undefined', path)
+    }
+
+    readonly name: string
+    readonly icon: string
+    readonly tooltip: string
+}

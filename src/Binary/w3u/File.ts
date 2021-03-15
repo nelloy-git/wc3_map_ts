@@ -1,102 +1,90 @@
-// import { Log } from "../../Utils";
-// import { Field } from "../Field";
-// import { File } from "../File";
-// import { byte2int, getFirstId, int2byte, nextId } from "../Utils";
+import * as Json from '../../Json'
+import * as Utils from '../../Utils'
 
-// import { findTUnitField } from "./Field";
-// import { TUnit } from "./TUnit";
+import { File } from "../File";
+import { getFirstId, int2byte, nextId } from "../Utils";
+import { TUnit } from "./TUnit";
 
-// export class w3uFile extends File<TUnit> {
-//     get version(){return this._version}
+export class w3uFile extends File<TUnit> {
 
-//     add(origin_id: string){
-//         let u = TUnit.create(this._getNextId(), origin_id)
-//         this._data.push(u)
-//         return u
-//     }
+    static fromBinary(file: Utils.FileBinary){
+        file.startReading()
 
-//     save(path: string){
-//         this._serialize()
-//         return super.save(path)
-//     }
+        let w3u = new w3uFile()
+        w3u.__version = file.readInt(4)
+        w3u.objects = []
+        
+        let origin_count = file.readInt(4)
+        for (let i = 0; i < origin_count; i++){
+            w3u.objects.push(TUnit.fromBinary(file))
+        }
 
-//     protected _parse(){
-//         let list: TUnit[] = []
+        let new_count = file.readInt(4)
+        for (let i = 0; i < new_count; i++){
+            w3u.objects.push(TUnit.fromBinary(file))
+        }
 
-//         this._version = this._readInt(4)
-//         this._readChar(4) // Pass original table
+        file.finishReading()
+        return w3u
+    }
 
-//         let count = this._readInt(4)
-//         for (let i = 0; i < count; i++){
-//             let origin_id = this._readChar(4)
-//             let id = this._readChar(4)
-//             let unit = TUnit.create(id, origin_id)
+    static fromJson(json: LuaTable, path: string){
+        let w3d = new w3uFile()
+        w3d.__version = Json.Read.Number(json, 'ver', 0, path)
 
-//             let changes_count = this._readInt(4)
-//             for (let j = 0; j < changes_count; j++){
-//                 let code = this._readChar(4)
-//                 let field = findTUnitField(code)
-//                 if (!field){
-//                     Log.wrn(w3uFile.name + ': unknown field \"' + code + '\"')
-//                 }
+        let list = Json.Read.TableArray(json, 'objects', [], path)
+        for (let i = 0; i < list.length; i++){
+            const json_obj = list[i]
+            w3d.objects.push(TUnit.fromJson(json_obj, path + '::[' + i + ']'))
+        }
 
-//                 let type_bytes = this._readChar(4)
-//                 if (field && Field.type2byte(field.type) != type_bytes){
-//                     Log.wrn(w3uFile.name + ': wrong field value type ' + code + '\n' +
-//                             byte2int(Field.type2byte(field.type)) + ' != ' + byte2int(type_bytes))
-//                 }
+        return w3d
+    }
 
-//                 let val
-//                 if (type_bytes == Field.type2byte('bool')){
-//                     val = this._readBool(4)
-//                 } else if(type_bytes == Field.type2byte('int')){
-//                     val = this._readInt(4)
-//                 } else if (type_bytes == Field.type2byte('real') || type_bytes == Field.type2byte('unreal')){
-//                     val = this._readFloat()
-//                 } else {
-//                     val = this._readString()
-//                 }
+    toBinary(){
+        let raw = ''
 
-//                 if (field){
-//                     TUnit.setField(unit, field, val)
-//                 }
+        raw += int2byte(this.version)
+        raw += int2byte(0)
+        raw += int2byte(this.objects.length)
+        for (const tunit of this.objects){
+            raw += tunit.toBinary()
+        }
 
-//                 this._readChar(4) // Pass end bytes
-//             }
+        return raw
+    }
 
-//             list.push(unit)
-//         }
+    toJson(){
+        let list = []
+        for (const tunit of this.objects){
+            list.push(tunit.toJson())
+        }
 
-//         return list
-//     }
+        return {
+            ver: this.__version,
+            objects: list,
+        }
+    }
 
-//     private _serialize(){
-//         this._raw_data = '\2\0\0\0' + 
-//                          '\0\0\0\0' +
-//                          int2byte(this._data.length)
-//         this._data.forEach(cur => {
-//             this._raw_data += TUnit.serialize(cur)
-//         })
-//     }
+    getFreeId(){
+        // Is id in use?
+        let found = true
+        while (found){
+            found = false
+            this.__last_id = nextId(this.__last_id)
 
-//     private _version: number = 0
+            for (const tdood of this.objects){
+                if (tdood.id == this.__last_id){
+                    found = true
+                    break
+                }
+            }
+        }
+        return this.__last_id
+    }
+    
+    get version(){return this.__version}
 
-//     private _last_id = getFirstId('UNIT')
-//     private _getNextId(){
-//         // Is id in use?
-//         let found = true
-//         while (found){
-//             found = false
-//             this._last_id = nextId(this._last_id)
-
-//             for (let i = 0; i < this._data.length; i++){
-//                 let unit = this._data[i]
-//                 if (unit.id == this._last_id){
-//                     found = true
-//                     break
-//                 }
-//             }
-//         }
-//         return this._last_id
-//     }
-// }
+    private __version: number = 1
+    private __last_id = getFirstId('UNIT')
+}

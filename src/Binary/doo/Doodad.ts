@@ -24,15 +24,15 @@ export class Doodad extends Obj {
         return dood
     }
 
-    static fromJson(json: LuaTable){
+    static fromJson(json: LuaTable, path: string){
         let dood = new Doodad()
-        dood.id = Json.Read.String(json, 'id')
-        dood.var = Json.Read.Number(json, 'v')
-        dood.pos = <[number, number, number]>Json.Read.NumberArray(json, 'p')
-        dood.yaw = Json.Read.Number(json, 'a')
-        dood.scale = <[number, number, number]>Json.Read.NumberArray(json, 's')
-        dood.flags = Json.Read.String(json, 'f')
-        dood.life = Json.Read.Number(json, 'l')
+        dood.id = Json.Read.String(json, 'id', '0000', path)
+        dood.var = Json.Read.Number(json, 'v', 0, path)
+        dood.pos = <[number, number, number]>Json.Read.NumberArray(json, 'p', [0, 0, 0], path)
+        dood.yaw = Json.Read.Number(json, 'a', 0, path)
+        dood.scale = <[number, number, number]>Json.Read.NumberArray(json, 's', [0, 0, 0], path)
+        dood.flags = Json.Read.String(json, 'f', '\0', path)
+        dood.life = Json.Read.Number(json, 'l', 0, path)
         
         return dood
     }

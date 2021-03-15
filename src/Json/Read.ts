@@ -2,98 +2,127 @@ import { getFilePath, Log } from "../Utils";
 
 let __path__ = Macro(getFilePath())
 
-export namespace Read {
-    export function Bool(json: LuaTable, key: string | number, path?: string){
-        let val = (<LuaHash>json)[key]
-        if (typeof val !== 'boolean'){
-            return Log.err('can not get key \'' + key + (path ?  '\' from ' + path : ''),
-                           __path__, undefined, 2)
+type Type = boolean | number | string | object
+type SType = 'boolean' | 'number' | 'string' | 'object'
+
+function isArray(t: any){
+    if (typeof t !== "object"){
+        return false
+    } 
+
+    // check if all the table keys are numerical and count their number
+    let count = 0
+    for (let k in t){
+        if (typeof(k) !== "number"){
+            return false
         }
-        return val
+        count++
     }
 
-    export function Number(json: LuaTable, key: string | number, path?: string){
-        let val = (<LuaHash>json)[key]
-        if (typeof val !== 'number'){
-            return Log.err('can not get key \'' + key + (path ?  '\' from ' + path : ''),
-                           __path__, undefined, 2)
+    // all keys are numerical. now let's see if they are sequential and start with 1
+    for (let i = 0; i < count; i++){
+        //Hint: the VALUE might be "nil", in that case "not t[i]" isn't enough, that's why we check the type
+        if (!t[i] && typeof t[i] !== "undefined"){
+            return false
         }
-        return val
     }
-    
-    export function String(json: LuaTable, key: string | number, path?: string){
-        let val = (<LuaHash>json)[key]
-        if (typeof val !== 'string'){
-            return Log.err('can not get key \'' + key + (path ?  '\' from ' + path : ''),
-                           __path__, undefined, 2)
+    return true
+}
+
+function read<T extends Type>(json: LuaTable, key: string | number, of_type: SType, def?: T, path?: string){
+    let val = (<LuaHash>json)[key]
+    if (typeof val !== of_type){
+        val = <any>def
+    }
+
+    if (!path){
+        return val ? <T>val : def
+    }
+
+    if (!val){
+        Log.wrn('Can not find ' + of_type + ' "' + key + '" in ' + path)
+    }
+
+    return <T>val
+}
+
+function readArray<T extends Type>(json: LuaTable, key: string | number, of_type: SType, def?: T, path?: string){
+    let arr = read<LuaTable>(json, key, 'object', {}, path)
+
+    if (!arr || !isArray(arr)){
+        if (path){
+            Log.wrn('Can not find Array<' + of_type + '> with key "' + key + '" in ' + path)
         }
-        return val
-    }
-    
-    export function Table(json: LuaTable, key: string | number, path?: string){
-        let val = (<LuaHash>json)[key]
-        if (typeof val !== 'object'){
-            print(type(val))
-            return Log.err('can not get key \'' + key + (path ?  '\' from ' + path : ''),
-                           __path__, undefined, 2)
-        }
-        return <LuaTable>val
-    }
-    
-    export function BooleanArray(json: LuaTable, key: string | number, path?: string){
-        let arr = Table(json, key, path)
-        let arr_k: string | number
-        for (arr_k in arr){
-            if (typeof arr_k !== 'boolean'){
-                return Log.err('BooleanArray can not contain string keys. ' + (path ? path : ''),
-                               __path__, undefined, 2)
+        return def
+    } 
+
+    for (let i = 0; i < (<Array<any>>arr).length; i++){
+        if (typeof (<Array<any>>arr)[i] !== of_type){
+            if (path){
+                Log.wrn('Array<' + of_type + '>[' + i + '] with key "' + key + '" is not ' + of_type + ' in ' + path)
             }
-    
-            Number(arr, arr_k, path)
+            return def
         }
-        return <number[]><unknown>arr
+    }
+    return arr
+}
+
+export namespace Read {
+
+    export function Bool(json: LuaTable, key: string | number): boolean | undefined
+    export function Bool(json: LuaTable, key: string | number, def: boolean): boolean
+    export function Bool(json: LuaTable, key: string | number, def: boolean, wrn_path: string): boolean
+    export function Bool(json: LuaTable, key: string | number, def?: boolean, wrn_path?: string){
+        return read(json, key, 'boolean', def, wrn_path)
     }
     
-    export function NumberArray(json: LuaTable, key: string | number, path?: string){
-        let arr = Table(json, key, path)
-        let arr_k: string | number
-        for (arr_k in arr){
-            if (typeof arr_k !== 'number'){
-                return Log.err('StringArray can not contain string keys. ' + (path ? path : ''),
-                               __path__, undefined, 2)
-            }
-    
-            Number(arr, arr_k, path)
-        }
-        return <number[]><unknown>arr
+    export function Number(json: LuaTable, key: string | number): number | undefined
+    export function Number(json: LuaTable, key: string | number, def: number): number
+    export function Number(json: LuaTable, key: string | number, def: number, wrn_path: string): number
+    export function Number(json: LuaTable, key: string | number, def?: number, wrn_path?: string){
+        return read(json, key, 'number', def, wrn_path)
     }
     
-    export function StringArray(json: LuaTable, key: string | number, path?: string){
-        let arr = Table(json, key, path)
-        let arr_k: string | number
-        for (arr_k in arr){
-            if (typeof arr_k !== 'number'){
-                return Log.err('StringArray can not contain string keys. ' + (path ? path : ''),
-                               __path__, undefined, 2)
-            }
-    
-            String(arr, arr_k, path)
-        }
-        return <string[]><unknown>arr
+    export function String(json: LuaTable, key: string | number): string | undefined
+    export function String(json: LuaTable, key: string | number, def: string): string
+    export function String(json: LuaTable, key: string | number, def: string, wrn_path: string): string
+    export function String(json: LuaTable, key: string | number, def?: string, wrn_path?: string){
+        return read(json, key, 'string', def, wrn_path)
     }
     
-    export function TableArray(json: LuaTable, key: string | number, path?: string){
-        let arr = Table(json, key, path)
-        let arr_k: string | number
-        for (arr_k in arr){
-            if (typeof arr_k !== 'number'){
-                return Log.err('StringArray can not contain string keys. ' + (path ? path : ''),
-                               __path__, undefined, 2)
-            }
+    export function Table(json: LuaTable, key: string | number): LuaTable | undefined
+    export function Table(json: LuaTable, key: string | number, def: LuaTable): LuaTable
+    export function Table(json: LuaTable, key: string | number, def: LuaTable, wrn_path: string): LuaTable
+    export function Table(json: LuaTable, key: string | number, def?: LuaTable, wrn_path?: string){
+        return read(json, key, 'object', def, wrn_path)
+    }
     
-            Table(arr, arr_k, path)
-        }
-        return <LuaTable[]><unknown>arr
+    export function BooleanArray(json: LuaTable, key: string | number): boolean[] | undefined
+    export function BooleanArray(json: LuaTable, key: string | number, def: boolean[]): boolean[]
+    export function BooleanArray(json: LuaTable, key: string | number, def: boolean[], wrn_path: string): boolean[]
+    export function BooleanArray(json: LuaTable, key: string | number, def?: boolean[], wrn_path?: string){
+        return readArray(json, key, 'boolean', def, wrn_path)
+    }
+    
+    export function NumberArray(json: LuaTable, key: string | number): number[] | undefined
+    export function NumberArray(json: LuaTable, key: string | number, def: number[]): number[]
+    export function NumberArray(json: LuaTable, key: string | number, def: number[], wrn_path: string): number[]
+    export function NumberArray(json: LuaTable, key: string | number, def?: number[], wrn_path?: string){
+        return readArray(json, key, 'number', def, wrn_path)
+    }
+    
+    export function StringArray(json: LuaTable, key: string | number): string[] | undefined
+    export function StringArray(json: LuaTable, key: string | number, def: string[]): string[]
+    export function StringArray(json: LuaTable, key: string | number, def: string[], wrn_path: string): string[]
+    export function StringArray(json: LuaTable, key: string | number, def?: string[], wrn_path?: string){
+        return readArray(json, key, 'string', def, wrn_path)
+    }
+    
+    export function TableArray(json: LuaTable, key: string | number): LuaTable[] | undefined
+    export function TableArray(json: LuaTable, key: string | number, def: LuaTable[]): LuaTable[]
+    export function TableArray(json: LuaTable, key: string | number, def: LuaTable[], wrn_path: string): LuaTable[]
+    export function TableArray(json: LuaTable, key: string | number, def?: LuaTable[], wrn_path?: string){
+        return readArray(json, key, 'object', def, wrn_path)
     }
 }
 

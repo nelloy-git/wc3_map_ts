@@ -1,13 +1,14 @@
 import * as Json from '../../Json'
+import * as Utils from '../../Utils'
 
-import { FileBinary } from "../../Utils"
 import { Obj } from "../Obj"
-import { TDoodadFieldChange } from './Field'
 import { Field } from '../Field'
+import { TDoodadFieldChange } from './Field'
+import { int2byte } from '../Utils'
 
 export class TDoodad extends Obj {
 
-    static fromBinary(file: FileBinary){
+    static fromBinary(file: Utils.FileBinary){
         let tdood = new TDoodad()
         tdood.origin_id = file.readChar(4)
         tdood.id = file.readChar(4)
@@ -24,14 +25,15 @@ export class TDoodad extends Obj {
         return tdood
     }
 
-    static fromJson(json: LuaTable){
+    static fromJson(json: LuaTable, path: string){
         let tdood = new TDoodad()
-        tdood.id = Json.Read.String(json, 'id')
-        tdood.origin_id = Json.Read.String(json, 'origin_id')
+        tdood.id = Json.Read.String(json, 'id', '\0\0\0\0', path)
+        tdood.origin_id = Json.Read.String(json, 'origin_id', '\0\0\0\0', path)
 
-        let changes = Json.Read.TableArray(json, 'changes')
-        for (const json_change of changes){
-            tdood.changes.push(TDoodadFieldChange.fromJson(json_change))
+        let changes = Json.Read.TableArray(json, 'changes', [], path)
+        for (let i = 0; i < changes.length; i++){
+            const json_change = changes[i]
+            tdood.changes.push(TDoodadFieldChange.fromJson(json_change, path + '::[' + i + ']'))
         }
 
         return tdood
@@ -41,8 +43,8 @@ export class TDoodad extends Obj {
         let raw = ''
         raw += this.origin_id
         raw += this.id
-        raw += this.changes.length
 
+        raw += int2byte(this.changes.length)
         for (const change of this.changes){
             raw += change.toBinary()
         }

@@ -1,4 +1,5 @@
 import { FileBinary, Log } from "../Utils";
+import { Obj } from "./Obj";
 import { byte2float, byte2int, byte2str, float2byte, int2byte, str2byte } from "./Utils";
 
 export abstract class Field<T extends Field.ValueType> {
@@ -28,14 +29,15 @@ export class FieldString extends Field<string> {
     constructor(id: string){ super(id, 'string') }
 }
 
-export abstract class FieldChange<T extends Field.ValueType> {
+export abstract class FieldChange<T extends Field.ValueType> extends Obj {
     constructor(
         public field: Field<T>,
         public val: T){
+        super()
     }
 
     static fromBinary: (file: FileBinary)=> FieldChange<Field.ValueType>
-    static fromJson: (json: LuaTable)=> FieldChange<Field.ValueType>
+    static fromJson: (json: LuaTable, path: string)=> FieldChange<Field.ValueType>
 
     abstract toBinary(): string
     abstract toJson(): LuaTable

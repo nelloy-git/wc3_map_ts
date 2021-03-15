@@ -1,31 +1,17 @@
-import { Log } from "../Utils"
-import { SyncData } from "./SyncData"
-import { Utils } from './Utils'
-
-declare function TestFileSync(this: void): void
+import { Log, encode64, decode64 } from "../Utils"
 
 const CHUNK_SIZE = 180
 const SYNC = 'S_D'
-// const SYNC_END = 'S_E'
-
-class SyncFile extends SyncData<[number, number, string]>{
-    protected data2raw(chunk_pos:number, chunk_size: number, data: string){
-        let pos = Utils.to32BitHexString(chunk_pos)
-        let size = Utils.to32BitHexString(chunk_size)
-        let raw = Utils.encode64(data)
-
-        return Utils.encode64(pos + size + raw)
-    }
-    protected raw2data(raw: string): [number, number, string]{
-        let pos = Utils.from32BitHexString(raw.substr(0, 8))
-        let size = Utils.from32BitHexString(raw.substr(8, 8))
-        let data = raw.substr(16)
-
-        return [pos, size, data]
-    }
-}
 
 type IOFileCallback = (this: void, path: string, pl: jplayer, data: string) => void
+
+function to32BitHexString(num: number) {
+    return string.format('%08X', num);
+}
+
+function from32BitHexString(someHexString: string) {
+    return tonumber(someHexString, 16) || 0;
+}
 
 export class File {
     static read(path: string, pl: jplayer, callback: IOFileCallback){
@@ -40,23 +26,23 @@ export class File {
             return
         }
 
-        let enc = Utils.encode64(s)
+        let enc = encode64(s)
         let chunks_count = math.ceil(enc.length / CHUNK_SIZE);
 
         let msg = ''
         for (let i = 0; i < enc.length; i++) {
             msg += enc.charAt(i);
             if (msg.length >= CHUNK_SIZE) {
-                let chunk = Utils.to32BitHexString(math.ceil(i / CHUNK_SIZE))
-                let count = Utils.to32BitHexString(chunks_count)
+                let chunk = to32BitHexString(math.ceil(i / CHUNK_SIZE))
+                let count = to32BitHexString(chunks_count)
                 Preload(`")\ncall BlzSendSyncData("${SYNC}","${chunk + count + msg}`);
                 msg = "";
             }
         }
 
         if (msg.length > 0) {
-            let chunk = Utils.to32BitHexString(chunks_count)
-            let count = Utils.to32BitHexString(chunks_count)
+            let chunk = to32BitHexString(chunks_count)
+            let count = to32BitHexString(chunks_count)
             Preload(`")\ncall BlzSendSyncData("${SYNC}","${chunk + count + msg}`);
         }
 
@@ -85,8 +71,8 @@ export class File {
     private static __onSync(){
         let raw = BlzGetTriggerSyncData()
 
-        let chunk = Utils.from32BitHexString(raw.substr(0, 8))
-        let count = Utils.from32BitHexString(raw.substr(8, 8))
+        let chunk = from32BitHexString(raw.substr(0, 8))
+        let count = from32BitHexString(raw.substr(8, 8))
         if (this.__data_size < 0){
             this.__data_size = count
         } else if (this.__data_size != count){
@@ -95,8 +81,7 @@ export class File {
 
 
         this.__data_rec++
-        this.__data[chunk - 1] = Utils.decode64(raw.substr(16))
-        // print(chunk, count, this.__data[chunk])
+        this.__data[chunk - 1] = decode64(raw.substr(16))
 
         if (this.__data_rec < count){
             return

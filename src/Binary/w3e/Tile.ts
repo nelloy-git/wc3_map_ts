@@ -22,11 +22,11 @@ export class Tile extends Obj {
         return  tile
     }
 
-    static fromJson(json: LuaTable){
+    static fromJson(json: LuaTable, path: string){
         let tile = new Tile()
-        tile.id_pos = Json.Read.Number(json, 'id')
-        tile.z = Json.Read.Number(json, 'z')
-        tile.water = Json.Read.Number(json, 'w')
+        tile.id_pos = Json.Read.Number(json, 'id', 0, path)
+        tile.z = Json.Read.Number(json, 'z', 0, path)
+        tile.water = Json.Read.Number(json, 'w', 0, path)
 
         return tile
     }

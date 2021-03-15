@@ -3,7 +3,7 @@ import * as Json from '../../Json'
 import { FileBinary, Log } from "../../Utils"
 import { Field, FieldBool, FieldChange, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
 import { int2byte } from '../Utils'
-import { DoodadsMeta } from './DoodadMeta'
+import { DoodadsMeta } from './DoodadsMeta'
 
 export class TDoodadFieldChange<T extends Field.ValueType> extends FieldChange<T>{
     constructor(field: Field<T>, val: T, variation: number){
@@ -35,22 +35,22 @@ export class TDoodadFieldChange<T extends Field.ValueType> extends FieldChange<T
         return new TDoodadFieldChange<Field.ValueType>(field, val, variation)
     }
 
-    static fromJson(json: LuaTable){
-        let code = Json.Read.String(json, 'id')
+    static fromJson(json: LuaTable, path: string){
+        let code = Json.Read.String(json, 'id', '\0\0\0\0', path)
         let field = findTDoodadField(code)
         if (!field){
             return Log.err('unknown field')
         }
 
-        let variation = Json.Read.Number(json, 'v')
+        let variation = Json.Read.Number(json, 'v', 0, path)
 
         let val 
         if (field.type == 'bool'){
-            val = Json.Read.Bool(json, 'val')
+            val = Json.Read.Bool(json, 'val', false, path)
         } else if (field.type == 'int' || field.type == 'real' || field.type == 'unreal'){
-            val = Json.Read.Number(json, 'val')
+            val = Json.Read.Number(json, 'val', 0, path)
         } else if (field.type == 'string'){
-            val = Json.Read.String(json, 'val')
+            val = Json.Read.String(json, 'val', 'undefined', path)
         } else {
             return Log.err('unknown field type')
         }

@@ -76,7 +76,11 @@ export class TileTexture {
             let bl = this.__corners[3] <= id_pos ? 2 : 0
             let pos = tl + tr + br + bl
 
-            this.__layers.push(this.__newImg(getById(id)[pos]))
+            let texture_set = getById(id)
+            let texture = texture_set ? texture_set[pos] : undefined
+            if(texture) {
+                this.__layers.push(this.__newImg(texture))
+            }
         }
     }
 

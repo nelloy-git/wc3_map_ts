@@ -1,5 +1,3 @@
-// export { AbilityJsonData } from './Ability'
-// export { BuffJsonData } from './Buff'
-// export { ParamsJsonData, ReadonlyJsonParams, readJsonParams } from './Params'
-// export { readNumber, readString, readTable, readStringArray } from './Read'
-// export { ScaleJsonData, ReadonlyScaleJsonData, readScale} from './Scales'
+export { AbilityJson } from './Ability'
+export { BuffJson } from './Buff'
+export { UnitTypeJson } from './UnitType'

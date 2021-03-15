@@ -44,21 +44,22 @@ export class w3eFile extends File<Tile> {
         return w3e
     }
 
-    static fromJson(json: LuaTable){
+    static fromJson(json: LuaTable, path: string){
         let w3e = new w3eFile()
 
-        w3e.main_tile = Json.Read.String(json, 'main')
-        w3e.used_tiles = Json.Read.StringArray(json, 'tiles')
-        w3e.used_cliffs = Json.Read.StringArray(json, 'cliffs')
-        w3e.mx = Json.Read.Number(json, 'mx')
-        w3e.my = Json.Read.Number(json, 'my')
-        w3e.cx = Json.Read.Number(json, 'cx')
-        w3e.cy = Json.Read.Number(json, 'cy')
+        w3e.main_tile = Json.Read.String(json, 'main', '', path)
+        w3e.used_tiles = Json.Read.StringArray(json, 'tiles', [], path)
+        w3e.used_cliffs = Json.Read.StringArray(json, 'cliffs', [], path)
+        w3e.mx = Json.Read.Number(json, 'mx', 0, path)
+        w3e.my = Json.Read.Number(json, 'my', 0, path)
+        w3e.cx = Json.Read.Number(json, 'cx', 0, path)
+        w3e.cy = Json.Read.Number(json, 'cy', 0, path)
         w3e.objects = []
 
-        let list = Json.Read.TableArray(json, 'objects')
-        for (const json_tile of list){
-            w3e.objects.push(Tile.fromJson(json_tile))
+        let list = Json.Read.TableArray(json, 'objects', [], path)
+        for (let i = 0; i < list.length; i++){
+            const json_tile = list[i]
+            w3e.objects.push(Tile.fromJson(json_tile, path + '::[' + i + ']'))
         }
         return w3e
     }

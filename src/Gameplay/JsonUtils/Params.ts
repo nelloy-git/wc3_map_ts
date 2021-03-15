@@ -1,28 +1,35 @@
-// import * as Param from "../../Parameter";
-// import { readNumber } from "./Read";
+import * as Json from '../../Json'
+import * as Param from "../../Parameter";
 
-// export type ParamsJsonData = {
-//     [param in Param.Type]: number
-// }
+export class ParamsJson {
+    constructor(json: LuaTable, default_val?: number){
+        this._def = default_val ? default_val : 0
 
-// export type ReadonlyJsonParams = {
-//     readonly [param in Param.Type]: number
-// }
+        for (let param of Param.Type.list()){
+            let val = Json.Read.Number(json, param)
+            this.values.set(param, val ? val : this._def)
+        }
+    }
 
-// export function readJsonParams(json: LuaHash | undefined, path?: string){
-//     let res = <ParamsJsonData>{}
+    get(param: Param.Type){
+        let v = this.values.get(param)
+        return v ? v : this._def
+    }
 
-//     let params_list = Param.Type.list()
-//     for (let param of params_list){
-//         res[param] = 0
-//         if (!json){
-//             continue
-//         }
+    getResult(params: Param.Container){
+        let res = 0
 
-//         if (typeof json[param] !== 'undefined'){
-//             res[param] = readNumber(json, param, path)
-//         }
-//     }
+        for (let p of Param.Type.list()){
+            let v = this.values.get(p)
+            if (v){
+                res += params.get(p, 'RES') * v
+            }
+        }
 
-//     return <ReadonlyJsonParams>res
-// }
+        return res
+    }
+
+    readonly values = new Map<Param.Type, number>()
+
+    private _def: number
+}

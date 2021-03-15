@@ -2,25 +2,31 @@ import * as Abil from "../../../AbilityExt";
 
 import { IFace } from "../../../AbilityExt"
 import { hUnit } from "../../../Handle"
-import { isWalkable } from "../../../Utils"
+import { deltaPos, getAngle, getTurnTime, isWalkable } from "../../../Utils"
 import { AbilityData } from "./AbilityData"
 
+const dt = Abil.Casting.period
+
 export class BreakthroughData extends AbilityData{
-    constructor(abil: IFace<any>, angle: number, range: number, vel: number){
+    constructor(abil: IFace<any>, caster: hUnit, target: Abil.Point){
         super(abil)
+        
+        this.caster = caster
+        let [dx, dy] = deltaPos(target, caster)
+        this.range = SquareRoot(dx * dx + dy * dy)
+        this.angle = getAngle(caster, target)
+        
+        let cast_time = abil.Casting.castingTime(target)
+        let turn_time = getTurnTime(caster, target)
+        let run_time = cast_time - turn_time
+        this.vel = this.range / run_time
 
-        let dt = Abil.Casting.period
-
-        this.caster = abil.Data.owner
-        this.angle = angle
-        this.vel = vel
-        this.vel_x = vel * Cos(angle) * dt
-        this.vel_y = vel * Sin(angle) * dt
+        this.vel_x = this.vel * Cos(this.angle) * dt
+        this.vel_y = this.vel * Sin(this.angle) * dt
         this._abs_vel_x = math.abs(this.vel_x)
         this._abs_vel_y = math.abs(this.vel_y)
-        this.range = range
-        this._range_x = math.abs(range * Cos(angle))
-        this._range_y = math.abs(range * Sin(angle))
+        this._range_x = math.abs(this.range * Cos(this.angle))
+        this._range_y = math.abs(this.range * Sin(this.angle))
         this._status = 'OK'
     }
 
