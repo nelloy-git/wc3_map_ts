@@ -1,9 +1,11 @@
 import { Screen } from "../FrameExt";
+import { hUnit } from "../Handle";
 import { Selection } from "../WcIO";
 // import { UnitInst } from "../Gameplay/Units/UnitType";
 import { InterfaceAbilityPanel } from "./Ability/Panel";
 import { InterfaceDamage } from "./Damage";
 import { InterfaceMinimap } from "./Minimap";
+import { IUnit } from "./Unit";
 import { InterfaceUnitInfoPanel } from './UnitInfo/Panel'
 import { UnitWorldBars } from "./UnitWorldInfo";
 
@@ -35,9 +37,9 @@ export function Init(){
     Selection.addAction((pl, gr)=>{
         if (pl != GetLocalPlayer()){return}
 
-        let u: any //UnitInst | undefined
+        let u: IUnit | undefined
         if (gr.length == 1){
-            // u = UnitInst.get(gr[0])
+            u = IUnit(hUnit.get(gr[0]))
         } 
 
         unit_info.unit = u

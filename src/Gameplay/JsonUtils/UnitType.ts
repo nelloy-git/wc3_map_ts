@@ -90,6 +90,7 @@ export class UnitTypeJson extends Json.FileCached {
         let tunit = new Binary.TUnit()
         tunit.id = this.id
         tunit.origin_id = 'hfoo'
+        tunit.changes.push(new Binary.TUnitFieldChange(Binary.TUnitField.ModelFile, this.model))
         w3u.objects.push(tunit)
     }
 
