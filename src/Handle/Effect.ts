@@ -104,7 +104,7 @@ export class hEffect extends Handle<jeffect> {
 
     get scaleX(){return this.__scale[0]}
     set scaleX(scale: number){
-        scale = scale <= 0.001 ? 0.001 : scale
+        scale = scale <= 0.002 ? 0.002 : scale
         BlzSetSpecialEffectMatrixScale(this.handle, scale / this.__scale[0], 1, 1)
         this.__scale[0] = scale
     }

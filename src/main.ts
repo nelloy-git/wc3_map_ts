@@ -51,3 +51,25 @@ if (IsGame()){
     tm.start(1, false)
 
 }
+
+class A {
+    get a(){return this._a}
+    set a(a: number){this._a = a}
+
+    protected _a: number = 0
+}
+
+class B extends A {
+    get a(){return super.a}
+    set a(a: number){
+        this.b = a
+        super.a = a
+    }
+
+    b: number = 1
+}
+
+let b = new B()
+print(b.a, b.b)
+b.a = 5
+print(b.a, b.b)

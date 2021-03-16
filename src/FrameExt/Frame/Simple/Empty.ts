@@ -1,7 +1,7 @@
 import * as Fdf from '../../../Fdf'
 import { Log } from '../../../Utils'
 
-import { Frame } from "../../Frame";
+import { Frame } from "../../FrameOld";
 
 export class SimpleEmpty extends Frame {
     constructor(){

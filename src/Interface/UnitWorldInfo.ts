@@ -14,9 +14,9 @@ enum BAR_TYPE {
 }
 
 const BAR_COLOR = {
-    [BAR_TYPE.LIFE]: new Color(33 / 255, 191 / 255, 0, 0.5),
-    [BAR_TYPE.MANA]: new Color(0, 66 / 255, 1, 0.5),
-    [BAR_TYPE.PSHIELD]: new Color(247 / 255, 165 / 255, 139 / 255, 0.5),
+    [BAR_TYPE.LIFE]: new Color(0.13, 0.75, 0, 0.5),
+    [BAR_TYPE.MANA]: new Color(0, 0.26, 1, 0.5),
+    [BAR_TYPE.PSHIELD]: new Color(0.96, 165 / 255, 139 / 255, 0.5),
     [BAR_TYPE.MSHELD]: new Color(189 / 255, 0, 1, 0.5),
     [BAR_TYPE.SHIELD]: new Color(27 / 255, 231 / 255, 186 / 255, 0.5),
     [BAR_TYPE.LIFE_BACK]: new Color(0, 0, 0, 0.5),
@@ -57,7 +57,7 @@ export class UnitWorldBars {
         this.__bars = []
         for (let t of Object.values(BAR_TYPE)){
             if (typeof t === 'string'){continue}
-            this.__bars.push(this.__createBar(t))
+            this.__bars[t] = this.__createBar(t)
         }
     }
     
@@ -125,9 +125,9 @@ export class UnitWorldBars {
     }
 
     private __update(){
-        for (let t: BAR_TYPE = 0; t < this.__bars.length; t++){
-            let bar = this.__bars[t]
-            bar.fullness = BAR_FULLNESS[t](this.__target)
+        for (let t of Object.values(BAR_TYPE)){
+            if (typeof t === 'string'){continue}
+            this.__bars[t].fullness = BAR_FULLNESS[t](this.__target)
         }
     }
 

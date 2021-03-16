@@ -1,6 +1,6 @@
 import * as Fdf from '../../../Fdf'
 import { Log } from '../../../Utils'
-import { Frame } from "../../Frame";
+import { Frame } from "../../FrameOld";
 import { SimpleString } from './String';
 
 export class SimpleText extends Frame {

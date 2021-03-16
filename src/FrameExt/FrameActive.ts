@@ -3,27 +3,22 @@ import * as Utils from '../Utils'
 
 const Log = Utils.Log
 
-import { FrameIFace } from './FrameIFace'
+import { Frame } from './Frame'
 
 let __path__ = Macro(Utils.getFilePath())
 
-export class Frame extends FrameIFace  {
+export class FrameActive extends Frame  {
     static get(id: jframehandle | number){
         let instance = Handle.Handle.get(id)
-        if (!instance){
-            return undefined
+        if (instance instanceof FrameActive){
+            return instance
         }
-
-        if (Utils.wcType(instance.handle) != 'framehandle'){
-            return Log.err('got wrong type of handle.',
-                            __path__, Frame, 2)
-        }
-
-        return instance as Frame
+        return undefined
     }
+    static getTriggered(){return FrameActive.get(BlzGetTriggerFrame())}
 
     constructor(handle: jframehandle, is_simple: boolean){
-        super(handle)
+        super(handle, is_simple)
 
         this.is_simple = is_simple
 

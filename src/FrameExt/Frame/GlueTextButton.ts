@@ -1,7 +1,7 @@
 import * as Fdf from '../../Fdf'
 import { Log } from "../../Utils";
 
-import { Frame } from "../Frame";
+import { Frame } from "../FrameOld";
 import { Backdrop } from './Backdrop'
 import { Highlight } from './Highlight'
 import { Text } from './Text'

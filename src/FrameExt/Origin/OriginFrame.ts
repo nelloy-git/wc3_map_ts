@@ -1,5 +1,5 @@
 import { Log } from "../../Utils";
-import { Frame } from "../Frame";
+import { Frame } from "../FrameOld";
 
 export abstract class OriginFrame extends Frame {
     protected constructor(handle: jframehandle, is_simple: boolean){

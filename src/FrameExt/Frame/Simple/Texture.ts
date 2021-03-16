@@ -1,5 +1,5 @@
 import { Log } from '../../../Utils'
-import { Frame } from "../../Frame";
+import { Frame } from "../../FrameOld";
 
 export class SimpleTexture extends Frame {
     constructor(handle: jframehandle){

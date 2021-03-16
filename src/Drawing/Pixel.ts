@@ -43,6 +43,7 @@ export function newImageList(count: number, image?: string){
         // Random position
         im.x = cx + w * Math.random()
         im.y = cy + h * Math.random()
+        im.visible = false
     }
     return list
 }
@@ -55,7 +56,9 @@ export function newEffectList(count: number, model?: string){
 
     let list: hEffect[] = []
     for (let i = 0; i < count; i++){
-        list.push(new hEffect(model, cx + w * Math.random(), cy + h * Math.random(), 0))
+        let eff = new hEffect(model, cx + w * Math.random(), cy + h * Math.random(), 0)
+        list.push(eff)
+        eff.visible = false
     }
     return list
 }

@@ -45,7 +45,7 @@ export class WorldBar extends hEffect {
 
     get fullness(){return this._fullness}
     set fullness(val: number){
-        this._fullness = val > 1 ? 1 : val < 0.001 ? 0.001 : val
+        this._fullness = val
         this.scaleX = this._fullness
     }
 

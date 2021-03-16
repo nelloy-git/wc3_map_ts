@@ -1,6 +1,6 @@
 import * as Fdf from '../../Fdf'
 import { Log } from "../../Utils";
-import { Frame } from "../Frame";
+import { Frame } from "../FrameOld";
 
 export type VertAlignment = 'TOP'|'MID'|'BOT'
 export type HorzAlignment = 'LEFT'|'CENTER'|'RIGHT'

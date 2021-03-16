@@ -17,14 +17,18 @@ export class Color {
         this._a = a ? a : 1
     };
 
-    public compare(other: Color){
+    copy(){
+        return new Color(this._r, this._g, this._b, this._a)
+    }
+
+    compare(other: Color){
         return (this._r == other._r) &&
                (this._g == other._g) &&
                (this._b == other._b) &&
                (this._a == other._a)
     }
 
-    public colorText(text: string){
+    colorText(text: string){
         return '|c' + this.hex(this._r)
                     + this.hex(this._g)
                     + this.hex(this._b)
@@ -32,14 +36,14 @@ export class Color {
                     + text + '|r'
     }
 
-    public getWcCode(){
+    getWcCode(){
         return BlzConvertColor(math.floor(255 * this._r),
                                math.floor(255 * this._g),
                                math.floor(255 * this._b),
                                math.floor(255 * this._a))
     }
 
-    public toString(){
+    toString(){
         return 'Color(' + this._r + ', ' +
                           this._g + ', ' +
                           this._b + ', ' +
@@ -50,17 +54,17 @@ export class Color {
         return string.format('%02X', math.floor(255 * val))
     }
 
-    public get r(){return this._r}
-    public set r(r: number){this._r = r > 1 ? 1 : r < 0 ? 0 : r}
+    get r(){return this._r}
+    set r(r: number){this._r = r > 1 ? 1 : r < 0 ? 0 : r}
 
-    public get g(){return this._g}
-    public set g(g: number){this._g = g > 1 ? 1 : g < 0 ? 0 : g}
+    get g(){return this._g}
+    set g(g: number){this._g = g > 1 ? 1 : g < 0 ? 0 : g}
 
-    public get b(){return this._b}
-    public set b(b: number){this._b = b > 1 ? 1 : b < 0 ? 0 : b}
+    get b(){return this._b}
+    set b(b: number){this._b = b > 1 ? 1 : b < 0 ? 0 : b}
 
-    public get a(){return this._a}
-    public set a(a: number){this._a = a > 1 ? 1 : a < 0 ? 0 : a}
+    get a(){return this._a}
+    set a(a: number){this._a = a > 1 ? 1 : a < 0 ? 0 : a}
 
     private _r: number = 1;
     private _g: number = 1;

@@ -1,6 +1,6 @@
 import * as Fdf from '../../../Fdf'
 import { Log } from '../../../Utils'
-import { Frame } from "../../Frame";
+import { Frame } from "../../FrameOld";
 import { SimpleTexture } from './Texture';
 
 export class SimpleImage extends Frame {
