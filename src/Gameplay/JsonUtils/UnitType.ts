@@ -103,12 +103,6 @@ export class UnitTypeJson extends Json.FileCached {
         unit.modelScale = Utils.isReforged(GetLocalPlayer()) ? this.size_hd : this.size_sd
 
         for (let param of Param.Type.list()){
-            if (param == 'LIFE'){
-                print(this.base_params.get(param))
-                print(this.mult_params.get(param))
-                print(this.add_params.get(param))
-            }
-
             params.set(param, 'BASE', this.base_params.get(param))
             params.set(param, 'MULT', this.mult_params.get(param))
             params.set(param, 'ADD', this.add_params.get(param))

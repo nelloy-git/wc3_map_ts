@@ -31,9 +31,9 @@ export class UnitContainer extends Container {
     set(param: Type, type: ValueType, val: number){
         let min = Type.unitMin(param)
         let max = Type.unitMax(param)
-        val = val < min ? min : val > max ? max : val
 
         let res = super.set(param, type, val)
+        res = res < min ? min : res > max ? max : res
         this._applyParam(param, res)
         return res
     }
@@ -43,26 +43,22 @@ export class UnitContainer extends Container {
         let max = Type.unitMax(param)
         let cur = super.get(param, type)
         val += cur
-        val = val < min ? min : val > max ? max : val
-
+        
         let res = super.set(param, type, val)
+        res = res < min ? min : res > max ? max : res
         this._applyParam(param, res)
         return res
     }
 
     protected _applyParam(param: Type, val: number){
-        switch (param){
-            case 'PATK':{this.owner.baseDamage = val; break}
-            case 'PSPD':{
-                // 0.5 attacks per sec is default (PSPD = 1 (100%))
-                this.owner.attackCooldown = 2 / val
-                break}
-            case 'LIFE':{this.owner.lifeMax = val; break}
-            case 'REGE':{this.owner.lifeRegen = val; break}
-            case 'MANA':{this.owner.manaMax = val; break}
-            case 'RECO':{this.owner.manaRegen = val; break}
-            case 'MOVE':{this.owner.moveSpeed = val; break}
-        }
+        if (param == 'PATK'){this.owner.baseDamage = val} else
+        // 0.5 attacks per sec is default (PSPD = 1 (100%))
+        if (param == 'PSPD'){this.owner.attackCooldown = 2 / val} else
+        if (param == 'LIFE'){this.owner.lifeMax = val} else
+        if (param == 'REGE'){this.owner.lifeRegen = val} else
+        if (param == 'MANA'){this.owner.manaMax = val} else
+        if (param == 'RECO'){this.owner.manaRegen = val} else
+        if (param == 'MOVE'){this.owner.moveSpeed = val}
     }
 
     readonly owner: hUnit;
