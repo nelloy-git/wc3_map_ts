@@ -1,13 +1,12 @@
-import { hUnit } from "../../Handle";
+import * as Handle from '../../Handle'
 
 import { Charges } from "./Charges";
 import { TData } from "../Type/Data";
-import { TargetType } from "../Utils";
-import { DataIFace, IFace } from "./IFace";
+import { DataIFace, IFace, TargetType } from "./IFace";
 
 
-export class Data<T extends TargetType> implements DataIFace<T>{
-    constructor(abil: IFace<T>, id: number, owner: hUnit, type: TData<T>){
+export class Data<T extends TargetType[]> implements DataIFace<T>{
+    constructor(abil: IFace<T>, id: number, owner: Handle.hUnit, type: TData<T>){
         this.id = id
         this.owner = owner
         this.abil = abil
@@ -30,7 +29,7 @@ export class Data<T extends TargetType> implements DataIFace<T>{
     consume(target: T){return this._type.consume(this.abil, target)}
 
     readonly id: number
-    readonly owner: hUnit
+    readonly owner: Handle.hUnit
     readonly abil: IFace<T>
     readonly Charges: Charges
 

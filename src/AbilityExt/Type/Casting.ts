@@ -1,7 +1,6 @@
-import { IFace } from '../Ability/IFace'
-import { TargetType } from '../Utils'
+import { IFace, TargetType } from '../Ability/IFace'
 
-export class TCasting<T extends TargetType> {
+export class TCasting<T extends TargetType[]> {
 
     get start(){return this._start}
     set start(f: ((abil: IFace<T>, targ: T)=>void)){this._start = f}

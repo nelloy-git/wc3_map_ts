@@ -1,12 +1,12 @@
-import { IFace } from "../../../AbilityExt"
+import { IFace, TargetType } from "../../../AbilityExt"
 import { hImage, hUnit } from "../../../Handle"
 import { Color } from "../../../Utils"
 import { Arc, Line, newImageList } from '../../../Drawing'
 
-import { AbilityData } from "./AbilityData"
+import { CastingData } from "./CastingData"
 
-export class HeavyHammerData extends AbilityData {
-    constructor(abil: IFace<any>, animation: number|string, range: number, min_angle: number, max_angle: number){
+export class HeavyHammerData extends CastingData {
+    constructor(abil: IFace<TargetType[]>, animation: number|string, range: number, min_angle: number, max_angle: number){
         super(abil)
 
         this._caster = abil.Data.owner
@@ -25,7 +25,7 @@ export class HeavyHammerData extends AbilityData {
         this._arc_b.setPolarPos(x, y, 48, min_angle, max_angle)
     }
 
-    static get = <(buff: IFace<any>) => HeavyHammerData>AbilityData.get
+    static get = <(buff: IFace<TargetType[]>) => HeavyHammerData>CastingData.get
 
     get progress(){return this._progress}
     set progress(p: number){

@@ -1,17 +1,19 @@
 import { Action, ActionList } from "../Utils"
 
+const LOCAL_PLAYER: jplayer = IsGame() ? GetLocalPlayer() : <any>null
+
 export namespace Mouse {
     export type Event = 'DOWN' | 'MOVE' | 'UP'
 
     export function getX(pl?: jplayer){
-        if (!pl){pl = GetLocalPlayer()}
+        if (!pl){pl = LOCAL_PLAYER}
         let poses = _pos.get(pl)
         if (!poses){return 0}
         return poses[0][0]
     }
 
     export function getY(pl?: jplayer){
-        if (!pl){pl = GetLocalPlayer()}
+        if (!pl){pl = LOCAL_PLAYER}
         let poses = _pos.get(pl)
         if (!poses){return 0}
         return poses[0][1]

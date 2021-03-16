@@ -108,26 +108,26 @@ interface ObjectWithPosition {
     y: number
 }
 
-export function deltaPos(obj1: ObjectWithPosition, obj2: ObjectWithPosition){
-    return <[dx: number, dy: number]>[obj2.x - obj1.x, obj2.y - obj1.y]
+export function deltaPos(this: void, obj1: ObjectWithPosition, obj2: ObjectWithPosition): [dx: number, dy: number]{
+    return [obj2.x - obj1.x, obj2.y - obj1.y]
 }
 
 interface ObjectWithAngle extends ObjectWithPosition {
     angle: number
 }
 
-export function getAngle(obj1: ObjectWithAngle, obj2: ObjectWithPosition){
+export function getAngle(this: void, obj1: ObjectWithAngle, obj2: ObjectWithPosition){
     let [dx, dy] = deltaPos(obj1, obj2)
     let ta = Atan2(dy, dx)
     return ta >= 0 ? ta : 2 * math.pi + ta
 }
 
-export function deltaAngle(obj1: ObjectWithAngle, obj2: ObjectWithPosition){
+export function deltaAngle(this: void, obj1: ObjectWithAngle, obj2: ObjectWithPosition){
     return math.abs(getAngle(obj1, obj2) - obj1.angle)
 }
 
 const FULL_TURN_TIME = 0.5
-export function getTurnTime(obj1: ObjectWithAngle, obj2?: ObjectWithPosition){
+export function getTurnTime(this: void, obj1: ObjectWithAngle, obj2?: ObjectWithPosition){
     if (!obj2){return FULL_TURN_TIME}
     return FULL_TURN_TIME * deltaAngle(obj1, obj2)
 }

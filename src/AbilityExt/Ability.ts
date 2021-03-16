@@ -1,7 +1,6 @@
 import { hUnit } from "../Handle";
 
-import { IFace } from "./Ability/IFace";
-import { TargetType } from "./Utils";
+import { IFace, TargetType } from "./Ability/IFace";
 
 import { Casting } from "./Ability/Casting";
 import { Data } from "./Ability/Data";
@@ -11,14 +10,14 @@ import { TCasting } from './Type/Casting'
 import { TData } from './Type/Data'
 import { TTargeting } from './Type/Targeting'
 
-export class TAbility<T extends TargetType>{
+export class TAbility<T extends TargetType[]>{
     constructor(
         public TCasting: TCasting<T>, 
         public TData: TData<T>,
         public TTargeting: TTargeting<T>){}
 }
 
-export class Ability<T extends TargetType> implements IFace<T> {
+export class Ability<T extends TargetType[]> implements IFace<T> {
     constructor(owner: hUnit, type: TAbility<T>){
         let id = IFace.register(this)
 

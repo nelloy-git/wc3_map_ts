@@ -7,11 +7,12 @@ export abstract class SyncData<T extends any[]> {
         this._id = SyncData._newId()
         SyncData._id2sync.set(this._id, this)
 
-        for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
-            if (SyncData._trigger){
+        if (IsGame()){
+            for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
                 BlzTriggerRegisterPlayerSyncEvent(SyncData._trigger, Player(i), this._id, false)
             }
         }
+
     }
 
     public send(...data: T): void{
@@ -88,5 +89,5 @@ export abstract class SyncData<T extends any[]> {
         let trig = CreateTrigger()
         TriggerAddAction(trig, SyncData.runActions)
         return trig
-    })() : undefined
+    })() : <jtrigger><unknown>undefined
 }

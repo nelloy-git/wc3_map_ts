@@ -1,6 +1,7 @@
 import { Action, ActionList, Log } from "../Utils";
 import { hUnit } from "../Handle";
 
+import { TargetType } from './Ability/IFace'
 import { Ability, TAbility } from './Ability'
 
 export class Container {
@@ -18,11 +19,11 @@ export class Container {
         return Container._owner2container.get(owner)
     }
 
-    get list(): ReadonlyMap<number, Ability<any>>{
+    get list(): ReadonlyMap<number, Ability<TargetType[]>>{
         return this._list
     }
 
-    set(i: number, type: TAbility<any>){
+    set(i: number, type: TAbility<TargetType[]>){
         this._list.set(i, new Ability(this.owner, type))
         this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
@@ -32,7 +33,7 @@ export class Container {
         this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
 
-    get(i: number): Readonly<Ability<any>> | undefined{
+    get(i: number): Readonly<Ability<TargetType[]>> | undefined{
         return this._list.get(i)
     }
 
@@ -50,7 +51,7 @@ export class Container {
 
     readonly owner: hUnit;
 
-    private _list = new Map<number, Ability<any>>()
+    private _list = new Map<number, Ability<TargetType[]>>()
     private _actions = new Map<Container.Event, ActionList<[Container, Container.Event]>>([
         ['LIST_CHANGED', new ActionList()],
     ])

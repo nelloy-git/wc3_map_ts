@@ -1,20 +1,22 @@
-import { Mouse, Selection } from '../../../WcIO'
-import { Arc, Line, newImageList } from '../../../Drawing'
-import { hImage, hTimer, hUnit } from '../../../Handle'
+import * as WcIO from '../../../WcIO'
+import * as Handle from '../../../Handle'
+import * as Draw from '../../../Drawing'
+import * as Utils from '../../../Utils'
+
 import { TTargeting } from '../Targeting'
-import { Point } from '../../Point'
 import { IFace } from '../../Ability/IFace'
 
-export let TTargetingCone = new TTargeting<[Point]>(getTarget)
+export let TTargetingCone = new TTargeting<[Utils.Vec2]>(getTarget)
 
-let cur_abil: IFace<[hUnit]> | undefined
-let line_l = IsGame() ? new Line(newImageList(200)) : <Line<hImage>><unknown>undefined
-let line_r = IsGame() ? new Line(newImageList(200)) : <Line<hImage>><unknown>undefined
-let arc_f = IsGame() ? new Arc(newImageList(200)) : <Arc<hImage>><unknown>undefined
-let arc_b = IsGame() ? new Arc(newImageList(200)) : <Arc<hImage>><unknown>undefined
+const L_LINE = new Draw.Line(Draw.newImageList(200))
+const R_LINE = new Draw.Line(Draw.newImageList(200))
+const FAR_ARC = new Draw.Arc(Draw.newImageList(200))
+const NEAR_ARC = new Draw.Arc(Draw.newImageList(100))
+
+let cur_abil: IFace<[Utils.Vec2]> | undefined
 
 if (IsGame()){
-    let timer = new hTimer()
+    let timer = new Handle.hTimer()
     timer.addAction(mouseTrack)
     timer.start(0.02, true)
 }
@@ -22,16 +24,16 @@ if (IsGame()){
 TTargetingCone.addAction('START', (inst, pl, abil) => {enableDrawing(true, pl, abil)})
 TTargetingCone.addAction('STOP', (inst, pl, abil) => {enableDrawing(false, pl, abil)})
 
-function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[hUnit]>){
+function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[Utils.Vec2]>){
     if (pl != GetLocalPlayer()){return}
     
     cur_abil = flag ? abil : undefined
-    Selection.lock(flag)
+    WcIO.Selection.lock(flag)
 
-    line_l.visible = flag
-    line_r.visible = flag
-    arc_f.visible = flag
-    arc_b.visible = flag
+    L_LINE.visible = flag
+    R_LINE.visible = flag
+    FAR_ARC.visible = flag
+    NEAR_ARC.visible = flag
 
     if (flag){mouseTrack()}
 }
@@ -40,7 +42,7 @@ function mouseTrack(this: void){
     if (!cur_abil){return}
 
     let owner = cur_abil.Data.owner
-    let [end] = getTarget(GetLocalPlayer(), cur_abil)
+    let [end] = getTarget(cur_abil)
 
     let a = Atan2(end.y - owner.y, end.x - owner.x)
     let width_angle = cur_abil.Data.area / 2
@@ -48,19 +50,19 @@ function mouseTrack(this: void){
 
     let cx = owner.x
     let cy = owner.y
-    line_l.setPolarPos(cx, cy, 48, a - width_angle, range, a - width_angle)
-    line_r.setPolarPos(cx, cy, 48, a + width_angle, range, a + width_angle)
-    arc_f.setPolarPos(cx, cy, range, a - width_angle, a + width_angle)
-    arc_b.setPolarPos(cx, cy, 48, a - width_angle, a + width_angle)
+    L_LINE.setPolarPos(cx, cy, 48, a - width_angle, range, a - width_angle)
+    R_LINE.setPolarPos(cx, cy, 48, a + width_angle, range, a + width_angle)
+    FAR_ARC.setPolarPos(cx, cy, range, a - width_angle, a + width_angle)
+    NEAR_ARC.setPolarPos(cx, cy, 48, a - width_angle, a + width_angle)
 }
 
-function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){
+function getTarget(this: void, abil: IFace<[Utils.Vec2]>){
     let owner = abil.Data.owner
 
     let start_x = owner.x
     let start_y = owner.y
-    let end_x = Mouse.getX(pl)
-    let end_y = Mouse.getY(pl)
+    let end_x = WcIO.Mouse.getX()
+    let end_y = WcIO.Mouse.getY()
 
     let dx = end_x - start_x
     let dy = end_y - start_y
@@ -72,6 +74,6 @@ function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){
     end_x = range * cos + start_x
     end_y = range * sin + start_y
 
-    let res: [Point] = [new Point(end_x, end_y)]
+    let res: [Utils.Vec2] = [new Utils.Vec2(end_x, end_y)]
     return res
 }

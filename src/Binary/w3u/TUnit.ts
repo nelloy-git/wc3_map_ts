@@ -65,7 +65,7 @@ export class TUnit extends Obj {
         }
     }
 
-    findChange(field: Field<any>){
+    findChange(field: Field<Field.ValueType>){
         for (let change of this.changes){
             if (change.field == field){
                 return change
@@ -83,7 +83,7 @@ export class TUnit extends Obj {
         this.__origin_id = origin_id.slice(0, 4)
     }
     
-    public changes: TUnitFieldChange<any>[] = []
+    public changes: TUnitFieldChange<Field.ValueType>[] = []
 
     private __id: string = ''
     private __origin_id: string = ''

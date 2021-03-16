@@ -3,7 +3,7 @@ import { hUnit } from '../Handle'
 
 let TCasting = new Abil.TCasting<hUnit[]>()
 TCasting.start = (abil, target) => {print(abil.Data.name + ': casting start')}
-TCasting.casting = (abil, target) => {print(abil.Data.name + ': casting left ' + abil.Casting.Timer.left)}
+TCasting.casting = (abil, target) => {print(abil.Data.name + ': casting left ' + abil.Casting.timer.left)}
 TCasting.cancel = (abil, target) => {print(abil.Data.name + ': casting cancel')}
 TCasting.interrupt = (abil, target) => {print(abil.Data.name + ': casting interrupt')}
 TCasting.finish = (abil, target) => {print(abil.Data.name + ': casting finish')}
@@ -24,7 +24,7 @@ TData.chargeMax = abil => {return 1}
 TData.chargeCooldown = abil => {return 5}
 TData.isAvailable = abil => {
     let charges = abil.Data.Charges.count > 0
-    let casting = abil.Casting.Timer.left <= 0
+    let casting = abil.Casting.timer.left <= 0
     return charges && casting
 }
 TData.consume = abil => {

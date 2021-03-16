@@ -91,7 +91,7 @@ export class DoodadMap {
     private __getDoodModel(id: string, tdood: Binary.TDoodad | undefined){
         if (tdood){
             let change = tdood.findChange(Binary.TDoodadField.Model)
-            if (change){return change.val}
+            if (change){return <string>change.val}
         }
 
         return Binary.TDoodadsSLK.getModel(id, HD)

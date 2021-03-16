@@ -1,5 +1,5 @@
-import { Action, ActionList } from '../../Utils'
-import { hTimerList } from '../../Handle'
+import * as Handle from '../../Handle'
+import * as Utils from '../../Utils'
 
 export class Charges {
     constructor(){
@@ -53,7 +53,7 @@ export class Charges {
         return this._actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[Charges, Charges.Event], void> | undefined){
+    removeAction(action: Utils.Action<[Charges, Charges.Event], void> | undefined){
         if (!action){return false}
 
         let found = false
@@ -73,12 +73,12 @@ export class Charges {
     private _cooldown = 1;
     private _pause = false;
     private _timer = Charges._timer_list.newTimerObj();
-    private readonly _actions = new Map<Charges.Event, ActionList<[Charges, Charges.Event]>>([
-        ['CHARGE_CD', new ActionList()],
-        ['CHARGE_CHANGED', new ActionList()],
+    private readonly _actions = new Map<Charges.Event, Utils.ActionList<[Charges, Charges.Event]>>([
+        ['CHARGE_CD', new Utils.ActionList()],
+        ['CHARGE_CHANGED', new Utils.ActionList()],
     ])
 
-    private static _timer_list = new hTimerList(Charges.period)
+    private static _timer_list = new Handle.hTimerList(Charges.period)
 }
 
 export namespace Charges {

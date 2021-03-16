@@ -1,9 +1,9 @@
-import { Action, ActionList } from "../../Utils";
-import { TTargeting } from "../Type/Targeting";
-import { TargetType } from "../Utils";
-import { IFace, TargetingIFace } from "./IFace";
+import * as Utils from '../../Utils'
 
-export class Targeting<T extends TargetType> implements TargetingIFace<T> {
+import { TTargeting } from "../Type/Targeting";
+import { IFace, TargetingIFace, TargetType } from "./IFace";
+
+export class Targeting<T extends TargetType[]> implements TargetingIFace<T> {
     constructor(abil: IFace<T>, type: TTargeting<T>){
         this.abil = abil
         this._type = type
@@ -28,7 +28,7 @@ export class Targeting<T extends TargetType> implements TargetingIFace<T> {
         return this._actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[IFace<T>, Targeting.Event], void>){
+    removeAction(action: Utils.Action<[IFace<T>, Targeting.Event], void>){
         for (let [event, list] of this._actions){
             if (list.remove(action)){return true}
         }
@@ -38,9 +38,9 @@ export class Targeting<T extends TargetType> implements TargetingIFace<T> {
     readonly abil: IFace<T>
 
     private _type: TTargeting<T>
-    private _actions = new Map<Targeting.Event, ActionList<[IFace<T>, Targeting.Event, T]>>([
-        ['TARG_START', new ActionList()],
-        ['TARG_STOP', new ActionList()],
+    private _actions = new Map<Targeting.Event, Utils.ActionList<[IFace<T>, Targeting.Event, T]>>([
+        ['TARG_START', new Utils.ActionList()],
+        ['TARG_STOP', new Utils.ActionList()],
     ])
 }
 

@@ -1,3 +1,4 @@
+import { TargetType } from "../../AbilityExt/Ability/IFace";
 import { hTimerList, hTimerObj } from "../../Handle";
 import { Action, ActionList } from "../../Utils";
 import { TDuration } from "../Type/Duration";

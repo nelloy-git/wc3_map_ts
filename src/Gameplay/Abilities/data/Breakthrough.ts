@@ -1,14 +1,15 @@
 import * as Abil from "../../../AbilityExt";
+import * as Handle from '../../../Handle'
+import * as Utils from '../../../Utils'
 
 import { IFace } from "../../../AbilityExt"
-import { hUnit } from "../../../Handle"
 import { deltaPos, getAngle, getTurnTime, isWalkable } from "../../../Utils"
-import { AbilityData } from "./AbilityData"
+import { CastingData } from "./CastingData"
 
 const dt = Abil.Casting.period
 
-export class BreakthroughData extends AbilityData{
-    constructor(abil: IFace<any>, caster: hUnit, target: Abil.Point){
+export class BreakthroughData extends CastingData{
+    constructor(abil: IFace<[Utils.Vec2]>, caster: Handle.hUnit, target: Utils.Vec2){
         super(abil)
         
         this.caster = caster
@@ -16,7 +17,7 @@ export class BreakthroughData extends AbilityData{
         this.range = SquareRoot(dx * dx + dy * dy)
         this.angle = getAngle(caster, target)
         
-        let cast_time = abil.Casting.castingTime(target)
+        let cast_time = abil.Casting.castingTime([target])
         let turn_time = getTurnTime(caster, target)
         let run_time = cast_time - turn_time
         this.vel = this.range / run_time
@@ -30,7 +31,7 @@ export class BreakthroughData extends AbilityData{
         this._status = 'OK'
     }
 
-    static get = <(abil: IFace<any>) => BreakthroughData> AbilityData.get
+    static get = <(abil: IFace<[Utils.Vec2]>) => BreakthroughData> CastingData.get
 
     // Returns false if finished.
     period(){
@@ -56,9 +57,9 @@ export class BreakthroughData extends AbilityData{
         return
     }
 
-    targets: hUnit[] = []
+    pushed: Handle.hUnit[] = []
 
-    readonly caster: hUnit
+    readonly caster: Handle.hUnit
     readonly angle: number
     readonly vel: number
     readonly vel_x: number

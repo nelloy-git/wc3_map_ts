@@ -1,20 +1,22 @@
-import { Action, ActionList, Log } from "../../Utils";
-import { hTimerList, hTimerObj, hUnit} from '../../Handle'
-import { TCasting } from "../Type/Casting";
-import { TargetType } from "../Utils";
-import { CastingIFace, IFace } from "./IFace";
+import * as Handle from '../../Handle'
+import * as Utils from '../../Utils'
 
-export class Casting<T extends TargetType> implements CastingIFace<T> {
+import { TCasting } from "../Type/Casting";
+import { CastingIFace, IFace, TargetType } from "./IFace";
+
+const __path__ = Macro(Utils.getFilePath())
+
+export class Casting<T extends TargetType[]> implements CastingIFace<T> {
     constructor(abil: IFace<T>, type: TCasting<T>){
         this.abil = abil
-        this._type = type
+        this.__type = type
 
-        this.Timer = Casting._timer_list.newTimerObj()
-        this.Timer.addAction('PERIOD', ()=>{this._period()})
-        this.Timer.addAction('FINISH', ()=>{this._stop('CAST_FINISH')})
+        this.timer = Casting._timer_list.newTimerObj()
+        this.timer.addAction('PERIOD', ()=>{this.__period()})
+        this.timer.addAction('FINISH', ()=>{this.__stop('CAST_FINISH')})
     }
 
-    static getActive(caster: hUnit | undefined){
+    static getActive(caster: Handle.hUnit | undefined){
         if (!caster){return undefined}
         return Casting._caster2abil.get(caster)
     }
@@ -24,7 +26,7 @@ export class Casting<T extends TargetType> implements CastingIFace<T> {
     
     start(target: T){
         if (!this.abil.Data.is_available){return false}
-        if (!this._type.isTargetValid(this.abil, target)){return false}
+        if (!this.__type.isTargetValid(this.abil, target)){return false}
 
         let caster = this.abil.Data.owner
 
@@ -37,107 +39,107 @@ export class Casting<T extends TargetType> implements CastingIFace<T> {
         this.abil.Data.Charges.cooldown = this.abil.Data.charge_cd
         if (!this.abil.Data.consume(target)){
             let t_name = this.abil.Data.name
-            return Log.err(Casting.name + 
-                           ': error in consuming resources.' + 
-                           'Check ' + t_name + '.isAvailable and' +
-                           t_name + '.consume methods.')
+            return Utils.Log.err('error in consuming resources.' + 
+                                 'Check ' + t_name + '.isAvailable and' +
+                                 t_name + '.consume methods.',
+                                 __path__, Casting, 2)
         }
 
-        let time = this._type.castingTime(this.abil, target)
+        let time = this.__type.castingTime(this.abil, target)
         time = time > 0 ? time : 0.01
-        this.Timer.start(time)
+        this.timer.start(time)
         
-        this._target = target
-        this._type.start(this.abil, target)
-        this._actions.get('CAST_START')?.run(this.abil, 'CAST_START', target)
+        this.__target = target
+        this.__type.start(this.abil, target)
+        this.__actions.get('CAST_START')?.run(this.abil, 'CAST_START', target)
     }
 
     extraPeriod(reduce_time_left: boolean){
-        this.Timer.period(reduce_time_left)
+        this.timer.period(reduce_time_left)
     }
 
     cancel(){
-        this._stop('CAST_CANCEL')
+        this.__stop('CAST_CANCEL')
     }
 
     interrupt(){
-        this._stop('CAST_INTERRUPT')
+        this.__stop('CAST_INTERRUPT')
     }
 
     finish(){
-        this._stop('CAST_FINISH')
+        this.__stop('CAST_FINISH')
     }
 
     castingTime(target: T | undefined){
-        return this._type.castingTime(this.abil, target)
+        return this.__type.castingTime(this.abil, target)
     }
 
     isTargetValid(target: T){
-        return this._type.isTargetValid(this.abil, target)
+        return this.__type.isTargetValid(this.abil, target)
     }
 
     addAction(event: Casting.Event,
               callback: (this: void, abil: IFace<T>, event: Casting.Event, target: T)=>void){
-        return this._actions.get(event)?.add(callback)
+        return this.__actions.get(event)?.add(callback)
     }
 
-    removeAction(action: Action<[IFace<T>, Casting.Event, T], void> | undefined){
+    removeAction(action: Utils.Action<[IFace<T>, Casting.Event, T], void> | undefined){
         if (!action){return false}
-        for (let [event, list] of this._actions){
+        for (let [event, list] of this.__actions){
             if (list.remove(action)){return true}
         }
         return false
     }
 
-    private _period(){
-        if (!this._target){
-            return Log.err(Casting.name + 
-                           ': target is undefined.')
+    private __period(){
+        if (!this.__target){
+            return Utils.Log.err('target is undefined.',
+                                    __path__, Casting, 3)
         }
 
-        this._actions.get('CAST_CASTING')?.run(this.abil, 'CAST_CASTING', this._target)
-        this._type.casting(this.abil, this._target)
+        this.__actions.get('CAST_CASTING')?.run(this.abil, 'CAST_CASTING', this.__target)
+        this.__type.casting(this.abil, this.__target)
     }
 
-    private _stop(event: 'CAST_CANCEL'|'CAST_INTERRUPT'|'CAST_FINISH'){
-        if (!this._target){
-            return Log.err(Casting.name + 
-                           ': ability is not casting.')
+    private __stop(event: 'CAST_CANCEL'|'CAST_INTERRUPT'|'CAST_FINISH'){
+        if (!this.__target){
+            return Utils.Log.err('ability is not casting.',
+                                    __path__, Casting, 3)
         }
 
         if (event == 'CAST_CANCEL'){
-            this._type.cancel(this.abil, this._target)
+            this.__type.cancel(this.abil, this.__target)
         } else if (event == 'CAST_INTERRUPT'){
-            this._type.interrupt(this.abil, this._target)
+            this.__type.interrupt(this.abil, this.__target)
         } else {
-            this._type.finish(this.abil, this._target)
+            this.__type.finish(this.abil, this.__target)
         }
-        this._actions.get(event)?.run(this.abil, event, this._target)
+        this.__actions.get(event)?.run(this.abil, event, this.__target)
 
-        if (this.Timer.left > 0){
-            this.Timer.cancel()
+        if (this.timer.left > 0){
+            this.timer.cancel()
         }
 
-        this._target = undefined
+        this.__target = undefined
         Casting._caster2abil.delete(this.abil.Data.owner)
     }
 
     readonly abil: IFace<T>
-    readonly Timer: hTimerObj
+    readonly timer: Handle.hTimerObj
 
-    private _type: TCasting<T>
-    private _target: T | undefined
+    private __type: TCasting<T>
+    private __target: T | undefined
 
-    private _actions = new Map<Casting.Event, ActionList<[IFace<T>, Casting.Event, T]>>([
-        ['CAST_START', new ActionList()],
-        ['CAST_CASTING', new ActionList()],
-        ['CAST_CANCEL', new ActionList()],
-        ['CAST_INTERRUPT', new ActionList()],
-        ['CAST_FINISH', new ActionList()],
+    private __actions = new Map<Casting.Event, Utils.ActionList<[IFace<T>, Casting.Event, T]>>([
+        ['CAST_START', new Utils.ActionList()],
+        ['CAST_CASTING', new Utils.ActionList()],
+        ['CAST_CANCEL', new Utils.ActionList()],
+        ['CAST_INTERRUPT', new Utils.ActionList()],
+        ['CAST_FINISH', new Utils.ActionList()],
     ])
 
-    private static _timer_list = new hTimerList(Casting.period)
-    private static _caster2abil = new Map<hUnit, IFace<any>>()
+    private static _timer_list = new Handle.hTimerList(Casting.period)
+    private static _caster2abil = new Map<Handle.hUnit, IFace<TargetType[]>>()
 }
 
 export namespace Casting {

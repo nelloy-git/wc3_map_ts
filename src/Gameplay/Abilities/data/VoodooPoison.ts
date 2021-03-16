@@ -1,12 +1,12 @@
 import * as Param from "../../../Parameter";
 
-import { IFace } from "../../../AbilityExt"
+import { IFace, TargetType } from "../../../AbilityExt"
 import { hEffect, hUnit} from "../../../Handle"
 import { Arc, Line, newEffectList } from '../../../Drawing'
-import { AbilityData } from "./AbilityData"
+import { CastingData } from "./CastingData"
 
-export class VoodooPoisonData extends AbilityData{
-    constructor(abil: IFace<any>, model: string,
+export class VoodooPoisonData extends CastingData{
+    constructor(abil: IFace<TargetType[]>, model: string,
                 cx: number, cy: number, cz: number,
                 r?: number, a?: number, step?: number){
         super(abil)
@@ -42,7 +42,7 @@ export class VoodooPoisonData extends AbilityData{
         this.progress = 0
     }
 
-    static get = <(abil: IFace<any>) => VoodooPoisonData>AbilityData.get
+    static get = <(abil: IFace<TargetType[]>) => VoodooPoisonData>CastingData.get
 
     get progress(){return this._progress}
     set progress(p: number){

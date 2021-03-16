@@ -103,6 +103,12 @@ export class UnitTypeJson extends Json.FileCached {
         unit.modelScale = Utils.isReforged(GetLocalPlayer()) ? this.size_hd : this.size_sd
 
         for (let param of Param.Type.list()){
+            if (param == 'LIFE'){
+                print(this.base_params.get(param))
+                print(this.mult_params.get(param))
+                print(this.add_params.get(param))
+            }
+
             params.set(param, 'BASE', this.base_params.get(param))
             params.set(param, 'MULT', this.mult_params.get(param))
             params.set(param, 'ADD', this.add_params.get(param))
@@ -118,14 +124,14 @@ export class UnitTypeJson extends Json.FileCached {
     }
 
     private _readAbilities(path: string){
-        let abils: Abil.TAbility<any>[] = []
+        let abils: Abil.TAbility<Abil.TargetType[]>[] = []
         let names = Json.Read.StringArray(this._raw, 'abils', [], path)
         
         for (let i = 0; i < names.length; i++){
             const name = names[i]
-            let found: Abil.TAbility<any> | undefined
+            let found: Abil.TAbility<Abil.TargetType[]> | undefined
             for (let k in AbilList){
-                let cur = (<{[k:string]: any}><unknown>AbilList)[k]
+                let cur = (<{[k:string]: Abil.TargetType[]}><unknown>AbilList)[k]
 
                 if (name == k && cur instanceof Abil.TAbility){
                     found = cur
@@ -155,7 +161,7 @@ export class UnitTypeJson extends Json.FileCached {
     readonly base_params: ParamsJson
     readonly mult_params: ParamsJson
     readonly add_params: ParamsJson
-    readonly abils: (Abil.TAbility<any> | undefined)[]
+    readonly abils: (Abil.TAbility<Abil.TargetType[]> | undefined)[]
 
     protected readonly _raw: LuaTable
 }

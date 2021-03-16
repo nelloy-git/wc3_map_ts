@@ -14,7 +14,7 @@ let json = new AbilityJson(__dir__ + '/json/Breakthrough.json')
 const KEY_DMG = 'pushDmg'
 const KEY_PUSH = 'pushDur'
 
-let Casting = new Abil.TCasting<[Abil.Point]>()
+let Casting = new Abil.TCasting<[Utils.Vec2]>()
 
 Casting.start = (abil, target) => {
     let caster = abil.Data.owner
@@ -51,7 +51,7 @@ Casting.casting = (abil, target) => {
     let in_range = hUnit.getInRange(x, y, abil.Data.area)
     for (let target of in_range){
         if (caster.isAlly(target)){continue}
-        if (data.targets.indexOf(target) >= 0){continue}
+        if (data.pushed.indexOf(target) >= 0){continue}
 
         // Push
         let buffs = Buff.Container.get(target)
@@ -68,7 +68,7 @@ Casting.casting = (abil, target) => {
                               dmg_scale.getResult(params), 'PSPL', WEAPON_TYPE_WHOKNOWS)
         }
 
-        data.targets.push(target)
+        data.pushed.push(target)
     }
 }
 
@@ -80,7 +80,7 @@ function getPushVelXY(caster: hUnit, target: hUnit, vel: number): [vel_x: number
     return [vel_x, vel_y]
 }
 
-function clear(abil: Abil.IFace<[Abil.Point]>){
+function clear(abil: Abil.IFace<[Utils.Vec2]>){
     BreakthroughData.get(abil).destroy()
 
     let caster = abil.Data.owner
@@ -126,7 +126,7 @@ Data.isAvailable = (abil) => {
     let controllable = !abil.Data.owner.pause
     let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
     let charges = abil.Data.Charges.count > 0
-    let casting = abil.Casting.Timer.left <= 0
+    let casting = abil.Casting.timer.left <= 0
 
     return charges && casting && enough_mana && controllable
 }

@@ -1,80 +1,81 @@
-import * as H from '../../Handle'
-import * as U from '../../Utils'
+import * as Handle from '../../Handle'
+import * as Utils from '../../Utils'
 import * as Input from '../../WcIO'
 
-import { IFace } from '../Ability/IFace'
-import { TargetType } from '../Utils'
-import { Point } from '../Point'
+import { IFace, TargetType } from '../Ability/IFace'
 
-export class SyncTargets extends Input.SyncData<[IFace<TargetType>, TargetType]> {
+const __path__ = Macro(Utils.getFilePath())
+
+const DATA_SEP = ';'
+const VALUE_SEP = '_'
+const VEC2_PREFIX = 'v'
+const UNIT_PREFIX = 'u'
+
+function __toString(obj: TargetType): string | undefined{
+    let str
+    if (obj instanceof Handle.hUnit){
+        str = UNIT_PREFIX + VALUE_SEP + obj.id.toString()
+    } else if (obj instanceof Utils.Vec2){
+        str = VEC2_PREFIX + VALUE_SEP + obj.toString()
+    } 
+
+    return str
+}
+
+function __fromString(str: string): TargetType | undefined{
+    let targ: TargetType | undefined
+    let [prefix, value] = str.split(VALUE_SEP)
+
+    if (prefix == UNIT_PREFIX){
+        let handle_id = parseInt(value)
+        targ = Handle.hUnit.get(handle_id)
+    } else if (prefix == VEC2_PREFIX){
+        targ = Utils.Vec2.fromString(value)
+    }
+
+    return targ
+}
+
+type SyncType = [IFace<TargetType[]>, TargetType[]]
+
+export class SyncTargets extends Input.SyncData<SyncType> {
     
-    protected data2raw(abil: IFace<TargetType>,
-                       target: TargetType){
+    protected data2raw(abil: IFace<TargetType[]>,
+                       targets: TargetType[]){
 
         let raw = abil.Data.id.toString()
-        for (let targ of target){
-            raw += SyncTargets._sep + 
-                   this._toRaw(targ)
+        for (let i = 0; i < targets.length; i++){
+            let s = __toString(targets[i])
+            if (!s){
+                return Utils.Log.err('unknown TargetType. targets[' + i + ']',
+                                        __path__, SyncTargets, 2)
+            }
+            raw += DATA_SEP + s
         }
         return raw
     }
 
-    protected raw2data(raw: string): [IFace<TargetType>, TargetType]{
-        let vals = raw.split(SyncTargets._sep)
+    protected raw2data(raw: string): SyncType{
+        let list = raw.split(DATA_SEP)
 
-        let abil_id = parseInt(vals[0])
-        let target: TargetType = []
-        for (let i = 1; i < vals.length; i++){
-            target.push(this._fromRaw(vals[i]))
-        }
-
+        let abil_id = parseInt(list[0])
         let abil = IFace.get(abil_id)
         if (!abil){
-            return U.Log.err(SyncTargets.name + 
-                           ': got invalid ability id.')
+            return Utils.Log.err('invalid ability id.',
+                                    __path__, SyncTargets, 2)
         }
 
-        return [abil, target]
+        let targets: TargetType[] = []
+        for (let i = 1; i < list.length; i++){
+            let targ = __fromString(list[i])
+
+            if (!targ){
+                return Utils.Log.err('can not parse target[' + i + '] = ' + list[i])
+            }
+
+            targets.push(targ)
+        }
+
+        return [abil, targets]
     }
-
-    /* Can not be used with arrays. */
-    private _toRaw(obj: H.hUnit | Point){
-        let raw
-        if (obj instanceof H.hUnit){
-            raw = SyncTargets._prefUnit + SyncTargets._prefSep + 
-                  obj.id.toString()
-        } else if (obj instanceof Point){
-            raw = SyncTargets._prefPoint +SyncTargets._prefSep +
-                  obj.toString()
-        } else {
-            return U.Log.err(SyncTargets.name + 
-                           ': unknown target type.')
-        }
-        return raw
-    }
-
-    private _fromRaw(raw: string){
-        let targ
-        let [pref, val] = raw.split(SyncTargets._prefSep)
-        if (pref == SyncTargets._prefUnit){
-            targ = H.hUnit.get(parseInt(val))
-        } else if (pref == SyncTargets._prefPoint){
-            targ = new Point(val)
-        } else { 
-            return U.Log.err(SyncTargets.toString() + 
-                           ': unknown target type.')
-        }
-
-        if (!targ){
-            return U.Log.err(SyncTargets.toString() + 
-                           ': can not parse targets.')
-        }
-
-        return targ
-    }
-
-    private static readonly _sep = ';'
-    private static readonly _prefSep = '_'
-    private static readonly _prefPoint = 'p'
-    private static readonly _prefUnit = 'u'
 }

@@ -16,9 +16,11 @@ export {
 export { Action } from './Action'
 export { ActionList } from './ActionList'
 export { Color } from './Color'
+export { FileBinary, FileText } from './File'
 export { Import } from './Import'
 export { Mat } from './Mat'
-export { FileBinary, FileText } from './File'
+export { Vec2 } from './Vec2'
+export { Vec3 } from './Vec3'
 
 import { Logger } from './Logger'
 export { Logger }

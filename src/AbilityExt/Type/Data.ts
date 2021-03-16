@@ -1,7 +1,6 @@
-import { IFace } from '../Ability/IFace'
-import { TargetType } from '../Utils'
+import { IFace, TargetType } from '../Ability/IFace'
 
-export class TData<T extends TargetType> {
+export class TData<T extends TargetType[]> {
 
     get name(){return this._name}
     set name(f: (abil: IFace<T>)=> string){this._name = f}

@@ -1,17 +1,18 @@
-import { Mouse, Selection } from '../../../WcIO'
-import { Arc, newImageList } from '../../../Drawing'
+import * as WcIO from '../../../WcIO'
+import * as Handle from '../../../Handle'
+import * as Draw from '../../../Drawing'
+import * as Utils from '../../../Utils'
+
 import { TTargeting } from '../Targeting'
-import { Point } from '../../Point'
 import { IFace } from '../../Ability/IFace'
-import { hImage, hTimer, hUnit } from '../../../Handle'
 
-export let TTargetingArea = new TTargeting<[Point]>(getTarget)
+export let TTargetingArea = new TTargeting<[Utils.Vec2]>(getTarget)
 
-let cur_abil: IFace<[hUnit]> | undefined
-let circle = IsGame() ? new Arc(newImageList(200)) : <Arc<hImage>><unknown>undefined
+let cur_abil: IFace<[Utils.Vec2]> | undefined
+let circle = new Draw.Arc(Draw.newImageList(200))
 
 if (IsGame()){
-    let timer = new hTimer()
+    let timer = new Handle.hTimer()
     timer.addAction(mouseTrack)
     timer.start(0.02, true)
 }
@@ -19,11 +20,11 @@ if (IsGame()){
 TTargetingArea.addAction('START', (inst, pl, abil) => {enableDrawing(true, pl, abil)})
 TTargetingArea.addAction('STOP', (inst, pl, abil) => {enableDrawing(false, pl, abil)})
 
-function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[hUnit]>){
+function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[Utils.Vec2]>){
     if (pl != GetLocalPlayer()){return}
     
     cur_abil = flag ? abil : undefined
-    Selection.lock(flag)
+    WcIO.Selection.lock(flag)
 
     circle.visible = flag
     if (flag){mouseTrack()}
@@ -32,17 +33,17 @@ function enableDrawing(flag: boolean, pl: jplayer, abil: IFace<[hUnit]>){
 function mouseTrack(this: void){
     if (!cur_abil){return}
 
-    let [targ] = getTarget(GetLocalPlayer(), cur_abil)
+    let [targ] = getTarget(cur_abil)
     circle.setPolarPos(targ.x, targ.y, cur_abil.Data.area, 0, 2 * math.pi)
 }
 
-function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){
+function getTarget(this: void, abil: IFace<[Utils.Vec2]>){
     let owner = abil.Data.owner
 
     let start_x = owner.x
     let start_y = owner.y
-    let end_x = Mouse.getX(pl)
-    let end_y = Mouse.getY(pl)
+    let end_x = WcIO.Mouse.getX()
+    let end_y = WcIO.Mouse.getY()
 
     let dx = end_x - start_x
     let dy = end_y - start_y
@@ -57,6 +58,6 @@ function getTarget(this: void, pl: jplayer, abil: IFace<[Point]>){
         end_y = range * sin + start_y
     }
 
-    let res: [Point] = [new Point(end_x, end_y)]
+    let res: [Utils.Vec2] = [new Utils.Vec2(end_x, end_y)]
     return res
 }

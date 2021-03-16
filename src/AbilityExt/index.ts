@@ -1,9 +1,8 @@
-export { IFace } from './Ability/IFace'
+export { IFace, TargetType } from './Ability/IFace'
 export { Ability, TAbility } from './Ability'
 export { Casting } from './Ability/Casting'
 export { Charges } from './Ability/Charges'
 export { Container } from './Container'
-export { Point } from './Point'
 
 export { TCasting } from './Type/Casting'
 export { TData } from './Type/Data'
