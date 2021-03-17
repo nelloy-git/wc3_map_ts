@@ -1,81 +1,63 @@
 import * as Fdf from '../../Fdf'
-import { Log } from "../../Utils";
-import { Frame } from "../FrameOld";
 
-export type VertAlignment = 'TOP'|'MID'|'BOT'
-export type HorzAlignment = 'LEFT'|'CENTER'|'RIGHT'
+import { Frame } from "../Frame";
 
 export class Text extends Frame {
-    constructor()
-    constructor(fdf: Fdf.Text)
-    constructor(handle: jframehandle)
-    constructor(handle?: Fdf.Text | jframehandle){
-        if (!handle){handle = Text._default_fdf}
-
-        if (handle instanceof Fdf.Text){
-            super(handle)
-            this._text = handle.text
-        } else {
-            super(handle, false)
-            this._text = ''
-        }
-        
-        this._ver_align = TEXT_JUSTIFY_MIDDLE
-        this._hor_align = TEXT_JUSTIFY_CENTER
+    
+    static fromFdf(fdf?: Fdf.Text){
+        fdf = fdf ? fdf : DefaultFdf
+        let [handle, _] = Frame._fromFdf(fdf)
+        let f = new Text(handle)
+        f.__text = fdf.text
+        f.__vert_align = fdf.justification[1]
+        f.__horz_align = fdf.justification[0]
+        return f
     }
 
-    public get text(){return this._text}
+    constructor(handle: jframehandle){
+        super(handle, false)
+
+        this.__text = ''
+        this.__vert_align = 'JUSTIFYMIDDLE'
+        this.__horz_align = 'JUSTIFYCENTER'
+    }
+
+    public get text(){return this.__text}
     public set text(text: string){
-        this._text = text
+        this.__text = text
         BlzFrameSetText(this.handle, text)
     }
     
-    get textVertAlignment(): VertAlignment{
-        switch (this._ver_align){
-            case TEXT_JUSTIFY_TOP: {return 'TOP'}
-            case TEXT_JUSTIFY_MIDDLE: {return 'MID'}
-            case TEXT_JUSTIFY_BOTTOM: {return 'BOT'}
-            default: {return 'MID'}
-        }
+    get textVertAlignment(): Text.VertAlignment {
+        return this.__vert_align
     }
-    set textVertAlignment(align: VertAlignment){
-        switch (align){
-            case 'TOP': {this._ver_align = TEXT_JUSTIFY_TOP}
-            case 'MID': {this._ver_align = TEXT_JUSTIFY_MIDDLE}
-            case 'BOT': {this._ver_align = TEXT_JUSTIFY_BOTTOM}
-        }
-        BlzFrameSetTextAlignment(this.handle, this._ver_align, this._hor_align)
+    set textVertAlignment(align: Text.VertAlignment){
+        this.__vert_align = align
+        this.__applyAlighment()
     }
 
-    get textHorzAlignment(): HorzAlignment{
-        switch (this._hor_align){
-            case TEXT_JUSTIFY_LEFT: {return 'LEFT'}
-            case TEXT_JUSTIFY_CENTER: {return 'CENTER'}
-            case TEXT_JUSTIFY_RIGHT: {return 'RIGHT'}
-            default: {return 'CENTER'}
-        }
+    get textHorzAlignment(): Text.HorzAlignment{
+        return this.__horz_align
     }
-    set textHorzAlignment(align: HorzAlignment){
-        switch (align){
-            case 'LEFT': {this._hor_align = TEXT_JUSTIFY_LEFT}
-            case 'CENTER': {this._hor_align = TEXT_JUSTIFY_CENTER}
-            case 'RIGHT': {this._hor_align = TEXT_JUSTIFY_RIGHT}
-        }
-        BlzFrameSetTextAlignment(this.handle, this._ver_align, this._hor_align)
+    set textHorzAlignment(align: Text.HorzAlignment){
+        this.__horz_align = align
     }
 
-    public addAction(){
-        return Log.err(Text.name + 
-                       ': events are not available.')
-    }
-    public removeAction(){
-        return Log.err(Text.name + 
-                       ': events are not available.')
+    private __applyAlighment(){
+        let vert = TEXT_JUSTIFY_MIDDLE
+        if (this.__vert_align == 'JUSTIFYBOTTOM'){vert = TEXT_JUSTIFY_BOTTOM} else
+        if (this.__vert_align == 'JUSTIFYTOP'){vert = TEXT_JUSTIFY_TOP}
+
+        let horz = TEXT_JUSTIFY_CENTER
+        if (this.__horz_align == 'JUSTIFYLEFT'){horz = TEXT_JUSTIFY_LEFT} else 
+        if (this.__horz_align == 'JUSTIFYRIGHT'){horz = TEXT_JUSTIFY_RIGHT}
+
+        BlzFrameSetTextAlignment(this.handle, vert, horz)
     }
 
-    private _text: string;
-    private _ver_align: jtextaligntype;
-    private _hor_align: jtextaligntype;
+    private __text: string;
+    private __vert_align: Text.VertAlignment;
+    private __horz_align: Text.HorzAlignment;
 
     private static _default_fdf = (()=>{
         let fdf = new Fdf.Text(Text.name + 'DefaultFdf')
@@ -87,3 +69,16 @@ export class Text extends Frame {
         return fdf
     })()
 }
+
+export namespace Text {
+    export type VertAlignment = 'JUSTIFYTOP' | 'JUSTIFYMIDDLE' | 'JUSTIFYBOTTOM'
+    export type HorzAlignment = 'JUSTIFYLEFT' | 'JUSTIFYCENTER' | 'JUSTIFYRIGHT'
+
+}
+
+const DefaultFdf = new Fdf.Text(Text.name + 'DefaultFdf')
+DefaultFdf.width = 0.04
+DefaultFdf.height = 0.04
+DefaultFdf.font = 'fonts\\nim_____.ttf'
+DefaultFdf.fontSize = 0.008
+DefaultFdf.justification = ['JUSTIFYCENTER', 'JUSTIFYMIDDLE']

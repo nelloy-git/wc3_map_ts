@@ -1,13 +1,9 @@
 import * as Handle from '../Handle'
 import * as Utils from '../Utils'
 
-const Log = Utils.Log
-
 import { Frame } from './Frame'
 
-let __path__ = Macro(Utils.getFilePath())
-
-export class FrameActive extends Frame  {
+export abstract class FrameActive extends Frame {
     static get(id: jframehandle | number){
         let instance = Handle.Handle.get(id)
         if (instance instanceof FrameActive){
@@ -17,144 +13,91 @@ export class FrameActive extends Frame  {
     }
     static getTriggered(){return FrameActive.get(BlzGetTriggerFrame())}
 
-    constructor(handle: jframehandle, is_simple: boolean){
+    constructor(handle: jframehandle, is_simple: boolean,
+                events: ReadonlyArray<jframeeventtype>){
+                    
         super(handle, is_simple)
 
-        this.is_simple = is_simple
+        this.__actions = new Map()
+        this.__events = []
+        for (const event of events){
+            this.__actions.set(event, new Utils.ActionList())
 
-        this.__pos = new Utils.Vec2(0, 0)
-        this.__size = new Utils.Vec2(0, 0)
-        this.__visible = true
-        this.__enable = true
-        this.__parent = undefined
-        this.__children = []
-        this.__level = 0
-        this.__color = new Utils.Color(1, 1, 1, 1)
+            // Register events in global trigger
+            let trig_event = Handle.hTriggerEvent.newFrameEvent(this.handle, event)
+            trig_event.applyToTrigger(__trigger)
+            this.__events.push(trig_event)
+        }
     }
-    
-    readonly is_simple: boolean
 
-    destroy(){ 
-        this.__removeFromParent()
-        this.__removeFromChildren()
+    destroy(){
+        // Remove events from global trigger
+        __trigger_events.splice(__trigger_events.indexOf(this.__events), 1)
+        __trigger.destroy()
+        __trigger = __triggerUpdated()
 
-        BlzDestroyFrame(this.handle)
         super.destroy()
     }
 
-    get x(){return this.__pos.x}
-    set x(x: number){this.pos = new Utils.Vec2(x, this.__pos.y)}
+    addAction(event: jframeeventtype, callback: FrameActive.Callback){
+        let list = this.__actions.get(event)
+        return list ? list.add(callback) : undefined
+    }
 
-    get y(){return this.__pos.y}
-    set y(y: number){this.pos = new Utils.Vec2(this.__pos.x, y)}
-
-    get pos(){return this.__pos.copy()}
-    set pos(v: Utils.Vec2){
-        this.__pos = v.copy()
-        if (this.__parent){
-            BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
-                             this.__parent.handle, FRAMEPOINT_TOPLEFT,
-                             v.x, -v.y)
-        } else {
-            BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
-                                v.x, 0.6 - v.y)
+    removeAction(action: FrameActive.Action){
+        let found = false
+        for (let [_, list] of this.__actions){
+            found = list.remove(action)
+            if (found){break}
         }
+        return found
+    }
 
-        // Update children positions.
-        for (let child of this.__children){
-            child.pos = child.pos
+    runActions(event: jframeeventtype, pl: jplayer){
+        let list = this.__actions.get(event)
+        if (list){
+            list.run(this, event, pl)
         }
     }
 
-    get abs_pos(): Utils.Vec2{
-        return this.__parent ? this.__parent.abs_pos.add(this.__pos): this.__pos.copy()
-    }
-
-    get width(){return this.__size.x}
-    set width(w: number){this.size = new Utils.Vec2(w, this.__size.y)}
-    
-    get height(){return this.__size.y}
-    set height(h: number){this.size = new Utils.Vec2(this.__size.x, h)}
-
-    get size(){return this.__size}
-    set size(v: Utils.Vec2){
-        this.__size = v.copy()
-        BlzFrameSetSize(this.handle, v.x, v.y)
-    }
-
-    get visible(){return this.__visible}
-    set visible(f: boolean){
-        this.__visible = f
-        BlzFrameSetVisible(this.handle, f)
-
-        // Update children visibility.
-        for (let child of this.__children){
-            child.visible = child.visible
-        }
-    }
-
-    get enable(){return this.__enable}
-    set enable(f: boolean){
-        this.__enable = f
-        BlzFrameSetVisible(this.handle, f)
-        
-        // Update children visibility.
-        for (let child of this.__children){
-            child.enable = child.enable
-        }
-    }
-
-    get parent(){return this.__parent}
-    set parent(p: Frame | undefined){
-        this.__removeFromParent()
-
-        this.__parent = p
-        if (p){
-            p.__children.push(this)
-            
-            p.pos = p.pos
-            p.visible = p.visible
-            p.enable = p.enable
-        } else {
-            this.pos = this.pos
-            this.visible = this.visible
-            this.enable = this.enable
-        }
-    }
-    get children(){return this.__children as ReadonlyArray<Frame>}
-    
-    get level(){return this.__level}
-    set level(lvl: number){
-        this.__level = lvl
-        BlzFrameSetLevel(this.handle, lvl)
-    }
-
-    get color(){return this.__color.copy()}
-    set color(c: Utils.Color){
-        this.__color = c.copy()
-        BlzFrameSetVertexColor(this.handle, c.getWcCode())
-        BlzFrameSetAlpha(this.handle, Math.floor(255 * c.a))
-    }
-
-    __removeFromParent(){
-        if (this.__parent){
-            let p_children = this.__parent.__children
-            p_children.splice(p_children.indexOf(this), 1)
-        }
-    }
-
-    __removeFromChildren(){
-        for (let child of this.__children){
-            child.parent = undefined
-        }
-    }
-
-    private __pos: Utils.Vec2
-    private __size: Utils.Vec2
-    private __visible: boolean
-    private __enable: boolean
-    private __parent: Frame | undefined
-    private __children: Frame[]
-    private __level: number
-    private __color: Utils.Color
+    private __actions: Map<jframeeventtype, Utils.ActionList<[FrameActive, jframeeventtype, jplayer]>>
+    private __events: Handle.hTriggerEvent[]
 }
+
+export namespace FrameActive {
+    export type Callback = (this: void, frame: FrameActive, event: jframeeventtype, pl: jplayer)=>void
+    export type Action = Utils.Action<[FrameActive, jframeeventtype, jplayer], void>
+}
+
+function __triggerAction(this: void){
+    let frame = FrameActive.getTriggered()
+    if (!frame){return}
+
+    let jevent = BlzGetTriggerFrameEvent()
+    let pl = GetTriggerPlayer()
+
+    // Drop focus
+    if (jevent == FRAMEEVENT_CONTROL_CLICK && pl == GetLocalPlayer()){
+        frame.enable = false
+        frame.enable = true
+    }
+
+    frame.runActions(jevent, pl)
+}
+let __trigger_events: Handle.hTriggerEvent[][] = []
+
+function __triggerUpdated(){
+    if (!IsGame()){return <Handle.hTrigger><unknown>undefined}
+
+    let t = new Handle.hTrigger()
+    t.addAction(__triggerAction)
+    for (const frame_events of __trigger_events){
+        for (let event of frame_events){
+            event.applyToTrigger(t)
+        }
+    }
+
+    return t
+}
+
+let __trigger = __triggerUpdated()

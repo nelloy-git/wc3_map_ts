@@ -1,60 +1,25 @@
+import * as Fdf from '../Fdf'
 import * as Handle from '../Handle'
 import * as Utils from '../Utils'
 
-const Log = Utils.Log
-
 import { FrameIFace } from './FrameIFace'
 
-let __path__ = Macro(Utils.getFilePath())
-
-export class Frame extends FrameIFace  {
-    static get(id: jframehandle | number){
-        let instance = Handle.Handle.get(id)
-        if (!instance){
-            return undefined
-        }
-
-        if (Utils.wcType(instance.handle) != 'framehandle'){
-            return Log.err('got wrong type of handle.',
-                            __path__, Frame, 2)
-        }
-
-        return instance as Frame
-    }
+export abstract class Frame extends FrameIFace  {
 
     constructor(handle: jframehandle, is_simple: boolean){
-        super(handle)
-
-        this.is_simple = is_simple
+        super(handle, is_simple)
 
         this.__pos = new Utils.Vec2(0, 0)
         this.__size = new Utils.Vec2(0, 0)
         this.__visible = true
         this.__enable = true
         this.__parent = undefined
-        this.__children = []
         this.__level = 0
         this.__color = new Utils.Color(1, 1, 1, 1)
     }
-    
-    readonly is_simple: boolean
 
-    destroy(){ 
-        this.__removeFromParent()
-        this.__removeFromChildren()
-
-        BlzDestroyFrame(this.handle)
-        super.destroy()
-    }
-
-    get x(){return this.__pos.x}
-    set x(x: number){this.pos = new Utils.Vec2(x, this.__pos.y)}
-
-    get y(){return this.__pos.y}
-    set y(y: number){this.pos = new Utils.Vec2(this.__pos.x, y)}
-
-    get pos(){return this.__pos.copy()}
-    set pos(v: Utils.Vec2){
+    protected _get_pos(){return this.__pos.copy()}
+    protected _set_pos(v: Utils.Vec2){
         this.__pos = v.copy()
         if (this.__parent){
             BlzFrameSetPoint(this.handle, FRAMEPOINT_TOPLEFT,
@@ -66,56 +31,48 @@ export class Frame extends FrameIFace  {
         }
 
         // Update children positions.
-        for (let child of this.__children){
+        for (let child of this._children){
             child.pos = child.pos
         }
     }
 
-    get abs_pos(): Utils.Vec2{
-        return this.__parent ? this.__parent.abs_pos.add(this.__pos): this.__pos.copy()
-    }
-
-    get width(){return this.__size.x}
-    set width(w: number){this.size = new Utils.Vec2(w, this.__size.y)}
-    
-    get height(){return this.__size.y}
-    set height(h: number){this.size = new Utils.Vec2(this.__size.x, h)}
-
-    get size(){return this.__size}
-    set size(v: Utils.Vec2){
+    protected _get_size(){return this.__size}
+    protected _set_size(v: Utils.Vec2){
         this.__size = v.copy()
         BlzFrameSetSize(this.handle, v.x, v.y)
     }
 
-    get visible(){return this.__visible}
-    set visible(f: boolean){
+    protected _get_visible(){return this.__visible}
+    protected _set_visible(f: boolean){
         this.__visible = f
         BlzFrameSetVisible(this.handle, f)
 
         // Update children visibility.
-        for (let child of this.__children){
+        for (let child of this._children){
             child.visible = child.visible
         }
     }
 
-    get enable(){return this.__enable}
-    set enable(f: boolean){
+    protected _get_enable(){return this.__enable}
+    protected _set_enable(f: boolean){
         this.__enable = f
         BlzFrameSetVisible(this.handle, f)
         
         // Update children visibility.
-        for (let child of this.__children){
+        for (let child of this._children){
             child.enable = child.enable
         }
     }
 
-    get parent(){return this.__parent}
-    set parent(p: Frame | undefined){
-        this.__removeFromParent()
+    protected _get_parent(){return this.__parent}
+    protected _set_parent(p: FrameIFace | undefined){
+        if (this.__parent){
+            this.__parent._children.splice(this.__parent._children.indexOf(this))
+        }
 
         this.__parent = p
         if (p){
-            p.__children.push(this)
+            p._children.push(this)
             
             p.pos = p.pos
             p.visible = p.visible
@@ -126,40 +83,25 @@ export class Frame extends FrameIFace  {
             this.enable = this.enable
         }
     }
-    get children(){return this.__children as ReadonlyArray<Frame>}
     
-    get level(){return this.__level}
-    set level(lvl: number){
+    protected _get_level(){return this.__level}
+    protected _set_level(lvl: number){
         this.__level = lvl
         BlzFrameSetLevel(this.handle, lvl)
     }
 
-    get color(){return this.__color.copy()}
-    set color(c: Utils.Color){
+    protected _get_color(){return this.__color.copy()}
+    protected _set_color(c: Utils.Color){
         this.__color = c.copy()
         BlzFrameSetVertexColor(this.handle, c.getWcCode())
         BlzFrameSetAlpha(this.handle, Math.floor(255 * c.a))
-    }
-
-    __removeFromParent(){
-        if (this.__parent){
-            let p_children = this.__parent.__children
-            p_children.splice(p_children.indexOf(this), 1)
-        }
-    }
-
-    __removeFromChildren(){
-        for (let child of this.__children){
-            child.parent = undefined
-        }
     }
 
     private __pos: Utils.Vec2
     private __size: Utils.Vec2
     private __visible: boolean
     private __enable: boolean
-    private __parent: Frame | undefined
-    private __children: Frame[]
+    private __parent: FrameIFace | undefined
     private __level: number
     private __color: Utils.Color
 }
