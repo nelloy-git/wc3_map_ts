@@ -1,64 +1,57 @@
 import * as Fdf from '../../../Fdf'
 import { Log } from '../../../Utils'
-import { Frame } from "../../FrameOld";
+import { Frame } from "../../Frame";
 
 export class SimpleStatusBar extends Frame {
-    constructor()
-    constructor(fdf: Fdf.SimpleStatusBar)
-    constructor(handle: jframehandle)
-    constructor(handle?: jframehandle | Fdf.SimpleStatusBar | undefined){
-        if (!handle || handle instanceof Fdf.Fdf){
-            let fdf = handle ? handle : SimpleStatusBar._default_fdf
-            
-            super(fdf)
-            this._texture = fdf.barTexture
-        } else {
-            super(handle, true)
-            this._texture = ''
-        }
 
-        this._fullness = 0
-        this._texture_flags = 0
-        this._texture_blend = true
+    static fromFdf(fdf?: Fdf.SimpleStatusBar){
+        fdf = fdf ? fdf : DefaultFdf
+        let [handle, _] = Frame._fromFdf(fdf)
+        let f = new SimpleStatusBar(handle)
+        f.__texture = fdf.barTexture
+        return f
     }
 
-    get texture(){return this._texture}
+    constructor(handle: jframehandle){
+        super(handle, true)
+        
+        this.__fullness = 0
+        this.__texture = ''
+        this.__texture_flags = 0
+        this.__texture_blend = true
+    }
+
+    get texture(){return this.__texture}
     set texture(path: string){
-        this._texture = path
-        BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
+        this.__texture = path
+        BlzFrameSetTexture(this.handle, this.__texture, this.__texture_flags, this.__texture_blend)
     }
 
-    get textureFlags(){return this._texture_flags}
+    get textureFlags(){return this.__texture_flags}
     set textureFlags(flags: number){
-        this._texture_flags = flags
-        BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
+        this.__texture_flags = flags
+        BlzFrameSetTexture(this.handle, this.__texture, this.__texture_flags, this.__texture_blend)
     }
 
-    get textureBlend(){return this._texture_blend}
+    get textureBlend(){return this.__texture_blend}
     set textureBlend(flag: boolean){
-        this._texture_blend = flag
-        BlzFrameSetTexture(this.handle, this._texture, this._texture_flags, this._texture_blend)
+        this.__texture_blend = flag
+        BlzFrameSetTexture(this.handle, this.__texture, this.__texture_flags, this.__texture_blend)
     }
 
-    get fullness(){return this._fullness}
+    get fullness(){return this.__fullness}
     set fullness(fullness: number){
-        this._fullness = fullness < 0 ? 0 : fullness > 1 ? 1 : fullness
-        BlzFrameSetValue(this.handle, 100 * this._fullness)
+        this.__fullness = fullness < 0 ? 0 : fullness > 1 ? 1 : fullness
+        BlzFrameSetValue(this.handle, 100 * this.__fullness)
     }
 
-    private _texture: string;
-    private _texture_flags: number;
-    private _texture_blend: boolean;
-    private _fullness: number;
-
-    private static _default_fdf = (()=>{
-        let name = SimpleStatusBar.name + 'DefaultFdf'
-
-        let fdf = new Fdf.SimpleStatusBar(name)
-        fdf.width = 0.04
-        fdf.height = 0.01
-        fdf.barTexture = 'Replaceabletextures\\Teamcolor\\Teamcolor00.blp'
-
-        return fdf
-    })()
+    private __texture: string;
+    private __texture_flags: number;
+    private __texture_blend: boolean;
+    private __fullness: number;
 }
+
+let DefaultFdf = new Fdf.SimpleStatusBar(SimpleStatusBar.name + 'DefaultFdf')
+DefaultFdf.width = 0.04
+DefaultFdf.height = 0.01
+DefaultFdf.barTexture = 'Replaceabletextures\\Teamcolor\\Teamcolor00.blp'

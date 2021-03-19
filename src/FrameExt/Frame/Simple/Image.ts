@@ -1,39 +1,45 @@
 import * as Fdf from '../../../Fdf'
-import { Log } from '../../../Utils'
-import { Frame } from "../../FrameOld";
+
+import { Frame } from "../../Frame";
 import { SimpleTexture } from './Texture';
 
 export class SimpleImage extends Frame {
-    constructor()
-    constructor(handle: jframehandle, texture: SimpleTexture)
-    constructor(handle?: jframehandle, texture?: SimpleTexture){
-        if (!handle){
-            super(SimpleImage._default_fdf)
-            this._texture = new SimpleTexture(BlzGetFrameByName(SimpleImage.name + 'DefaultFdfTexture', 0))
-        } else {
-            super(handle, true)
-            this._texture = texture as SimpleTexture
-        }
+
+    static fromFdf() : SimpleImage
+    static fromFdf(fdf: Fdf.SimpleFrame, texture_name: string) : SimpleImage
+    static fromFdf(fdf?: Fdf.SimpleFrame, texture_name?: string){
+        fdf = fdf ? fdf : DefaultFdf
+        let [handle, _] = Frame._fromFdf(fdf)
+
+        texture_name = texture_name ? texture_name : SimpleImage.name + 'DefaultFdfTexture'
+        let f = new SimpleTexture(BlzGetFrameByName(texture_name, 0))
+
+        return new SimpleImage(handle, f)
     }
 
-    public get texture(){return this._texture.texture}
-    public set texture(path: string){this._texture.texture = path}
+    constructor(handle: jframehandle, texture_frame: SimpleTexture){
+        super(handle, true)
 
-    public get textureFlags(){return this._texture.textureFlags}
-    public set textureFlags(flags: number){this._texture.textureFlags = flags}
+        this.__texture = texture_frame
+    }
 
-    public get textureBlend(){return this._texture.textureBlend}
-    public set textureBlend(flag: boolean){this._texture.textureBlend = flag}
+    public get texture(){return this.__texture.texture}
+    public set texture(path: string){this.__texture.texture = path}
 
-    private _texture: SimpleTexture;
+    public get textureFlags(){return this.__texture.textureFlags}
+    public set textureFlags(flags: number){this.__texture.textureFlags = flags}
 
-    private static _default_fdf = (()=>{
-        let fdf = new Fdf.SimpleFrame(SimpleImage.name + 'DefaultFdf')
-        fdf.width = 0.04
-        fdf.height = 0.04
-            let texture = new Fdf.SimpleTexture(SimpleImage.name + 'DefaultFdfTexture')
-            texture.textureFile = ''
-        fdf.addSubframe(texture)
-        return fdf
-    })()
+    public get textureBlend(){return this.__texture.textureBlend}
+    public set textureBlend(flag: boolean){this.__texture.textureBlend = flag}
+
+    private __texture: SimpleTexture;
+}
+
+let DefaultFdf = new Fdf.SimpleFrame(SimpleImage.name + 'DefaultFdf')
+DefaultFdf.width = 0.04
+DefaultFdf.height = 0.04
+{
+    let texture = new Fdf.SimpleTexture(SimpleImage.name + 'DefaultFdfTexture')
+    texture.textureFile = ''
+    DefaultFdf.addSubframe(texture)
 }

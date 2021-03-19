@@ -1,4 +1,5 @@
-export { Frame } from './FrameOld'
+export { Frame } from './Frame'
+export { FrameActive } from './FrameActive'
 
 export { Backdrop } from './Frame/Backdrop'
 export { GlueTextButton } from './Frame/GlueTextButton'
@@ -22,3 +23,5 @@ export { OriginPortrait } from './Origin/Portrait'
 export { OriginTooltip } from './Origin/Tooltip'
 
 export { Screen } from './Screen'
+
+export { onInit } from './Init'

@@ -1,25 +1,35 @@
 import * as Fdf from '../../../Fdf'
-import { Color, Log } from '../../../Utils'
+import { Color } from '../../../Utils'
+
 import { SimpleStatusBar } from "./StatusBar";
 import { SimpleTexture } from './Texture';
 import { SimpleString } from './String';
 
 export class SimpleStatusBarExt extends SimpleStatusBar {
-    constructor()
-    constructor(handle: jframehandle, background: SimpleTexture,
-                border: SimpleTexture, text: SimpleString)
-    constructor(handle?: jframehandle, background?: SimpleTexture,
-                border?: SimpleTexture, text?: SimpleString){
-        if (!handle){
-            let fdf = SimpleStatusBarExt._def_fdf
 
-            super(fdf)
-            background = SimpleStatusBarExt._captureElement('BACKGROUND')
-            border = SimpleStatusBarExt._captureElement('BORDER')
-            text = SimpleStatusBarExt._captureElement('TEXT')
-        } else {
-            super(handle)
-        }
+    static fromFdf(): SimpleStatusBarExt
+    static fromFdf(fdf: Fdf.SimpleStatusBar, background_name: string,
+                   border_name: string, text_name: string): SimpleStatusBarExt
+    static fromFdf(fdf?: Fdf.SimpleStatusBar, background_name?: string,
+                    border_name?: string, text_name?: string){
+        fdf = fdf ? fdf : DefaultFdf
+        let [handle, _] = SimpleStatusBar._fromFdf(fdf)
+        
+        background_name = background_name ? background_name : DefaultName + 'BACKGROUND'
+        let background = new SimpleTexture(BlzGetFrameByName(background_name, 0))
+
+        border_name = border_name ? border_name : DefaultName + 'BORDER'
+        let border = new SimpleTexture(BlzGetFrameByName(border_name, 0))
+
+        text_name = text_name ? text_name : DefaultName + 'TEXT'
+        let text = new SimpleString(BlzGetFrameByName(text_name, 0))
+        
+        return new SimpleStatusBarExt(handle, background, border, text)
+    }
+
+    constructor(handle: jframehandle, background: SimpleTexture,
+                border: SimpleTexture, text: SimpleString){
+        super(handle)
 
         this._elements = new Map()
         if (background){this._elements.set('BACKGROUND', background)}
@@ -34,51 +44,45 @@ export class SimpleStatusBarExt extends SimpleStatusBar {
     }
 
     private _elements: Map<SimpleStatusBar.Element, SimpleTexture | SimpleString>;
-
-    private static _captureElement(elem: 'BACKGROUND' | 'BORDER'): SimpleTexture
-    private static _captureElement(elem: 'TEXT'): SimpleString
-    private static _captureElement(elem: SimpleStatusBar.Element){
-        let name = SimpleStatusBarExt._def_fdf.name + elem
-        let handle = BlzGetFrameByName(name, 0)
-        if (elem == 'BACKGROUND' || elem == 'BORDER'){
-            return new SimpleTexture(handle)
-        } else if (elem == 'TEXT'){
-            return new SimpleString(handle)
-        }
-    }
-
-    private static _def_fdf = (()=>{
-        let name = SimpleStatusBarExt.name + 'DefaultFdf'
-
-        let fdf = new Fdf.SimpleStatusBar(name)
-        fdf.width = 0.04
-        fdf.height = 0.01
-        fdf.barTexture = 'Replaceabletextures\\Teamcolor\\Teamcolor00.blp'
-            let layer_back = new Fdf.SimpleLayer('BACKGROUND')
-                let background = new Fdf.SimpleTexture(name + 'BACKGROUND')
-                background.textureFile = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
-            layer_back.addSubframe(background)
-        fdf.addSubframe(layer_back)
-
-            let forw_frame = new Fdf.SimpleFrame(name + 'Forward')
-            forw_frame.setAllPoints = true
-                let forw_layer = new Fdf.SimpleLayer('ARTWORK')
-                    let forw_string = new Fdf.SimpleString(name + 'TEXT')
-                    forw_string.text = 'SomeText'
-                    forw_string.font = 'fonts\\nim_____.ttf'
-                    forw_string.fontSize = 0.008
-                    forw_string.color = new Color(1, 1, 1, 1)
-                forw_layer.addSubframe(forw_string)
-                    let forw_border = new Fdf.SimpleTexture(name + 'BORDER')
-                    forw_border.textureFile = 'UI\\Feedback\\XPBar\\human-xpbar-border.blp'
-                forw_layer.addSubframe(forw_border)
-            forw_frame.addSubframe(forw_layer)
-        fdf.addSubframe(forw_frame)
-
-        return fdf
-    })()
 }
 
 export namespace SimpleStatusBar {
     export type Element = 'BACKGROUND' | 'BORDER' | 'TEXT'
+}
+
+let DefaultName = SimpleStatusBarExt.name + 'DefaultFdf'
+let DefaultFdf = new Fdf.SimpleStatusBar(DefaultName)
+DefaultFdf.width = 0.04
+DefaultFdf.height = 0.01
+DefaultFdf.barTexture = 'Replaceabletextures\\Teamcolor\\Teamcolor00.blp'
+{
+    let layer_back = new Fdf.SimpleLayer('BACKGROUND')
+    {
+        let background = new Fdf.SimpleTexture(DefaultName + 'BACKGROUND')
+        background.textureFile = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
+        layer_back.addSubframe(background)
+    }
+    DefaultFdf.addSubframe(layer_back)
+    
+    let forw_frame = new Fdf.SimpleFrame(DefaultName + 'Forward')
+    forw_frame.setAllPoints = true
+    {
+        let forw_layer = new Fdf.SimpleLayer('ARTWORK')
+        {
+            let forw_string = new Fdf.SimpleString(DefaultName + 'TEXT')
+            forw_string.text = 'SomeText'
+            forw_string.font = 'fonts\\nim_____.ttf'
+            forw_string.fontSize = 0.008
+            forw_string.color = new Color(1, 1, 1, 1)
+            forw_layer.addSubframe(forw_string)
+        }
+
+        {
+            let forw_border = new Fdf.SimpleTexture(DefaultName + 'BORDER')
+            forw_border.textureFile = 'UI\\Feedback\\XPBar\\human-xpbar-border.blp'
+            forw_layer.addSubframe(forw_border)
+        }
+        forw_frame.addSubframe(forw_layer)
+    }
+    DefaultFdf.addSubframe(forw_frame)        
 }

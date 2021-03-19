@@ -1,34 +1,41 @@
 import * as Fdf from '../../../Fdf'
-import { Log } from '../../../Utils'
-import { Frame } from "../../FrameOld";
+
+import { Frame } from "../../Frame";
 import { SimpleString } from './String';
 
 export class SimpleText extends Frame {
-    constructor()
-    constructor(handle: jframehandle, string: SimpleString)
-    constructor(handle?: jframehandle, string?: SimpleString){
-        if (!handle){
-            super(SimpleText._default_fdf)
-            this._string = new SimpleString(BlzGetFrameByName(SimpleText.name + 'DefaultFdfString', 0))
-        } else {
-            super(handle, true)
-            this._string = string as SimpleString
-        }
+
+    static fromFdf() : SimpleText
+    static fromFdf(fdf: Fdf.SimpleFrame, text_name: string) : SimpleText
+    static fromFdf(fdf?: Fdf.SimpleFrame, text_name?: string){
+        fdf = fdf ? fdf : DefaultFdf
+        let [handle, _] = Frame._fromFdf(fdf)
+
+        text_name = text_name ? text_name : Fdf.SimpleFrame.name + 'DefaultFdfString'
+        let f = new SimpleString(BlzGetFrameByName(text_name, 0))
+
+        return new SimpleText(handle, f)
+    }
+    
+    constructor(handle: jframehandle, string: SimpleString){
+        super(handle, true)
+
+        this.__string = string
     }
 
-    public get text(){return this._string.text}
-    public set text(text: string){this._string.text = text}
+    public get text(){return this.__string.text}
+    public set text(text: string){this.__string.text = text}
     
-    public get font(){return this._string.font}
-    public set font(font: string){this._string.font = font}
+    public get font(){return this.__string.font}
+    public set font(font: string){this.__string.font = font}
     
-    public get fontSize(){return this._string.fontSize}
-    public set fontSize(size: number){this._string.fontSize = size}
+    public get fontSize(){return this.__string.fontSize}
+    public set fontSize(size: number){this.__string.fontSize = size}
     
-    public get fontFlags(){return this._string.fontFlags}
-    public set fontFlags(flags: number){this._string.fontFlags = flags}
+    public get fontFlags(){return this.__string.fontFlags}
+    public set fontFlags(flags: number){this.__string.fontFlags = flags}
 
-    private _string: SimpleString;
+    private __string: SimpleString;
 
     private static _default_fdf = (()=>{
         let fdf = new Fdf.SimpleFrame(SimpleText.name + 'DefaultFdf')
@@ -41,4 +48,15 @@ export class SimpleText extends Frame {
         fdf.addSubframe(text)
         return fdf
     })()
+}
+
+let DefaultFdf = new Fdf.SimpleFrame(SimpleText.name + 'DefaultFdf')
+DefaultFdf.width = 0.04
+DefaultFdf.height = 0.04
+{
+    let text = new Fdf.SimpleString(SimpleText.name + 'DefaultFdfString')
+    text.text = ''
+    text.font = 'fonts\\nim_____.ttf'
+    text.fontSize = 0.008
+    DefaultFdf.addSubframe(text)
 }

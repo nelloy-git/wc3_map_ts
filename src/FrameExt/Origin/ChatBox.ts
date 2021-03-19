@@ -1,13 +1,23 @@
-import { hTimer } from "../../Handle";
-import { Log } from "../../Utils";
-import { OriginFrame } from './OriginFrame'
+import { onPreInit } from '../Init'
+import { Frame } from '../Frame'
 
-/** Unique properties. */
-export class OriginChatBox extends OriginFrame {
-    public static instance(){return OriginChatBox._instance} 
+export class OriginChatBox extends Frame {
+    public static inst(){return __instance}
 
-    private static _instance: OriginFrame | undefined;
-    private static _init_timer = IsGame() ? (() => {
+    // private static __instance: OriginChatBox;
+
+    private constructor(handle: jframehandle){
+        super(handle, false)
+    }
+
+    let __instance: OriginChatBox = IsGame() ? (() => {
+        let handle = BlzGetOriginFrame(ORIGIN_FRAME_CHAT_MSG, 0)
+        BlzFrameClearAllPoints(handle)
+        BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+    
+        __instance = new Frame()
+
+
         let t = new hTimer()
         t.addAction(() => {
             let handle = BlzGetOriginFrame(ORIGIN_FRAME_CHAT_MSG, 0)
@@ -17,9 +27,18 @@ export class OriginChatBox extends OriginFrame {
             BlzFrameClearAllPoints(handle)
             BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
 
-            OriginChatBox._instance = new OriginChatBox(handle, is_simple)
+            OriginChatBox.__instance = new OriginChatBox(handle, is_simple)
             t.destroy()
         })
         t.start(0, false)
     })() : undefined;
 }
+
+let __instance: OriginChatBox
+onPreInit(()=>{
+    let handle = BlzGetOriginFrame(ORIGIN_FRAME_CHAT_MSG, 0)
+    BlzFrameClearAllPoints(handle)
+    BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+
+    __instance = new Frame()
+})
