@@ -1,5 +1,3 @@
-import * as Fdf from '../Fdf'
-import * as Handle from '../Handle'
 import * as Utils from '../Utils'
 
 import { FrameIFace } from './FrameIFace'

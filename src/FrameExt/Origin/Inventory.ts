@@ -1,35 +1,42 @@
-import { hTimer } from "../../Handle";
-import { Log } from "../../Utils";
-import { OriginFrame } from './OriginFrame'
+import * as Utils from '../../Utils'
 
-/** Unique properties. */
-export class OriginInventory extends OriginFrame {
-    public static instance(){return OriginInventory._instance} 
+import { onPreInit } from '../Init'
+import { Frame } from '../Frame'
 
-    private static _instance: OriginFrame | undefined;
-    private static _init_timer = IsGame() ? (() => {
-        let t = new hTimer()
-        t.addAction(() => {
+export class OriginInventory extends Frame {
+    static inst(){
+        if (!OriginInventory.__instance){
+            return Utils.Log.err('can not get origin frame before FrameExt finish initialization.')
+        }
+        return OriginInventory.__instance
+    } 
+
+    private constructor(handle: jframehandle){
+        super(handle, false)
+    }
+
+    private static __instance: OriginInventory = <OriginInventory><unknown>undefined
+    private static __pre_init_action = (()=>{
+        return onPreInit(()=>{
             let item_btn = BlzGetOriginFrame(ORIGIN_FRAME_ITEM_BUTTON, 0)
-            if (!item_btn){return Log.err(OriginInventory.name + 
-                                          ': static instance has not been created')}
+            if (!item_btn){
+                return Utils.Log.wrn('can not init ' + OriginInventory.name)
+            }
                                           
             let item_parent = BlzFrameGetParent(item_btn)
-            if (!item_parent){return Log.err(OriginInventory.name + 
-                                             ': static instance has not been created')}
+            if (!item_parent){
+                return Utils.Log.wrn('can not init ' + OriginInventory.name)
+            }
             
             let handle = BlzFrameGetParent(item_parent)
-            if (!handle){return Log.err(OriginInventory.name + 
-                                        ': static instance has not been created')}
+            if (!handle){
+                return Utils.Log.wrn('can not init ' + OriginInventory.name)
+            }
 
-
-            let is_simple = false
             BlzFrameClearAllPoints(handle)
-            BlzFrameSetParent(handle, undefined)
-
-            OriginInventory._instance = new OriginInventory(handle, is_simple)
-            t.destroy()
+            BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+        
+            OriginInventory.__instance = new OriginInventory(handle)
         })
-        t.start(0, false)
-    })() : undefined;
+    })()
 }

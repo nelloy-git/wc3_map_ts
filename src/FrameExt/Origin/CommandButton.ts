@@ -1,63 +1,63 @@
-import { hTimer } from "../../Handle";
-import { Log } from "../../Utils";
-import { OriginFrame } from './OriginFrame'
+import * as Utils from '../../Utils'
 
-/** Unique properties. */
-export class OriginCommandButton extends OriginFrame {
-    static instance(i: number){return OriginCommandButton._instance[i]} 
-    
-    protected _set_pos(pos: [x: number, y: number]){
+import { onPreInit } from '../Init'
+import { Frame } from '../Frame'
+
+export class OriginCommandButton extends Frame {
+    static inst(i: number){
+        if (!OriginCommandButton.__instance){
+            return Utils.Log.err('can not get origin frame before FrameExt finish initialization.')
+        }
+        return OriginCommandButton.__instance[i]
+    }
+
+    protected _set_pos(v: Utils.Vec2){
         let parent = this.parent
+        let parent_abs_pos = parent ? parent.abs_pos : new Utils.Vec2(0, 0)
+        let size = this.size
 
-        let p_abs_pos = parent?.absPos
-        let [px, py] = p_abs_pos ? p_abs_pos : [0, 0]
+        let new_min = parent_abs_pos.add(v)
+        let new_max = new_min.add(size)
 
-        let [x, y] = this.pos
-        let abs_x = px + x
-        let abs_y = py + y
-
-        let [w, h] = this.size
-
-        if (abs_x < 0 || abs_y < 0 || abs_x + w > 0.8 || abs_y + h > 0.6){
-            Log.wrn(OriginCommandButton.name + 
-                    ': can not be moved correctly outside of [[0, 0], [0.8, 0.6]]' + 
-                    ' default zone.')
+        if (new_min.x < 0 || new_min.y < 0 || new_max.x > 0.8, new_max.y > 0.6){
+            Utils.Log.wrn(OriginCommandButton.name + 
+                          ': can not be moved correctly outside of [[0, 0], [0.8, 0.6]]')
         }
 
-        super._set_pos(pos)
+        super._set_pos(v)
     }
 
-    protected _set_size(size: [w: number, h: number]){
-        let [abs_x, abs_y] = this.absPos
-        let [w, h] = size
+    protected _set_size(v: Utils.Vec2){
+        let new_min = this.abs_pos
+        let new_max = new_min.add(this.size)
 
-        if (abs_x < 0 || abs_y < 0 || abs_x + w > 0.8 || abs_y + h > 0.6){
-            Log.wrn(OriginCommandButton.name + 
-                    ': can not be moved outside of [[0, 0], [0.8, 0.6]]' + 
-                    ' default zone.')
+        if (new_min.x < 0 || new_min.y < 0 || new_max.x > 0.8, new_max.y > 0.6){
+            Utils.Log.wrn(OriginCommandButton.name + 
+                          ': can not be moved correctly outside of [[0, 0], [0.8, 0.6]]')
         }
 
-        super._set_size(size)
+        super._set_size(v)
     }
 
-    private static _instance: (OriginFrame | undefined)[] = [];
-    private static _init_timer = IsGame() ? (() => {
-        let t = new hTimer()
-        t.addAction(() => {
+    private constructor(handle: jframehandle){
+        super(handle, false)
+    }
+
+    private static __instance: OriginCommandButton[] = <OriginCommandButton[]><unknown>undefined
+    private static __pre_init_action = (()=>{
+        return onPreInit(()=>{
+            OriginCommandButton.__instance = []
             for (let i = 0; i < 12; i++){
-                let handle = BlzGetFrameByName("MiniMapFrame", 0)
-                if (!handle){return Log.err(OriginCommandButton.name + 
-                                            ': static instance has not been created')}
-                                            
-                let is_simple = false
+                let handle = BlzGetFrameByName("CommandButton_" + i.toString(), 0)
+                if (!handle){
+                    return Utils.Log.wrn('can not init ' + OriginCommandButton.name)
+                }
+
                 BlzFrameClearAllPoints(handle)
                 BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
 
-                OriginCommandButton._instance[i] = new OriginCommandButton(handle, is_simple)
+                OriginCommandButton.__instance.push(new OriginCommandButton(handle))
             }
-
-            t.destroy()
         })
-        t.start(0, false)
-    })() : undefined;
+    })()
 }

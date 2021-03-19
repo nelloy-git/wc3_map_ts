@@ -14,12 +14,12 @@ if (IsGame()){
 
 export function onPreInit(callback: ()=>void){
     if (IsGame()){
-        pre_init_timer.addAction(callback)
+        return pre_init_timer.addAction(callback)
     }
 }
 
 export function onInit(callback: ()=>void){
     if (IsGame()){
-        init_timer.addAction(callback)
+        return init_timer.addAction(callback)
     }
 }

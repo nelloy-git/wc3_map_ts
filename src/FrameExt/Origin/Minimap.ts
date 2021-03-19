@@ -1,26 +1,32 @@
-import { hTimer } from "../../Handle";
-import { Log } from "../../Utils";
-import { OriginFrame } from './OriginFrame'
+import * as Utils from '../../Utils'
 
-/** Unique properties. */
-export class OriginMinimap extends OriginFrame {
-    static instance(){return OriginMinimap._instance} 
+import { onPreInit } from '../Init'
+import { Frame } from '../Frame'
 
-    private static _instance: OriginFrame | undefined;
-    private static _init_timer = IsGame() ? (() => {
-        let t = new hTimer()
-        t.addAction(() => {
+export class OriginMinimap extends Frame {
+    static inst(){
+        if (!OriginMinimap.__instance){
+            return Utils.Log.err('can not get origin frame before FrameExt finish initialization.')
+        }
+        return OriginMinimap.__instance
+    } 
+
+    private constructor(handle: jframehandle){
+        super(handle, false)
+    }
+
+    private static __instance: OriginMinimap = <OriginMinimap><unknown>undefined
+    private static __pre_init_action = (()=>{
+        return onPreInit(()=>{
             let handle = BlzGetFrameByName("MiniMapFrame", 0)
-            if (!handle){return Log.err(OriginMinimap.name + 
-                                        ': static instance has not been created')}
+            if (!handle){
+                return Utils.Log.wrn('can not init ' + OriginMinimap.name)
+            }
 
-            let is_simple = false
             BlzFrameClearAllPoints(handle)
-            BlzFrameSetParent(handle, undefined)
-
-            OriginMinimap._instance = new OriginMinimap(handle, is_simple)
-            t.destroy()
+            BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+        
+            OriginMinimap.__instance = new OriginMinimap(handle)
         })
-        t.start(0, false)
-    })() : undefined;
+    })()
 }

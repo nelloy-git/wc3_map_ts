@@ -68,8 +68,3 @@ class B extends A {
 
     b: number = 1
 }
-
-let b = new B()
-print(b.a, b.b)
-b.a = 5
-print(b.a, b.b)

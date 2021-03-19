@@ -1,87 +1,120 @@
-import { Screen } from "../Screen";
-import { hTimer } from "../../Handle";
-import { Log } from "../../Utils";
-import { OriginFrame } from './OriginFrame'
-import { Frame } from "..";
+import * as Utils from '../../Utils'
+
+import { onPreInit } from '../Init'
+import { Frame } from '../Frame'
+import { Screen } from '../Screen'
 
 /** Unique properties. */
-export class OriginPortrait extends OriginFrame {
-    static instance(){return OriginPortrait._instance} 
+export class OriginPortrait extends Frame {
+    static inst(){
+        if (!OriginPortrait.__instance){
+            return Utils.Log.err('can not get origin frame before FrameExt finish initialization.')
+        }
+        return OriginPortrait.__instance
+    } 
 
-    protected _get_pos(): [number, number]{return [this.__x, this.__y]}
-    protected _set_pos(pos: [x: number, y: number]){
-        [this.__x, this.__y] = pos
-        let [px, py] = this.parent ? this.parent.absPos : [0, 0]
+    protected _get_pos(){return this.__fake_pos.copy()}
+    protected _set_pos(v: Utils.Vec2){
+        let parent = this.parent
+        let parent_abs_pos = parent ? parent.abs_pos : new Utils.Vec2(0, 0)
+        let size = this.size
 
-        let real_x = px + this.__x
-        let real_y = py + this.__y
+        let new_min = parent_abs_pos.add(v)
+        let new_max = new_min.add(size)
 
-        real_x = 0.8 / Screen.size[0] * (real_x - Screen.pos[0])
-        real_y = real_y
-        let [real_w, real_h] = super._get_size()
-        
-        /** Bugged when outside screen. */
-        real_x = real_x < 0.001 ? 0.001 : (real_x + real_w) > 0.799 ? 0.799 - real_w : real_x
-        real_y = real_y < 0.001 ? 0.001 : (real_y + real_h) > 0.599 ? 0.599 - real_h : real_y
+        let sc_pos = Screen.pos
+        let sc_size = Screen.size
+        if (new_min.x < sc_pos.x || new_min.y < sc_pos.y
+            || new_max.x > sc_size.x, new_max.y > sc_size.y){
 
-        super._set_pos([real_x, real_y])
-        super._set_size([real_w, real_h])
+            Utils.Log.wrn(OriginPortrait.name + 
+                          ': can not be moved correctly outside of screen')
+
+            new_min.x = Math.max(new_min.x, sc_pos.x + 0.0001)
+            new_min.y = Math.max(new_min.y, sc_pos.y + 0.0001)
+
+            let sc_max = sc_pos.add(sc_size)
+            let size_max = sc_max.sub(new_min)
+            size.x = Math.min(size.x, size_max.x - 0.0001)
+            size.y = Math.min(size.y, size_max.y - 0.0001)
+        }
+
+        let real_pos = parent_abs_pos.add(new_min)
+        real_pos.x = 0.8 / Screen.size.x * (real_pos.x - Screen.pos.x)
+
+        let real_size = size.copy()
+        real_size.x = 0.8 / Screen.size.x * real_size.x
+
+        super._set_pos(real_pos)
+        super._set_size(real_size)
     }
 
-    protected _get_size(): [w: number, h: number]{return [this.__w, this.__h]}
-    protected _set_size(size: [w: number, h: number]){
-        [this.__w, this.__h] = size
+    protected _get_size(){return this.__fake_size.copy()}
+    protected _set_size(v: Utils.Vec2){
+        let parent = this.parent
+        let parent_abs_pos = parent ? parent.abs_pos : new Utils.Vec2(0, 0)
+        let size = v.copy()
 
-        let [real_x, real_y] = super._get_pos()
-        let real_w = 0.8 / Screen.size[0] * this.__w
-        let real_h = this.__h
-        
-        /** Bugged when outside screen. */
-        real_x = real_x < 0.001 ? 0.001 : (real_x + real_w) > 0.799 ? 0.799 - real_w : real_x
-        real_y = real_y < 0.001 ? 0.001 : (real_y + real_h) > 0.599 ? 0.599 - real_h : real_y
+        let new_min = this.abs_pos
+        let new_max = new_min.add(v)
 
-        super._set_pos([real_x, real_y])
-        super._set_size([real_w, real_h])
-    }
+        let sc_pos = Screen.pos
+        let sc_size = Screen.size
+        if (new_min.x < sc_pos.x || new_min.y < sc_pos.y
+            || new_max.x > sc_size.x, new_max.y > sc_size.y){
 
-    get parent(){return null}
-    set parent(parent: Frame | null){
-        Log.err(OriginPortrait.name + 
-                ': parentness disabled.')
+            Utils.Log.wrn(OriginPortrait.name + 
+                          ': can not be moved correctly outside of screen')
+
+            new_min.x = Math.max(new_min.x, sc_pos.x + 0.0001)
+            new_min.y = Math.max(new_min.y, sc_pos.y + 0.0001)
+
+            let sc_max = sc_pos.add(sc_size)
+            let size_max = sc_max.sub(new_min)
+            size.x = Math.min(size.x, size_max.x - 0.0001)
+            size.y = Math.min(size.y, size_max.y - 0.0001)
+        }
+
+        let real_pos = parent_abs_pos.add(new_min)
+        real_pos.x = 0.8 / Screen.size.x * (real_pos.x - Screen.pos.x)
+
+        let real_size = size.copy()
+        real_size.x = 0.8 / Screen.size.x * real_size.x
+
+        super._set_pos(real_pos)
+        super._set_size(real_size)
     }
     
-    private __x: number = 0
-    private __y: number = 0
-    private __w: number = 0
-    private __h: number = 0
+    private __fake_pos: Utils.Vec2 = new Utils.Vec2(0, 0)
+    private __fake_size: Utils.Vec2 = new Utils.Vec2(0.1, 0.1)
 
-    private static _instance: OriginFrame | undefined;
-    private static _init_timer = IsGame() ? (() => {
-        let t = new hTimer()
-        t.addAction(() => {
+    private constructor(handle: jframehandle){
+        super(handle, false)
+    }
+
+    private static __instance: OriginPortrait = <OriginPortrait><unknown>undefined
+    private static __pre_init_action = (()=>{
+        return onPreInit(()=>{
             let handle = BlzGetOriginFrame(ORIGIN_FRAME_PORTRAIT, 0)
-            let is_simple = false
-            if (!handle){return Log.err(OriginPortrait.name + 
-                                        ': static instance has not been crated')}
-            
-            BlzFrameClearAllPoints(handle)
-            BlzFrameSetParent(handle, undefined)
+            if (!handle){
+                return Utils.Log.wrn('can not init ' + OriginPortrait.name)
+            }
 
-            OriginPortrait._instance = new OriginPortrait(handle, is_simple)
-            OriginPortrait._instance.pos = [0, 0]
-            OriginPortrait._instance.size = [0.1, 0.1]
+            BlzFrameClearAllPoints(handle)
+            BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+        
+            OriginPortrait.__instance = new OriginPortrait(handle)
+            OriginPortrait.__instance.pos = new Utils.Vec2(0, 0)
+            OriginPortrait.__instance.size = new Utils.Vec2(0.1, 0.1)
 
             Screen.addAction(() => {
-                if (!OriginPortrait._instance){return}
+                if (!OriginPortrait.__instance){return}
 
-                OriginPortrait._instance.pos = OriginPortrait._instance.pos
-                OriginPortrait._instance.size = OriginPortrait._instance.size
+                OriginPortrait.__instance.pos = OriginPortrait.__instance.pos
+                OriginPortrait.__instance.size = OriginPortrait.__instance.size
             })
-
-            t.destroy()
         })
-        t.start(0, false)
-    })() : undefined;
+    })()
 }
 
 /** Portrait have hardcoded bind to some element. Bottom corner does not move in other ways. */

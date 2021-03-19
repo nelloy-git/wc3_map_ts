@@ -33,6 +33,10 @@ export class Vec2 {
         return new Vec2(this.x + other.x, this.y + other.y)
     }
 
+    sub(other: Vec2){
+        return new Vec2(this.x - other.x, this.y - other.y)
+    }
+
     mult(k: number){
         return new Vec2(k * this.x, k * this.y)
     }

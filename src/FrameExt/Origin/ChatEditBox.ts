@@ -1,60 +1,60 @@
-import { hTimer } from "../../Handle";
-import { Log } from "../../Utils";
-import { OriginFrame } from './OriginFrame'
+import * as Utils from '../../Utils'
 
-/** Unique properties. */
-export class OriginChatEditBox extends OriginFrame {
-    static instance(){return OriginChatEditBox._instance} 
+import { onPreInit } from '../Init'
+import { Frame } from '../Frame'
 
-    protected _set_pos(pos: [x: number, y: number]){
+export class OriginChatEditBox extends Frame {
+    static inst(){
+        if (!OriginChatEditBox.__instance){
+            return Utils.Log.err('can not get origin frame before FrameExt finish initialization.')
+        }
+        return OriginChatEditBox.__instance
+    } 
+
+    protected _set_pos(v: Utils.Vec2){
         let parent = this.parent
+        let parent_abs_pos = parent ? parent.abs_pos : new Utils.Vec2(0, 0)
+        let size = this.size
 
-        let p_abs_pos = parent?.absPos
-        let [px, py] = p_abs_pos ? p_abs_pos : [0, 0]
+        let new_min = parent_abs_pos.add(v)
+        let new_max = new_min.add(size)
 
-        let [x, y] = this.pos
-        let abs_x = px + x
-        let abs_y = py + y
-
-        let [w, h] = this.size
-
-        if (abs_x < 0 || abs_y < 0 || abs_x + w > 0.8 || abs_y + h > 0.6){
-            Log.wrn(OriginChatEditBox.name + 
-                    ': can not be moved correctly outside of [[0, 0], [0.8, 0.6]]' + 
-                    ' default zone.')
+        if (new_min.x < 0 || new_min.y < 0 || new_max.x > 0.8, new_max.y > 0.6){
+            Utils.Log.wrn(OriginChatEditBox.name + 
+                          ': can not be moved correctly outside of [[0, 0], [0.8, 0.6]]')
         }
 
-        super._set_pos(pos)
+        super._set_pos(v)
     }
 
-    protected _set_size(size: [w: number, h: number]){
-        let [abs_x, abs_y] = this.absPos
-        let [w, h] = size
+    protected _set_size(v: Utils.Vec2){
+        let new_min = this.abs_pos
+        let new_max = new_min.add(this.size)
 
-        if (abs_x < 0 || abs_y < 0 || abs_x + w > 0.8 || abs_y + h > 0.6){
-            Log.wrn(OriginChatEditBox.name + 
-                    ': can not be moved outside of [[0, 0], [0.8, 0.6]]' + 
-                    ' default zone.')
+        if (new_min.x < 0 || new_min.y < 0 || new_max.x > 0.8, new_max.y > 0.6){
+            Utils.Log.wrn(OriginChatEditBox.name + 
+                          ': can not be moved correctly outside of [[0, 0], [0.8, 0.6]]')
         }
 
-        super._set_size(size)
+        super._set_size(v)
     }
 
-    private static _instance: OriginFrame | undefined;
-    private static _init_timer = IsGame() ? (() => {
-        let t = new hTimer()
-        t.addAction(() => {
+    private constructor(handle: jframehandle){
+        super(handle, false)
+    }
+
+    private static __instance: OriginChatEditBox = <OriginChatEditBox><unknown>undefined
+    private static __pre_init_action = (()=>{
+        return onPreInit(()=>{
             let handle = BlzFrameGetChild(BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), 11)
-            if (!handle){return Log.err(OriginChatEditBox.name + 
-                                        ': static instance has not been created')}
-            let is_simple = false
-            
-            BlzFrameClearAllPoints(handle)
-            BlzFrameSetParent(handle, undefined)
+            if (!handle){
+                return Utils.Log.wrn('can not init ' + OriginChatEditBox.name)
+            }
 
-            OriginChatEditBox._instance = new OriginChatEditBox(handle, is_simple)
-            t.destroy()
+            BlzFrameClearAllPoints(handle)
+            BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
+        
+            OriginChatEditBox.__instance = new OriginChatEditBox(handle)
         })
-        t.start(0, false)
-    })() : undefined;
+    })()
 }
