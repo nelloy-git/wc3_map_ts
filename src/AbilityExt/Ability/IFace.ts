@@ -38,7 +38,7 @@ export interface TargetingIFace<T extends TargetType[]> {
 export interface CastingIFace<T extends TargetType[]> {
     readonly abil: IFace<T>
     readonly period: number
-    readonly timer: Handle.hTimerObj
+    readonly Timer: Handle.hTimerObj
 
     start(target: T): void
     extraPeriod(reduce_time_left: boolean): void

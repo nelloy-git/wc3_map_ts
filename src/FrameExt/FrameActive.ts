@@ -1,3 +1,4 @@
+import * as Fdf from '../Fdf'
 import * as Handle from '../Handle'
 import * as Utils from '../Utils'
 
@@ -13,7 +14,13 @@ export abstract class FrameActive extends Frame {
     }
     static getTriggered(){return FrameActive.get(BlzGetTriggerFrame())}
 
+    constructor(fdf: Fdf.Fdf, is_simple: boolean,
+                events: ReadonlyArray<jframeeventtype>)
     constructor(handle: jframehandle, is_simple: boolean,
+                events: ReadonlyArray<jframeeventtype>)
+    constructor(handle_or_fdf: jframehandle | Fdf.Fdf, is_simple: boolean,
+                events: ReadonlyArray<jframeeventtype>)
+    constructor(handle: jframehandle | Fdf.Fdf, is_simple: boolean,
                 events: ReadonlyArray<jframeeventtype>){
                     
         super(handle, is_simple)

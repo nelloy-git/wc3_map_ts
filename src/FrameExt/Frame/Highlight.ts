@@ -12,10 +12,16 @@ export class Highlight extends Frame {
         return f
     }
 
-    constructor(handle: jframehandle){
-        super(handle, false)
+    constructor(handle_or_fdf?: jframehandle | Fdf.Highlight){
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, false)
 
-        this.__texture = ''
+        if (handle_or_fdf instanceof Fdf.Backdrop){
+            this.__texture = handle_or_fdf.background
+        } else {
+            this.__texture = ''
+        }
+        
         this.__texture_flags = 0
         this.__texture_blend = true
     }

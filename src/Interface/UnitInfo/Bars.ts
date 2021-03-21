@@ -1,4 +1,5 @@
 import * as Frame from "../../FrameExt";
+import { Vec2 } from '../../Utils'
 
 import { hTimerList, hTimerObj } from "../../Handle";
 import { Shield } from "../../Parameter";
@@ -9,24 +10,24 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
     constructor(){
         super()
 
-        this._timer = InterfaceUnitBars._timer_list.newTimerObj()
-        this._timer.addAction('PERIOD', () => {this.update()})
-        this._timer.addAction('FINISH', timer => {timer.start(3600)})
-        this._timer.start(3600)
+        this.__timer = InterfaceUnitBars._timer_list.newTimerObj()
+        this.__timer.addAction('PERIOD', () => {this.update()})
+        this.__timer.addAction('FINISH', timer => {timer.start(3600)})
+        this.__timer.start(3600)
 
-        this._life = new InterfaceMultiBar(4)
-        this._life.parent = this
-        this._life.bar(0).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor06.blp'
-        this._life.bar(1).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor17.blp'
-        this._life.setBarHeightPart(1, 0.5)
-        this._life.bar(2).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor15.blp'
-        this._life.setBarHeightPart(2, 0.5)
-        this._life.bar(3).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor02.blp'
-        this._life.setBarHeightPart(3, 0.5)
+        this.__life = new InterfaceMultiBar(4)
+        this.__life.parent = this
+        this.__life.bar(0).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor06.blp'
+        this.__life.bar(1).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor17.blp'
+        this.__life.setBarHeightPart(1, 0.5)
+        this.__life.bar(2).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor15.blp'
+        this.__life.setBarHeightPart(2, 0.5)
+        this.__life.bar(3).texture = 'Replaceabletextures\\Teamcolor\\Teamcolor02.blp'
+        this.__life.setBarHeightPart(3, 0.5)
         
-        this._mana = new Frame.SimpleStatusBarExt()
-        this._mana.parent = this
-        this._mana.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor01.blp'
+        this.__mana = new Frame.SimpleStatusBarExt()
+        this.__mana.parent = this
+        this.__mana.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor01.blp'
         
         this.size = this.size
     }
@@ -54,11 +55,11 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
             let min = Math.min(p_shield, m_shield)
             let max = Math.max(max_p_shield, max_m_shield, max_life)
 
-            this._life.bar(0).fullness = life / max_life
-            this._life.bar(1).fullness = p_shield / max
-            this._life.bar(2).fullness = m_shield / max
-            this._life.bar(3).fullness = min / max
-            this._life.text.text = string.format('%.0f / %.0f (%.1f%%)',
+            this.__life.bar(0).fullness = life / max_life
+            this.__life.bar(1).fullness = p_shield / max
+            this.__life.bar(2).fullness = m_shield / max
+            this.__life.bar(3).fullness = min / max
+            this.__life.text.text = string.format('%.0f / %.0f (%.1f%%)',
                                                  life, max_life, 100 * life / max_life)
 
             // Mana
@@ -66,8 +67,8 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
             let mana = u.mana
             let max_mana = u.manaMax
 
-            this._mana.fullness = mana / max_mana
-            let mana_text = this._mana.getElement('TEXT')
+            this.__mana.fullness = mana / max_mana
+            let mana_text = this.__mana.getElement('TEXT')
             if (mana_text){
                 mana_text.text = string.format('%.0f / %.0f (%.1f%%)',
                                                 mana, max_mana, 100 * mana / max_mana)
@@ -75,28 +76,25 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
         }
     }
     
-    protected _set_size(size: [w: number, h: number]){
+    protected _set_size(size: Vec2){
         super._set_size(size)
 
-        let w = size[0]
-        let h = size[1] / 2
+        this.__life.size = new Vec2(size.x, size.y / 2)
+        this.__life.pos = new Vec2(0, 0)
 
-        this._life.size = [w, h]
-        this._life.pos = [0, 0]
-
-        this._mana.size = [w, h]
-        this._mana.pos = [0, h]
-        let mana_text = this._mana.getElement('TEXT')
+        this.__mana.size = new Vec2(size.x, size.y / 2)
+        this.__mana.pos = new Vec2(0, size.y / 2)
+        let mana_text = this.__mana.getElement('TEXT')
         if (mana_text){
-            mana_text.fontSize = 0.8 * h
+            mana_text.fontSize = 0.8 * size.y / 2
         }
     }
 
     private _unit: IUnit | undefined
 
-    private _timer: hTimerObj
-    private _life: InterfaceMultiBar
-    private _mana: Frame.SimpleStatusBarExt
+    private __timer: hTimerObj
+    private __life: InterfaceMultiBar
+    private __mana: Frame.SimpleStatusBarExt
 
     private static _timer_list: hTimerList = new hTimerList(0.025);
 }

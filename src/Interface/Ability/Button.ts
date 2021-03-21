@@ -1,75 +1,79 @@
 import * as Abil from "../../AbilityExt";
-import { GlueTextButton } from '../../FrameExt'
-import { Frame } from "../../FrameExt";
-import { hTimerList } from "../../Handle";
+import * as Frame from '../../FrameExt'
+import * as Handle from '../../Handle'
+import { Vec2 } from '../../Utils'
 
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
 import { InterfaceHotkey } from '../Utils/Hotkey'
-import { Mouse } from "../../WcIO";
 
-export class InterfaceAbilityButton extends GlueTextButton {
+export class InterfaceAbilityButton extends Frame.GlueTextButton {
     constructor(){
         super()
 
-        this._charges.parent = this
-        this._charges.visible = false
-        this._charges.pos = [0, 0.75 * this.size[1]]
-        this._charges.level = this.level + 1
+        this.__charges = new InterfaceAbilityCharges()
+        this.__charges.parent = this
+        this.__charges.pos = new Vec2(0, 0.75 * this.size.y)
+        this.__charges.level = this.level + 1
 
-        this._cooldown.parent = this
-        this._cooldown.visible = false
-        this._cooldown.pos = [0, 0]
+        this.__cooldown = new InterfaceAbilityCooldown()
+        this.__cooldown.parent = this
 
-        this._hotkey.parent = this
-        this._hotkey.visible = true
-        this._hotkey.pos = [0, 0]
-        this._hotkey.size = [0.3 * this.size[0], 0.25 * this.size[1]]
-        this._hotkey.action = (pl, meta, is_down)=>{this._hotkeyUsed(pl, meta, is_down)}
+        this.__hotkey = new InterfaceHotkey()
+        this.__hotkey.parent = this
+        this.__hotkey.action = (pl, meta, is_down)=>{this.__hotkeyUsed(pl, meta, is_down)}
 
         this.size = this.size
-        this.visible = false
-        this.addAction('CLICK', (f: Frame, e:Frame.Event, pl:jplayer) => {this._clicked(pl)})
+        this.addAction(FRAMEEVENT_CONTROL_CLICK, 
+                       (f: Frame.FrameActive, e: jframeeventtype, pl:jplayer) =>
+                            {this.__clicked(pl)})
 
-        this._timer.addAction('PERIOD', ()=>{this._checkEnable()})
-        this._timer.addAction('FINISH', ()=>{this._timer.start(3600)})
-        this._timer.start(3600)
+        this.__timer = InterfaceAbilityButton.__timer_list.newTimerObj()
+        this.__timer.addAction('PERIOD', ()=>{this._checkEnable()})
+        this.__timer.addAction('FINISH', (tm)=>{tm.start(3600)})
+        this.__timer.start(3600)
     }
 
-    protected _set_size(size: [number, number]){
-        super._set_size(size)
-        
-        this._charges.size = [0.3 * size[0], 0.25 * size[1]]
-        this._charges.pos = [0, 0.75 * size[1]]
-
-        this._hotkey.size = [0.3 * size[0], 0.25 * size[1]]
-
-        this._cooldown.size = size
-    }
-
-    get ability(){return this._abil}
+    get ability(){return this.__abil}
     set ability(abil: Abil.Ability<any> | undefined){
-        this._clearAbility()
-        this._applyAbility(abil)
+        this.__clearAbility()
+        this.__applyAbility(abil)
         this._checkEnable()
     }
 
-    get key(){return this._hotkey.key}
-    set key(key: joskeytype | undefined){this._hotkey.key = key}
-
-    smartCast: boolean = true
+    get key(){return this.__hotkey.key}
+    set key(key: joskeytype | undefined){
+        this.__hotkey.key = key
+    }
 
     destroy(){
         super.destroy()
-        InterfaceAbilityButton._timer_list.removeTimerObj(this._timer)
+        InterfaceAbilityButton.__timer_list.removeTimerObj(this.__timer)
     }
 
-    private _clearAbility(){
-        this._abil = undefined
+    protected _set_size(size: Vec2){
+        super._set_size(size)
+        
+        this.__charges.pos = new Vec2(0, 0.75 * size.y)
+        this.__charges.size = new Vec2(0.3 * size.x, 0.25 * size.y)
+
+        this.__hotkey.pos = new Vec2(0, 0)
+        this.__hotkey.size = new Vec2(0.3 * size.x, 0.25 * size.y)
+
+        this.__cooldown.pos = new Vec2(0, 0)
+        this.__cooldown.size = size
+    }
+
+    protected _set_visible(f: boolean){
+        super._set_visible(f && (this.__abil != undefined))
+    }
+
+    private __clearAbility(){
+        this.__abil = undefined
         this.visible = false
     }
 
-    private _applyAbility(abil: Abil.Ability<any> | undefined){
+    private __applyAbility(abil: Abil.Ability<any> | undefined){
         if (abil){
             let normal = this.getElement('NORMAL')
             if (normal){normal.texture = abil.Data.icon_normal}
@@ -81,36 +85,37 @@ export class InterfaceAbilityButton extends GlueTextButton {
             if (disabled){disabled.texture = abil.Data.icon_disabled}
         }
         
-        this._abil = abil
-        this._charges.ability = abil
-        this._cooldown.ability = abil
+        this.__abil = abil
+        this.__charges.ability = abil
+        this.__cooldown.ability = abil
         this.visible = abil != undefined
+        this.__hotkey.visible = abil != undefined 
     }
 
-    private _clicked(pl: jplayer){
-        if (!this._abil || !this.visible){return}
+    private __clicked(pl: jplayer){
+        if (!this.__abil || !this.visible){return}
 
         let active = Abil.TTargeting.activeAbility(pl)
         if (active == undefined){
-            this._abil.Targeting.start(pl)
-        } else if (active == this._abil) {
-            this._abil.Targeting.finish(pl)
+            this.__abil.Targeting.start(pl)
+        } else if (active == this.__abil) {
+            this.__abil.Targeting.finish(pl)
         } else {
             active.Targeting.cancel(pl)
-            this._abil.Targeting.start(pl)
+            this.__abil.Targeting.start(pl)
         }
     }
 
     // Async func
-    private _hotkeyUsed(pl: jplayer, meta: number, is_down: boolean){
-        if (!this._abil){return}
+    private __hotkeyUsed(pl: jplayer, meta: number, is_down: boolean){
+        if (!this.__abil){return}
 
         let active = Abil.TTargeting.activeAbility(pl)
         if (this.smartCast){
             if (is_down && active == undefined){
-                this._abil.Targeting.start(pl)
-            } else if (!is_down && this._abil == active){
-                this._abil.Targeting.finish(pl)
+                this.__abil.Targeting.start(pl)
+            } else if (!is_down && this.__abil == active){
+                this.__abil.Targeting.finish(pl)
             }
         } else {
             // TODO use on self 
@@ -118,16 +123,17 @@ export class InterfaceAbilityButton extends GlueTextButton {
     }
 
     private _checkEnable(){
-        if (!this._abil){return}
-        this.enable = this._abil.Data.is_available
+        if (!this.__abil){return}
+        this.enable = this.__abil.Data.is_available
     }
 
-    private _abil: Abil.Ability<any> | undefined
+    smartCast: boolean = true
 
-    private _charges = new InterfaceAbilityCharges()
-    private _cooldown = new InterfaceAbilityCooldown()
-    private _hotkey = new InterfaceHotkey()
-    private _timer = InterfaceAbilityButton._timer_list.newTimerObj()
+    private __abil: Abil.Ability<any> | undefined
+    private __charges: InterfaceAbilityCharges
+    private __cooldown: InterfaceAbilityCooldown
+    private __hotkey: InterfaceHotkey
+    private __timer: Handle.hTimerObj
     
-    private static _timer_list: hTimerList = new hTimerList(0.05);
+    private static __timer_list = new Handle.hTimerList(0.05);
 }

@@ -5,22 +5,15 @@ import { SimpleString } from './String';
 
 export class SimpleText extends Frame {
 
-    static fromFdf() : SimpleText
-    static fromFdf(fdf: Fdf.SimpleFrame, text_name: string) : SimpleText
-    static fromFdf(fdf?: Fdf.SimpleFrame, text_name?: string){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = Frame._fromFdf(fdf)
+    constructor()
+    constructor(fdf: Fdf.SimpleFrame, string_name: string)
+    constructor(handle: jframehandle, string_name: string)
+    constructor(handle_or_fdf?: jframehandle | Fdf.SimpleFrame, string_name?: string){
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, true)
 
-        text_name = text_name ? text_name : Fdf.SimpleFrame.name + 'DefaultFdfString'
-        let f = new SimpleString(BlzGetFrameByName(text_name, 0))
-
-        return new SimpleText(handle, f)
-    }
-    
-    constructor(handle: jframehandle, string: SimpleString){
-        super(handle, true)
-
-        this.__string = string
+        string_name = string_name ? string_name : DefaultFdf.name + 'String'
+        this.__string = new SimpleString(BlzGetFrameByName(string_name, 0))
     }
 
     public get text(){return this.__string.text}
@@ -36,25 +29,13 @@ export class SimpleText extends Frame {
     public set fontFlags(flags: number){this.__string.fontFlags = flags}
 
     private __string: SimpleString;
-
-    private static _default_fdf = (()=>{
-        let fdf = new Fdf.SimpleFrame(SimpleText.name + 'DefaultFdf')
-        fdf.width = 0.04
-        fdf.height = 0.04
-        let text = new Fdf.SimpleString(SimpleText.name + 'DefaultFdfString')
-            text.text = ''
-            text.font = 'fonts\\nim_____.ttf'
-            text.fontSize = 0.008
-        fdf.addSubframe(text)
-        return fdf
-    })()
 }
 
 let DefaultFdf = new Fdf.SimpleFrame(SimpleText.name + 'DefaultFdf')
 DefaultFdf.width = 0.04
 DefaultFdf.height = 0.04
 {
-    let text = new Fdf.SimpleString(SimpleText.name + 'DefaultFdfString')
+    let text = new Fdf.SimpleString(DefaultFdf.name + 'String')
     text.text = ''
     text.font = 'fonts\\nim_____.ttf'
     text.fontSize = 0.008

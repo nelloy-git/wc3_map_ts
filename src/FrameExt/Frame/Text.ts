@@ -3,23 +3,20 @@ import * as Fdf from '../../Fdf'
 import { Frame } from "../Frame";
 
 export class Text extends Frame {
-    
-    static fromFdf(fdf?: Fdf.Text){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = Frame._fromFdf(fdf)
-        let f = new Text(handle)
-        f.__text = fdf.text
-        f.__vert_align = fdf.justification[1]
-        f.__horz_align = fdf.justification[0]
-        return f
-    }
 
-    constructor(handle: jframehandle){
-        super(handle, false)
+    constructor(handle_or_fdf?: jframehandle | Fdf.Text){
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, false)
 
-        this.__text = ''
-        this.__vert_align = 'JUSTIFYMIDDLE'
-        this.__horz_align = 'JUSTIFYCENTER'
+        if (handle_or_fdf instanceof Fdf.Text){
+            this.__text = handle_or_fdf.text
+            this.__vert_align = handle_or_fdf.justification[1]
+            this.__horz_align = handle_or_fdf.justification[0]
+        } else {
+            this.__text = ''
+            this.__vert_align = 'JUSTIFYMIDDLE'
+            this.__horz_align = 'JUSTIFYCENTER'
+        }
     }
 
     public get text(){return this.__text}
@@ -58,16 +55,6 @@ export class Text extends Frame {
     private __text: string;
     private __vert_align: Text.VertAlignment;
     private __horz_align: Text.HorzAlignment;
-
-    private static _default_fdf = (()=>{
-        let fdf = new Fdf.Text(Text.name + 'DefaultFdf')
-        fdf.width = 0.04
-        fdf.height = 0.04
-        fdf.font = 'fonts\\nim_____.ttf'
-        fdf.fontSize = 0.008
-        fdf.justification = ['JUSTIFYCENTER', 'JUSTIFYMIDDLE']
-        return fdf
-    })()
 }
 
 export namespace Text {

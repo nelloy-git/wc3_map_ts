@@ -7,46 +7,51 @@ import { SimpleString } from './String';
 
 export class SimpleStatusBarExt extends SimpleStatusBar {
 
-    static fromFdf(): SimpleStatusBarExt
-    static fromFdf(fdf: Fdf.SimpleStatusBar, background_name: string,
-                   border_name: string, text_name: string): SimpleStatusBarExt
-    static fromFdf(fdf?: Fdf.SimpleStatusBar, background_name?: string,
-                    border_name?: string, text_name?: string){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = SimpleStatusBar._fromFdf(fdf)
-        
+    constructor()
+    constructor(fdf: Fdf.SimpleStatusBar,
+                background_name: string, border_name: string, text_name: string)
+    constructor(handle: jframehandle,
+                background_name: string, border_name: string, text_name: string)
+    constructor(handle_or_fdf?: jframehandle | Fdf.SimpleStatusBar,
+                background_name?: string, border_name?: string, text_name?: string){
+
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf)
+
         background_name = background_name ? background_name : DefaultName + 'BACKGROUND'
-        let background = new SimpleTexture(BlzGetFrameByName(background_name, 0))
-
         border_name = border_name ? border_name : DefaultName + 'BORDER'
-        let border = new SimpleTexture(BlzGetFrameByName(border_name, 0))
-
         text_name = text_name ? text_name : DefaultName + 'TEXT'
-        let text = new SimpleString(BlzGetFrameByName(text_name, 0))
-        
-        return new SimpleStatusBarExt(handle, background, border, text)
-    }
 
-    constructor(handle: jframehandle, background: SimpleTexture,
-                border: SimpleTexture, text: SimpleString){
-        super(handle)
-
-        this._elements = new Map()
-        if (background){this._elements.set('BACKGROUND', background)}
-        if (border){this._elements.set('BORDER', border)}
-        if (text){this._elements.set('TEXT', text)}
+        this.__elements = new Map()
+        this.__linkElement('BACKGROUND', background_name)
+        this.__linkElement('BORDER', border_name)
+        this.__linkElement('TEXT', text_name)
     }
 
     getElement(elem: 'BACKGROUND' | 'BORDER'): SimpleTexture | undefined
     getElement(elem: 'TEXT'): SimpleString | undefined
-    getElement(elem: SimpleStatusBar.Element){
-        return this._elements.get(elem)
+    getElement(elem: SimpleStatusBarExt.Element){
+        return this.__elements.get(elem)
     }
 
-    private _elements: Map<SimpleStatusBar.Element, SimpleTexture | SimpleString>;
+    private __linkElement(elem: SimpleStatusBarExt.Element, name?: string){
+        if (!name){ return}
+
+        let handle = BlzGetFrameByName(name, 0)
+        let frame: SimpleTexture | SimpleString
+        if (elem == 'BACKGROUND' || elem == 'BORDER'){
+            frame = new SimpleTexture(handle)
+        } else {    //elem == 'TEXT'
+            frame = new SimpleString(handle)
+        }
+
+        this.__elements.set(elem, frame)
+    }
+
+    private __elements: Map<SimpleStatusBarExt.Element, SimpleTexture | SimpleString>;
 }
 
-export namespace SimpleStatusBar {
+export namespace SimpleStatusBarExt {
     export type Element = 'BACKGROUND' | 'BORDER' | 'TEXT'
 }
 

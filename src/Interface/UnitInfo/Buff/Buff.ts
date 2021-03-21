@@ -7,7 +7,7 @@ export class InterfaceBuff extends GlueTextButton {
         this.visible = false
     }
 
-    get buff(){return this._buff}
+    get buff(){return this.__buff}
     set buff(buff: Buff.IFace<any> | undefined){
         this.visible = buff != undefined
         if (buff){
@@ -16,5 +16,5 @@ export class InterfaceBuff extends GlueTextButton {
         }
     }
 
-    private _buff: Buff.IFace<any> | undefined
+    private __buff: Buff.IFace<any> | undefined
 }

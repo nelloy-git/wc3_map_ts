@@ -50,12 +50,10 @@ function mouseTrack(this: void){
     let w = cur_abil.Data.area / 2
     let r = SquareRoot(dx * dx + dy * dy)
 
-    let cx = end.x
-    let cy = end.y
-    L_ARROW.setPolarPos(cx, cy, 0, 0, 2 * w, a - 5 / 6 * math.pi)
-    R_ARROW.setPolarPos(cx, cy, 0, 0, 2 * w, a + 5 / 6 * math.pi)
-    L_LINE.setPolarPos(L_ARROW.x2, L_ARROW.y2, 0, 0, r - w, a + math.pi)
-    R_LINE.setPolarPos(R_ARROW.x2, R_ARROW.y2, 0, 0, r - w, a + math.pi)
+    L_ARROW.setPolarPos(end, 0, 0, 2 * w, a - 5 / 6 * math.pi)
+    R_ARROW.setPolarPos(end, 0, 0, 2 * w, a + 5 / 6 * math.pi)
+    L_LINE.setPolarPos(L_ARROW.p2, 0, 0, r - w, a + math.pi)
+    R_LINE.setPolarPos(R_ARROW.p2, 0, 0, r - w, a + math.pi)
 }
 
 function getTarget(this: void, abil: IFace<[Utils.Vec2]>){

@@ -1,27 +1,28 @@
 import * as Abil from "../../AbilityExt";
 import * as Buff from "../../Buff";
 import * as Param from "../../Parameter";
-import * as Utils from '../../Utils'
 import { hUnit } from "../../Handle";
+import { getFileDir, Vec2 } from "../../Utils";
 
 import { AbilityJson } from "../JsonUtils/Ability";
 import { BreakthroughData } from "./data/Breakthrough";
 import { Push } from '../Buffs'
 
-const __dir__ = Macro(Utils.getFileDir())
-let json = new AbilityJson(__dir__ + '/json/Breakthrough.json')
+const __dir__ = Macro(getFileDir())
 
+const json = new AbilityJson(__dir__ + '/json/Breakthrough.json')
 const KEY_DMG = 'pushDmg'
-const KEY_PUSH = 'pushDur'
+const KEY_PUSH_DUR = 'pushDur'
 
-let Casting = new Abil.TCasting<[Utils.Vec2]>()
+let Casting = new Abil.TCasting<[Vec2]>()
 
 Casting.start = (abil, target) => {
     let caster = abil.Data.owner
     new BreakthroughData(abil, caster, target[0])
 
     caster.pause = true
-    caster.angle = Utils.getAngle(caster, target[0])
+    caster.angle = target[0].sub(caster.pos).angle
+
     let anim = json.getNumber(['animation', 'walk'])
     caster.animation = anim ? anim : 0
 }
@@ -45,20 +46,21 @@ Casting.casting = (abil, target) => {
         return
     }
 
-    let x = caster.x
-    let y = caster.y
     let params = Param.UnitContainer.get(caster)
-    let in_range = hUnit.getInRange(x, y, abil.Data.area)
+    let in_range = hUnit.getInRange(caster.pos, abil.Data.area)
     for (let target of in_range){
         if (caster.isAlly(target)){continue}
         if (data.pushed.indexOf(target) >= 0){continue}
 
         // Push
         let buffs = Buff.Container.get(target)
-        let buff_scale = json.scales.get(KEY_PUSH)
+        let buff_scale = json.scales.get(KEY_PUSH_DUR)
+
         if (params && buffs && buff_scale){
-            buffs.add(caster, buff_scale.getResult(params),
-                      Push, getPushVelXY(caster, target, data.vel))
+            let time = buff_scale.getResult(params)
+            let vel = getPushVel(caster, target, data.vel.length)
+            print(time, vel.toString())
+            buffs.add(caster, time, Push, [vel])
         }
         
         // Damage
@@ -72,15 +74,11 @@ Casting.casting = (abil, target) => {
     }
 }
 
-function getPushVelXY(caster: hUnit, target: hUnit, vel: number): [vel_x: number, vel_y: number]{
-    let [dx, dy] = Utils.deltaPos(caster, target)
-    let r = SquareRoot(dx * dx + dy * dy)
-    let vel_x = 1.5 * vel * dx / r
-    let vel_y = 1.5 * vel * dy / r
-    return [vel_x, vel_y]
+function getPushVel(caster: hUnit, target: hUnit, vel: number){
+    return target.pos.sub(caster.pos).norm.mult(1.5 * vel / Abil.Casting.period)
 }
 
-function clear(abil: Abil.IFace<[Utils.Vec2]>){
+function clear(abil: Abil.IFace<[Vec2]>){
     BreakthroughData.get(abil).destroy()
 
     let caster = abil.Data.owner
@@ -95,17 +93,13 @@ Casting.castingTime = (abil, target) => {
     let caster = abil.Data.owner
     let param = Param.UnitContainer.get(caster)
     let ms = param ? param.get('MOVE', 'RES') : 300
-    let mspd = param ? param.get('MSPD', 'RES') : 1
 
-    let targ = undefined
-    let range = abil.Data.range
-    if (target){
-        targ = target[0]
-        let [dx, dy] = Utils.deltaPos(caster, targ)
-        range = SquareRoot(dx * dx + dy * dy)
-    }
+    let range = target ? target[0].sub(caster.pos).length : abil.Data.range
+    let angle = target ? target[0].sub(caster.pos).angle : math.pi
+    angle = Math.min(angle, 2 * math.pi - angle)
+    let turn_time = 0.5 * angle / math.pi
 
-    return Utils.getTurnTime(abil.Data.owner, targ) + range / (mspd * ms)
+    return turn_time + range / ms
 }
 Casting.isTargetValid = (abil, target) => {return true}
 
@@ -126,7 +120,7 @@ Data.isAvailable = (abil) => {
     let controllable = !abil.Data.owner.pause
     let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
     let charges = abil.Data.Charges.count > 0
-    let casting = abil.Casting.timer.left <= 0
+    let casting = abil.Casting.Timer.left <= 0
 
     return charges && casting && enough_mana && controllable
 }

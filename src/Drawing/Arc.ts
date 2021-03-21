@@ -1,35 +1,41 @@
-import { Color, Log } from '../Utils'
+import { Color, Log, Vec2 } from '../Utils'
 import { Pixel, PixelList } from "./Pixel";
 
 
 export class Arc<T extends Pixel> {
     constructor(pixels: PixelList<T>,
-                pixel_step?: number){
-        this._pixels = pixels
-        this._step = pixel_step ? pixel_step : 8
-        this._in_use = 0
+                pixel_step: number = 8, z: number = 0){
+        this.__c = new Vec2(0, 0)
+        this.__r = 0
+        this.__a1 = 0
+        this.__a2 = 0
+        this.__z = 0
+
+        this.__pixels = pixels
+        this.__step = pixel_step
+        this.__in_use = 0
+
+        if (z != 0){this.z = z}
     }
 
-    public setPolarPos(cx: number, cy: number, r: number, a1: number, a2: number){
-        this._cx = cx
-        this._cy = cy
-        this._r = r
-        this._a1 = a1
-        this._a2 = a2
+    public setPolarPos(c: Vec2, r: number, a1: number, a2: number){
+        this.__c = c.copy()
+        this.__r = r
+        this.__a1 = a1
+        this.__a2 = a2
 
-        this.update()
+        this._update()
     }
 
-    public get cx(){return this._cx}
-    public get cy(){return this._cy}
-    public get r(){return this._r}
-    public get a1(){return this._a1}
-    public get a2(){return this._a2}
+    public get c(){return this.__c.copy()}
+    public get r(){return this.__r}
+    public get a1(){return this.__a1}
+    public get a2(){return this.__a2}
 
-    public get z(){return this._z}
+    public get z(){return this.__z}
     public set z(z: number){
-        this._z = z
-        for (let pixel of this._pixels){
+        this.__z = z
+        for (let pixel of this.__pixels){
             pixel.z = z
         }
     }
@@ -37,7 +43,7 @@ export class Arc<T extends Pixel> {
     public get color(){return new Color(this._color)}
     public set color(color: Color){
         this._color = new Color(color)
-        for (let pixel of this._pixels){
+        for (let pixel of this.__pixels){
             pixel.color = color
         }
     }
@@ -45,56 +51,54 @@ export class Arc<T extends Pixel> {
     public get visible(){return this._visible}
     public set visible(flag: boolean){
         this._visible = flag
-        for (let i = 0; i < math.min(this._in_use, this._pixels.length); i++){
-            this._pixels[i].visible = flag
+        for (let i = 0; i < math.min(this.__in_use, this.__pixels.length); i++){
+            this.__pixels[i].visible = flag
         }
     }
 
     public destroy(){
-        for (let pixel of this._pixels){
+        for (let pixel of this.__pixels){
             pixel.destroy()
         }
     }
 
-    private update(){
-        let da = math.max(this._a2, this._a1) - math.min(this._a2, this._a1)
-        let arc_length = this._r * (da)
+    private _update(){
+        let da = math.max(this.__a2, this.__a1) - math.min(this.__a2, this.__a1)
+        let arc_length = this.__r * (da)
 
-        this._in_use = math.floor(arc_length / this._step) + 1
-        if (this._in_use > this._pixels.length){
+        this.__in_use = math.floor(arc_length / this.__step) + 1
+        if (this.__in_use > this.__pixels.length){
             Log.wrn(Arc.name + 
                     ': is not enought pixels to fill arc.')
         }
 
-        let cx = this._cx
-        let cy = this._cy
-        let r = this._r
-        let a = math.min(this._a2, this._a1)
-        let step_a = da / this._in_use
-        let rly_used = math.min(this._in_use, this._pixels.length)
+        let c = this.__c
+        let r = this.__r
+        let a = math.min(this.__a2, this.__a1)
+        let step_a = da / this.__in_use
+        let rly_used = math.min(this.__in_use, this.__pixels.length)
         for (let i = 0; i < rly_used; i++){
-            let pixel = this._pixels[i]
+            let pixel = this.__pixels[i]
             pixel.visible = this._visible
-            pixel.x = cx + r * Cos(a)
-            pixel.y = cy + r * Sin(a)
+            pixel.x = c.x + r * Cos(a)
+            pixel.y = c.y + r * Sin(a)
             a += step_a
         }
 
-        for (let i = rly_used; i < this._pixels.length; i++){
-            this._pixels[i].visible = false
+        for (let i = rly_used; i < this.__pixels.length; i++){
+            this.__pixels[i].visible = false
         }
     }
 
-    private _cx: number = 0
-    private _cy: number = 0
-    private _r: number = 0
-    private _a1: number = 0
-    private _a2: number = 0
-    private _z: number = 0
+    private __c: Vec2
+    private __r: number
+    private __a1: number
+    private __a2: number
+    private __z: number
 
-    private _step: number
-    private _in_use: number
-    private _pixels: PixelList<T>
+    private __step: number
+    private __in_use: number
+    private __pixels: PixelList<T>
 
     private _color = new Color(1, 1, 1, 1)
     // private _render_always = true

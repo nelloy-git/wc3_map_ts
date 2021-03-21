@@ -1,7 +1,7 @@
 import * as Handle from "../Handle";
 import * as Utils from "../Utils"
 
-import { onPreInit } from './Init'
+import { onPostInit } from './Init'
 
 export class Screen {
     
@@ -25,6 +25,7 @@ export class Screen {
 
     private static __pixel_width = 0;
     private static __pixel_height = 0;
+
     private static __update(this: void){
         let cur_pixel_width = BlzGetLocalClientWidth()
         let cur_pixel_height = BlzGetLocalClientHeight()
@@ -47,7 +48,7 @@ export class Screen {
 
     private static __update_timer = IsGame() ? new Handle.hTimer() : <Handle.hTimer><unknown>undefined
     private static __pre_init_action = (()=>{
-        return onPreInit(()=>{
+        return onPostInit(()=>{
             Screen.__update()
             Screen.__update_timer.addAction(Screen.__update)
             Screen.__update_timer.start(1, true)

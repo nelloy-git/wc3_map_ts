@@ -9,7 +9,13 @@ export class OriginMinimap extends Frame {
             return Utils.Log.err('can not get origin frame before FrameExt finish initialization.')
         }
         return OriginMinimap.__instance
-    } 
+    }
+    
+    protected _set_size(size: Utils.Vec2){
+        size.x = size.x > OriginMinimap.MIN_SIZE ? size.x : OriginMinimap.MIN_SIZE
+        size.y = size.y > OriginMinimap.MIN_SIZE ? size.y : OriginMinimap.MIN_SIZE
+        super._set_size(size)
+    }
 
     private constructor(handle: jframehandle){
         super(handle, false)
@@ -29,4 +35,8 @@ export class OriginMinimap extends Frame {
             OriginMinimap.__instance = new OriginMinimap(handle)
         })
     })()
+}
+
+export namespace OriginMinimap {
+    export const MIN_SIZE = 0.15
 }

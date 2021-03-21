@@ -17,11 +17,12 @@ if (!IsGame()){
 
 import * as Abil from './AbilityExt'
 import * as Binary from './Binary'
+import * as Frame from './FrameExt'
 import * as IO from './WcIO'
 import * as Json from './Json'
 import * as Utils from "./Utils"
 
-import { Init } from './Interface/Init'
+import { tmp } from './Interface/Init'
 import { hTimer } from './Handle'
 
 import * as UnitType from './Gameplay/Units'
@@ -39,14 +40,16 @@ if (IsGame()){
     SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()
 
-    Init()
+    tmp()
 
     let fog = CreateFogModifierRect(Player(0), FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, true)
     FogModifierStart(fog)
 
     let tm = new hTimer()
     tm.addAction(()=>{
-        let u = UnitType.Ogre.create(0, 0, Player(0))
+        UnitType.Ogre.create(0, 0, Player(0))
+        UnitType.Ogre.create(0, 0, Player(0))
+        UnitType.Ogre.create(0, 0, Player(1))
     })
     tm.start(1, false)
 

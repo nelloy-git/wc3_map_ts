@@ -5,8 +5,7 @@ import { Frame } from "../../Frame";
 export class SimpleEmpty extends Frame {
 
     constructor(){
-        let [handle, is_simple] = Frame._fromFdf(DefaultFdf)
-        super(handle, is_simple)
+        super(DefaultFdf, true)
     }
 }
 

@@ -1,11 +1,24 @@
+import * as Fdf from '../Fdf'
 import * as Utils from '../Utils'
 
 import { FrameIFace } from './FrameIFace'
 
 export abstract class Frame extends FrameIFace  {
 
-    constructor(handle: jframehandle, is_simple: boolean){
-        super(handle, is_simple)
+    constructor(fdf: Fdf.Fdf, is_simple: boolean)
+    constructor(handle: jframehandle, is_simple: boolean)
+    constructor(handle_or_fdf: jframehandle | Fdf.Fdf, is_simple: boolean)
+    constructor(handle_or_fdf: jframehandle | Fdf.Fdf, is_simple: boolean){
+        let handle: jframehandle | undefined
+        
+        if (handle_or_fdf instanceof Fdf.Fdf){
+            let fdf = handle_or_fdf;
+            [handle, is_simple] = Frame._fromFdf(fdf)
+        } else {
+            handle = handle_or_fdf
+        }
+
+        super(<jframehandle>handle, is_simple)
 
         this.__pos = new Utils.Vec2(0, 0)
         this.__size = new Utils.Vec2(0, 0)
@@ -14,7 +27,12 @@ export abstract class Frame extends FrameIFace  {
         this.__parent = undefined
         this.__level = 0
         this.__color = new Utils.Color(1, 1, 1, 1)
+        this.__children = []
     }
+
+    get parent(){return this._get_parent()}
+    set parent(p: Frame | undefined){this._set_parent(p)}
+    get children(){return this._get_children() as ReadonlyArray<Frame>}
 
     protected _get_pos(){return this.__pos.copy()}
     protected _set_pos(v: Utils.Vec2){
@@ -29,7 +47,7 @@ export abstract class Frame extends FrameIFace  {
         }
 
         // Update children positions.
-        for (let child of this._children){
+        for (let child of this.__children){
             child.pos = child.pos
         }
     }
@@ -40,47 +58,51 @@ export abstract class Frame extends FrameIFace  {
         BlzFrameSetSize(this.handle, v.x, v.y)
     }
 
-    protected _get_visible(){return this.__visible}
+    protected _get_visible(){
+        return BlzFrameIsVisible(this.handle)
+    }
     protected _set_visible(f: boolean){
         this.__visible = f
-        BlzFrameSetVisible(this.handle, f)
+
+        let par_visible = true
+        if (this.parent){
+            par_visible = this.parent.visible
+        }
+        
+        let is_visible = f && par_visible
+        BlzFrameSetVisible(this.handle, is_visible)
 
         // Update children visibility.
-        for (let child of this._children){
-            child.visible = child.visible
+        for (let child of this.__children){
+            child.visible = child.__visible
         }
     }
 
     protected _get_enable(){return this.__enable}
     protected _set_enable(f: boolean){
         this.__enable = f
-        BlzFrameSetVisible(this.handle, f)
+
+        let par_enable = this.parent ? this.parent.enable : true
+        BlzFrameSetEnable(this.handle, f && par_enable)
         
         // Update children visibility.
-        for (let child of this._children){
+        for (let child of this.__children){
             child.enable = child.enable
         }
     }
 
-    protected _get_parent(){return this.__parent}
-    protected _set_parent(p: FrameIFace | undefined){
+    protected _get_parent(): Frame | undefined {return this.__parent}
+    protected _set_parent(p: Frame | undefined){
         if (this.__parent){
-            this.__parent._children.splice(this.__parent._children.indexOf(this))
+            this.__parent.__children.splice(this.__parent.__children.indexOf(this))
         }
 
         this.__parent = p
         if (p){
-            p._children.push(this)
-            
-            p.pos = p.pos
-            p.visible = p.visible
-            p.enable = p.enable
-        } else {
-            this.pos = this.pos
-            this.visible = this.visible
-            this.enable = this.enable
+            p.__children.push(this)
         }
     }
+    protected _get_children(){return this.__children}
     
     protected _get_level(){return this.__level}
     protected _set_level(lvl: number){
@@ -95,11 +117,19 @@ export abstract class Frame extends FrameIFace  {
         BlzFrameSetAlpha(this.handle, Math.floor(255 * c.a))
     }
 
+    protected _update(){
+        let root = this.__parent ? this.__parent : this
+        root.pos = root.pos
+        root.size = root.size
+        root.visible = root.visible
+    }
+
     private __pos: Utils.Vec2
     private __size: Utils.Vec2
     private __visible: boolean
     private __enable: boolean
-    private __parent: FrameIFace | undefined
+    private __parent: Frame | undefined
     private __level: number
     private __color: Utils.Color
+    private __children: Frame[]
 }

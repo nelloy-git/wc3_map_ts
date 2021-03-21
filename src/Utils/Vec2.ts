@@ -47,4 +47,17 @@ export class Vec2 {
 
     x: number
     y: number
+
+    get length(){
+        return SquareRoot(this.x * this.x + this.y * this.y)
+    }
+
+    get angle(){
+        let a = Atan2(this.y, this.x)
+        return a >= 0 ? a : 2 * math.pi + a
+    }
+
+    get norm(){
+        return this.mult(1 / this.length)
+    }
 }

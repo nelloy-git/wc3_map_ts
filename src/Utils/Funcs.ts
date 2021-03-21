@@ -1,5 +1,6 @@
 /** @noSelfInFile */
 
+import { Vec2 } from './Vec2'
 import { Import } from "./Import"
 import { Logger } from "./Logger"
 let Log = Logger.Default
@@ -35,14 +36,19 @@ let _item = IsGame() ? (()=>{
     SetItemVisible(it, false)
     return it
 })() : <jitem><unknown>undefined
-export function isWalkable(x: number, y: number){
-    SetItemPosition(_item, x, y)
+
+export function isWalkable(v: Vec2) : boolean
+export function isWalkable(x: number, y: number) : boolean
+export function isWalkable(x_or_v: number | Vec2, y?: number){
+    let p = y ? new Vec2(<number>x_or_v, y) : <Vec2>x_or_v
+
+    SetItemPosition(_item, p.x, p.y)
     SetItemVisible(_item, false)
 
     let it_x = GetItemX(_item)
     let it_y = GetItemY(_item)
-    if (it_x > x + 1 || it_x < x - 1 ||
-        it_y > y + 1 || it_y < y - 1){
+    if (it_x > p.x + 1 || it_x < p.x - 1 ||
+        it_y > p.y + 1 || it_y < p.y - 1){
         return true
     }
     return false
@@ -101,33 +107,4 @@ export function getFileDir(){
     }
 
     return path.substring(0, last)
-}
-
-interface ObjectWithPosition {
-    x: number
-    y: number
-}
-
-export function deltaPos(this: void, obj1: ObjectWithPosition, obj2: ObjectWithPosition): [dx: number, dy: number]{
-    return [obj2.x - obj1.x, obj2.y - obj1.y]
-}
-
-interface ObjectWithAngle extends ObjectWithPosition {
-    angle: number
-}
-
-export function getAngle(this: void, obj1: ObjectWithAngle, obj2: ObjectWithPosition){
-    let [dx, dy] = deltaPos(obj1, obj2)
-    let ta = Atan2(dy, dx)
-    return ta >= 0 ? ta : 2 * math.pi + ta
-}
-
-export function deltaAngle(this: void, obj1: ObjectWithAngle, obj2: ObjectWithPosition){
-    return math.abs(getAngle(obj1, obj2) - obj1.angle)
-}
-
-const FULL_TURN_TIME = 0.5
-export function getTurnTime(this: void, obj1: ObjectWithAngle, obj2?: ObjectWithPosition){
-    if (!obj2){return FULL_TURN_TIME}
-    return FULL_TURN_TIME * deltaAngle(obj1, obj2)
 }

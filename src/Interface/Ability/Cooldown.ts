@@ -1,72 +1,86 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
-import { Action } from '../../Utils'
+import { Action, Vec2 } from '../../Utils'
 
 export class InterfaceAbilityCooldown extends Frame.SimpleImage {
     constructor(){
         super()
 
+        this.__full_size = super._get_size()
         this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
 
-        this._text.parent = this
-        this._text.pos = [0, 0]
-        this._text.size = this.size
-        this._text.font = 'fonts\\nim_____.ttf'
-        this._text.fontSize = 0.35 * this.size[1]
+        this.__text = new Frame.SimpleText()
+        this.__text.parent = this
+        this.__text.pos = new Vec2(0, 0)
+        this.__text.size = this.size
+        this.__text.font = 'fonts\\nim_____.ttf'
+        this.__text.fontSize = 0.35 * this.size.y
     }
-    get ability(){return this._abil}
+
+    get ability(){return this.__abil}
     set ability(abil: Abil.Ability<any> | undefined){
-        if (this._abil){
-            this._abil.Data.Charges.removeAction(this._changed_action)
-            this._abil.Data.Charges.removeAction(this._cooldown_action)
+        if (this.__abil){
+            this.__abil.Data.Charges.removeAction(this.__changed_action)
+            this.__abil.Data.Charges.removeAction(this.__cooldown_action)
         }
 
-        this._abil = abil
+        this.__abil = abil
+        this.visible = abil != undefined
         if (!abil){return}
 
-        this._changed_action = abil.Data.Charges.addAction('CHARGE_CHANGED',
-                                                            charges => {this._chargesChanged(charges)})
+        this.__changed_action = abil.Data.Charges.addAction('CHARGE_CHANGED',
+                                                            charges => {this.__chargesChanged(charges)})
 
-        this._cooldown_action = abil.Data.Charges.addAction('CHARGE_CD',
-                                                            charges => {this._cooldownLoop(charges)})
+        this.__cooldown_action = abil.Data.Charges.addAction('CHARGE_CD',
+                                                            charges => {this.__cooldownLoop(charges)})
 
-        this._chargesChanged(abil.Data.Charges)
-        this._cooldownLoop(abil.Data.Charges)
+        this.__chargesChanged(abil.Data.Charges)
+        this.__cooldownLoop(abil.Data.Charges)
     }
 
-    protected _set_size(size: [number, number]){
-        this._size = size
-        super._set_size([this._cd_part * size[0], size[1]])
+    protected _get_size(){return this.__full_size}
+    protected _set_size(size: Vec2){
+        this.__full_size = size.copy()
 
-        this._text.size = size
-        this._text.fontSize = 0.35 * size[1]
+        this.__text.size = size
+        this.__text.fontSize = 0.35 * size.y
+        
+        if (this.__abil){
+            this.__chargesChanged(this.__abil.Data.Charges)
+            this.__cooldownLoop(this.__abil.Data.Charges)
+        }
     }
 
-    private _chargesChanged(charges: Abil.Charges){
+    protected _set_visible(f: boolean){
+        super._set_visible(f && (this.__abil != undefined))
+    }
+
+    private __chargesChanged(charges: Abil.Charges){
         let color = this.color
         color.a = charges.count < 1 ? 0.85 : 0.35
         this.color = color
-        this._text.visible = charges.count != charges.countMax
+        this.__text.visible = charges.count != charges.countMax
     }
 
-    private _cooldownLoop(charges: Abil.Charges){
+    private __cooldownLoop(charges: Abil.Charges){
         let left = charges.left
-        // print(left)
-        if (left <= 0){this._text.text = ''; return}
+        if (left <= 0){this.__text.text = ''; return}
 
         let full = charges.cooldown
-        this._cd_part = left / full
+        this.__cd_part = left / full
 
-        super._set_size([this._cd_part * this._size[0], this._size[1]])
-        this._text.text = string.format('%.1f', left)
+        let s = this.__full_size
+        s.x = this.__cd_part * s.x
+        super._set_size(s)
+        this.__text.text = string.format('%.1f', left)
     }
 
-    private _size: [number, number] = this._get_size()
+    private __full_size: Vec2
 
-    private _cd_part: number = 0
-    private _abil: Abil.Ability<any> | undefined
-    private _changed_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
-    private _cooldown_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
+    private __cd_part: number = 0
+    private __abil: Abil.Ability<any> | undefined
+    private __changed_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
+    private __cooldown_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
 
-    private _text = new Frame.SimpleText()
+    private __text: Frame.SimpleText
 }

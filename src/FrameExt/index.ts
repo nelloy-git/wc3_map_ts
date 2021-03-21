@@ -20,7 +20,7 @@ export { OriginCommandButton } from './Origin/CommandButton'
 export { OriginInventory } from './Origin/Inventory'
 export { OriginMinimap } from './Origin/Minimap'
 export { OriginPortrait } from './Origin/Portrait'
-export { OriginTooltip } from './Origin/Tooltip'
+// export { OriginTooltip } from './Origin/Tooltip'
 
 export { Screen } from './Screen'
 

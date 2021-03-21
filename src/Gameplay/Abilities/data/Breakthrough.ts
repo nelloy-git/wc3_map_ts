@@ -3,7 +3,7 @@ import * as Handle from '../../../Handle'
 import * as Utils from '../../../Utils'
 
 import { IFace } from "../../../AbilityExt"
-import { deltaPos, getAngle, getTurnTime, isWalkable } from "../../../Utils"
+import { isWalkable } from "../../../Utils"
 import { CastingData } from "./CastingData"
 
 const dt = Abil.Casting.period
@@ -13,43 +13,33 @@ export class BreakthroughData extends CastingData{
         super(abil)
         
         this.caster = caster
-        let [dx, dy] = deltaPos(target, caster)
-        this.range = SquareRoot(dx * dx + dy * dy)
-        this.angle = getAngle(caster, target)
+        this.target = target
+
+        let delta = target.sub(caster.pos)
+        this.angle = delta.angle
         
         let cast_time = abil.Casting.castingTime([target])
-        let turn_time = getTurnTime(caster, target)
+        let turn_time = 0.5 * Math.min(this.angle, 2 * math.pi - this.angle) / math.pi
         let run_time = cast_time - turn_time
-        this.vel = this.range / run_time
-
-        this.vel_x = this.vel * Cos(this.angle) * dt
-        this.vel_y = this.vel * Sin(this.angle) * dt
-        this._abs_vel_x = math.abs(this.vel_x)
-        this._abs_vel_y = math.abs(this.vel_y)
-        this._range_x = math.abs(this.range * Cos(this.angle))
-        this._range_y = math.abs(this.range * Sin(this.angle))
+        this.vel = delta.mult(dt / run_time)
         this._status = 'OK'
-    }
+    } 
 
     static get = <(abil: IFace<[Utils.Vec2]>) => BreakthroughData> CastingData.get
 
-    // Returns false if finished.
     period(){
-        let x = this.caster.x + this.vel_x
-        let y = this.caster.y + this.vel_y
+        let pos = this.caster.pos.add(this.vel)
 
-        if (isWalkable(x, y)){
+        if (isWalkable(pos)){
             this._status = 'COLLISION'
             return
         }
 
-        this.caster.x = x
-        this.caster.y = y
+        this.caster.pos = pos
+        let delta = this.target.sub(pos)
 
-        this._range_x -= this._abs_vel_x
-        this._range_y -= this._abs_vel_y
-
-        if (this._range_x <= 0 || this._range_y <= 0){
+        let abs = math.abs
+        if (abs(delta.x) < abs(this.vel.x) || abs(delta.y) < abs(this.vel.y)){
             this._status = 'FINISH'
             return
         }
@@ -60,18 +50,10 @@ export class BreakthroughData extends CastingData{
     pushed: Handle.hUnit[] = []
 
     readonly caster: Handle.hUnit
+    readonly target: Utils.Vec2
     readonly angle: number
-    readonly vel: number
-    readonly vel_x: number
-    readonly vel_y: number
-    readonly range: number
+    readonly vel: Utils.Vec2
     get status(){return this._status}
-    get range_x(){return this._range_x}
-    get range_y(){return this._range_y}
 
     private _status: 'OK'|'COLLISION'|'FINISH'
-    private _range_x: number
-    private _range_y: number
-    private _abs_vel_x: number
-    private _abs_vel_y: number
 }

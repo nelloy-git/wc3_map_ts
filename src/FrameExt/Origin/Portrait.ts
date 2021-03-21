@@ -1,4 +1,5 @@
 import * as Utils from '../../Utils'
+import { Vec2 } from '../../Utils'
 
 import { onPreInit } from '../Init'
 import { Frame } from '../Frame'
@@ -14,83 +15,58 @@ export class OriginPortrait extends Frame {
     } 
 
     protected _get_pos(){return this.__fake_pos.copy()}
-    protected _set_pos(v: Utils.Vec2){
-        let parent = this.parent
-        let parent_abs_pos = parent ? parent.abs_pos : new Utils.Vec2(0, 0)
-        let size = this.size
+    protected _set_pos(v: Vec2){
+        this.__fake_pos = v.copy()
+        let [pos, size] = this.__portraitCoord()
 
-        let new_min = parent_abs_pos.add(v)
-        let new_max = new_min.add(size)
-
-        let sc_pos = Screen.pos
-        let sc_size = Screen.size
-        if (new_min.x < sc_pos.x || new_min.y < sc_pos.y
-            || new_max.x > sc_size.x, new_max.y > sc_size.y){
-
-            Utils.Log.wrn(OriginPortrait.name + 
-                          ': can not be moved correctly outside of screen')
-
-            new_min.x = Math.max(new_min.x, sc_pos.x + 0.0001)
-            new_min.y = Math.max(new_min.y, sc_pos.y + 0.0001)
-
-            let sc_max = sc_pos.add(sc_size)
-            let size_max = sc_max.sub(new_min)
-            size.x = Math.min(size.x, size_max.x - 0.0001)
-            size.y = Math.min(size.y, size_max.y - 0.0001)
-        }
-
-        let real_pos = parent_abs_pos.add(new_min)
-        real_pos.x = 0.8 / Screen.size.x * (real_pos.x - Screen.pos.x)
-
-        let real_size = size.copy()
-        real_size.x = 0.8 / Screen.size.x * real_size.x
-
-        super._set_pos(real_pos)
-        super._set_size(real_size)
+        BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
+                            pos.x, 0.6 - pos.y)
+        super._set_size(size)
     }
 
     protected _get_size(){return this.__fake_size.copy()}
-    protected _set_size(v: Utils.Vec2){
-        let parent = this.parent
-        let parent_abs_pos = parent ? parent.abs_pos : new Utils.Vec2(0, 0)
-        let size = v.copy()
+    protected _set_size(v: Vec2){
+        this.__fake_size = v.copy()
+        let [pos, size] = this.__portraitCoord()
 
-        let new_min = this.abs_pos
-        let new_max = new_min.add(v)
-
-        let sc_pos = Screen.pos
-        let sc_size = Screen.size
-        if (new_min.x < sc_pos.x || new_min.y < sc_pos.y
-            || new_max.x > sc_size.x, new_max.y > sc_size.y){
-
-            Utils.Log.wrn(OriginPortrait.name + 
-                          ': can not be moved correctly outside of screen')
-
-            new_min.x = Math.max(new_min.x, sc_pos.x + 0.0001)
-            new_min.y = Math.max(new_min.y, sc_pos.y + 0.0001)
-
-            let sc_max = sc_pos.add(sc_size)
-            let size_max = sc_max.sub(new_min)
-            size.x = Math.min(size.x, size_max.x - 0.0001)
-            size.y = Math.min(size.y, size_max.y - 0.0001)
-        }
-
-        let real_pos = parent_abs_pos.add(new_min)
-        real_pos.x = 0.8 / Screen.size.x * (real_pos.x - Screen.pos.x)
-
-        let real_size = size.copy()
-        real_size.x = 0.8 / Screen.size.x * real_size.x
-
-        super._set_pos(real_pos)
-        super._set_size(real_size)
+        BlzFrameSetAbsPoint(this.handle, FRAMEPOINT_TOPLEFT,
+                            pos.x, 0.6 - pos.y)
+        super._set_size(size)
     }
-    
-    private __fake_pos: Utils.Vec2 = new Utils.Vec2(0, 0)
-    private __fake_size: Utils.Vec2 = new Utils.Vec2(0.1, 0.1)
 
     private constructor(handle: jframehandle){
         super(handle, false)
     }
+
+    private __portraitCoord(): [pos: Vec2, size: Vec2]{
+        let pos1 = this.abs_pos
+        let pos2 = this.__fake_size.copy().add(pos1)
+
+        let sc_pos1 = Screen.pos
+        let sc_pos2 = sc_pos1.add(Screen.size)
+
+        pos1 = new Vec2(Math.max(sc_pos1.x + 0.0001, pos1.x),
+                        Math.max(sc_pos1.y + 0.0001, pos1.y))
+        pos1 = new Vec2(Math.min(sc_pos2.x - 0.0001, pos1.x),
+                        Math.min(sc_pos2.y - 0.0001, pos1.y))
+
+        pos2 = new Vec2(Math.max(sc_pos1.x + 0.0001, pos2.x),
+                        Math.max(sc_pos1.y + 0.0001, pos2.y))
+        pos2 = new Vec2(Math.min(sc_pos2.x - 0.0001, pos2.x),
+                        Math.min(sc_pos2.y - 0.0001, pos2.y))
+
+        
+        let k = 0.8 / Screen.size.x
+        pos1.x = k * (pos1.x - sc_pos1.x)
+        pos2.x = k * (pos2.x - sc_pos1.x)
+
+        let size = pos2.sub(pos1)
+
+        return [pos1, size]
+    }
+    
+    private __fake_pos: Vec2 = new Vec2(0, 0)
+    private __fake_size: Vec2 = new Vec2(0.1, 0.1)
 
     private static __instance: OriginPortrait = <OriginPortrait><unknown>undefined
     private static __pre_init_action = (()=>{
@@ -104,8 +80,8 @@ export class OriginPortrait extends Frame {
             BlzFrameSetParent(handle, BlzGetFrameByName("ConsoleUIBackdrop", 0))
         
             OriginPortrait.__instance = new OriginPortrait(handle)
-            OriginPortrait.__instance.pos = new Utils.Vec2(0, 0)
-            OriginPortrait.__instance.size = new Utils.Vec2(0.1, 0.1)
+            OriginPortrait.__instance.pos = new Vec2(0, 0)
+            OriginPortrait.__instance.size = new Vec2(0.1, 0.1)
 
             Screen.addAction(() => {
                 if (!OriginPortrait.__instance){return}

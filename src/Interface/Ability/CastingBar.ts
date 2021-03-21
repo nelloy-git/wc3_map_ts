@@ -84,8 +84,8 @@ export class InterfaceCastingBar extends Frame.SimpleStatusBarExt {
         } else if (event == 'CAST_CASTING'){
             let text = this.getElement('TEXT')
             if (text){text.text = string.format('%s (%.1f / %.1f)',
-                                                abil.Data.name, abil.Casting.timer.left, abil.Casting.timer.fullTime)}
-            this.fullness = 1 - (abil.Casting.timer.left / abil.Casting.timer.fullTime)
+                                                abil.Data.name, abil.Casting.Timer.left, abil.Casting.Timer.fullTime)}
+            this.fullness = 1 - (abil.Casting.Timer.left / abil.Casting.Timer.fullTime)
 
             this._is_visible = true
         } else if (event == 'CAST_CANCEL') {

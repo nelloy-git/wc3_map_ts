@@ -1,9 +1,13 @@
 import * as Frame from "../../FrameExt"
 import * as Param from "../../Parameter";
-import { Action } from "../../Utils";
+import { Action, Color, Vec2 } from "../../Utils";
 import { IUnit } from "../Unit";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
+
+const WHITE = new Color(1, 1, 1, 1)
+const GREEN = new Color(0.2, 0.8, 0.2, 1)
+const RED = new Color(0.8, 0.2, 0.2, 1)
 
 export class InterfaceUnitParameters extends Frame.Backdrop {
     constructor(){
@@ -34,30 +38,42 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
         this._updateValues(p)
     }
 
-    protected _set_size(size: [w: number, h: number]){
+    protected _set_size(size: Vec2){
         super._set_size(size)
 
-        let x0 = 0.05 * size[0]
-        let y0 = 0.05 * size[1]
-        let w = 0.9 * size[0]
-        let h = 0.9 * size[1] / this._frames.size
+        let name_x0 = 0.05 * size.x
+        let val_x0 = 0.55 * size.x
+        let h = 0.9 * size.y / this._frames.size
+        let cell_size = new Vec2(0.45 * size.x, h)
 
+        let i = 0
         for (let [param, [name, val]] of this._frames){
-            name.pos = [x0, y0]
-            name.size = [w / 2, h]
+            name.pos = new Vec2(name_x0, 0.05 * size.y + i * h)
+            name.size = cell_size
             name.fontSize = 0.9 * h
 
-            val.pos = [x0 + w / 2, y0]
-            val.size = [w / 2, h]
+            val.pos = new Vec2(val_x0, 0.05 * size.y + i * h)
+            val.size = cell_size
             val.fontSize = 0.9 * h
 
-            y0 += h
+            i++
         }
     }
 
     private _updateValues(params: Param.Container){
         for (let [param, [name, val]] of this._frames){
-            val.text = Math.floor(params.get(param, 'RES')).toString()
+            let base = params.get(param, 'BASE')
+            let res = params.get(param, 'RES')
+
+            let res_col = res == base ? WHITE : res > base ? GREEN : RED
+
+            if (this._percent_param.includes(param)){
+                let tmp = res_col.colorText('%.0f%%')
+                val.text = string.format(tmp, 100 * res)
+            } else {
+                let tmp = res_col.colorText('%.0f')
+                val.text = string.format(tmp, res)
+            }
         }
     }
 
@@ -80,6 +96,14 @@ export class InterfaceUnitParameters extends Frame.Backdrop {
         ['CRIT', [new Frame.SimpleText(), new Frame.SimpleText()]],
         ['MOVE', [new Frame.SimpleText(), new Frame.SimpleText()]],
     ])
+
+    private _percent_param: Param.Type[] = [
+        'PSPD',
+        'PRES',
+        'MSPD',
+        'MRES',
+        'CRIT'
+    ]
 
     private _unit: IUnit | undefined
     private _changed_action: Action<[Param.Container, Param.Type], void> | undefined

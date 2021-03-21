@@ -1,64 +1,70 @@
-import { Backdrop, Frame, SimpleText } from "../../FrameExt";
-import { Keyboard } from "../../WcIO";
-import { Action } from "../../Utils";
+import * as Abil from "../../AbilityExt";
+import * as Frame from "../../FrameExt";
+import * as WcIO from '../../WcIO'
+import { Action, Vec2 } from '../../Utils'
 
-export class InterfaceHotkey extends Backdrop {
+export class InterfaceHotkey extends Frame.Backdrop {
     constructor(){
         super()
         
         this.visible = false
         this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
 
-        this._text.parent = this
-        this._text.pos = [0, 0]
-        this._text.size = this.size
-        this._text.font = 'fonts\\nim_____.ttf'
+        this.__fake_visible = false
+        this.__text = new Frame.SimpleText()
+        this.__text.parent = this
+        this.__text.pos = new Vec2(0, 0)
+        this.__text.size = this.size
+        this.__text.font = 'fonts\\nim_____.ttf'
 
-        this._keyboard_action = Keyboard.addAction((
+        this.__keyboard_action = WcIO.Keyboard.addAction((
             pl: jplayer, key: joskeytype, meta: number, is_down: boolean)=>{
-                this._keyPressed(pl, key, meta, is_down)
+                this.__keyPressed(pl, key, meta, is_down)
             }
         )
     }
 
-    meta: number = 0;
-
-    get size(){return this._get_size()}
-    set size(size: [w: number, h: number]){
-        this._set_size(size)
-        this._text.size = size
-        this._text.fontSize = 0.8 * size[1]
-    }
-
-    get key(){return this._key}
+    get key(){return this.__key}
     set key(key: joskeytype | undefined){
-        this._key = key
-        this.visible = !(key == undefined)
+        this.__key = key
+        this.visible = this.visible
         if (key){
-            this._text.text = Keyboard.keyToString(key)
+            this.__text.text = WcIO.Keyboard.keyToString(key)
         }
     }
 
     set action(callback: (this: void, pl: jplayer, meta: number, is_down: boolean)=>void){
-        this._action = new Action(callback)
+        this.__action = new Action(callback)
     }
 
     destroy(){
         super.destroy()
-        Keyboard.removeAction(this._keyboard_action)
+        WcIO.Keyboard.removeAction(this.__keyboard_action)
     }
 
-    private _keyPressed(pl: jplayer, key: joskeytype, meta: number, is_down: boolean){
+    protected _set_size(size: Vec2){
+        super._set_size(size)
+        this.__text.size = size
+        this.__text.fontSize = 0.8 * size.y
+    }
+
+    protected _get_visible(){return this.__fake_visible}
+    protected _set_visible(f: boolean){
+        this.__fake_visible = f
+        super._set_visible(f && (this.__key != undefined))
+    }
+
+    private __keyPressed(pl: jplayer, key: joskeytype, meta: number, is_down: boolean){
         if (pl != GetLocalPlayer()){return}
         if (key != this.key){return}
-        if (meta != this.meta){return}
 
-        if (this._action){this._action.run(pl, meta, is_down)}
+        if (this.__action){this.__action.run(pl, meta, is_down)}
     }
 
-    private _key: joskeytype | undefined;
-    private _keyboard_action: Action<[jplayer, joskeytype, number, boolean], void> | undefined
-    private _action: Action<[jplayer, number, boolean], void> | undefined;
+    private __fake_visible: boolean
+    private __key: joskeytype | undefined;
+    private __keyboard_action: Action<[jplayer, joskeytype, number, boolean], void> | undefined
+    private __action: Action<[jplayer, number, boolean], void> | undefined;
 
-    private _text = new SimpleText()
+    private __text: Frame.SimpleText
 }

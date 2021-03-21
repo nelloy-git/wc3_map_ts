@@ -4,18 +4,19 @@ import { Frame } from "../Frame";
 
 export class Backdrop extends Frame {
 
-    static fromFdf(fdf?: Fdf.Backdrop){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = Frame._fromFdf(fdf)
-        let f = new Backdrop(handle)
-        f.__texture = fdf.background
-        return f
-    }
+    constructor()
+    constructor(fdf: Fdf.Backdrop)
+    constructor(handle: jframehandle)
+    constructor(handle_or_fdf?: jframehandle | Fdf.Backdrop){
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, false)
 
-    constructor(handle: jframehandle){
-        super(handle, false)
-
-        this.__texture = ''
+        if (handle_or_fdf instanceof Fdf.Backdrop){
+            this.__texture = handle_or_fdf.background
+        } else {
+            this.__texture = ''
+        }
+        
         this.__texture_flags = 0
         this.__texture_blend = true
     }

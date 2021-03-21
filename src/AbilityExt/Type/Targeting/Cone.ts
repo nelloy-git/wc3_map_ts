@@ -44,16 +44,16 @@ function mouseTrack(this: void){
     let owner = cur_abil.Data.owner
     let [end] = getTarget(cur_abil)
 
-    let a = Atan2(end.y - owner.y, end.x - owner.x)
-    let width_angle = cur_abil.Data.area / 2
-    let range = cur_abil.Data.range
+    let delta = end.sub(owner.pos)
+    let a = delta.angle
+    let w = cur_abil.Data.area / 2
+    let r = cur_abil.Data.range
 
-    let cx = owner.x
-    let cy = owner.y
-    L_LINE.setPolarPos(cx, cy, 48, a - width_angle, range, a - width_angle)
-    R_LINE.setPolarPos(cx, cy, 48, a + width_angle, range, a + width_angle)
-    FAR_ARC.setPolarPos(cx, cy, range, a - width_angle, a + width_angle)
-    NEAR_ARC.setPolarPos(cx, cy, 48, a - width_angle, a + width_angle)
+    let c = owner.pos
+    L_LINE.setPolarPos(c, 48, a - w, r, a - w)
+    R_LINE.setPolarPos(c, 48, a + w, r, a + w)
+    FAR_ARC.setPolarPos(c, r, a - w, a + w)
+    NEAR_ARC.setPolarPos(c, 48, a - w, a + w)
 }
 
 function getTarget(this: void, abil: IFace<[Utils.Vec2]>){

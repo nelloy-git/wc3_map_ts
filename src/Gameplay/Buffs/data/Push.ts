@@ -1,59 +1,49 @@
 import * as Buff from '../../../Buff'
 
 import { hUnit } from "../../../Handle"
-import { isWalkable } from "../../../Utils"
+import { isWalkable, Vec2 } from "../../../Utils"
 import { BuffData } from "./BuffData"
 
 export class PushData extends BuffData {
-    constructor(buff: Buff.IFace<any>, vel:[x: number, y: number]){
+    constructor(buff: Buff.IFace<any>, vel:[vel: Vec2]){
         super(buff)
         
-        this._target = buff.Data.owner
-        this._status = 'OK'
+        this.target = buff.Data.owner
+        this.__status = 'OK'
 
-        let dt = Buff.period
-        let [vel_x, vel_y] = vel
-        this._vel_x = vel_x * dt
-        this._vel_y = vel_y * dt
-        this._acc_x = -this._vel_x * dt / buff.Dur.Timer.fullTime
-        this._acc_y = -this._vel_y * dt / buff.Dur.Timer.fullTime
+        const dt = Buff.period
+        this.__vel = vel[0].mult(dt)
+        this.__acc = this.__vel.mult(-dt / buff.Dur.Timer.fullTime)
     }
 
     static get = <(buff: Buff.IFace<any>) => PushData>BuffData.get
 
     period(){
-        let x = this._target.x + this._vel_x
-        let y = this._target.y + this._vel_y
+        let pos = this.target.pos.add(this.__vel)
 
-        if (isWalkable(x, y)){
-            this._status = 'COLLISION'
+        if (isWalkable(pos)){
+            this.__status = 'COLLISION'
             return
         }
 
-        this._target.x = x
-        this._target.y = y
+        this.target.pos = pos
+        this.__vel = this.__vel.add(this.__acc)
 
-        this._vel_x += this._acc_x
-        this._vel_y += this._acc_y
-
-        if (math.abs(this._vel_x) <= math.abs(this._acc_x) || 
-            math.abs(this._vel_y) <= math.abs(this._acc_y)){
-            
-            this._status = 'FINISH'
+        let abs = math.abs
+        if (abs(this.__vel.length) <= abs(this.__acc.length)){
+            this.__status = 'FINISH'
             return
         }
 
         return
     }
+    
+    readonly target: hUnit
 
-    get status(){return this._status}
-    get vel_x(){return this._vel_x}
-    get vel_y(){return this._vel_y}
+    get status(){return this.__status}
+    get vel(){return this.__vel.copy}
 
-    private _target: hUnit
-    private _status: 'OK'|'COLLISION'|'FINISH'
-    private _vel_x: number
-    private _vel_y: number
-    private _acc_x: number
-    private _acc_y: number
+    private __status: 'OK'|'COLLISION'|'FINISH'
+    private __vel: Vec2
+    private __acc: Vec2
 }

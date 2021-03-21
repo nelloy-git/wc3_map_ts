@@ -28,6 +28,8 @@
     },
 
     "abils": [
-        "Breakthrough"
+        "Breakthrough",
+        "HeavyHammer",
+        "VoodooPoison"
     ]
 }

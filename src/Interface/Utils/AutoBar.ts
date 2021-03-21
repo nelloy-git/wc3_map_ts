@@ -1,21 +1,23 @@
-import { SimpleStatusBarExt } from "../../FrameExt";
+import * as Frame from "../../FrameExt"
+import { Vec2 } from '../../Utils'
+
 import { hTimerList } from "../../Handle";
 import { Action } from "../../Utils";
 
-export class InterfaceAutoBar extends SimpleStatusBarExt {
+export class InterfaceAutoBar extends Frame.SimpleStatusBarExt {
     constructor(){
         super()
         
         this._timer_obj = InterfaceAutoBar._timer_list.newTimerObj()
-        this._timer_obj.addAction('PERIOD', ()=>{this._update()})
+        this._timer_obj.addAction('PERIOD', ()=>{this._updateVals()})
         this._timer_obj.addAction('FINISH', ()=>{this._timer_obj.start(3600)})
         this._timer_obj.start(3600)
     }
 
-    protected _set_size(size: [w: number, h: number]){
+    protected _set_size(size: Vec2){
         super._set_size(size)
         let text = this.getElement('TEXT')
-        if (text){text.fontSize = 0.8 * size[1]}
+        if (text){text.fontSize = 0.8 * size.y}
     }
 
     set curGetter(f: ((this: void)=>number) | undefined){
@@ -36,7 +38,7 @@ export class InterfaceAutoBar extends SimpleStatusBarExt {
         InterfaceAutoBar._timer_list.removeTimerObj(this._timer_obj)
     }
 
-    private _update(){
+    private _updateVals(){
         if (!this._cur_getter || !this._max_getter){return}
 
         let cur = this._cur_getter.run()

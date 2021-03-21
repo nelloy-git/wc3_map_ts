@@ -1,9 +1,7 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
-
-import { hUnit } from "../../Handle";
-import { Mouse } from "../../WcIO";
-import { Action } from "../../Utils";
+import * as WcIO from '../../WcIO'
+import { Action, Vec2 } from '../../Utils'
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"
 import { InterfaceAbilityButton } from "./Button";
@@ -16,72 +14,79 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
         this.cols = cols
         this.rows = rows
 
-        this._casting_bar = new InterfaceCastingBar()
-        this._casting_bar.parent = this
+        this.__casting_bar = new InterfaceCastingBar()
+        this.__casting_bar.parent = this
 
+        this.__backgrounds = []
+        this.__buttons = []
         for (let y = 0; y < rows; y++){
-            this._backgrounds.push([])
-            this._buttons.push([])
+            this.__backgrounds.push([])
+            this.__buttons.push([])
 
             for (let x = 0; x < cols; x++){
                 let back = new Frame.Backdrop(InterfaceBorderFdf)
+                this.__backgrounds[y].push(back)
                 back.parent = this
-                this._backgrounds[y].push(back)
 
                 let btn = new InterfaceAbilityButton()
+                this.__buttons[y].push(btn)
                 btn.parent = back
-                this._buttons[y].push(btn)
             }
         }
         this.size = this.size
     }
 
-    get unit(){return this._unit}
+    get unit(){return this.__unit}
     set unit(u: IUnit | undefined){
-        if (this._unit){
-            this._unit.abils.removeAction(this._abils_changed)
+        if (this.__unit){
+            this.__unit.abils.removeAction(this.__abils_changed)
         }
 
-        this._unit = u
-        this._casting_bar.unit = u
-        this.visible = (u != undefined)
-        if (!u){return}
+        this.__unit = u
+        this.__casting_bar.unit = u
+        this.visible = u != undefined
 
-        let a = u.abils
-        a.addAction('LIST_CHANGED', a => {this._update(a)})
-        this._update(a)
+        let abils = u ? u.abils : undefined
+        if (abils){
+            abils.addAction('LIST_CHANGED', abil => {this._updateAbil(abil)})
+        }
+        this._updateAbil(abils)
     }
 
     setKey(x: number, y: number, key: joskeytype | undefined){
-        this._buttons[y][x].key = key
+        this.__buttons[y][x].key = key
     }
 
-    protected _set_size(size: [number, number]){
+    protected _set_size(size: Vec2){
         super._set_size(size)
 
-        this._casting_bar.pos = [size[0] / 4, -size[1] / 4]
-        this._casting_bar.size = [size[0] / 2, size[1] / 4]
+        this.__casting_bar.pos = new Vec2(size.x / 4, -size.y / 4)
+        this.__casting_bar.size = new Vec2(size.x / 2, size.y / 4)
 
-        let w = size[0] / this.cols
-        let h = size[1] / this.rows
+        let back_size = new Vec2(size.x / this.cols, size.y / this.rows)
         for (let y = 0; y < this.rows; y++){
             for (let x = 0; x < this.cols; x++){
-                this._backgrounds[y][x].pos = [x * w, y * h]
-                this._backgrounds[y][x].size = [w, h]
+                this.__backgrounds[y][x].pos = new Vec2(x * back_size.x, y * back_size.y)
+                this.__backgrounds[y][x].size = back_size
 
-                this._buttons[y][x].pos = [0.1 * w, 0.1 * h]
-                this._buttons[y][x].size = [0.8 * w, 0.8 * h]
+                this.__buttons[y][x].pos = back_size.mult(0.1)
+                this.__buttons[y][x].size = back_size.mult(0.8)
             }
         }
     }
 
-    protected _update(abils: Abil.Container){
-        let list = abils.list
+    protected _set_visible(f: boolean){
+        super._set_visible(f && (this.__unit != undefined))
+    }
+
+    protected _updateAbil(abils: Abil.Container | undefined){
+        let list = abils ? abils.list : undefined
 
         let i = 0
         for (let y = 0; y < this.rows; y++){
             for (let x = 0; x < this.cols; x++){
-                this._buttons[y][x].ability = list.get(i)
+                const abil = list ? list.get(i) : undefined
+                this.__buttons[y][x].ability = abil
                 i++
             }
         }
@@ -90,22 +95,22 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     readonly cols: number
     readonly rows: number
 
-    private _unit: IUnit | undefined
-    private _abils_changed: Action<[Abil.Container], void> | undefined
+    private __unit: IUnit | undefined
+    private __abils_changed: Action<[Abil.Container], void> | undefined
 
-    private _casting_bar: InterfaceCastingBar
-    private _backgrounds: Frame.Backdrop[][] = []
-    private _buttons: InterfaceAbilityButton[][] = []
+    private __casting_bar: InterfaceCastingBar
+    private __backgrounds: Frame.Backdrop[][]
+    private __buttons: InterfaceAbilityButton[][]
 
-    private _mouse_control = Mouse.addAction('UP', (event, pl, btn) => {
+    private _mouse_control = WcIO.Mouse.addAction('UP', (event, pl, btn) => {
         if (btn == MOUSE_BUTTON_TYPE_LEFT){
             let active_targ = Abil.TTargeting.activeAbility(pl)
             if (active_targ){
                 active_targ.Targeting.finish(pl)
             }
         } else if (btn == MOUSE_BUTTON_TYPE_RIGHT){
-            if (this._unit){
-                let active_cast = Abil.Casting.getActive(this._unit.obj)
+            if (this.__unit){
+                let active_cast = Abil.Casting.getActive(this.__unit.obj)
                 if (active_cast){
                     active_cast.Casting.cancel()
                 }

@@ -1,4 +1,4 @@
-import { Color, getFilePath, id2int, Log, wcType } from "../Utils";
+import { Color, getFilePath, id2int, Log, Vec2, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 let __path__ = Macro(getFilePath())
@@ -37,6 +37,9 @@ export class hUnit extends Handle<junit>{
 
     get z(){return GetUnitFlyHeight(this.handle)}
     set z(z: number){SetUnitFlyHeight(this.handle, z, 0)}
+
+    get pos(){return new Vec2(this.x, this.y)}
+    set pos(v: Vec2){this.x = v.x; this.y = v.y}
 
     get angle(){return bj_DEGTORAD * GetUnitFacing(this.handle)}
     set angle(a: number){SetUnitFacingTimed(this.handle, bj_RADTODEG * a, 0.01)}
@@ -190,8 +193,8 @@ export namespace hUnit {
         return u ? hUnit.get(u) : undefined
     }
 
-    export function getInRange(x: number, y: number, r: number){
-        GroupEnumUnitsInRange(_group, x, y, r)
+    export function getInRange(v: Vec2, r: number){
+        GroupEnumUnitsInRange(_group, v.x, v.y, r)
 
         let list: hUnit[] = []
         let u = FirstOfGroup(_group)

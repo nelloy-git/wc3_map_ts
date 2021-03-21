@@ -1,5 +1,7 @@
-import { Screen } from "../FrameExt";
+import * as Frame from "../FrameExt";
+
 import { hUnit } from "../Handle";
+import { Vec2 } from "../Utils";
 import { Selection } from "../WcIO";
 // import { UnitInst } from "../Gameplay/Units/UnitType";
 import { InterfaceAbilityPanel } from "./Ability/Panel";
@@ -12,26 +14,35 @@ import { UnitWorldBars } from "./UnitWorldInfo";
 const skills_cols = 6
 const skills_rows = 1
 
-export function Init(){
+export function tmp(){
+
+}
+
+function Init(this: void){
+    print('Interface initilizing')
+
     InterfaceDamage.Init()
     UnitWorldBars.Init()
 
-    let map = InterfaceMinimap.instance
-    let unit_info = InterfaceUnitInfoPanel.instance
+    let map = InterfaceMinimap.inst
+    
+    let unit_info = InterfaceUnitInfoPanel.inst
+    unit_info.visible = false
+
     let skills = new InterfaceAbilityPanel(skills_cols, skills_rows)
+    skills.visible = false
 
-    Screen.addAction(([x0, y0], [w, h])=>{
-        let x = math.max(x0, -0.22)
+    Frame.Screen.addAction((sc_pos, sc_size)=>{
+        map.size = new Vec2(0.15, 0.15)
+        map.pos = new Vec2(sc_pos.x, sc_pos.y + sc_size.y - map.height)
 
-        map.size = [0.12, 0.12]
-        map.pos = [x, y0 + h - map.size[1]]
+        unit_info.size = new Vec2(0.2, 0.2)
+        unit_info.pos = new Vec2(Math.max(sc_pos.x, -(unit_info.size.x + 0.03)),
+                                 sc_pos.x <= -(unit_info.size.x + 0.05) ? 0 : 0.03)
 
-        unit_info.size = [0.2, 0.2]
-        unit_info.pos = [x, x < -0.21 ? 0 : 0.03]
-
-        skills.size = [0.05 * skills_cols, 0.05 * skills_rows]
-        let [skills_w, skill_h] = skills.size
-        skills.pos = [x0 + (w - skills_w) / 2, y0 + h - skill_h]
+        skills.size = new Vec2(0.05 * skills_cols, 0.05 * skills_rows)
+        skills.pos = new Vec2(sc_pos.x + (sc_size.x - skills.width) / 2,
+                              sc_pos.y + (sc_size.y - skills.height))
     })
 
     Selection.addAction((pl, gr)=>{
@@ -52,4 +63,8 @@ export function Init(){
     skills.setKey(3, 0, OSKEY_R)
     skills.setKey(4, 0, OSKEY_D)
     skills.setKey(5, 0, OSKEY_F)
+
+    print('Interface initilizing done')
 }
+
+Frame.onInit(Init)

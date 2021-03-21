@@ -34,7 +34,7 @@ function mouseTrack(this: void){
     if (!cur_abil){return}
 
     let [targ] = getTarget(cur_abil)
-    circle.setPolarPos(targ.x, targ.y, cur_abil.Data.area, 0, 2 * math.pi)
+    circle.setPolarPos(targ, cur_abil.Data.area, 0, 2 * math.pi)
 }
 
 function getTarget(this: void, abil: IFace<[Utils.Vec2]>){

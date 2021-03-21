@@ -5,22 +5,15 @@ import { SimpleTexture } from './Texture';
 
 export class SimpleImage extends Frame {
 
-    static fromFdf() : SimpleImage
-    static fromFdf(fdf: Fdf.SimpleFrame, texture_name: string) : SimpleImage
-    static fromFdf(fdf?: Fdf.SimpleFrame, texture_name?: string){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = Frame._fromFdf(fdf)
+    constructor()
+    constructor(fdf: Fdf.SimpleFrame, texture_name: string)
+    constructor(handle: jframehandle, texture_name: string)
+    constructor(handle_or_fdf?: jframehandle | Fdf.SimpleFrame, texture_name?: string){
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, true)
 
-        texture_name = texture_name ? texture_name : SimpleImage.name + 'DefaultFdfTexture'
-        let f = new SimpleTexture(BlzGetFrameByName(texture_name, 0))
-
-        return new SimpleImage(handle, f)
-    }
-
-    constructor(handle: jframehandle, texture_frame: SimpleTexture){
-        super(handle, true)
-
-        this.__texture = texture_frame
+        texture_name = texture_name ? texture_name : DefaultFdf.name + 'Texture'
+        this.__texture = new SimpleTexture(BlzGetFrameByName(texture_name, 0))
     }
 
     public get texture(){return this.__texture.texture}
@@ -39,7 +32,7 @@ let DefaultFdf = new Fdf.SimpleFrame(SimpleImage.name + 'DefaultFdf')
 DefaultFdf.width = 0.04
 DefaultFdf.height = 0.04
 {
-    let texture = new Fdf.SimpleTexture(SimpleImage.name + 'DefaultFdfTexture')
+    let texture = new Fdf.SimpleTexture(DefaultFdf.name + 'Texture')
     texture.textureFile = ''
     DefaultFdf.addSubframe(texture)
 }

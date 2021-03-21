@@ -1,4 +1,5 @@
 import * as Frame from '../../FrameExt'
+import { Vec2 } from '../../Utils'
 
 export class InterfaceMultiBar extends Frame.SimpleEmpty {
     constructor(count: number){
@@ -9,15 +10,15 @@ export class InterfaceMultiBar extends Frame.SimpleEmpty {
         this.background.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
         this.background.level = 0
 
-        this._bars = []
-        this._bar_heights = []
+        this.__bars = []
+        this.__bar_heights = []
         for (let i = 0; i < count; i++){
             let bar = new Frame.SimpleStatusBar()
             bar.parent = this
             bar.level = i + 1
-            this._bars.push(bar)
+            this.__bars.push(bar)
 
-            this._bar_heights.push(1)
+            this.__bar_heights.push(1)
         }
 
         this.border = new Frame.SimpleImage()
@@ -30,29 +31,29 @@ export class InterfaceMultiBar extends Frame.SimpleEmpty {
         this.text.text = ''
         this.text.level = count + 1
     }
+    
+    bar(pos: number){return this.__bars[pos]}
 
     setBarHeightPart(pos: number, h: number){
-        this._bar_heights[pos] = h < 0 ? 0 : h > 1 ? 1 : h
+        this.__bar_heights[pos] = h < 0 ? 0 : h > 1 ? 1 : h
     }
 
-    protected _set_size(size: [w: number, h: number]){
+    protected _set_size(size: Vec2){
         super._set_size(size)
-        let [w, h] = size
 
         this.background.size = size
-        for (let i = 0; i < this._bars.length; i++){
-            this._bars[i].size = [w, this._bar_heights[i] * h]
+        for (let i = 0; i < this.__bars.length; i++){
+            this.__bars[i].size = new Vec2(size.x , this.__bar_heights[i] * size.y)
         }
         this.border.size = size
         this.text.size = size
-        this.text.fontSize = 0.8 * h
+        this.text.fontSize = 0.8 * size.y
     }
 
     readonly background: Frame.SimpleImage
     readonly border: Frame.SimpleImage
     readonly text: Frame.SimpleText
-    bar(pos: number){return this._bars[pos]}
     
-    private _bars: Frame.SimpleStatusBar[]
-    private _bar_heights: number[]
+    private __bars: Frame.SimpleStatusBar[]
+    private __bar_heights: number[]
 }

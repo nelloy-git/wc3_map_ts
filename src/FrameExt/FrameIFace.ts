@@ -43,10 +43,13 @@ export abstract class FrameIFace extends Handle.Handle<jframehandle> {
 
     destroy(){
         let par = this._get_parent()
-        if (par){par._children.splice(par._children.indexOf(this), 1)}
         
-        for (let child of this._children){
-            child.parent = undefined
+        if (par){
+            par._get_children().splice(par._get_children().indexOf(this), 1)
+        }
+        
+        for (let child of this._get_children()){
+            child._set_parent(undefined)
         }
 
         BlzDestroyFrame(this.handle)
@@ -70,7 +73,7 @@ export abstract class FrameIFace extends Handle.Handle<jframehandle> {
     get pos(){return this._get_pos()}
     set pos(p: Utils.Vec2){this._set_pos(p)}
     get abs_pos(): Utils.Vec2{
-        let p = this.parent
+        let p = this._get_parent()
         return p ? p.abs_pos.add(this.pos): this.pos.copy()
     }
 
@@ -95,11 +98,6 @@ export abstract class FrameIFace extends Handle.Handle<jframehandle> {
     get enable(){return this._get_enable()}
     set enable(v: boolean){this._set_enable(v)}
 
-    get parent(){return this._get_parent()}
-    set parent(v: FrameIFace | undefined){this._set_parent(v)}
-    get children(){return this._children as ReadonlyArray<FrameIFace>}
-    get _children(){return this.__children}
-
     get level(){return this._get_level()}
     set level(v: number){this._set_level(v)}
 
@@ -120,14 +118,13 @@ export abstract class FrameIFace extends Handle.Handle<jframehandle> {
 
     protected abstract _get_parent(): FrameIFace | undefined
     protected abstract _set_parent(p: FrameIFace | undefined): void
+    protected abstract _get_children(): FrameIFace[]
 
     protected abstract _get_level(): number
     protected abstract _set_level(l: number): void
 
     protected abstract _get_color(): Utils.Color
     protected abstract _set_color(c: Utils.Color): void
-
-    private __children: FrameIFace[] = []
 
     private static readonly __origin_game_ui = IsGame() ?
         BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0)

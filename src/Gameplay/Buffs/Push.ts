@@ -1,18 +1,18 @@
 import * as Buff from '../../Buff'
 
-import { getFileDir } from "../../Utils";
+import { getFileDir, Vec2 } from "../../Utils";
 import { BuffJson } from "../JsonUtils/Buff";
 import { PushData } from "./data/Push";
 
 let __dir__ = Macro(getFileDir())
 let json = new BuffJson(__dir__ + '/json/Push.json')
 
-let Data = new Buff.TData<[vel_x: number, vel_y: number]>()
+let Data = new Buff.TData<[vel: Vec2]>()
 Data.name = (buff) => {return json.name}
 Data.icon = (buff) => {return json.icon}
 Data.tooltip = (buff) => {return json.tooltip}
 
-let Duration = new Buff.TDuration<[vel_x: number, vel_y: number]>()
+let Duration = new Buff.TDuration<[vel: Vec2]>()
 
 Duration.start = (buff) => {
     buff.Data.owner.pause = true

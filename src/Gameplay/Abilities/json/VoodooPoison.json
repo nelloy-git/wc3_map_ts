@@ -1,0 +1,33 @@
+{
+    "name": "Voodoo poison",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNShadowPact.blp",
+    "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNShadowPact.blp",
+    "tooltip": "T\no\no\nl\nt\ni\np",
+
+    "animation": {
+        "cast": 12,
+        "castDur": 0.8
+    },
+
+    "scales": {
+
+        "castTime": {
+            "base": 2
+        },
+        
+        "dmg": {
+            "base": 25,
+            "baseAdd": {
+                "MATK": 1
+            }
+        },
+
+        "dur": {
+            "base": 10
+        },
+
+        "ticksPerSec": {
+            "base": 2
+        }
+    }
+}

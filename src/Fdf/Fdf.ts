@@ -12,7 +12,7 @@ export abstract class Fdf implements IFace{
         this.file = file ? file : Fdf._file
 
         if (Fdf._name2fdf.get(name)){
-            return Log.err('frame with the same name already exists.',
+            return Log.err('frame with the same name already exists. "' + name + '"',
                             __path__, Fdf, 2)
         }
         Fdf._name2fdf.set(name, this)

@@ -4,16 +4,9 @@ import { Frame } from "../../Frame";
 
 export class SimpleStatusBar extends Frame {
 
-    static fromFdf(fdf?: Fdf.SimpleStatusBar){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = Frame._fromFdf(fdf)
-        let f = new SimpleStatusBar(handle)
-        f.__texture = fdf.barTexture
-        return f
-    }
-
-    constructor(handle: jframehandle){
-        super(handle, true)
+    constructor(handle_or_fdf?: jframehandle | Fdf.SimpleStatusBar){
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, true)
         
         this.__fullness = 0
         this.__texture = ''

@@ -11,9 +11,9 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
         this.abil = abil
         this.__type = type
 
-        this.timer = Casting._timer_list.newTimerObj()
-        this.timer.addAction('PERIOD', ()=>{this.__period()})
-        this.timer.addAction('FINISH', ()=>{this.__stop('CAST_FINISH')})
+        this.Timer = Casting._timer_list.newTimerObj()
+        this.Timer.addAction('PERIOD', ()=>{this.__period()})
+        this.Timer.addAction('FINISH', ()=>{this.__stop('CAST_FINISH')})
     }
 
     static getActive(caster: Handle.hUnit | undefined){
@@ -47,7 +47,7 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
 
         let time = this.__type.castingTime(this.abil, target)
         time = time > 0 ? time : 0.01
-        this.timer.start(time)
+        this.Timer.start(time)
         
         this.__target = target
         this.__type.start(this.abil, target)
@@ -55,7 +55,7 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
     }
 
     extraPeriod(reduce_time_left: boolean){
-        this.timer.period(reduce_time_left)
+        this.Timer.period(reduce_time_left)
     }
 
     cancel(){
@@ -116,8 +116,8 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
         }
         this.__actions.get(event)?.run(this.abil, event, this.__target)
 
-        if (this.timer.left > 0){
-            this.timer.cancel()
+        if (this.Timer.left > 0){
+            this.Timer.cancel()
         }
 
         this.__target = undefined
@@ -125,7 +125,7 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
     }
 
     readonly abil: IFace<T>
-    readonly timer: Handle.hTimerObj
+    readonly Timer: Handle.hTimerObj
 
     private __type: TCasting<T>
     private __target: T | undefined

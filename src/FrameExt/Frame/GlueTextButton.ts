@@ -8,60 +8,65 @@ import { Text } from './Text'
 
 export class GlueTextButton extends FrameActive {
 
-    static fromFdf(fdf?: Fdf.GlueTextButton){
-        fdf = fdf ? fdf : DefaultFdf
-        let [handle, _] = FrameActive._fromFdf(fdf)
-        let f = new GlueTextButton(handle)
-        f.__linkElement(fdf, 'NORMAL')
-        f.__linkElement(fdf, 'PUSHED')
-        f.__linkElement(fdf, 'DISABLED')
-        f.__linkElement(fdf, 'MOUSE')
-        f.__linkElement(fdf, 'FOCUS')
-        f.__linkElement(fdf, 'TEXT')
-        
-        return f
-    }
-
+    constructor()
+    constructor(fdf: Fdf.GlueTextButton)
     constructor(handle: jframehandle,
-                normal?: Backdrop, pushed?: Backdrop, disabled?: Backdrop,
-                mouse?: Highlight, focus?: Highlight, text?: Text){
+                normal_name: string, pushed_name: string, disabled_name: string,
+                mouse_name: string, focus_name: string, text_name: string)
+    constructor(handle_or_fdf?: jframehandle | Fdf.GlueTextButton,
+                normal_name?: string, pushed_name?: string, disabled_name?: string,
+                mouse_name?: string, focus_name?: string, text_name?: string){
 
-        super(handle, false, GlueTextButton.Events)
+        handle_or_fdf = handle_or_fdf ? handle_or_fdf : DefaultFdf
+        super(handle_or_fdf, false, GlueTextButton.Events)
+        
+        if (handle_or_fdf instanceof Fdf.GlueTextButton){
+            normal_name = GlueTextButton.__linkedElementName(handle_or_fdf, 'NORMAL')
+            pushed_name = GlueTextButton.__linkedElementName(handle_or_fdf, 'PUSHED')
+            disabled_name = GlueTextButton.__linkedElementName(handle_or_fdf, 'DISABLED')
+            mouse_name = GlueTextButton.__linkedElementName(handle_or_fdf, 'MOUSE')
+            focus_name = GlueTextButton.__linkedElementName(handle_or_fdf, 'FOCUS')
+            text_name = GlueTextButton.__linkedElementName(handle_or_fdf, 'TEXT')
+        }
 
         this.__elements = new Map()
-        if (normal){this.__elements.set('NORMAL', normal)}
-        if (pushed){this.__elements.set('PUSHED', pushed)}
-        if (disabled){this.__elements.set('DISABLED', disabled)}
-        if (mouse){this.__elements.set('MOUSE', mouse)}
-        if (focus){this.__elements.set('FOCUS', focus)}
-        if (text){this.__elements.set('TEXT', text)}
+        this.__linkElement('NORMAL', normal_name)
+        this.__linkElement('PUSHED', pushed_name)
+        this.__linkElement('DISABLED', disabled_name)
+        this.__linkElement('MOUSE', mouse_name)
+        this.__linkElement('FOCUS', focus_name)
+        this.__linkElement('TEXT', text_name)
     }
 
-    public getElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop | undefined
-    public getElement(elem: 'MOUSE' | 'FOCUS'): Highlight | undefined
-    public getElement(elem: 'TEXT'): Text | undefined
-    public getElement(elem: GlueTextButton.Element){
+    getElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop | undefined
+    getElement(elem: 'MOUSE' | 'FOCUS'): Highlight | undefined
+    getElement(elem: 'TEXT'): Text | undefined
+    getElement(elem: GlueTextButton.Element){
         return this.__elements.get(elem)
+    }
+
+    private __linkElement(elem: GlueTextButton.Element, name?: string){
+        if (!name){ return}
+
+        let handle = BlzGetFrameByName(name, 0)
+        let frame: Backdrop | Highlight | Text
+        if (elem == 'NORMAL' || elem == 'PUSHED' || elem == 'DISABLED'){
+            frame = new Backdrop(handle)
+        } else if (elem == 'FOCUS' || elem == 'MOUSE'){
+            frame = new Highlight(handle)
+        } else { // elem == 'TEXT'
+            frame = new Text(handle)
+        }
+
+        this.__elements.set(elem, frame)
     }
 
     private __elements: Map<GlueTextButton.Element, Backdrop | Highlight | Text>
 
-    private __linkElement(fdf: Fdf.GlueTextButton,
-                          name: Fdf.GlueTextButton.Element){
-        let fdf_elem = fdf.getElement(name)
-        if (!fdf_elem){return}
-
-        let elem
-        let handle = BlzGetFrameByName(fdf_elem.name, 0)
-        if (name == 'NORMAL' || name == 'PUSHED' || name == 'DISABLED'){
-            elem = new Backdrop(handle)
-        } else if (name == 'MOUSE' || name == 'FOCUS') {
-            elem = new Highlight(handle)
-        } else { // (name == 'TEXT') 
-            elem = new Text(handle)
-        }
-
-        this.__elements.set(name, elem)
+    private static __linkedElementName(fdf: Fdf.GlueTextButton,
+                                       elem: Fdf.GlueTextButton.Element){
+        let fdf_elem = fdf.getElement(elem)
+        return fdf_elem ? fdf_elem.name : undefined
     }
 }
 

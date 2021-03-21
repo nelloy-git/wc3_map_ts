@@ -2,15 +2,15 @@ export {
     int2id,
     id2int,
     wcType,
-    getAngle,
+    // getAngle,
     getFileDir,
     getFilePath,
     getTerrainZ,
     isWalkable,
     isReforged,
-    deltaPos,
-    deltaAngle,
-    getTurnTime
+    // deltaPos,
+    // deltaAngle,
+    // getTurnTime
 } from'./Funcs'
 
 export { Action } from './Action'

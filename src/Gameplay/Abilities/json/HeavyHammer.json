@@ -5,13 +5,17 @@
     "tooltip": "T\no\no\nl\nt\ni\np",
     
 
-    "animations": {
-        "strike_Ogre": 6,
-        "strike_Ogre_startTime": 0.3,
-        "strike_Ogre_endTime": 0.4
+    "animation": {
+        "strikeId": 6,
+        "strikeStart": 0.3,
+        "strikeEnd": 0.4
     },
 
-    "scale": {
+    "scales": {
+        "castTime": {
+            "base": 3
+        },
+
         "dmg": {
             "base": 50,
             "baseAdd": {

@@ -111,7 +111,6 @@ export class UnitTypeJson extends Json.FileCached {
         for (let i = 0; i < this.abils.length; i++){
             const cur = this.abils[i]
             if (cur){abils.set(i, cur)}
-            i++
         }
         
         return unit
@@ -121,8 +120,7 @@ export class UnitTypeJson extends Json.FileCached {
         let abils: Abil.TAbility<Abil.TargetType[]>[] = []
         let names = Json.Read.StringArray(this._raw, 'abils', [], path)
         
-        for (let i = 0; i < names.length; i++){
-            const name = names[i]
+        for (const name of names){
             let found: Abil.TAbility<Abil.TargetType[]> | undefined
             for (let k in AbilList){
                 let cur = (<{[k:string]: Abil.TargetType[]}><unknown>AbilList)[k]

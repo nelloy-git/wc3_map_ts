@@ -29,18 +29,18 @@ export class Color {
     }
 
     colorText(text: string){
-        return '|c' + this.hex(this._r)
+        return '|c' + this.hex(this._a)
+                    + this.hex(this._r)
                     + this.hex(this._g)
                     + this.hex(this._b)
-                    + this.hex(this._a)
                     + text + '|r'
     }
 
     getWcCode(){
-        return BlzConvertColor(math.floor(255 * this._r),
+        return BlzConvertColor(math.floor(255 * this._a),
+                               math.floor(255 * this._r),
                                math.floor(255 * this._g),
-                               math.floor(255 * this._b),
-                               math.floor(255 * this._a))
+                               math.floor(255 * this._b))
     }
 
     toString(){

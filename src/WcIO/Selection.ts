@@ -71,14 +71,10 @@ export namespace Selection {
 
         for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
             let pl = Player(i)
-            if (GetPlayerController(pl) == MAP_CONTROL_USER &&
-                GetPlayerSlotState(pl) == PLAYER_SLOT_STATE_PLAYING){
-
-                _groups.set(pl, [])
-                TriggerRegisterPlayerUnitEvent(_trigger_select, pl, EVENT_PLAYER_UNIT_SELECTED)
-                TriggerRegisterPlayerUnitEvent(_trigger_deselect, pl, EVENT_PLAYER_UNIT_DESELECTED)
-                TriggerRegisterPlayerUnitEvent(_trigger_died, pl, EVENT_PLAYER_UNIT_DEATH)
-            } 
+            _groups.set(pl, [])
+            TriggerRegisterPlayerUnitEvent(_trigger_select, pl, EVENT_PLAYER_UNIT_SELECTED)
+            TriggerRegisterPlayerUnitEvent(_trigger_deselect, pl, EVENT_PLAYER_UNIT_DESELECTED)
+            TriggerRegisterPlayerUnitEvent(_trigger_died, pl, EVENT_PLAYER_UNIT_DEATH)
         }
     }
 }
