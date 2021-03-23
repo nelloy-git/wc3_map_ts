@@ -15,7 +15,7 @@ export class AbilityJson extends Json.FileCached {
         }
 
         let raw = Json.decode(<string>data)
-        this._raw = raw
+        this.raw = raw
 
         this.name = Json.Read.String(raw, 'name', 'unfined', path)
         this.icon = Json.Read.String(raw, 'icon', 'unfined', path)
@@ -30,7 +30,7 @@ export class AbilityJson extends Json.FileCached {
     }
 
     getNumber(key_tree: string[]){
-        let cur: LuaTable = this._raw
+        let cur: LuaTable = this.raw
         for (let i = 0; i < key_tree.length - 1; i++){
             let next = Json.Read.Table(cur, key_tree[i])
             if (!next){return undefined}
@@ -40,11 +40,10 @@ export class AbilityJson extends Json.FileCached {
         return Json.Read.Number(cur, key_tree[key_tree.length - 1])
     }
 
-    readonly name: string
-    readonly icon: string
-    readonly dis_icon: string
-    readonly tooltip: string
-    readonly scales: Map<string, ScaleJson>
-
-    protected readonly _raw: LuaTable
+    name: string
+    icon: string
+    dis_icon: string
+    tooltip: string
+    scales: Map<string, ScaleJson>
+    raw: LuaTable
 }
