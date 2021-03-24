@@ -23,7 +23,6 @@ export class Ability<T extends TargetType[]> implements IFace<T> {
     constructor(owner: hUnit, type: TAbility<T>){
         let id = IFace.register(this)
 
-        this.type = type
         this.Casting = new Casting(this, type.TCasting)
         this.Data = new Data(this, id, owner, type.TData)
         this.Targeting = new Targeting(this, type.TTargeting)
@@ -32,7 +31,7 @@ export class Ability<T extends TargetType[]> implements IFace<T> {
     }
 
     static addAction(event: Ability.Event,
-                     callback: (abil: Ability<TargetType[]>, event: Ability.Event) => void){
+                     callback: (this: void, abil: Ability<TargetType[]>, event: Ability.Event) => void){
         return this.__actions.get(event)?.add(callback)
     }
 
@@ -43,7 +42,6 @@ export class Ability<T extends TargetType[]> implements IFace<T> {
         return false
     }
 
-    readonly type: TAbility<T>
     readonly Casting: Casting<T>
     readonly Data: Data<T>
     readonly Targeting: Targeting<T>

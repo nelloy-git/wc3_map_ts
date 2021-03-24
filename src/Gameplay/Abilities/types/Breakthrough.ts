@@ -10,7 +10,7 @@ import { Push } from '../../Buffs'
 
 const __dir__ = Macro(getFileDir())
 
-const json = new AbilityJson(__dir__ + '/json/Breakthrough.json')
+const json = new AbilityJson(__dir__ + '/../json/Breakthrough.json')
 const KEY_DMG = 'pushDmg'
 const KEY_PUSH_DUR = 'pushDur'
 

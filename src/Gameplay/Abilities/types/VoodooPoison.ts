@@ -1,15 +1,15 @@
-import * as Abil from "../../AbilityExt";
-import * as Buff from "../../Buff";
-import * as Param from "../../Parameter";
-import { hTimer, hUnit } from "../../Handle";
-import { getFileDir, Vec2 } from "../../Utils";
+import * as Abil from "../../../AbilityExt";
+import * as Buff from "../../../Buff";
+import * as Param from "../../../Parameter";
+import { hTimer, hUnit } from "../../../Handle";
+import { getFileDir, Vec2 } from "../../../Utils";
 
-import { AbilityJson } from "../JsonUtils/Ability";
-import { VoodooPoisonData } from "./Data/VoodooPoison";
+import { AbilityJson } from "../../JsonUtils/Ability";
+import { VoodooPoisonData } from "../Data/VoodooPoison";
 
 const __dir__ = Macro(getFileDir())
 
-const json = new AbilityJson(__dir__ + '/json/VoodooPoison.json')
+const json = new AbilityJson(__dir__ + '/../json/VoodooPoison.json')
 const KEY_CAST_TIME = 'castTime'
 const KEY_DMG = 'dmg'
 const KEY_DUR = 'dur'

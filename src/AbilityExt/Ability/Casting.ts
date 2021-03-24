@@ -9,7 +9,7 @@ const __path__ = Macro(Utils.getFilePath())
 export class Casting<T extends TargetType[]> implements CastingIFace<T> {
     constructor(abil: IFace<T>, type: TCasting<T>){
         this.abil = abil
-        this.__type = type
+        this.type = type
 
         this.Timer = Casting._timer_list.newTimerObj()
         this.Timer.addAction('PERIOD', ()=>{this.__period()})
@@ -26,7 +26,7 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
     
     start(target: T){
         if (!this.abil.Data.is_available){return false}
-        if (!this.__type.isTargetValid(this.abil, target)){return false}
+        if (!this.type.isTargetValid(this.abil, target)){return false}
 
         let caster = this.abil.Data.owner
 
@@ -45,12 +45,12 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
                                  __path__, Casting, 2)
         }
 
-        let time = this.__type.castingTime(this.abil, target)
+        let time = this.type.castingTime(this.abil, target)
         time = time > 0 ? time : 0.01
         this.Timer.start(time)
         
         this.__target = target
-        this.__type.start(this.abil, target)
+        this.type.start(this.abil, target)
         this.__actions.get('CAST_START')?.run(this.abil, 'CAST_START', target)
     }
 
@@ -71,11 +71,11 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
     }
 
     castingTime(target: T | undefined){
-        return this.__type.castingTime(this.abil, target)
+        return this.type.castingTime(this.abil, target)
     }
 
     isTargetValid(target: T){
-        return this.__type.isTargetValid(this.abil, target)
+        return this.type.isTargetValid(this.abil, target)
     }
 
     addAction(event: Casting.Event,
@@ -98,7 +98,7 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
         }
 
         this.__actions.get('CAST_CASTING')?.run(this.abil, 'CAST_CASTING', this.__target)
-        this.__type.casting(this.abil, this.__target)
+        this.type.casting(this.abil, this.__target)
     }
 
     private __stop(event: 'CAST_CANCEL'|'CAST_INTERRUPT'|'CAST_FINISH'){
@@ -108,11 +108,11 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
         }
 
         if (event == 'CAST_CANCEL'){
-            this.__type.cancel(this.abil, this.__target)
+            this.type.cancel(this.abil, this.__target)
         } else if (event == 'CAST_INTERRUPT'){
-            this.__type.interrupt(this.abil, this.__target)
+            this.type.interrupt(this.abil, this.__target)
         } else {
-            this.__type.finish(this.abil, this.__target)
+            this.type.finish(this.abil, this.__target)
         }
         this.__actions.get(event)?.run(this.abil, event, this.__target)
 
@@ -126,8 +126,8 @@ export class Casting<T extends TargetType[]> implements CastingIFace<T> {
 
     readonly abil: IFace<T>
     readonly Timer: Handle.hTimerObj
-
-    private __type: TCasting<T>
+    readonly type: TCasting<T>
+    
     private __target: T | undefined
 
     private __actions = new Map<Casting.Event, Utils.ActionList<[IFace<T>, Casting.Event, T]>>([

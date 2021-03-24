@@ -1,4 +1,4 @@
-export { IFace, TargetType } from './Ability/IFace'
+export { IFace, CastingIFace, TargetingIFace, DataIFace, TargetType } from './Ability/IFace'
 export { Ability, TAbility } from './Ability'
 export { Casting } from './Ability/Casting'
 export { Charges } from './Ability/Charges'

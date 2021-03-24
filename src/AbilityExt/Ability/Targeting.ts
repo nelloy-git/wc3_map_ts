@@ -6,21 +6,21 @@ import { IFace, TargetingIFace, TargetType } from "./IFace";
 export class Targeting<T extends TargetType[]> implements TargetingIFace<T> {
     constructor(abil: IFace<T>, type: TTargeting<T>){
         this.abil = abil
-        this._type = type
+        this.type = type
     }
 
     start(pl: jplayer){
         if (this.abil.Data.is_available){
-            this._type.start(pl, this.abil)
+            this.type.start(pl, this.abil)
         }
     }
 
     cancel(pl: jplayer){
-        this._type.stop(pl, this.abil)
+        this.type.stop(pl, this.abil)
     }
 
     finish(pl: jplayer, target?: T){
-        this._type.finish(pl, this.abil, target)
+        this.type.finish(pl, this.abil, target)
     }
 
     addAction(event: Targeting.Event,
@@ -36,8 +36,8 @@ export class Targeting<T extends TargetType[]> implements TargetingIFace<T> {
     }
 
     readonly abil: IFace<T>
+    readonly type: TTargeting<T>
 
-    private _type: TTargeting<T>
     private _actions = new Map<Targeting.Event, Utils.ActionList<[IFace<T>, Targeting.Event, T]>>([
         ['TARG_START', new Utils.ActionList()],
         ['TARG_STOP', new Utils.ActionList()],

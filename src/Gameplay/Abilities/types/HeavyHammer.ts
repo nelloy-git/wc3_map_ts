@@ -1,16 +1,16 @@
-import * as Abil from "../../AbilityExt";
-import * as Buff from "../../Buff";
-import * as Param from "../../Parameter";
-import { hTimer, hUnit } from "../../Handle";
-import { getFileDir, Vec2 } from "../../Utils";
+import * as Abil from "../../../AbilityExt";
+import * as Buff from "../../../Buff";
+import * as Param from "../../../Parameter";
+import { hTimer, hUnit } from "../../../Handle";
+import { getFileDir, Vec2 } from "../../../Utils";
 
-import { AbilityJson } from "../JsonUtils/Ability";
-import { HeavyHammerData } from "./Data/HeavyHammer";
-import { TossUp } from '../Buffs'
+import { AbilityJson } from "../../JsonUtils/Ability";
+import { HeavyHammerData } from "../Data/HeavyHammer";
+import { TossUp } from '../../Buffs'
 
 const __dir__ = Macro(getFileDir())
 
-const json = new AbilityJson(__dir__ + '/json/HeavyHammer.json')
+const json = new AbilityJson(__dir__ + '/../json/HeavyHammer.json')
 const KEY_CAST_TIME = 'castTime'
 const KEY_DMG = 'dmg'
 const KEY_TOSS_DUR = 'tossDur'

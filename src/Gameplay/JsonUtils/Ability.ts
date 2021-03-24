@@ -21,6 +21,13 @@ export class AbilityJson extends Json.FileCached {
         this.icon = Json.Read.String(raw, 'icon', 'unfined', path)
         this.dis_icon = Json.Read.String(raw, 'disIcon', 'unfined', path)
         this.tooltip = Json.Read.String(raw, 'tooltip', 'unfined', path)
+        this.life_cost = Json.Read.Number(raw, 'lifeCost', 0, path)
+        this.mana_cost = Json.Read.Number(raw, 'manaCost', 0, path)
+        this.range = Json.Read.Number(raw, 'range', 0, path)
+        this.area = Json.Read.Number(raw, 'area', 0, path)
+        this.charges_use = Json.Read.Number(raw, 'chargesUse', 0, path)
+        this.charges_max = Json.Read.Number(raw, 'chargesMax', 0, path)
+        this.charge_cd = Json.Read.Number(raw, 'chargeCD', 0, path)
 
         this.scales = new Map()
         let raw_scales = Json.Read.Table(raw, 'scales', {}, path)
@@ -44,6 +51,14 @@ export class AbilityJson extends Json.FileCached {
     icon: string
     dis_icon: string
     tooltip: string
+    life_cost: number
+    mana_cost: number
+    range: number
+    area: number
+    charges_use: number 
+    charges_max: number
+    charge_cd: number
+
     scales: Map<string, ScaleJson>
     raw: LuaTable
 }
