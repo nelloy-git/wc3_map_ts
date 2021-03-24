@@ -7,7 +7,7 @@ import * as Utils from '../../Utils'
 import { hUnit } from '../../Handle'
 
 import * as AbilList from '../Abilities'
-import { ParamsJson } from './Params'
+import { ParamsJson } from '../JsonUtils'
 
 let __path__ = Macro(Utils.getFilePath())
 
@@ -56,13 +56,13 @@ export class UnitInst extends UnitInstHidden {
     }
 }
 
-export class UnitTypeJson extends Json.FileCached {
+export class GameplayUnitType extends Json.FileCached {
     constructor(w3u: Binary.w3uFile, json_path: string){
         super(json_path)
         
         let data = this._file.data
         if (!data){
-            Utils.Log.err(json_path + ' is empty', __path__, UnitTypeJson)
+            Utils.Log.err(json_path + ' is empty', __path__, GameplayUnitType)
         }
 
         let raw = Json.decode(<string>data)

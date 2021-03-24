@@ -3,10 +3,17 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNShadowPact.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNShadowPact.blp",
     "tooltip": "T\no\no\nl\nt\ni\np",
+    "lifeCost": 0,
+    "manaCost": 5,
+    "range": 800,
+    "area": 150,
+    "chargesUse": 1,
+    "chargesMax": 1,
+    "chargeCD": 5,
 
     "animation": {
         "cast": 12,
-        "castDur": 0.8
+        "castDefaultDur": 0.8
     },
 
     "scales": {

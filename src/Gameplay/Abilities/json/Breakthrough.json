@@ -3,6 +3,13 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNStampede.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp",
     "tooltip": "T\no\no\nl\nt\ni\np",
+    "lifeCost": 0,
+    "manaCost": 10,
+    "range": 500,
+    "area": 200,
+    "chargesUse": 1,
+    "chargesMax": 1,
+    "chargeCD": 5,
 
     "animation": {
         "walk": 11

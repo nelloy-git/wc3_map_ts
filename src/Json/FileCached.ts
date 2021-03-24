@@ -2,6 +2,7 @@ import * as Utils from '../Utils'
 
 export class FileCached {
     constructor(path: string){
+        this.path = path
         this._file = new Utils.FileText()
 
         if (!IsGame()){
@@ -11,6 +12,8 @@ export class FileCached {
             this._file.loadCache(path)
         }
     }
+
+    readonly path: string
 
     protected readonly _file: Utils.FileText
 }

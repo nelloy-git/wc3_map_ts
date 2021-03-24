@@ -12,24 +12,24 @@ TCasting.isTargetValid = (abil, target) => {return true}
 
 let TData = new Abil.TData<hUnit[]>()
 TData.name = abil => {return 'TestType'}
-TData.iconNormal = abil => {return 'ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp'}
-TData.iconDisabled = abil => {return 'ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp'}
+TData.icon = abil => {return 'ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp'}
+TData.dis_icon = abil => {return 'ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp'}
 TData.tooltip = abil => {return 'TestTooltip'}
-TData.lifeCost = abil => {return 0}
-TData.manaCost = abil => {return 0}
+TData.life_cost = abil => {return 0}
+TData.mana_cost = abil => {return 0}
 TData.range = abil => {return 500}
 TData.area = abil => {return 50}
-TData.chargeUsed = abil => {return 1}
-TData.chargeMax = abil => {return 1}
-TData.chargeCooldown = abil => {return 5}
-TData.isAvailable = abil => {
+TData.charges_use = abil => {return 1}
+TData.charges_max = abil => {return 1}
+TData.charge_cd = abil => {return 5}
+TData.is_available = abil => {
     let charges = abil.Data.Charges.count > 0
     let casting = abil.Casting.Timer.left <= 0
     return charges && casting
 }
 TData.consume = abil => {
-    abil.Data.Charges.cooldown = TData.chargeCooldown(abil)
-    abil.Data.Charges.count -= TData.chargeUsed(abil)
+    abil.Data.Charges.cooldown = TData.charge_cd(abil)
+    abil.Data.Charges.count -= TData.charges_use(abil)
     return true
 }
 

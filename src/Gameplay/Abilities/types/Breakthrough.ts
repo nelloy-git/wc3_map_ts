@@ -106,17 +106,17 @@ Casting.isTargetValid = (abil, target) => {return true}
 let Data = new Abil.TData()
 
 Data.name = (abil) => {return json.name}
-Data.iconNormal = (abil) => {return json.icon}
-Data.iconDisabled = (abil) => {return json.dis_icon}
+Data.icon = (abil) => {return json.icon}
+Data.dis_icon = (abil) => {return json.dis_icon}
 Data.tooltip = (abil) => {return json.tooltip}
-Data.lifeCost = (abil) => {return 0}
-Data.manaCost = (abil) => {return 0}
+Data.life_cost = (abil) => {return 0}
+Data.mana_cost = (abil) => {return 0}
 Data.range = (abil) => {return 650}
 Data.area = (abil) => {return 100}
-Data.chargeUsed = (abil) => {return 1}
-Data.chargeMax = (abil) => {return 1}
-Data.chargeCooldown = (abil) => {return 5}
-Data.isAvailable = (abil) => {
+Data.charges_use = (abil) => {return 1}
+Data.charges_max = (abil) => {return 1}
+Data.charge_cd = (abil) => {return 5}
+Data.is_available = (abil) => {
     let controllable = !abil.Data.owner.pause
     let enough_mana = abil.Data.owner.mana >= abil.Data.mana_cost
     let charges = abil.Data.Charges.count > 0

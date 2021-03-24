@@ -10,8 +10,8 @@ export abstract class CastingData {
         CastingData._abil2data.set(buff, this)
     }
 
-    static get(buff: Abil.IFace<Abil.TargetType[]>){
-        let data = this._abil2data.get(buff)
+    static get(abil: Abil.IFace<Abil.TargetType[]>){
+        let data = this._abil2data.get(abil)
         if (!data){
             return Log.err('data is undefined.',
                             __path__, CastingData, 2)

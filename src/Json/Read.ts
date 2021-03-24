@@ -3,7 +3,7 @@ import { getFilePath, Log } from "../Utils";
 let __path__ = Macro(getFilePath())
 
 type Type = boolean | number | string | object
-type SType = 'boolean' | 'number' | 'string' | 'object'
+type SType = 'any' | 'boolean' | 'number' | 'string' | 'object'
 
 function isArray(t: any){
     if (typeof t !== "object"){
@@ -31,15 +31,23 @@ function isArray(t: any){
 
 function read<T extends Type>(json: LuaTable, key: string | number, of_type: SType, def?: T, path?: string){
     let val = (<LuaHash>json)[key]
+    if (of_type == 'any'){
+        return <T>val
+    }
+
+    let wrn = false
     if (typeof val !== of_type){
         val = <any>def
+        if (def != undefined && path != undefined){
+            wrn = true
+        }
     }
 
     if (!path){
         return val ? <T>val : def
     }
 
-    if (!val){
+    if (wrn){
         Log.wrn('Can not find ' + of_type + ' "' + key + '" in ' + path)
     }
 
@@ -68,6 +76,10 @@ function readArray<T extends Type>(json: LuaTable, key: string | number, of_type
 }
 
 export namespace Read {
+
+    export function Any(json: LuaTable, key: string | number): any | undefined {
+        return read(json, key, 'any')
+    }
 
     export function Bool(json: LuaTable, key: string | number): boolean | undefined
     export function Bool(json: LuaTable, key: string | number, def: boolean): boolean
