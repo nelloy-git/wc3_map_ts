@@ -1,9 +1,7 @@
-import * as Param from "../../../Parameter";
-
 import { IFace, TargetType } from "../../../AbilityExt"
 import { hEffect, hUnit} from "../../../Handle"
 import { Arc, Line, newEffectList } from '../../../Drawing'
-import { CastingData } from "./CastingData"
+import { CastingData } from "../CastingData"
 import { Vec2 } from "../../../Utils";
 
 const MODEL = 'Abilities\\Spells\\Items\\OrbVenom\\OrbVenomMissile.mdl'

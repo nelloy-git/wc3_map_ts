@@ -3,7 +3,7 @@ import { hImage, hUnit } from "../../../Handle"
 import { Color, Vec2 } from "../../../Utils"
 import { Arc, Line, newImageList } from '../../../Drawing'
 
-import { CastingData } from "./CastingData"
+import { CastingData } from "../CastingData"
 
 export class HeavyHammerData extends CastingData {
     constructor(abil: IFace<TargetType[]>, caster: hUnit, target: Vec2, width: number){

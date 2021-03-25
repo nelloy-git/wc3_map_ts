@@ -5,7 +5,7 @@ import { hTimer, hUnit } from "../../../Handle";
 import { getFileDir, Vec2 } from "../../../Utils";
 
 import { AbilityData, KeysTree } from '../Data'
-import { HeavyHammerData } from "../Data/HeavyHammer";
+import { HeavyHammerData } from "../data/HeavyHammer";
 import { TossUp } from '../../Buffs'
 
 const __dir__ = Macro(getFileDir())
@@ -91,18 +91,14 @@ Casting.finish = (abil, target) => {
 
 Casting.castingTime = (abil, target) => {
     let caster = abil.Data.owner
-    
-    let angle = target ? target[0].sub(caster.pos).angle : math.pi
-    angle = Math.min(angle, 2 * math.pi - angle)
-    let turn_time = 0.5 * angle / math.pi
+    let params = Param.UnitContainer.get(caster)
 
     let start = AbilityData.getJson(abil).getNumber(ANIM_STRIKE_START, 0)
     let end = AbilityData.getJson(abil).getNumber(ANIM_STRIKE_END, 0)
 
-    let params = Param.UnitContainer.get(caster)
     let cast_time = AbilityData.getJson(abil).getScaled(SCALE_CAST_TIME, params)
 
-    return math.max(turn_time, start + end, cast_time)
+    return math.max(start + end, cast_time)
 }
 
 Casting.isTargetValid = (abil, target) => {return true}

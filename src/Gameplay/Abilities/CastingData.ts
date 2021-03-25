@@ -1,6 +1,5 @@
-import * as Abil from '../../../AbilityExt'
-
-import { getFilePath, Log } from "../../../Utils";
+import * as Abil from '../../AbilityExt'
+import { getFilePath, Log } from "../../Utils";
 
 let __path__ = Macro(getFilePath())
 

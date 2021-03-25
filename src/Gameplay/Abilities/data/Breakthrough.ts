@@ -1,15 +1,15 @@
 import * as Abil from "../../../AbilityExt";
 import * as Handle from '../../../Handle'
-import * as Utils from '../../../Utils'
+import { Vec2 } from '../../../Utils'
 
 import { IFace } from "../../../AbilityExt"
-import { isWalkable } from "../../../Utils"
-import { CastingData } from "./CastingData"
+import { CastingData } from "../CastingData"
+import { Move } from "../../utils/Move";
 
 const dt = Abil.Casting.period
 
 export class BreakthroughData extends CastingData{
-    constructor(abil: IFace<[Utils.Vec2]>, caster: Handle.hUnit, target: Utils.Vec2){
+    constructor(abil: IFace<[Vec2]>, caster: Handle.hUnit, target: Vec2){
         super(abil)
         
         this.caster = caster
@@ -21,39 +21,44 @@ export class BreakthroughData extends CastingData{
         let cast_time = abil.Casting.castingTime([target])
         let turn_time = 0.5 * Math.min(this.angle, 2 * math.pi - this.angle) / math.pi
         let run_time = cast_time - turn_time
-        this.vel = delta.mult(dt / run_time)
-        this._status = 'OK'
+        let vel = delta.mult(dt / run_time)
+
+        this.__move = new Move(caster, vel)
+        this.vel = this.__move.vel
     } 
 
-    static get = <(abil: IFace<[Utils.Vec2]>) => BreakthroughData> CastingData.get
+    static get = <(abil: IFace<[Vec2]>) => BreakthroughData> CastingData.get
 
-    period(){
-        let pos = this.caster.pos.add(this.vel)
-
-        if (isWalkable(pos)){
-            this._status = 'COLLISION'
-            return
+    move(){
+        let pos = this.__move.move()
+        if (!pos){
+            return BreakthroughData.Status.COLLISION
         }
 
-        this.caster.pos = pos
+        let vel = this.__move.vel
         let delta = this.target.sub(pos)
-
         let abs = math.abs
-        if (abs(delta.x) < abs(this.vel.x) || abs(delta.y) < abs(this.vel.y)){
-            this._status = 'FINISH'
-            return
+        if (abs(delta.x) < abs(vel.x) || abs(delta.y) < abs(vel.y)){
+            return BreakthroughData.Status.FINISHED
         }
 
-        return
+        return BreakthroughData.Status.OK
     }
 
     pushed: Handle.hUnit[] = []
 
     readonly caster: Handle.hUnit
-    readonly target: Utils.Vec2
+    readonly target: Vec2
+    readonly vel: Vec2
     readonly angle: number
-    readonly vel: Utils.Vec2
-    get status(){return this._status}
 
-    private _status: 'OK'|'COLLISION'|'FINISH'
+    private __move: Move
+}
+
+export namespace BreakthroughData{
+    export enum Status {
+        OK,
+        COLLISION,
+        FINISHED
+    }
 }

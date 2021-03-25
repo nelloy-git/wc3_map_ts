@@ -49,9 +49,9 @@ export function isWalkable(x_or_v: number | Vec2, y?: number){
     let it_y = GetItemY(_item)
     if (it_x > p.x + 1 || it_x < p.x - 1 ||
         it_y > p.y + 1 || it_y < p.y - 1){
-        return true
+        return false
     }
-    return false
+    return true
 }
 
 new Import(GetSrc() + '/Utils/IsReforged/Check.toc', 'war3mapImported/IsReforged/Check.toc')

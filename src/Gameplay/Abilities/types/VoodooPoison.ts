@@ -3,7 +3,7 @@ import * as Param from "../../../Parameter";
 import { hTimer, hUnit } from "../../../Handle";
 import { getFileDir, Vec2 } from "../../../Utils";
 
-import { VoodooPoisonData } from "../Data/VoodooPoison";
+import { VoodooPoisonData } from "../data/VoodooPoison";
 import { AbilityData, KeysTree } from "../Data";
 
 const __dir__ = Macro(getFileDir())

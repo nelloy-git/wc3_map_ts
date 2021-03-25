@@ -5,8 +5,8 @@
     "dev": "tstl --watch"
   },
   "devDependencies": {
-    "lua-types": "^2.8.0",
-    "typescript": "^4.1.3",
+    "lua-types": "^2.9.1",
+    "typescript": "^4.2.3",
     "typescript-to-lua": "^0.36.1"
   }
 }
