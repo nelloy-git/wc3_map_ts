@@ -27,6 +27,14 @@
         "MOVE": 310
     },
 
+    "multParams": {
+
+    },
+
+    "addParams": {
+
+    },
+
     "abils": [
         "Breakthrough",
         "HeavyHammer",

@@ -57,37 +57,9 @@ export class TUnitFieldChange<T extends Field.ValueType> extends FieldChange<T>{
         return new TUnitFieldChange<Field.ValueType>(field, val)
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let code = Json.Read.String(json, 'id', '\0\0\0\0', path)
-        let field = findTUnitField(code)
-        if (!field){
-            return Log.err('unknown field')
-        }
-
-        let val 
-        if (field.type == 'bool'){
-            val = Json.Read.Bool(json, 'val', false, path)
-        } else if (field.type == 'int' || field.type == 'real' || field.type == 'unreal'){
-            val = Json.Read.Number(json, 'val', 0, path)
-        } else if (field.type == 'string'){
-            val = Json.Read.String(json, 'val', 'undefined', path)
-        } else {
-            return Log.err('unknown field type')
-        }
-
-        return new TUnitFieldChange<Field.ValueType>(field, val)
-    }
-
     toBinary(){
         return this.field.id + Field.type2byte(this.field.type) +
                 Field.val2byte(this.field.type, this.val) + '\0\0\0\0'
-    }
-
-    toJson(){
-        return {
-            id: this.field.id,
-            val: this.val,
-        }
     }
 }
 

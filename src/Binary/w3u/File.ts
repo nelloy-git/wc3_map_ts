@@ -28,19 +28,6 @@ export class w3uFile extends File<TUnit> {
         return w3u
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let w3d = new w3uFile()
-        w3d.__version = Json.Read.Number(json, 'ver', 0, path)
-
-        let list = Json.Read.TableArray(json, 'objects', [], path)
-        for (let i = 0; i < list.length; i++){
-            const json_obj = list[i]
-            w3d.objects.push(TUnit.fromJson(json_obj, path + '::[' + i + ']'))
-        }
-
-        return w3d
-    }
-
     toBinary(){
         let raw = ''
 
@@ -52,18 +39,6 @@ export class w3uFile extends File<TUnit> {
         }
 
         return raw
-    }
-
-    toJson(){
-        let list = []
-        for (const tunit of this.objects){
-            list.push(tunit.toJson())
-        }
-
-        return {
-            ver: this.__version,
-            objects: list,
-        }
     }
 
     getFreeId(){

@@ -25,20 +25,6 @@ export class TUnit extends Obj {
         return tunit
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let tunit = new TUnit()
-        tunit.id = Json.Read.String(json, 'id', '\0\0\0\0', path)
-        tunit.origin_id = Json.Read.String(json, 'origin_id', '\0\0\0\0', path)
-
-        let changes = Json.Read.TableArray(json, 'changes', [], path)
-        for (let i = 0; i < changes.length; i++){
-            const json_change = changes[i]
-            tunit.changes.push(TUnitFieldChange.fromJson(json_change, path + '::[' + i + ']'))
-        }
-
-        return tunit
-    }
-
     toBinary(){
         let raw = ''
         raw += this.origin_id
@@ -50,19 +36,6 @@ export class TUnit extends Obj {
         }
 
         return raw
-    }
-
-    toJson(){
-        let changes = []
-        for (const change of this.changes){
-            changes.push(change.toJson())
-        }
-
-        return {
-            id: this.id,
-            origin_id: this.origin_id,
-            changes: changes
-        }
     }
 
     findChange(field: Field<Field.ValueType>){

@@ -49,8 +49,12 @@ export class hAbility extends Handle<jability> {
     private static runActions(this: void,
                               event: AbilityEvent){
         let abil = hAbility.getSpell()
-
-        abil?._actions.get(event)?.run(abil, event)
+        if (abil){
+            let event_actions = abil._actions.get(event)
+            if (event_actions){
+                event_actions.run(abil, event)
+            }
+        }
     }
 
     destroy(){

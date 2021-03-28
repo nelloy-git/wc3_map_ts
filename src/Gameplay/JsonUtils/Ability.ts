@@ -6,36 +6,50 @@ import { ScaleJson } from './Scales'
 
 let __path__ = Macro(Utils.getFilePath())
 
-export type KeysTree = ReadonlyArray<string>;
+const NAME = ['name']
+const ICON = ['icon']
+const DISICON = ['disIcon']
+const TOOLTIP = ['tooltip']
+const LIFE_COST = ['lifeCost']
+const MANA_COST = ['manaCost']
+const RANGE = ['range']
+const AREA = ['area']
+const CHARGES_USE = ['chargesUse']
+const CHARGES_MAX = ['chargesMax']
+const CHARGES_CD = ['chargeCD']
 
-export class AbilityJson extends Json.FileCached {
-    constructor(path: string){
+export class AbilityJson extends Json.Cached {
+    constructor(path: string, scales?: string[], extra?: Json.Tree[]){
         super(path)
 
-        let data = this._file.data
-        if (!data){
-            Utils.Log.err(path + ' is empty', __path__, AbilityJson)
-        }
-
-        let raw = Json.decode(<string>data)
-        this.raw = raw
-
-        this.name = Json.Read.String(raw, 'name', 'undefined', path)
-        this.icon = Json.Read.String(raw, 'icon', 'undefined', path)
-        this.dis_icon = Json.Read.String(raw, 'disIcon', 'undefined', path)
-        this.tooltip = Json.Read.String(raw, 'tooltip', 'undefined', path)
-        this.life_cost = Json.Read.Number(raw, 'lifeCost', 0, path)
-        this.mana_cost = Json.Read.Number(raw, 'manaCost', 0, path)
-        this.range = Json.Read.Number(raw, 'range', 0, path)
-        this.area = Json.Read.Number(raw, 'area', 0, path)
-        this.charges_use = Json.Read.Number(raw, 'chargesUse', 0, path)
-        this.charges_max = Json.Read.Number(raw, 'chargesMax', 0, path)
-        this.charge_cd = Json.Read.Number(raw, 'chargeCD', 0, path)
+        let data = this.data
+        this.name = data.getString(NAME, 'undefined')
+        this.icon = data.getString(ICON, 'undefined')
+        this.dis_icon = data.getString(DISICON, 'undefined')
+        this.tooltip = data.getString(TOOLTIP, 'undefined')
+        this.life_cost = data.getNumber(LIFE_COST, 0)
+        this.mana_cost = data.getNumber(MANA_COST, 0)
+        this.range = data.getNumber(RANGE, 0)
+        this.area = data.getNumber(AREA, 0)
+        this.charges_use = data.getNumber(CHARGES_USE, 0)
+        this.charges_max = data.getNumber(CHARGES_MAX, 0)
+        this.charge_cd = data.getNumber(CHARGES_CD, 0)
 
         this.scales = new Map()
-        let raw_scales = Json.Read.Table(raw, 'scales', {}, path)
-        for (let key in raw_scales){
-            this.scales.set(key, new ScaleJson(Json.Read.Table(raw_scales, key, {}, path + '::' + key)))
+
+        if (scales){
+            let scales_data = data.getSub(['scales'])
+            for (const name of scales){
+                this.scales.set(name, new ScaleJson(scales_data.getSub([name])))
+            }
+        }
+        
+        if (extra){
+            for (const tree of extra){
+                if (!data.isExist(tree)){
+                    return Utils.Log.err('can not find key\n' + data.tree2string(tree))
+                }
+            }
         }
     }
 
@@ -52,19 +66,6 @@ export class AbilityJson extends Json.FileCached {
         return scale.getResult(params)
     }
 
-    getNumber(key_tree: KeysTree, def: number){
-        let cur: LuaTable = this.raw
-        for (let i = 0; i < key_tree.length - 1; i++){
-            let next = Json.Read.Table(cur, key_tree[i])
-            if (!next){
-                return Utils.Log.err('key tree does not exits in ' + this.path)
-            }
-            cur = next
-        }
-
-        return Json.Read.Number(cur, key_tree[key_tree.length - 1], def)
-    }
-
     name: string
     icon: string
     dis_icon: string
@@ -78,5 +79,4 @@ export class AbilityJson extends Json.FileCached {
     charge_cd: number
 
     scales: Map<string, ScaleJson>
-    raw: LuaTable
 }

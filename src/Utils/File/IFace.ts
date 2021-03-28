@@ -10,7 +10,7 @@ export abstract class FileIFace {
     static isExist(path: string){
         let [ok, err, code] = os.rename(path, path)
         if (!ok){
-            if (code == 13){
+            if (<number><unknown>code == 13){
                 // Permission denied, but it exists
                 return true
             }

@@ -2,13 +2,16 @@ import * as Json from '../../Json'
 import * as Param from "../../Parameter";
 
 export class ParamsJson {
-    constructor(json: LuaTable, default_val?: number){
-        this._def = default_val ? default_val : 0
+    constructor(json: Json.Data, default_val: number){
+        this._def = default_val
 
+        let silent = json.silent
+
+        json.silent = true
         for (let param of Param.Type.list()){
-            let val = Json.Read.Number(json, param)
-            this.values.set(param, val ? val : this._def)
+            this.values.set(param, json.getNumber([param], default_val))
         }
+        json.silent = silent
     }
 
     get(param: Param.Type){

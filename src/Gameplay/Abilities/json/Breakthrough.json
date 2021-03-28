@@ -6,7 +6,7 @@
     "lifeCost": 0,
     "manaCost": 10,
     "range": 500,
-    "area": 200,
+    "area": 100,
     "chargesUse": 1,
     "chargesMax": 1,
     "chargeCD": 5,

@@ -1,19 +1,20 @@
 import * as Utils from '../Utils'
+import * as JsonLua from './JsonLua'
+import { Data } from './Data'
 
-export class FileCached {
+export class Cached {
     constructor(path: string){
-        this.path = path
-        this._file = new Utils.FileText()
-
+        let f = new Utils.FileText()
         if (!IsGame()){
-            this._file.read(path)
-            this._file.saveCache(path)
+            f.read(path)
+            f.saveCache(path)
         } else {
-            this._file.loadCache(path)
+            f.loadCache(path)
         }
+        let s_data = <string>f.data
+
+        this.data = new Data(path, JsonLua.decode(s_data))
     }
 
-    readonly path: string
-
-    protected readonly _file: Utils.FileText
+    readonly data: Data
 }

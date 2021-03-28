@@ -29,7 +29,9 @@ export class hTrigger extends Handle<jtrigger> {
 
     private static runActions(this: void){
         let trig = hTrigger.getTriggering()
-        trig?._actions.run(trig)
+        if (trig){
+            trig._actions.run(trig)
+        }
     }
 
     destroy(){

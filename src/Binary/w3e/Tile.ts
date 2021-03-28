@@ -22,15 +22,6 @@ export class Tile extends Obj {
         return  tile
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let tile = new Tile()
-        tile.id_pos = Json.Read.Number(json, 'id', 0, path)
-        tile.z = Json.Read.Number(json, 'z', 0, path)
-        tile.water = Json.Read.Number(json, 'w', 0, path)
-
-        return tile
-    }
-
     toBinary(){
         let raw = ''
 
@@ -41,14 +32,6 @@ export class Tile extends Obj {
         raw += '\0'
 
         return raw
-    }
-
-    toJson(){
-        return {
-            id: this.id_pos,
-            z: this.z,
-            w: this.water
-        }
     }
 
     id_pos: number = 0

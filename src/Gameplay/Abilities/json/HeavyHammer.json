@@ -4,18 +4,18 @@
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp",
     "tooltip": "T\no\no\nl\nt\ni\np",
     "lifeCost": 0,
-    "manaCost": 5,
+    "manaCost": 1,
     "range": 250,
     "area": 1.5,
     "chargesUse": 1,
     "chargesMax": 1,
     "chargeCD": 5,
-    
 
     "animation": {
         "strikeId": 6,
         "strikeStart": 0.3,
-        "strikeEnd": 0.4
+        "strikeEnd": 0.4,
+        "tossHeight": 300
     },
 
     "scales": {

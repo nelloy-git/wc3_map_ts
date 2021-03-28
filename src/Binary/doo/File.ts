@@ -25,21 +25,6 @@ export class dooFile extends File<Doodad> {
         return doo
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let doo = new dooFile()
-        doo.head = Json.Read.String(json, 'head', 'undefined', path)
-        doo.version = Json.Read.Number(json, 'ver', 0, path)
-        doo.subversion = Json.Read.Number(json, 'subv', 0, path)
-        doo.objects = []
-
-        let list = Json.Read.TableArray(json, 'objects', [], path)
-        for (let i = 0; i < list.length; i++){
-            const cur_dood = list[i]
-            doo.objects.push(Doodad.fromJson(cur_dood, path + '::[' + i + ']'))
-        }
-        return doo
-    }
-
     toBinary(){
         let raw = ''
         raw += this.head.slice(0, 4)
@@ -52,20 +37,6 @@ export class dooFile extends File<Doodad> {
         }
 
         return raw
-    }
-
-    toJson(){
-        let list: LuaTable[] = []
-        for (const dood of this.objects){
-            list.push(dood.toJson())
-        }
-
-        return {
-            head: this.head,
-            ver: this.version,
-            subv: this.subversion,
-            objects: list
-        }
     }
     
     head: string = ''

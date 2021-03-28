@@ -46,7 +46,7 @@ export class hFrame extends Handle<jframehandle> {
     public set size(size: [w: number, h: number]){BlzFrameSetSize(this.handle, size[0], size[1])}
 
     public get parent(){let h = BlzFrameGetParent(this.handle); return h ? Handle.get(h) as hFrame : null}
-    public set parent(parent: hFrame | null){BlzFrameSetParent(this.handle, parent?.handle)}
+    public set parent(parent: hFrame | null){BlzFrameSetParent(this.handle, parent ? parent.handle : undefined)}
 
     public get visible(){return BlzFrameIsVisible(this.handle)};
     public set visible(flag: boolean){BlzFrameSetVisible(this.handle, flag)};

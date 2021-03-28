@@ -2,48 +2,49 @@ import * as Buff from '../../../Buff'
 
 import { hUnit } from "../../../Handle"
 import { isWalkable, Vec2 } from "../../../Utils"
-import { BuffData } from "./BuffData"
+import { Move } from '../../utils/Move'
+import { BuffData } from "../BuffData"
+
+const dt = Buff.period
 
 export class PushData extends BuffData {
-    constructor(buff: Buff.IFace<any>, vel:[vel: Vec2]){
+    constructor(buff: Buff.IFace<any>, target: hUnit, vel: Vec2){
         super(buff)
         
-        this.target = buff.Data.owner
-        this.__status = 'OK'
+        this.target = target
+        let loop_vel = vel.mult(dt)
+        let loop_acc = loop_vel.mult(-dt / buff.Dur.Timer.fullTime)
 
-        const dt = Buff.period
-        this.__vel = vel[0].mult(dt)
-        this.__acc = this.__vel.mult(-dt / buff.Dur.Timer.fullTime)
+        this.__move = new Move(target, loop_vel, loop_acc)
     }
 
     static get = <(buff: Buff.IFace<any>) => PushData>BuffData.get
 
-    period(){
-        let pos = this.target.pos.add(this.__vel)
-
-        if (isWalkable(pos)){
-            this.__status = 'COLLISION'
-            return
+    move(){
+        let pos = this.__move.move()
+        if (!pos){
+            return PushData.Status.COLLISION
         }
 
-        this.target.pos = pos
-        this.__vel = this.__vel.add(this.__acc)
+        let vel = this.__move.vel
+        let acc = <Vec2>this.__move.acc
 
         let abs = math.abs
-        if (abs(this.__vel.length) <= abs(this.__acc.length)){
-            this.__status = 'FINISH'
-            return
+        if (abs(vel.x) < abs(acc.x) || abs(vel.y) < abs(acc.y)){
+            return PushData.Status.FINISHED
         }
-
-        return
+        return PushData.Status.OK
     }
     
     readonly target: hUnit
 
-    get status(){return this.__status}
-    get vel(){return this.__vel.copy}
+    private __move: Move
+}
 
-    private __status: 'OK'|'COLLISION'|'FINISH'
-    private __vel: Vec2
-    private __acc: Vec2
+export namespace PushData{
+    export enum Status {
+        OK,
+        COLLISION,
+        FINISHED
+    }
 }

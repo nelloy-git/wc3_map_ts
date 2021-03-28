@@ -6,18 +6,18 @@ import { getFileDir, Vec2 } from "../../../Utils";
 
 import { BreakthroughData } from "../data/Breakthrough";
 import { Push } from '../../Buffs'
-import { AbilityData, KeysTree } from "../Data";
+import { AbilityData } from "../Data";
 
 const __dir__ = Macro(getFileDir())
 
 const SCALE_CAST_TIME = 'castTime'
 const SCALE_DMG = 'pushDmg'
 const SCALE_PUSH_DUR = 'pushDur'
-const ANIM_WALK_ID: KeysTree = ['animation', 'walk']
+const ANIM_WALK_ID = ['animation', 'walk']
 
-const TData = new AbilityData(__dir__ + '/../json/Breakthrough.json')
-TData.checkScale([SCALE_CAST_TIME, SCALE_DMG, SCALE_PUSH_DUR])
-TData.checkTree([ANIM_WALK_ID])
+const TData = new AbilityData(__dir__ + '/../json/Breakthrough.json',
+                              [SCALE_CAST_TIME, SCALE_DMG, SCALE_PUSH_DUR],
+                              [ANIM_WALK_ID])
 
 let Casting = new Abil.TCasting<[Vec2]>()
 
@@ -27,7 +27,7 @@ Casting.start = (abil, target) => {
 
     caster.pause = true
     caster.angle = data.angle
-    caster.animation = AbilityData.getJson(abil).getNumber(ANIM_WALK_ID, 0)
+    caster.animation = AbilityData.getJson(abil).data.getNumber(ANIM_WALK_ID, 0)
 }
 
 Casting.casting = (abil, target) => {

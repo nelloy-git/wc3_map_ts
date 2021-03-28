@@ -36,7 +36,9 @@ export class hTimer extends Handle<jtimer> {
     }
     private static runActions(this: void){
         let timer = hTimer.getExpired()
-        timer?._actions.run(timer)
+        if (timer){
+            timer._actions.run(timer)
+        }
     }
 
     destroy(){

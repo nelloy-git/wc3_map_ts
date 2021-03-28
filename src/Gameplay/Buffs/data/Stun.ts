@@ -1,7 +1,7 @@
 import * as Buff from '../../../Buff'
 
 import { hEffect, hUnit } from "../../../Handle"
-import { BuffData } from "./BuffData"
+import { BuffData } from "../BuffData"
 
 export class StunData extends BuffData {
     constructor(buff: Buff.IFace<any>, model: string){

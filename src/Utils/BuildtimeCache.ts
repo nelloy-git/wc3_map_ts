@@ -7,26 +7,29 @@ let __path__ = Macro(getFilePath())
 export class BuildtimeCache <T extends BuildtimeData> {
     constructor(id: number | string){
         this.id = id
-        this._cache = (<LuaHash>BuildtimeCache._global_cache)[id]
+        let cache = <BuildtimeTable | undefined>BuildtimeCache.__global_cache.get(id)
 
-        if (IsGame() && (!this._cache)){
-            Log.err('can not load cache data for id: ' + this.id.toString(),
-                    __path__, BuildtimeCache, 3)
-        }
-
-        if (!IsGame()){
-            if (this._cache){
-                Log.err('id ' + this.id.toString() + ' is already used.',
+        if (cache == undefined){
+            if (IsGame()){
+                Log.err('can not load cache data for id: ' + this.id.toString(),
                         __path__, BuildtimeCache, 3)
             }
             
-            this._cache = {};
-            (<LuaHash>BuildtimeCache._global_cache)[id] = this._cache
+            cache = new LuaTable<number | string, BuildtimeData>();
+            BuildtimeCache.__global_cache.set(id, cache)
+        } else {
+            if (!IsGame()){
+                Log.err('id ' + this.id.toString() + ' is already used.',
+                        __path__, BuildtimeCache, 3)
+            }
         }
+
+        // print('Contructor: ', id, cache)
+        this.__cache = <BuildtimeTable>cache
     }
 
     get(key: string): T{
-        return <T>(<LuaHash>this._cache)[key]
+        return <T>this.__cache.get(key)
     }
 
     set(key: string, val: T){
@@ -34,15 +37,16 @@ export class BuildtimeCache <T extends BuildtimeData> {
             return Log.err('can be used in buildtime only.',
                             __path__, BuildtimeCache, 2)
         }
-        (<LuaHash>this._cache)[key] = val
+        // print(this.id, key)
+        this.__cache.set(key, val)
     }
 
     readonly id: string | number
-    private _cache: BuildtimeData
+    private __cache: BuildtimeTable
 
-    private static _global_cache: BuildtimeData = (()=>{
-        let cache = MacroFinal(()=>{return BuildtimeCache._global_cache})
-        cache = cache ? cache : {}
+    private static __global_cache: BuildtimeTable = (()=>{
+        let cache = MacroFinal<BuildtimeTable>(()=>{return BuildtimeCache.__global_cache})
+        cache = cache != undefined ? cache : new LuaTable<number | string, BuildtimeData>()
         return cache
     })()
 }

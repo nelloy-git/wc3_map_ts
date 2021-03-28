@@ -44,26 +44,6 @@ export class w3eFile extends File<Tile> {
         return w3e
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let w3e = new w3eFile()
-
-        w3e.main_tile = Json.Read.String(json, 'main', '', path)
-        w3e.used_tiles = Json.Read.StringArray(json, 'tiles', [], path)
-        w3e.used_cliffs = Json.Read.StringArray(json, 'cliffs', [], path)
-        w3e.mx = Json.Read.Number(json, 'mx', 0, path)
-        w3e.my = Json.Read.Number(json, 'my', 0, path)
-        w3e.cx = Json.Read.Number(json, 'cx', 0, path)
-        w3e.cy = Json.Read.Number(json, 'cy', 0, path)
-        w3e.objects = []
-
-        let list = Json.Read.TableArray(json, 'objects', [], path)
-        for (let i = 0; i < list.length; i++){
-            const json_tile = list[i]
-            w3e.objects.push(Tile.fromJson(json_tile, path + '::[' + i + ']'))
-        }
-        return w3e
-    }
-
     toBinary(){
         let raw = ''
 
@@ -90,24 +70,6 @@ export class w3eFile extends File<Tile> {
         }
 
         return raw
-    }
-
-    toJson(){
-        let list = []
-        for (const tile of this.objects){
-            list.push(tile.toJson())
-        }
-
-        return {
-            main: this.main_tile,
-            tiles: this.used_tiles,
-            cliffs: this.used_cliffs,
-            mx: this.mx,
-            my: this.my,
-            cx: this.cx,
-            cy: this.cy,
-            objects: list
-        }
     }
 
     get(x: number, y: number): Tile | undefined {

@@ -1,7 +1,7 @@
-export type Json = LuaTable<JsonKey, JsonVal>
-export type JsonVal = boolean | number | string | Json | undefined
-export type JsonKey = number | string
-export type JsonTree = ReadonlyArray<JsonKey>
+export type Data = LuaTable<Key, Val>
+export type Key = number | string
+export type Val = boolean | number | string | Data | undefined
+export type Tree = ReadonlyArray<Key>
 
-export function decode(this: void, str: string) : Json 
-export function encode(this: void, json: Json) : string
+export function decode(this: void, str: string) : Data
+export function encode(this: void, json: Data) : string

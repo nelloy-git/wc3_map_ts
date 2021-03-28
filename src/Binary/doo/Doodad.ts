@@ -24,19 +24,6 @@ export class Doodad extends Obj {
         return dood
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let dood = new Doodad()
-        dood.id = Json.Read.String(json, 'id', '0000', path)
-        dood.var = Json.Read.Number(json, 'v', 0, path)
-        dood.pos = <[number, number, number]>Json.Read.NumberArray(json, 'p', [0, 0, 0], path)
-        dood.yaw = Json.Read.Number(json, 'a', 0, path)
-        dood.scale = <[number, number, number]>Json.Read.NumberArray(json, 's', [0, 0, 0], path)
-        dood.flags = Json.Read.String(json, 'f', '\0', path)
-        dood.life = Json.Read.Number(json, 'l', 0, path)
-        
-        return dood
-    }
-
     toBinary(){
         let raw = ''
 
@@ -54,20 +41,6 @@ export class Doodad extends Obj {
         raw += '\0\0\0\0' // unknown
 
         return raw
-    }
-
-    toJson(){
-        let json = {
-            id: this.id,
-            v: this.var,
-            p: this.pos,
-            a: this.yaw,
-            s: this.scale,
-            f: this.flags,
-            l: this.life
-        }
-
-        return json
     }
 
     get id(){ return this.__id }

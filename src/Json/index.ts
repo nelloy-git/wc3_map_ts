@@ -1,4 +1,11 @@
-export { FileCached } from './FileCached'
-export { FileGame } from './FileGame'
-export { Read } from './ReadOld'
-export { encode, decode } from './JsonLua'
+export { Cached } from './FileCached'
+// export { FileGame } from './FileGame'
+export { Data } from './Data'
+export { 
+    Data as LuaData,
+    Key,
+    Val,
+    Tree,
+    encode,
+    decode
+} from './JsonLua'

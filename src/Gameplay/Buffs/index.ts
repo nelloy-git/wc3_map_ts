@@ -1,3 +1,3 @@
-export { Push } from './Push'
+export { Push } from './types/Push'
 // export { Stun } from './Stun'
-export { TossUp } from './TossUp'
+export { TossUp } from './types/TossUp'

@@ -11,81 +11,36 @@ import { ParamsJson } from '../JsonUtils'
 
 let __path__ = Macro(Utils.getFilePath())
 
-class UnitInstHidden {
-    constructor(id: number, x: number, y: number, owner: jplayer){
-        this.unit = new hUnit(id, x, y, owner)
-        this.abils = new Abil.Container(this.unit)
-        this.buffs = new Buff.Container(this.unit)
-        this.params = new Param.UnitContainer(this.unit)
-        
-        UnitInstHidden._hunit2ext.set(this.unit, this)
-    }
+const NAME = ['name']
+const ICON = ['icon']
+const DISICON = ['disIcon']
+const MODEL = ['model']
+const SIZE_HD = ['sizeHD']
+const SIZE_SD = ['sizeSD']
+const PARAM_BASE = ['baseParams']
+const PARAM_MULT = ['multParams']
+const PARAM_ADD = ['addParams']
+const ABILS = ['abils']
 
-    static get(id: number): UnitInstHidden | undefined
-    static get(u: junit): UnitInstHidden | undefined
-    static get(u: hUnit): UnitInstHidden | undefined
-    static get(id_or_junit: hUnit | junit | number): UnitInstHidden | undefined
-    static get(id_or_junit: hUnit | junit | number){
-        if (id_or_junit instanceof hUnit){
-            return UnitInstHidden._hunit2ext.get(id_or_junit)
-        }
-        
-        let unit = hUnit.get(id_or_junit)
-        if (!unit){return}
-        return UnitInstHidden._hunit2ext.get(unit)
-    }
-    
-    readonly unit: hUnit
-    readonly abils: Abil.Container
-    readonly buffs: Buff.Container
-    readonly params: Param.UnitContainer
-    
-    private static _hunit2ext = new Map<hUnit, UnitInstHidden>()
-}
-
-export class UnitInst extends UnitInstHidden {
-    private constructor(id: number, x: number, y: number, owner: jplayer){
-        super(id, x, y, owner)
-    }
-
-    static get(id: number): UnitInst | undefined
-    static get(u: junit): UnitInst | undefined
-    static get(u: hUnit): UnitInst | undefined
-    static get(id_or_junit: hUnit | junit | number): UnitInst | undefined {
-        return UnitInstHidden.get(id_or_junit)
-    }
-}
-
-export class GameplayUnitType extends Json.FileCached {
+export class GameplayUnitType extends Json.Cached {
     constructor(w3u: Binary.w3uFile, json_path: string){
         super(json_path)
         
-        let data = this._file.data
-        if (!data){
-            Utils.Log.err(json_path + ' is empty', __path__, GameplayUnitType)
-        }
-
-        let raw = Json.decode(<string>data)
-        this._raw = raw
+        let data = this.data
 
         this.id = w3u.getFreeId()
-        this.name = Json.Read.String(raw, 'name', 'unfined', json_path)
-        this.icon = Json.Read.String(raw, 'icon', 'unfined', json_path)
-        this.dis_icon = Json.Read.String(raw, 'disIcon', 'unfined', json_path)
-        this.model = Json.Read.String(raw, 'model', 'unfined', json_path)
-        this.size_hd = Json.Read.Number(this._raw, 'sizeHD', 1, json_path)
-        this.size_sd = Json.Read.Number(this._raw, 'sizeSD', 1, json_path)
+        this.name = data.getString(NAME, 'unfined')
+        this.icon = data.getString(ICON, 'unfined')
+        this.dis_icon = data.getString(DISICON, 'unfined')
+        this.model = data.getString(MODEL, 'unfined')
+        this.size_hd = data.getNumber(SIZE_HD, 1)
+        this.size_sd = data.getNumber(SIZE_SD, 1)
 
-        let raw_base_params = Json.Read.Table(raw, 'baseParams', {}, json_path)
-        this.base_params = new ParamsJson(raw_base_params, 0)
+        this.base_params = new ParamsJson(data.getSub(PARAM_BASE), 0)
+        this.mult_params = new ParamsJson(data.getSub(PARAM_MULT), 1)
+        this.add_params = new ParamsJson(data.getSub(PARAM_ADD), 0)
 
-        let raw_mult_params = Json.Read.Table(raw, 'multParams', {}, json_path)
-        this.mult_params = new ParamsJson(raw_mult_params, 1)
-        
-        let raw_add_params = Json.Read.Table(raw, 'addParams', {}, json_path)
-        this.add_params = new ParamsJson(raw_add_params, 0)
-
-        this.abils = this._readAbilities(json_path)
+        this.abils = this._readAbilities()
 
         let tunit = new Binary.TUnit()
         tunit.id = this.id
@@ -116,11 +71,16 @@ export class GameplayUnitType extends Json.FileCached {
         return unit
     }
 
-    private _readAbilities(path: string){
+    private _readAbilities(){
         let abils: Abil.TAbility<Abil.TargetType[]>[] = []
-        let names = Json.Read.StringArray(this._raw, 'abils', [], path)
-        
-        for (const name of names){
+
+        let data = this.data.getSub(ABILS)
+
+        let i = 1
+        while (data.isExist([i])){
+            let name = data.getString([i])
+            i++
+
             let found: Abil.TAbility<Abil.TargetType[]> | undefined
             for (let k in AbilList){
                 let cur = (<{[k:string]: Abil.TargetType[]}><unknown>AbilList)[k]
@@ -130,6 +90,8 @@ export class GameplayUnitType extends Json.FileCached {
                     break
                 }
             }
+
+            // print(name, found)
 
             if (!found){
                 Utils.Log.wrn('Can not find ability \"' + name + '\"')
@@ -154,6 +116,4 @@ export class GameplayUnitType extends Json.FileCached {
     readonly mult_params: ParamsJson
     readonly add_params: ParamsJson
     readonly abils: (Abil.TAbility<Abil.TargetType[]> | undefined)[]
-
-    protected readonly _raw: LuaTable
 }

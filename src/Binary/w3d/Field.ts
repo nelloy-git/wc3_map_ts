@@ -35,40 +35,9 @@ export class TDoodadFieldChange<T extends Field.ValueType> extends FieldChange<T
         return new TDoodadFieldChange<Field.ValueType>(field, val, variation)
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let code = Json.Read.String(json, 'id', '\0\0\0\0', path)
-        let field = findTDoodadField(code)
-        if (!field){
-            return Log.err('unknown field')
-        }
-
-        let variation = Json.Read.Number(json, 'v', 0, path)
-
-        let val 
-        if (field.type == 'bool'){
-            val = Json.Read.Bool(json, 'val', false, path)
-        } else if (field.type == 'int' || field.type == 'real' || field.type == 'unreal'){
-            val = Json.Read.Number(json, 'val', 0, path)
-        } else if (field.type == 'string'){
-            val = Json.Read.String(json, 'val', 'undefined', path)
-        } else {
-            return Log.err('unknown field type')
-        }
-
-        return new TDoodadFieldChange<Field.ValueType>(field, val, variation)
-    }
-
     toBinary(){
         return this.field.id + '\0\0\0\0' + int2byte(this.variation) +
                 Field.type2byte(this.field.type) + Field.val2byte(this.field.type, this.val) + '\0\0\0\0'
-    }
-
-    toJson(){
-        return {
-            id: this.field.id,
-            v: this.variation,
-            val: this.val,
-        }
     }
 
     variation: number = 0

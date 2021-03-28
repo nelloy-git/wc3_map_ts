@@ -1,11 +1,11 @@
-import * as Buff from '../../Buff'
+import * as Buff from '../../../Buff'
 
-import { getFileDir } from "../../Utils";
-import { BuffJson } from "../JsonUtils/Buff";
-import { TossUpData } from "./data/TossUp";
+import { getFileDir } from "../../../Utils";
+import { BuffJson } from "../../JsonUtils/Buff";
+import { TossUpData } from "../data/TossUp";
 
 let __dir__ = Macro(getFileDir())
-let json = new BuffJson(__dir__ + '/json/TossUp.json')
+let json = new BuffJson(__dir__ + '/../json/TossUp.json')
 
 let Data = new Buff.TData<[height: number]>()
 Data.name = (buff) => {return json.name}

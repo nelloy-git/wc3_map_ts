@@ -28,19 +28,6 @@ export class w3dFile extends File<TDoodad> {
         return w3d
     }
 
-    static fromJson(json: LuaTable, path: string){
-        let w3d = new w3dFile()
-        w3d.__version = Json.Read.Number(json, 'ver', 0, path)
-
-        let list = Json.Read.TableArray(json, 'objects', [], path)
-        for (let i = 0; i < list.length; i++){
-            const json_obj = list[i]
-            w3d.objects.push(TDoodad.fromJson(json_obj, path + '::[' + i + ']'))
-        }
-
-        return w3d
-    }
-
     toBinary(){
         let raw = ''
 
@@ -52,18 +39,6 @@ export class w3dFile extends File<TDoodad> {
         }
 
         return raw
-    }
-
-    toJson(){
-        let list = []
-        for (const tdood of this.objects){
-            list.push(tdood.toJson())
-        }
-
-        return {
-            ver: this.__version,
-            objects: list,
-        }
     }
 
     getFreeId(){

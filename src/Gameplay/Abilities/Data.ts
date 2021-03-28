@@ -2,14 +2,19 @@ import * as Abil from "../../AbilityExt";
 import * as Json from '../../Json'
 import { getFilePath, Log } from "../../Utils";
 
-import { AbilityJson, KeysTree } from "../JsonUtils"
-export { KeysTree }
+import { AbilityJson } from "../JsonUtils"
 
 const __path__ = Macro(getFilePath())
 
+export function getJson(abil: Abil.IFace<any>){
+    return AbilityData.getJson(abil)
+}
+
 export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
-    constructor(path: string){
+    constructor(path: string, scales?: string[], extra?: Json.Tree[]){
         super()
+        // Cache source json
+        this.__json_file = new AbilityJson(path, scales, extra)
 
         this.name = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).name}
         this.icon = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).icon}
@@ -25,45 +30,30 @@ export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
         this.is_available = (abil: Abil.IFace<T>)=>{return true}
         this.consume = (abil: Abil.IFace<T>, target: T)=>{return true}
 
-        this.__json_path = path
-        // Cache source json
-        this.__json_file = new AbilityJson(path)
-    }
-
-    checkTree(trees: KeysTree[]){
-        for (const tree of trees){
-            let cur = this.__json_file.raw
-            for (let i = 0; i < tree.length - 1; i++){
-                let next = Json.Read.Table(cur, tree[i], {}, this.__json_path)
-                if (!next){
-                    let msg = 'checkExtraKey failed for \n' + this.__json_path
-                    for (let j = 0; j < i; j++){
-                        msg += ' -> ' + tree[j]
-                    }
-                    return Log.err(msg, __path__, AbilityData, 2)
-                }
-                cur = next
-            }
-
-            let val = Json.Read.Any(cur, tree[tree.length - 1])
-            if (val == undefined){
-                let msg = 'checkExtraKey failed for \n' + this.__json_path
-                for (let j = 0; j < tree.length; j++){
-                    msg += ' -> ' + tree[j]
-                }
-                return Log.err(msg, __path__, AbilityData, 2)
+        this.__scale_names = []
+        if (scales){
+            for (const name of scales){
+                this.__scale_names.push(name)
             }
         }
     }
 
-    checkScale(names: KeysTree){
-        for (const name of names){
-            let scale = this.__json_file.scales.get(name)
-            if (scale == undefined){
-                return Log.err('checkScale failed for\n' + this.__json_path + ' -> ' + name,
-                                __path__, AbilityData, 2)
+    static getJson(abil: Abil.IFace<Abil.TargetType[]>): AbilityJson{
+        let data = AbilityData.__abil2json.get(abil)
+        if (!data){
+            let abil_tdata = (<Abil.Ability<Abil.TargetType[]>>abil).Data.type
+            if (abil_tdata instanceof AbilityData){
+                // Copy without checks
+                data = new AbilityJson(abil_tdata.__json_file.data.src, abil_tdata.__scale_names)
             }
+            
+            if (!data){
+                return Log.err('Can not get ability json template.')
+            }
+
+            AbilityData.__abil2json.set(abil, data)
         }
+        return data
     }
 
     get is_available(){return this._is_available}
@@ -92,25 +82,7 @@ export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
         this._consume = wrapped
     }
 
-    static getJson(abil: Abil.IFace<Abil.TargetType[]>): AbilityJson{
-        let data = AbilityData.__abil2json.get(abil)
-        if (!data){
-            let abil_tdata = (<Abil.Ability<Abil.TargetType[]>>abil).Data.type
-            if (abil_tdata instanceof AbilityData){
-                data = new AbilityJson(abil_tdata.__json_path)
-            }
-            
-            if (!data){
-                return Log.err('Can not get ability json template.')
-            }
-
-            AbilityData.__abil2json.set(abil, data)
-        }
-        return data
-    }
-
-    private __json_path: string
+    private __scale_names: string[]
     private __json_file: AbilityJson
-
     private static __abil2json = new Map<Abil.IFace<Abil.TargetType[]>, AbilityJson>()
 }

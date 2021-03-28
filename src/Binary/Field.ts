@@ -37,10 +37,7 @@ export abstract class FieldChange<T extends Field.ValueType> extends Obj {
     }
 
     static fromBinary: (file: FileBinary)=> FieldChange<Field.ValueType>
-    static fromJson: (json: LuaTable, path: string)=> FieldChange<Field.ValueType>
-
     abstract toBinary(): string
-    abstract toJson(): LuaTable
 }
 
 export namespace Field {

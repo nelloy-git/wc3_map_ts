@@ -1,7 +1,7 @@
 import * as Buff from '../../../Buff'
 
 import { hUnit } from "../../../Handle"
-import { BuffData } from "./BuffData"
+import { BuffData } from "../BuffData"
 
 export class TossUpData extends BuffData {
     constructor(buff: Buff.IFace<any>, height: number){
