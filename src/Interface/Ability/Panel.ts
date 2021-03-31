@@ -7,6 +7,7 @@ import { InterfaceBorderFdf } from "../Utils/BorderFdf"
 import { InterfaceAbilityButton } from "./Button";
 import { InterfaceCastingBar } from "./CastingBar";
 import { IUnit } from "../Unit";
+import { InterfaceAbilityTooltip } from "./Tooltip";
 
 export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     constructor(cols: number, rows: number){
@@ -16,6 +17,10 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
 
         this.__casting_bar = new InterfaceCastingBar()
         this.__casting_bar.parent = this
+
+        this.__tooltip = new InterfaceAbilityTooltip()
+        this.__tooltip.parent = this
+        this.__tooltip.visible = false
 
         this.__backgrounds = []
         this.__buttons = []
@@ -31,6 +36,15 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
                 let btn = new InterfaceAbilityButton()
                 this.__buttons[y].push(btn)
                 btn.parent = back
+                btn.addAction(FRAMEEVENT_MOUSE_ENTER, ()=>{
+                    this.__tooltip.ability = btn.ability
+                    this.__tooltip.pos = btn.pos.add(new Vec2(0, -0.005 - this.__tooltip.size.y))
+                    this.__tooltip.visible = true
+                })
+                btn.addAction(FRAMEEVENT_MOUSE_LEAVE, ()=>{
+                    this.__tooltip.visible = false
+                })
+
             }
         }
         this.size = this.size
@@ -73,6 +87,9 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
                 this.__buttons[y][x].size = back_size.mult(0.8)
             }
         }
+
+        this.__tooltip.size = new Vec2(size.x / 2, 1.5 * size.y)
+        this.__tooltip.pos = new Vec2(0, -this.__tooltip.size.y)
     }
 
     protected _set_visible(f: boolean){
@@ -101,6 +118,7 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
     private __casting_bar: InterfaceCastingBar
     private __backgrounds: Frame.Backdrop[][]
     private __buttons: InterfaceAbilityButton[][]
+    private __tooltip: InterfaceAbilityTooltip
 
     private _mouse_control = WcIO.Mouse.addAction('UP', (event, pl, btn) => {
         if (btn == MOUSE_BUTTON_TYPE_LEFT){

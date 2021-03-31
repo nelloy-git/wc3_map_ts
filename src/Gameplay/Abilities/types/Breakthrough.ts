@@ -6,7 +6,7 @@ import { getFileDir, Vec2 } from "../../../Utils";
 
 import { BreakthroughData } from "../data/Breakthrough";
 import { Push } from '../../Buffs'
-import { AbilityData } from "../Data";
+import { AbilityData, getJson } from "../Data";
 
 const __dir__ = Macro(getFileDir())
 
@@ -25,9 +25,11 @@ Casting.start = (abil, target) => {
     let caster = abil.Data.owner
     let data = new BreakthroughData(abil, caster, target[0])
 
+    print(getJson(abil).getFormula(SCALE_DMG))
+
     caster.pause = true
     caster.angle = data.angle
-    caster.animation = AbilityData.getJson(abil).data.getNumber(ANIM_WALK_ID, 0)
+    caster.animation = getJson(abil).data.getNumber(ANIM_WALK_ID, 0)
 }
 
 Casting.casting = (abil, target) => {
@@ -49,7 +51,7 @@ Casting.casting = (abil, target) => {
 
     // Push nearly enemies
     let params = Param.UnitContainer.get(caster)
-    let json = AbilityData.getJson(abil)
+    let json = getJson(abil)
 
     let in_range = hUnit.getInRange(caster.pos, abil.Data.area)
     for (const unit of in_range){
@@ -77,7 +79,7 @@ function getPushVel(caster: hUnit, target: hUnit, vel: number){
 }
 
 function clear(abil: Abil.IFace<[Vec2]>){
-    BreakthroughData.get(abil).destroy()
+    BreakthroughData.get(abil).detach()
 
     let caster = abil.Data.owner
     caster.pause = false
@@ -92,11 +94,11 @@ Casting.castingTime = (abil, target) => {
     let params = Param.UnitContainer.get(caster)
 
     let delta = target ? target[0].sub(caster.pos) : new Vec2(-math.pi, 0)
-    let angle = delta.angle
+    let angle = math.abs(delta.angle - caster.angle)
     angle = Math.min(angle, 2 * math.pi - angle)
     let turn_time = 0.5 * angle / math.pi
 
-    let cast_time = AbilityData.getJson(abil).getScaled(SCALE_CAST_TIME, params)
+    let cast_time = getJson(abil).getScaled(SCALE_CAST_TIME, params)
 
     return turn_time + cast_time
 }

@@ -6,7 +6,7 @@ import { Vec2 } from "../../../Utils";
 
 const MODEL = 'Abilities\\Spells\\Items\\OrbVenom\\OrbVenomMissile.mdl'
 const HEIGHT = -40
-const STEP = 16
+const STEP = 24
 
 export class VoodooPoisonData extends CastingData{
     constructor(abil: IFace<TargetType[]>,
@@ -52,16 +52,14 @@ export class VoodooPoisonData extends CastingData{
         }
     }
 
-    detach(){
-        super.destroy()
-    }
-
     destroy(){
         this.__circle.destroy()
         this.__line1.destroy()
         this.__line2.destroy()
         this.__line3.destroy()
         this.__line4.destroy()
+
+        super.destroy()
     }
 
     time: number = 0

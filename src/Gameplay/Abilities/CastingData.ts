@@ -18,6 +18,10 @@ export abstract class CastingData {
         return data
     }
 
+    detach(){
+        CastingData._abil2data.delete(this._abil)
+    }
+
     destroy(){
         CastingData._abil2data.delete(this._abil)
     }

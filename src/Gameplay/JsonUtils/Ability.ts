@@ -66,6 +66,15 @@ export class AbilityJson extends Json.Cached {
         return scale.getResult(params)
     }
 
+    getFormula(name: string, prec_base: number = 0, prec_add: number = 0, prec_mult: number = 0){
+        let scale = this.scales.get(name)
+        if (!scale){
+            return '{' + name + '}'
+        }
+
+        return scale.getFormula(prec_base, prec_add, prec_mult)
+    }
+
     name: string
     icon: string
     dis_icon: string

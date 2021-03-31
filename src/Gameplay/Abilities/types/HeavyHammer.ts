@@ -104,8 +104,7 @@ function dealDamage(abil: Abil.IFace<[Vec2]>, target: Vec2){
     let data = HeavyHammerData.get(abil)
 
     let caster = abil.Data.owner
-    let x = caster.x
-    let y = caster.y
+    let pos = caster.pos
     let a = caster.angle
     let w_a = abil.Data.area / 2
     let progr = data.progress
@@ -120,8 +119,8 @@ function dealDamage(abil: Abil.IFace<[Vec2]>, target: Vec2){
         if (caster.isAlly(targ)){continue}
 
         // Select cone
-        let angle = Atan2(targ.y - y, targ.x - x)
-        angle = angle >= 0 ? angle : 2 * math.pi + angle
+        let angle = targ.pos.sub(pos).angle
+        angle = Math.min(angle, 2 * math.pi - angle) / math.pi
 
         if (angle > a - w_a && angle < a + w_a){
             // Toss Up

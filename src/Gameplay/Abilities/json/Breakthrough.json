@@ -2,9 +2,9 @@
     "name": "Breakthrough",
     "icon": "ReplaceableTextures\\CommandButtons\\BTNStampede.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp",
-    "tooltip": "T\no\no\nl\nt\ni\np",
+    "tooltip": "Ogre charges in a direction.\nWhen he collides with an enemy he deals\n{pushDmg} physical damage\nand pushes them away for\n{pushDur:0:1:1} seconds.",
     "lifeCost": 0,
-    "manaCost": 10,
+    "manaCost": 1,
     "range": 500,
     "area": 100,
     "chargesUse": 1,
@@ -23,13 +23,16 @@
         
         "pushDmg": {
             "base": 50,
-            "baseAdd": {
+            "resAdd": {
                 "PATK": 2
             }
         },
 
         "pushDur": {
-            "base": 1
+            "base": 1,
+            "resMult": {
+                "PDEF": 0.01
+            }
         }
     }
 }

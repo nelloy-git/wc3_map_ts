@@ -40,12 +40,12 @@ export class HeavyHammerData extends CastingData {
     }
 
     destroy(){
-        super.destroy()
-
         this._line_l.destroy()
         this._line_r.destroy()
         this._arc_f.destroy()
         this._arc_b.destroy()
+
+        super.destroy()
     }
 
     cur_anim: 'START'|'PAUSE'|'END' = 'END'

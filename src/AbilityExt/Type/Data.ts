@@ -12,7 +12,7 @@ export class TData<T extends TargetType[]> {
     set dis_icon(f: (abil: IFace<T>)=> string){this._dis_icon = f}
 
     get tooltip(){return this._tooltip}
-    set tooltip(f: (abil: IFace<T>)=> string){this._tooltip = f}
+    set tooltip(f: (abil: IFace<T>, full: boolean)=> string){this._tooltip = f}
 
     get life_cost(){return this._life_cost}
     set life_cost(f: (abil: IFace<T>)=> number){this._life_cost = f}
@@ -44,7 +44,7 @@ export class TData<T extends TargetType[]> {
     protected _name: ((abil: IFace<T>) => string) = () => {return 'undefined'}
     protected _icon: ((abil: IFace<T>) => string) = () => {return 'ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp'}
     protected _dis_icon: ((abil: IFace<T>) => string) = () => {return 'undefined'}
-    protected _tooltip: ((abil: IFace<T>) => string) = () => {return ''}
+    protected _tooltip: ((abil: IFace<T>, full: boolean) => string) = () => {return ''}
     protected _life_cost: ((abil: IFace<T>) => number) = () => {return 0}
     protected _mana_cost: ((abil: IFace<T>) => number) = () => {return 0}
     protected _range: ((abil: IFace<T>) => number) = () => {return 0}

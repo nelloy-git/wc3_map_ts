@@ -4,7 +4,7 @@
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNShadowPact.blp",
     "tooltip": "T\no\no\nl\nt\ni\np",
     "lifeCost": 0,
-    "manaCost": 5,
+    "manaCost": 1,
     "range": 800,
     "area": 150,
     "chargesUse": 1,

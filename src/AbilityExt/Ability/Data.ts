@@ -17,7 +17,8 @@ export class Data<T extends TargetType[]> implements DataIFace<T>{
     get name(){return this.type.name(this.abil)}
     get icon_normal(){return this.type.icon(this.abil)}
     get icon_disabled(){return this.type.dis_icon(this.abil)}
-    get tooltip(){return this.type.tooltip(this.abil)}
+    get tooltip(){return this.type.tooltip(this.abil, false)}
+    get tooltipFull(){return this.type.tooltip(this.abil, true)}
     get life_cost(){return this.type.life_cost(this.abil)}
     get mana_cost(){return this.type.mana_cost(this.abil)}
     get range(){return this.type.range(this.abil)}

@@ -29,7 +29,7 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
                             {this.__clicked(pl)})
 
         this.__timer = InterfaceAbilityButton.__timer_list.newTimerObj()
-        this.__timer.addAction('PERIOD', ()=>{this._checkEnable()})
+        this.__timer.addAction('PERIOD', ()=>{this.__checkEnable()})
         this.__timer.addAction('FINISH', (tm)=>{tm.start(3600)})
         this.__timer.start(3600)
     }
@@ -38,7 +38,7 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
     set ability(abil: Abil.Ability<any> | undefined){
         this.__clearAbility()
         this.__applyAbility(abil)
-        this._checkEnable()
+        this.__checkEnable()
     }
 
     get key(){return this.__hotkey.key}
@@ -122,7 +122,7 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
         }
     }
 
-    private _checkEnable(){
+    private __checkEnable(){
         if (!this.__abil){return}
         this.enable = this.__abil.Data.is_available
     }

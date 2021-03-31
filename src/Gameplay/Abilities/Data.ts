@@ -1,5 +1,6 @@
 import * as Abil from "../../AbilityExt";
 import * as Json from '../../Json'
+import * as Param from '../../Parameter'
 import { getFilePath, Log } from "../../Utils";
 
 import { AbilityJson } from "../JsonUtils"
@@ -19,7 +20,7 @@ export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
         this.name = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).name}
         this.icon = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).icon}
         this.dis_icon = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).dis_icon}
-        this.tooltip = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).tooltip}
+        this.tooltip = (abil: Abil.IFace<T>, full: boolean)=>{return this.__getTooltip(abil, full)}
         this.life_cost = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).life_cost}
         this.mana_cost = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).mana_cost}
         this.range = (abil: Abil.IFace<T>)=>{return AbilityData.getJson(abil).range}
@@ -80,6 +81,29 @@ export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
         }
 
         this._consume = wrapped
+    }
+
+    private __getTooltip(abil: Abil.IFace<T>, full: boolean){
+        let json = AbilityData.getJson(abil)
+        let params = Param.UnitContainer.get(abil.Data.owner)
+
+        let tmp_tooltip = json.tooltip
+        let [tooltip, _] = string.gsub(tmp_tooltip, '%b{}', (match: string) => {
+            let field = match.slice(1, -1).split(':')
+            let key = field[0]
+            let prec_base = field[1] ? tonumber(field[1]) : 0
+            let prec_add = field[2] ? tonumber(field[2]) : 0
+            let prec_mult = field[3] ? tonumber(field[3]) : 0
+
+            let scale = json.scales.get(key)
+            let val = ''
+            if (scale){
+                val = string.format('%.0f', json.getScaled(key, params))
+                match = full ? json.getFormula(key, prec_base, prec_add, prec_mult) : ''
+            }
+            return val + ' ' + match
+        })
+        return tooltip
     }
 
     private __scale_names: string[]

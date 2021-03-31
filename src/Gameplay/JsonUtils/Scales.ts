@@ -34,12 +34,12 @@ export class ScaleJson {
     getResult(params: Param.Container){
         let res = this.base
 
-        if (this.baseMult){
-            res *= this.baseMult.getResult(params)
-        }
-
         if (this.baseAdd){
-            res += this.baseAdd.getResult(params)
+            let add = this.baseAdd.getResult(params)
+            if (this.baseMult){
+                add *= this.baseMult.getResult(params)
+            }
+            res += add
         }
 
         if (this.resMult){
@@ -51,6 +51,29 @@ export class ScaleJson {
         }
 
         return res
+    }
+
+    getFormula(prec_base: number = 0, prec_add: number = 0, prec_mult: number = 0){
+        let f = string.format('%.' + prec_base + 'f', this.base)
+
+        if (this.baseAdd){
+            let add = this.baseAdd.getFormula(false, prec_add)
+        
+            if (this.baseMult){
+                add += ' * (' + this.baseMult.getFormula(true, prec_mult) + ')'
+            }
+            f = f + ' + ' + add
+        }
+
+        if (this.resMult){
+            f = f + ' * (' + this.resMult.getFormula(true, prec_mult) + ')'
+        }
+
+        if (this.resAdd){
+            f = f + ' + ' + this.resAdd.getFormula(false, prec_add)
+        }
+
+        return '[' + f + ']'
     }
     
     readonly base: number
