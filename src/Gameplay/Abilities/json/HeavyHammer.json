@@ -2,7 +2,9 @@
     "name": "Heavy hammer",
     "icon": "ReplaceableTextures\\CommandButtons\\BTNThunderclap.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp",
-    "tooltip": "T\no\no\nl\nt\ni\np",
+    "tooltip": [
+        "T\no\no\nl\nt\ni\np"
+    ],
     "lifeCost": 0,
     "manaCost": 1,
     "range": 250,

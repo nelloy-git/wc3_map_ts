@@ -2,7 +2,9 @@
     "name": "Voodoo poison",
     "icon": "ReplaceableTextures\\CommandButtons\\BTNShadowPact.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNShadowPact.blp",
-    "tooltip": "T\no\no\nl\nt\ni\np",
+    "tooltip": [
+        "T\no\no\nl\nt\ni\np"
+    ],
     "lifeCost": 0,
     "manaCost": 1,
     "range": 800,

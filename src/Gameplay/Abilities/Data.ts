@@ -1,7 +1,7 @@
 import * as Abil from "../../AbilityExt";
 import * as Json from '../../Json'
 import * as Param from '../../Parameter'
-import { getFilePath, Log } from "../../Utils";
+import { Color, getFilePath, Log } from "../../Utils";
 
 import { AbilityJson } from "../JsonUtils"
 
@@ -10,6 +10,8 @@ const __path__ = Macro(getFilePath())
 export function getJson(abil: Abil.IFace<any>){
     return AbilityData.getJson(abil)
 }
+
+const FORMULA_COLOR = new Color(0.2, 0.2, 0.2, 1)
 
 export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
     constructor(path: string, scales?: string[], extra?: Json.Tree[]){
@@ -95,11 +97,10 @@ export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
             let prec_add = field[2] ? tonumber(field[2]) : 0
             let prec_mult = field[3] ? tonumber(field[3]) : 0
 
-            let scale = json.scales.get(key)
             let val = ''
-            if (scale){
+            if (json.scales.get(key)){
                 val = string.format('%.0f', json.getScaled(key, params))
-                match = full ? json.getFormula(key, prec_base, prec_add, prec_mult) : ''
+                match = full ? FORMULA_COLOR.colorText(json.getFormula(key, prec_base, prec_add, prec_mult)) : ''
             }
             return val + ' ' + match
         })

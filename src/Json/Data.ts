@@ -26,8 +26,13 @@ export class Data {
     }
 
     isExist(tree: JsonLua.Tree){
-        let val = this.__read(tree, 'any')
-        return val[0]
+        let [found, val] = this.__read(tree, 'any')
+        return found
+    }
+
+    getAny(tree: JsonLua.Tree){
+        let [found, val] = this.__read(tree, 'any')
+        return found ? val : undefined
     }
 
     getSub(tree: JsonLua.Tree): Data
@@ -158,7 +163,7 @@ export class Data {
                 return Log.err('Can not find "' + t + '" value\n' + res[1],
                                 __path__, Data, 4)
             } else if (rt == ReadType.Wrn) {
-                Log.wrn('Can not find "' + t + '"value\n' + res[1])
+                Log.wrn('Can not find "' + t + '" value\n' + res[1])
             }
             return def
         }

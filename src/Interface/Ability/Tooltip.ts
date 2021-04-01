@@ -12,6 +12,8 @@ const TOOL_LINE_HEIGHT = 0.012
 const NAME_CHAR_WIDTH = 0.007
 const TOOL_CHAR_WIDTH = 0.006
 
+const CHARS_PER_LINE = 50
+
 export class InterfaceAbilityTooltip extends Frame.Backdrop {
     constructor(){
         super(InterfaceBorderFdf)
@@ -21,13 +23,13 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
 
         this.__tooltip = new Frame.Text(TooltipFdf)
         this.__tooltip.parent = this.__name
-        this.__formula = false
+        this.__full = false
 
         this.size = this.size
 
         WcIO.Keyboard.addAction((pl, key, meta, is_down)=>{
             if (pl != GetLocalPlayer() || key != OSKEY_LCONTROL){return}
-            this.__formula = is_down
+            this.__full = is_down
             this.__updateTooltip()
         })
     }
@@ -53,23 +55,10 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
         }
 
         let abil_name = this.__ability.Data.name + '\n'
-        let abil_tooltip = this.__formula ? this.__ability.Data.tooltipFull : this.__ability.Data.tooltip
+        let abil_tool = this.__full ? this.__ability.Data.tooltipFull : this.__ability.Data.tooltip
 
-        let max_chars = -1
-        let name_lines = abil_name.split('\n')
-        for (let line of name_lines){
-            max_chars = math.max(max_chars, line.length)
-        }
-        let name_w = max_chars * NAME_CHAR_WIDTH
-        let name_h = name_lines.length * NAME_LINE_HEIGHT
-
-        max_chars = -1
-        let tool_lines = abil_tooltip.split('\n')
-        for (let line of tool_lines){
-            max_chars = math.max(max_chars, line.length)
-        }
-        let tool_w = max_chars * TOOL_CHAR_WIDTH
-        let tool_h = tool_lines.length * TOOL_LINE_HEIGHT
+        let [name, name_w, name_h] = this.__splitLines(abil_name)
+        let [tool, tool_w, tool_h] = this.__splitLines(abil_tool)
 
         let w = 1.1 * math.max(name_w, tool_w)
         let h = 1.1 * (name_h + tool_h)
@@ -79,17 +68,48 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
 
         this.__name.pos = new Vec2(0.05 * w, 0.05 * h)
         this.__name.size = new Vec2(0.9 * w, name_h)
-        this.__name.text = abil_name
+        this.__name.text = name
 
         this.__tooltip.pos = new Vec2(0, name_h)
         this.__tooltip.size = new Vec2(0.9 * w, tool_h)
-        this.__tooltip.text = abil_tooltip
+        this.__tooltip.text = tool
+    }
+
+    private __splitLines(str: string){
+        str = str.replaceAll('\t', ' ')
+        str = str.replaceAll('\n', '\n ')
+        let words = str.split(' ')
+        let lines = ['']
+        
+        let max_chars = -1
+        for (const word of words){
+            let len = lines.length - 1
+            lines[len] += word
+
+            if (lines[len].length > CHARS_PER_LINE || word.endsWith('\n')){
+                if (word.endsWith('\n')){
+                    lines[len] = lines[len].slice(0, lines[len].length - 1)    
+                }
+                
+                max_chars = math.max(max_chars, lines[len].length)
+                lines.push('')
+            }
+        }
+        let w = max_chars * NAME_CHAR_WIDTH
+        let h = lines.length * NAME_LINE_HEIGHT
+
+        let splitted = ''
+        for (const line of lines){
+            splitted += line + '\n'
+        }
+
+        return $multi(splitted, w, h)
     }
 
     private __name: Frame.Text
     private __tooltip: Frame.Text
     private __ability: Abil.Ability<any> | undefined
-    private __formula: boolean
+    private __full: boolean
 }
 
 const NameFdf = new Fdf.Text(InterfaceAbilityTooltip.name + 'Name')

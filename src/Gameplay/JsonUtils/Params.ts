@@ -3,7 +3,7 @@ import * as Param from "../../Parameter";
 
 export class ParamsJson {
     constructor(json: Json.Data, default_val: number){
-        this._def = default_val
+        this.__def = default_val
 
         let silent = json.silent
 
@@ -18,32 +18,33 @@ export class ParamsJson {
 
     get(param: Param.Type){
         let v = this.values.get(param)
-        return v ? v : this._def
+        return v ? v : this.__def
     }
 
     getResult(params: Param.Container){
-        let res = this._def
-
+        let res = 0
         for (let [p, v] of this.values){
             res += params.get(p, 'RES') * v
         }
-
         return res
     }
 
-    getFormula(percent: boolean = false, prec: number = 0){
-        let f = ''
-
-        let tmp = ' + %.' + prec + 'f' + (percent ? '%%' : '') + ' * %s'
-        let k = percent ? 100 : 1
-        for (let [p, v] of this.values){
-            f += string.format(tmp, k * v, p)
+    getFormula(prec: number = 0){
+        if (this.values.size == 0){
+            return [false, '']
         }
 
-        return f.substr(3)
+        let f = ''
+        let fmt = ' + %.' + prec + 'f * %s'
+
+        for (let [p, v] of this.values){
+            f += string.format(fmt, v, p)
+        }
+
+        return [true, f.substr(3)]
     }
 
     readonly values = new Map<Param.Type, number>()
 
-    private _def: number
+    private __def: number
 }

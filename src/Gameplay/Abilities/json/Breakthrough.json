@@ -2,7 +2,12 @@
     "name": "Breakthrough",
     "icon": "ReplaceableTextures\\CommandButtons\\BTNStampede.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNStampede.blp",
-    "tooltip": "Ogre charges in a direction.\nWhen he collides with an enemy he deals\n{pushDmg} physical damage\nand pushes them away for\n{pushDur:0:1:1} seconds.",
+    "tooltip": [
+        "Ogre charges in a direction. ",
+        "When he collides with an enemy ",
+        "he deals {pushDmg:0:0:0} physical damage ",
+        "and pushes them away for {pushDur:1:2:2} seconds."
+    ],
     "lifeCost": 0,
     "manaCost": 1,
     "range": 500,

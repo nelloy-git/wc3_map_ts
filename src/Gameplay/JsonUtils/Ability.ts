@@ -18,6 +18,12 @@ const CHARGES_USE = ['chargesUse']
 const CHARGES_MAX = ['chargesMax']
 const CHARGES_CD = ['chargeCD']
 
+const DEFAULT_TOOLTIP_LIST = new Json.Data('AbilityJsonDefaultTooltip', (() => {
+    let tbl = new LuaTable()
+    tbl.set(1, 'undefined')
+    return tbl
+})())
+
 export class AbilityJson extends Json.Cached {
     constructor(path: string, scales?: string[], extra?: Json.Tree[]){
         super(path)
@@ -26,7 +32,6 @@ export class AbilityJson extends Json.Cached {
         this.name = data.getString(NAME, 'undefined')
         this.icon = data.getString(ICON, 'undefined')
         this.dis_icon = data.getString(DISICON, 'undefined')
-        this.tooltip = data.getString(TOOLTIP, 'undefined')
         this.life_cost = data.getNumber(LIFE_COST, 0)
         this.mana_cost = data.getNumber(MANA_COST, 0)
         this.range = data.getNumber(RANGE, 0)
@@ -35,8 +40,15 @@ export class AbilityJson extends Json.Cached {
         this.charges_max = data.getNumber(CHARGES_MAX, 0)
         this.charge_cd = data.getNumber(CHARGES_CD, 0)
 
-        this.scales = new Map()
+        let tooltip_list = data.getSub(TOOLTIP, DEFAULT_TOOLTIP_LIST)
+        this.tooltip = ''
+        let i = 1
+        while(tooltip_list.isExist([i])){
+            this.tooltip += tooltip_list.getString([i], 'NOT_STRING')
+            i++
+        }
 
+        this.scales = new Map()
         if (scales){
             let scales_data = data.getSub(['scales'])
             for (const name of scales){
