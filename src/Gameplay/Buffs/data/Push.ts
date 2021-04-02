@@ -3,11 +3,11 @@ import * as Buff from '../../../Buff'
 import { hUnit } from "../../../Handle"
 import { isWalkable, Vec2 } from "../../../Utils"
 import { Move } from '../../utils/Move'
-import { BuffData } from "../BuffData"
+import { DurationData } from "../DurationData"
 
 const dt = Buff.period
 
-export class PushData extends BuffData {
+export class Push extends DurationData {
     constructor(buff: Buff.IFace<any>, target: hUnit, vel: Vec2){
         super(buff)
         
@@ -18,12 +18,12 @@ export class PushData extends BuffData {
         this.__move = new Move(target, loop_vel, loop_acc)
     }
 
-    static get = <(buff: Buff.IFace<any>) => PushData>BuffData.get
+    static get = <(buff: Buff.IFace<any>) => Push>DurationData.get
 
     move(){
         let pos = this.__move.move()
         if (!pos){
-            return PushData.Status.COLLISION
+            return Push.Status.COLLISION
         }
 
         let vel = this.__move.vel
@@ -31,9 +31,9 @@ export class PushData extends BuffData {
 
         let abs = math.abs
         if (abs(vel.x) < abs(acc.x) || abs(vel.y) < abs(acc.y)){
-            return PushData.Status.FINISHED
+            return Push.Status.FINISHED
         }
-        return PushData.Status.OK
+        return Push.Status.OK
     }
     
     readonly target: hUnit
@@ -41,7 +41,7 @@ export class PushData extends BuffData {
     private __move: Move
 }
 
-export namespace PushData{
+export namespace Push{
     export enum Status {
         OK,
         COLLISION,

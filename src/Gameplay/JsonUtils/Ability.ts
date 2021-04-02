@@ -24,45 +24,74 @@ const DEFAULT_TOOLTIP_LIST = new Json.Data('AbilityJsonDefaultTooltip', (() => {
     return tbl
 })())
 
-export class AbilityJson extends Json.Cached {
-    constructor(path: string, scales?: string[], extra?: Json.Tree[]){
-        super(path)
+export class AbilityJson {
+    static load(json: Json.Data, scales?: string[], extra?: Json.Tree[]){
+        let abil_json = new AbilityJson()
+        abil_json.name = json.getString(NAME, 'undefined')
+        abil_json.icon = json.getString(ICON, 'undefined')
+        abil_json.dis_icon = json.getString(DISICON, 'undefined')
+        abil_json.life_cost = json.getNumber(LIFE_COST, 0)
+        abil_json.mana_cost = json.getNumber(MANA_COST, 0)
+        abil_json.range = json.getNumber(RANGE, 0)
+        abil_json.area = json.getNumber(AREA, 0)
+        abil_json.charges_use = json.getNumber(CHARGES_USE, 0)
+        abil_json.charges_max = json.getNumber(CHARGES_MAX, 0)
+        abil_json.charge_cd = json.getNumber(CHARGES_CD, 0)
 
-        let data = this.data
-        this.name = data.getString(NAME, 'undefined')
-        this.icon = data.getString(ICON, 'undefined')
-        this.dis_icon = data.getString(DISICON, 'undefined')
-        this.life_cost = data.getNumber(LIFE_COST, 0)
-        this.mana_cost = data.getNumber(MANA_COST, 0)
-        this.range = data.getNumber(RANGE, 0)
-        this.area = data.getNumber(AREA, 0)
-        this.charges_use = data.getNumber(CHARGES_USE, 0)
-        this.charges_max = data.getNumber(CHARGES_MAX, 0)
-        this.charge_cd = data.getNumber(CHARGES_CD, 0)
-
-        let tooltip_list = data.getSub(TOOLTIP, DEFAULT_TOOLTIP_LIST)
-        this.tooltip = ''
+        let tooltip_list = json.getSub(TOOLTIP, DEFAULT_TOOLTIP_LIST)
+        abil_json.tooltip = ''
         let i = 1
         while(tooltip_list.isExist([i])){
-            this.tooltip += tooltip_list.getString([i], 'NOT_STRING')
+            abil_json.tooltip += tooltip_list.getString([i], '')
             i++
         }
 
-        this.scales = new Map()
         if (scales){
-            let scales_data = data.getSub(['scales'])
+            let scales_data = json.getSub(['scales'])
             for (const name of scales){
-                this.scales.set(name, new ScaleJson(scales_data.getSub([name])))
+                abil_json.scales.set(name, new ScaleJson(scales_data.getSub([name])))
             }
         }
         
         if (extra){
             for (const tree of extra){
-                if (!data.isExist(tree)){
-                    return Utils.Log.err('can not find key\n' + data.tree2string(tree))
+                if (!json.isExist(tree)){
+                    return Utils.Log.err('can not find key\n' + json.tree2string(tree))
                 }
+                let val = json.getAny(tree)
+                if (typeof val === 'object'){
+                    return Utils.Log.err('extra value can not be of type "object"\n' + json.tree2string(tree))
+                }
+                abil_json.extra.set(tree, val)
             }
         }
+
+        return abil_json
+    }
+
+    copy(){
+        let copy = new AbilityJson()
+        copy.name = this.name
+        copy.icon = this.icon
+        copy.dis_icon = this.dis_icon
+        copy.tooltip = this.tooltip
+        copy.life_cost = this.life_cost
+        copy.mana_cost = this.mana_cost
+        copy.range = this.range
+        copy.area = this.area
+        copy.charges_use = this.charges_use
+        copy.charges_max = this.charges_max
+        copy.charge_cd = this.charge_cd
+
+        for (let [k, v] of this.scales){
+            copy.scales.set(k, v.copy())
+        }
+
+        for (let [k, v] of this.extra){
+            copy.extra.set(k, v)
+        }
+
+        return copy
     }
 
     getScaled(name: string, params?: Param.UnitContainer){
@@ -87,6 +116,22 @@ export class AbilityJson extends Json.Cached {
         return scale.getFormula(prec_base, prec_add, prec_mult)
     }
 
+    private constructor(){
+        this.name = 'undefined'
+        this.icon = 'undefined'
+        this.dis_icon = 'undefined'
+        this.tooltip = 'undefined'
+        this.life_cost = 0
+        this.mana_cost = 0
+        this.range = 0
+        this.area = 0
+        this.charges_use = 0
+        this.charges_max = 0
+        this.charge_cd = 0
+        this.scales = new Map()
+        this.extra = new Map()
+    }
+
     name: string
     icon: string
     dis_icon: string
@@ -100,4 +145,5 @@ export class AbilityJson extends Json.Cached {
     charge_cd: number
 
     scales: Map<string, ScaleJson>
+    extra: Map<Json.Tree, any>
 }

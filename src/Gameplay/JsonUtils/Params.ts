@@ -2,23 +2,28 @@ import * as Json from '../../Json'
 import * as Param from "../../Parameter";
 
 export class ParamsJson {
-    constructor(json: Json.Data, default_val: number){
-        this.__def = default_val
+    constructor(json: Json.Data | undefined){
+        if (json){
+            let silent = json.silent
 
-        let silent = json.silent
-
-        json.silent = true
-        for (let param of Param.Type.list()){
-            if (json.isExist([param])){
-                this.values.set(param, json.getNumber([param]))
+            json.silent = true
+            for (let param of Param.Type.list()){
+                if (json.isExist([param])){
+                    this.values.set(param, json.getNumber([param]))
+                }
             }
+            json.silent = silent
         }
-        json.silent = silent
     }
 
-    get(param: Param.Type){
-        let v = this.values.get(param)
-        return v ? v : this.__def
+    copy(){
+        let copy = new ParamsJson(undefined)
+
+        for (let [p, v] of this.values){
+            copy.values.set(p, v)
+        }
+
+        return copy
     }
 
     getResult(params: Param.Container){
@@ -45,6 +50,4 @@ export class ParamsJson {
     }
 
     readonly values = new Map<Param.Type, number>()
-
-    private __def: number
 }

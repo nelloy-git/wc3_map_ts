@@ -87,16 +87,17 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
         for (const word of words){
             let len = lines.length - 1
             lines[len] += word + ' '
+            max_chars = math.max(max_chars, lines[len].length)
 
-            if (lines[len].length > CHARS_PER_LINE || word.endsWith('\n')){
-                if (word.endsWith('\n')){
-                    lines[len] = lines[len].slice(0, lines[len].length - 2)    
-                }
-                
+            if (word.endsWith('\n')){
+                lines[len] = lines[len].slice(0, lines[len].length - 1)
                 lines.push('')
+                continue
             }
 
-            max_chars = math.max(max_chars, lines[len].length)
+            if (lines[len].length > CHARS_PER_LINE){
+                lines.push('')
+            }
         }
 
         let splitted = ''

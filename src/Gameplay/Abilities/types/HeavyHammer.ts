@@ -2,32 +2,41 @@ import * as Abil from "../../../AbilityExt";
 import * as Buff from "../../../Buff";
 import * as Param from "../../../Parameter";
 import { hTimer, hUnit } from "../../../Handle";
-import { getFileDir, Vec2 } from "../../../Utils";
+import { Vec2 } from "../../../Utils";
 
-import { AbilityData, getJson } from '../Data'
-import { HeavyHammerData } from "../data/HeavyHammer";
+import { AbilityData, getJson } from "../Data";
+import { AbilityJson } from "../../JsonUtils";
+
+import { HeavyHammer as Cached } from '../json'
+import { HeavyHammer as CastData } from '../data'
 import { TossUp } from '../../Buffs'
 
-const __dir__ = Macro(getFileDir())
+//========
 
+// Scales 
 const SCALE_CAST_TIME = 'castTime'
 const SCALE_DMG = 'dmg'
 const SCALE_TOSS_DUR = 'tossDur'
+
+// Extra
 const ANIM_STRIKE_ID = ['animation', 'strikeId']
 const ANIM_STRIKE_START = ['animation', 'strikeStart']
 const ANIM_STRIKE_END = ['animation', 'strikeEnd']
 const ANIM_TOSS_HEIGHT = ['animation', 'tossHeight']
 
-const TData = new AbilityData(__dir__ + '/../json/HeavyHammer.json',
-                              [SCALE_CAST_TIME, SCALE_DMG, SCALE_TOSS_DUR],
-                              [ANIM_STRIKE_END, ANIM_STRIKE_ID, ANIM_STRIKE_START, ANIM_TOSS_HEIGHT])
+// Init
+const ABIL_CACHED = AbilityJson.load(Cached,
+    [SCALE_CAST_TIME, SCALE_DMG, SCALE_TOSS_DUR],
+    [ANIM_STRIKE_END, ANIM_STRIKE_ID, ANIM_STRIKE_START, ANIM_TOSS_HEIGHT])
+const TData = new AbilityData(ABIL_CACHED)
+const Casting = new Abil.TCasting<[Vec2]>()
 
-let Casting = new Abil.TCasting<[Vec2]>()
+//========
 
 Casting.start = (abil, target) => {
     let caster = abil.Data.owner
     let targ = target[0]
-    let data = new HeavyHammerData(abil, caster, targ, abil.Data.area)
+    let data = new CastData(abil, caster, targ, abil.Data.area)
 
     let delta = targ.sub(caster.pos)
     let angle = delta.angle
@@ -35,35 +44,39 @@ Casting.start = (abil, target) => {
     caster.pause = true
     caster.angle = angle
 
-    caster.animation = getJson(abil).data.getNumber(ANIM_STRIKE_ID, 0)
+    caster.animation = getJson(abil).extra.get(ANIM_STRIKE_ID)
     data.cur_anim = 'START'
 }
 
+//========
+
 Casting.casting = (abil, target) => {
     let caster = abil.Data.owner
-    let data = HeavyHammerData.get(abil)
+    let data = CastData.get(abil)
     
     let left = abil.Casting.Timer.left
     let full = abil.Casting.Timer.fullTime
     data.progress = 1 - (left / full)
 
     // Animation start
-    let start = getJson(abil).data.getNumber(ANIM_STRIKE_START, 0)
+    let start = getJson(abil).extra.get(ANIM_STRIKE_START)
     if (left < full - start && data.cur_anim == 'START'){
         caster.animation_scale = 0
         data.cur_anim = 'PAUSE'
     }
 
     // Animation end
-    let end = getJson(abil).data.getNumber(ANIM_STRIKE_END, 0)
+    let end = getJson(abil).extra.get(ANIM_STRIKE_END)
     if (left < end && data.cur_anim == 'PAUSE'){
         caster.animation_scale = 1
         data.cur_anim = 'END'
     }
 }
 
+//========
+
 Casting.cancel = (abil, target) => {
-    let data = HeavyHammerData.get(abil)
+    let data = CastData.get(abil)
     
     let caster = abil.Data.owner
     caster.animation_scale = 1
@@ -75,33 +88,43 @@ Casting.cancel = (abil, target) => {
         t.destroy()
     })
 
-    let endTime = getJson(abil).data.getNumber(ANIM_STRIKE_END, 0)
+    let endTime = getJson(abil).extra.get(ANIM_STRIKE_END)
     t.start(endTime, false)
 }
 
-Casting.interrupt = clearCasting
+//========
+
+Casting.interrupt = clear
+
+//========
 
 Casting.finish = (abil, target) => {
     dealDamage(abil, target[0])
-    clearCasting(abil)
+    clear(abil)
 }
+
+//========
 
 Casting.castingTime = (abil, target) => {
     let caster = abil.Data.owner
     let params = Param.UnitContainer.get(caster)
 
-    let start = getJson(abil).data.getNumber(ANIM_STRIKE_START, 0)
-    let end = getJson(abil).data.getNumber(ANIM_STRIKE_END, 0)
+    let start = getJson(abil).extra.get(ANIM_STRIKE_START)
+    let end = getJson(abil).extra.get(ANIM_STRIKE_END)
 
     let cast_time = AbilityData.getJson(abil).getScaled(SCALE_CAST_TIME, params)
 
     return math.max(start + end, cast_time)
 }
 
+//========
+
 Casting.isTargetValid = (abil, target) => {return true}
 
+//========
+
 function dealDamage(abil: Abil.IFace<[Vec2]>, target: Vec2){
-    let data = HeavyHammerData.get(abil)
+    let data = CastData.get(abil)
 
     let caster = abil.Data.owner
     let pos = caster.pos
@@ -127,7 +150,7 @@ function dealDamage(abil: Abil.IFace<[Vec2]>, target: Vec2){
             let buffs = Buff.Container.get(targ)
             if (buffs){
                 buffs.add(caster, progr * toss_max_dur,
-                          TossUp, [progr * getJson(abil).data.getNumber(ANIM_TOSS_HEIGHT)])
+                          TossUp, [progr * getJson(abil).extra.get(ANIM_TOSS_HEIGHT)])
             }
             
             // Damage
@@ -139,8 +162,8 @@ function dealDamage(abil: Abil.IFace<[Vec2]>, target: Vec2){
     }
 }
 
-function clearCasting(abil: Abil.IFace<[Vec2]>){
-    let data = HeavyHammerData.get(abil)
+function clear(abil: Abil.IFace<[Vec2]>){
+    let data = CastData.get(abil)
     data.detach()
     data.destroy()
 

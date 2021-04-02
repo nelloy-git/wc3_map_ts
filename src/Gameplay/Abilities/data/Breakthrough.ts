@@ -8,7 +8,7 @@ import { Move } from "../../utils/Move";
 
 const dt = Abil.Casting.period
 
-export class BreakthroughData extends CastingData{
+export class Breakthrough extends CastingData{
     constructor(abil: IFace<[Vec2]>, caster: Handle.hUnit, target: Vec2){
         super(abil)
         
@@ -27,22 +27,22 @@ export class BreakthroughData extends CastingData{
         this.vel = this.__move.vel
     } 
 
-    static get = <(abil: IFace<[Vec2]>) => BreakthroughData> CastingData.get
+    static get = <(abil: IFace<[Vec2]>) => Breakthrough> CastingData.get
 
     move(){
         let pos = this.__move.move()
         if (!pos){
-            return BreakthroughData.Status.COLLISION
+            return Breakthrough.Status.COLLISION
         }
 
         let vel = this.__move.vel
         let delta = this.target.sub(pos)
         let abs = math.abs
         if (abs(delta.x) < abs(vel.x) || abs(delta.y) < abs(vel.y)){
-            return BreakthroughData.Status.FINISHED
+            return Breakthrough.Status.FINISHED
         }
 
-        return BreakthroughData.Status.OK
+        return Breakthrough.Status.OK
     }
 
     pushed: Handle.hUnit[] = []
@@ -55,7 +55,7 @@ export class BreakthroughData extends CastingData{
     private __move: Move
 }
 
-export namespace BreakthroughData{
+export namespace Breakthrough{
     export enum Status {
         OK,
         COLLISION,

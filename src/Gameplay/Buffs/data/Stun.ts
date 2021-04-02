@@ -1,9 +1,9 @@
 import * as Buff from '../../../Buff'
 
 import { hEffect, hUnit } from "../../../Handle"
-import { BuffData } from "../BuffData"
+import { DurationData } from "../DurationData"
 
-export class StunData extends BuffData {
+export class Stun extends DurationData {
     constructor(buff: Buff.IFace<any>, model: string){
         super(buff)
 
@@ -14,7 +14,7 @@ export class StunData extends BuffData {
         this._eff.scaleZ = this.target.modelScale / 2
     }
 
-    static get = <(buff: Buff.IFace<any>) => StunData>BuffData.get
+    static get = <(buff: Buff.IFace<any>) => Stun>DurationData.get
 
     period(){
         this._eff.x = this.target.x
@@ -22,8 +22,8 @@ export class StunData extends BuffData {
         this._eff.z = this.target.z
     }
 
-    destroy(){
-        super.destroy()
+    detach(){
+        super.detach()
         this._eff.destroy()
     }
 

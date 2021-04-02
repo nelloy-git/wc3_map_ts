@@ -1,53 +1,67 @@
 import * as Abil from "../../../AbilityExt";
 import * as Param from "../../../Parameter";
 import { hTimer, hUnit } from "../../../Handle";
-import { getFileDir, Vec2 } from "../../../Utils";
+import { Vec2 } from "../../../Utils";
 
-import { VoodooPoisonData } from "../data/VoodooPoison";
 import { AbilityData, getJson } from "../Data";
+import { AbilityJson } from "../../JsonUtils";
 
-const __dir__ = Macro(getFileDir())
+import { VoodooPoison as Cached } from '../json'
+import { VoodooPoison as CastData } from '../data'
 
+//========
+
+// Scales 
 const SCALE_CAST_TIME = 'castTime'
 const SCALE_DMG = 'dmg'
 const SCALE_DUR = 'dur'
 const SCALE_TICKS_PER_SEC = 'ticksPerSec'
 
+// Extra
 const ANIM_CAST = ['animation', 'cast']
 const ANIM_CAST_DEFAULT_DUR = ['animation', 'castDefaultDur']
 
-const TData = new AbilityData(__dir__ + '/../json/VoodooPoison.json',
-                              [SCALE_CAST_TIME, SCALE_DMG, SCALE_DUR, SCALE_TICKS_PER_SEC],
-                              [ANIM_CAST, ANIM_CAST_DEFAULT_DUR])
+// Init
+const ABIL_CACHED = AbilityJson.load(Cached,
+    [SCALE_CAST_TIME, SCALE_DMG, SCALE_DUR, SCALE_TICKS_PER_SEC],
+    [ANIM_CAST, ANIM_CAST_DEFAULT_DUR])
+const TData = new AbilityData(ABIL_CACHED)
+const Casting = new Abil.TCasting<[Vec2]>()
 
-let Casting = new Abil.TCasting<[Vec2]>()
+//========
 
 Casting.start = (abil, target) => {
     let caster = abil.Data.owner
     let json = getJson(abil)
+    let data = new CastData(abil, caster, target[0], abil.Data.area)
     
-    let delta = target[0].sub(caster.pos)
-    let angle = delta.angle
-
     caster.pause = true
-    caster.angle = angle
+    caster.angle = data.angle
 
-    caster.animation = json.data.getNumber(ANIM_CAST, 0)
-    caster.animation_scale =  json.data.getNumber(ANIM_CAST_DEFAULT_DUR, 0) / abil.Casting.Timer.fullTime
-
-    new VoodooPoisonData(abil, caster, target[0], abil.Data.area)
+    caster.animation = json.extra.get(ANIM_CAST)
+    caster.animation_scale =  json.extra.get(ANIM_CAST_DEFAULT_DUR) / abil.Casting.Timer.fullTime
 }
 
+//========
+
 Casting.casting = (abil, target) => {
-    let data = VoodooPoisonData.get(abil)
+    let data = CastData.get(abil)
     data.progress = 1 - (abil.Casting.Timer.left / abil.Casting.Timer.fullTime)
 }
 
-Casting.cancel = (abil) => {clear(abil)}
-Casting.interrupt = (abil) => {clear(abil)}
+//========
+
+Casting.cancel = clear
+
+//========
+
+Casting.interrupt = clear
+
+//========
+
 Casting.finish = (abil) => {
-    let data = VoodooPoisonData.get(abil)
     let caster = abil.Data.owner
+    let data = CastData.get(abil)
     let json = getJson(abil)
 
     let params = Param.UnitContainer.get(caster)
@@ -75,13 +89,20 @@ Casting.finish = (abil) => {
     t.start(1 / ticks_per_sec, true)
 }
 
+//========
+
 Casting.castingTime = (abil, target) => {
     let params = Param.UnitContainer.get(abil.Data.owner)
     let json = getJson(abil)
 
     return json.getScaled(SCALE_CAST_TIME, params)
 }
+
+//========
+
 Casting.isTargetValid = (abil, target) => {return true}
+
+//========
 
 function stopAnim(u: hUnit){
     u.pause = false
@@ -90,7 +111,7 @@ function stopAnim(u: hUnit){
 }
 
 function clear(abil: Abil.IFace<[Vec2]>){
-    let data = VoodooPoisonData.get(abil)
+    let data = CastData.get(abil)
     if (data){
         data.detach()
         data.destroy()

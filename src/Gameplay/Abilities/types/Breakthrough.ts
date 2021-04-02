@@ -2,37 +2,49 @@ import * as Abil from "../../../AbilityExt";
 import * as Buff from "../../../Buff";
 import * as Param from "../../../Parameter";
 import { hUnit } from "../../../Handle";
-import { getFileDir, Vec2 } from "../../../Utils";
+import { Vec2 } from "../../../Utils";
 
-import { BreakthroughData } from "../data/Breakthrough";
-import { Push } from '../../Buffs'
 import { AbilityData, getJson } from "../Data";
+import { AbilityJson } from "../../JsonUtils";
 
-const __dir__ = Macro(getFileDir())
+import { Breakthrough as Cached } from '../json'
+import { Breakthrough as CastData } from '../data'
+import { Push } from '../../Buffs'
 
+//========
+
+// Scales 
 const SCALE_CAST_TIME = 'castTime'
 const SCALE_DMG = 'pushDmg'
 const SCALE_PUSH_DUR = 'pushDur'
+
+// Extra
 const ANIM_WALK_ID = ['animation', 'walk']
 
-const TData = new AbilityData(__dir__ + '/../json/Breakthrough.json',
-                              [SCALE_CAST_TIME, SCALE_DMG, SCALE_PUSH_DUR],
-                              [ANIM_WALK_ID])
+// Init
+const ABIL_CACHED = AbilityJson.load(Cached,
+    [SCALE_CAST_TIME, SCALE_DMG, SCALE_PUSH_DUR],
+    [ANIM_WALK_ID])
+const TData = new AbilityData(ABIL_CACHED)
+const Casting = new Abil.TCasting<[Vec2]>()
 
-let Casting = new Abil.TCasting<[Vec2]>()
+//========
 
 Casting.start = (abil, target) => {
     let caster = abil.Data.owner
-    let data = new BreakthroughData(abil, caster, target[0])
+    let json = getJson(abil)
+    let data = new CastData(abil, caster, target[0])
     
     caster.pause = true
     caster.angle = data.angle
-    caster.animation = getJson(abil).data.getNumber(ANIM_WALK_ID, 0)
+    caster.animation = json.extra.get(ANIM_WALK_ID)
 }
+
+//========
 
 Casting.casting = (abil, target) => {
     let caster = abil.Data.owner
-    let data = BreakthroughData.get(abil)
+    let data = CastData.get(abil)
 
     // Wait caster turning
     if (caster.angle < data.angle - 0.1 || caster.angle > data.angle + 0.1){
@@ -41,9 +53,9 @@ Casting.casting = (abil, target) => {
 
     // Moving caster
     const status = data.move()
-    if (status == BreakthroughData.Status.COLLISION){
+    if (status == CastData.Status.COLLISION){
         return abil.Casting.cancel()
-    } else if (status == BreakthroughData.Status.FINISHED){
+    } else if (status == CastData.Status.FINISHED){
         return abil.Casting.finish()
     }
 
@@ -72,21 +84,20 @@ Casting.casting = (abil, target) => {
     }
 }
 
-function getPushVel(caster: hUnit, target: hUnit, vel: number){
-    return target.pos.sub(caster.pos).norm.mult(1.5 * vel / Abil.Casting.period)
-}
+//========
 
-function clear(abil: Abil.IFace<[Vec2]>){
-    BreakthroughData.get(abil).detach()
+Casting.cancel = clear
 
-    let caster = abil.Data.owner
-    caster.pause = false
-    caster.animation = 'stand'
-}
+//========
 
-Casting.cancel = (abil) => {clear(abil)}
-Casting.interrupt = (abil) => {clear(abil)}
-Casting.finish = (abil) => {clear(abil)}
+Casting.interrupt = clear
+
+//========
+
+Casting.finish = clear
+
+//========
+
 Casting.castingTime = (abil, target) => {
     let caster = abil.Data.owner
     let params = Param.UnitContainer.get(caster)
@@ -100,6 +111,23 @@ Casting.castingTime = (abil, target) => {
 
     return turn_time + cast_time
 }
+
+//========
+
 Casting.isTargetValid = (abil, target) => {return true}
+
+//========
+
+function getPushVel(caster: hUnit, target: hUnit, vel: number){
+    return target.pos.sub(caster.pos).norm.mult(1.5 * vel / Abil.Casting.period)
+}
+
+function clear(abil: Abil.IFace<[Vec2]>){
+    CastData.get(abil).detach()
+
+    let caster = abil.Data.owner
+    caster.pause = false
+    caster.animation = 'stand'
+}
 
 export let Breakthrough = new Abil.TAbility(Casting, TData, Abil.TTargetingLine)

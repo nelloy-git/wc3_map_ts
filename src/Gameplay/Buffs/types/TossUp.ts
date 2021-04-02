@@ -1,33 +1,47 @@
 import * as Buff from '../../../Buff'
 
-import { getFileDir } from "../../../Utils";
+import { BuffData } from '../Data'
 import { BuffJson } from "../../JsonUtils/Buff";
-import { TossUpData } from "../data/TossUp";
 
-let __dir__ = Macro(getFileDir())
-let json = new BuffJson(__dir__ + '/../json/TossUp.json')
+import { TossUp as DurData } from "../data";
+import { TossUp as Cached } from '../json'
 
-let Data = new Buff.TData<[height: number]>()
-Data.name = (buff) => {return json.name}
-Data.icon = (buff) => {return json.icon}
-Data.tooltip = (buff) => {return json.tooltip}
+//========
 
-let Duration = new Buff.TDuration<[height: number]>()
+// Init
+const BUFF_CHACHED = BuffJson.load(Cached)
+const TData = new BuffData(BUFF_CHACHED)
+const TDur = new Buff.TDuration<[height: number]>()
 
-Duration.start = (buff) => {
-    buff.Data.owner.pause = true
-    new TossUpData(buff, buff.Data.user_data[0])
+//========
+
+TDur.start = (buff) => {
+    let owner = buff.Data.owner
+    let height = buff.Data.user_data[0]
+    let data = new DurData(buff, height)
+
+    owner.pause = true
 }
 
-Duration.period = (buff) => {
-    TossUpData.get(buff).period()
+//========
+
+TDur.period = (buff) => {
+    DurData.get(buff).period()
 }
 
-Duration.cancel = (buff) => {
+//========
+
+TDur.cancel = clear
+
+//========
+
+TDur.finish = clear
+
+//========
+
+function clear(buff: Buff.IFace<[number]>){
     buff.Data.owner.pause = false
-    TossUpData.get(buff).destroy()
+    DurData.get(buff).detach()
 }
 
-Duration.finish = Duration.cancel
-
-export let TossUp = new Buff.TBuff(Data, Duration)
+export let TossUp = new Buff.TBuff(TData, TDur)

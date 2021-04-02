@@ -1,7 +1,9 @@
 {
     "name": "Stun",
     "icon": "ReplaceableTextures\\CommandButtons\\BTNStun.blp",
-    "tooltip": "T\no\no\nl\nt\ni\np",
+    "tooltip": [
+        "Duration: {dur}"
+    ],
     
     "model": "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl"
 }

@@ -36,9 +36,9 @@ export class GameplayUnitType extends Json.Cached {
         this.size_hd = data.getNumber(SIZE_HD, 1)
         this.size_sd = data.getNumber(SIZE_SD, 1)
 
-        this.base_params = new ParamsJson(data.getSub(PARAM_BASE), 0)
-        this.mult_params = new ParamsJson(data.getSub(PARAM_MULT), 1)
-        this.add_params = new ParamsJson(data.getSub(PARAM_ADD), 0)
+        this.base_params = new ParamsJson(data.getSub(PARAM_BASE))
+        this.mult_params = new ParamsJson(data.getSub(PARAM_MULT))
+        this.add_params = new ParamsJson(data.getSub(PARAM_ADD))
 
         this.abils = this._readAbilities()
 
@@ -58,9 +58,14 @@ export class GameplayUnitType extends Json.Cached {
         unit.modelScale = Utils.isReforged(GetLocalPlayer()) ? this.size_hd : this.size_sd
 
         for (let param of Param.Type.list()){
-            params.set(param, 'BASE', this.base_params.get(param))
-            params.set(param, 'MULT', this.mult_params.get(param))
-            params.set(param, 'ADD', this.add_params.get(param))
+            let base = this.base_params.values.get(param)
+            params.set(param, 'BASE', base ? base : 0)
+
+            let mult = this.mult_params.values.get(param)
+            params.set(param, 'MULT', mult ? mult : 1)
+
+            let add = this.add_params.values.get(param)
+            params.set(param, 'ADD', add ? add : 0)
         }
 
         for (let i = 0; i < this.abils.length; i++){

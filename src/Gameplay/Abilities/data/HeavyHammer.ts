@@ -5,7 +5,7 @@ import { Arc, Line, newImageList } from '../../../Drawing'
 
 import { CastingData } from "../CastingData"
 
-export class HeavyHammerData extends CastingData {
+export class HeavyHammer extends CastingData {
     constructor(abil: IFace<TargetType[]>, caster: hUnit, target: Vec2, width: number){
         super(abil)
 
@@ -26,7 +26,7 @@ export class HeavyHammerData extends CastingData {
         this._arc_b.setPolarPos(c, 48, min_angle, max_angle)
     }
 
-    static get = <(buff: IFace<TargetType[]>) => HeavyHammerData>CastingData.get
+    static get = <(buff: IFace<TargetType[]>) => HeavyHammer>CastingData.get
 
     get progress(){return this._progress}
     set progress(p: number){

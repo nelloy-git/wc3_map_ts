@@ -3,9 +3,10 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNThunderclap.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp",
     "tooltip": [
-        "Ogre creates an area with poisonous ground in selected ",
-        "area. Enemies in the area take {dmg:1:1:1} magic damage ",
-        "per second."
+        "Ogre charges a powerful swing in an area in front of himself ",
+        "that will deal damage to enemies when released. Enemies hit by ",
+        "the swing will take {dmg:0:0:2} physical damage and will also be knocked ",
+        "up up to {tossDur:1:2:2} seconds."
     ],
     "lifeCost": 0,
     "manaCost": 1,

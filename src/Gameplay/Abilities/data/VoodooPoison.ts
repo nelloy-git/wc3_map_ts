@@ -8,13 +8,16 @@ const MODEL = 'Abilities\\Spells\\Items\\OrbVenom\\OrbVenomMissile.mdl'
 const HEIGHT = -40
 const STEP = 24
 
-export class VoodooPoisonData extends CastingData{
+export class VoodooPoison extends CastingData{
     constructor(abil: IFace<TargetType[]>,
                 caster: hUnit, target: Vec2, area: number){
         super(abil)
 
         this.caster = caster
         this.target = target.copy()
+
+        let delta = target.sub(caster.pos)
+        this.angle = delta.angle
         this.area = area
         this.__visible = false
 
@@ -28,7 +31,7 @@ export class VoodooPoisonData extends CastingData{
         this.progress = 0
     }
 
-    static get = <(abil: IFace<TargetType[]>) => VoodooPoisonData>CastingData.get
+    static get = <(abil: IFace<TargetType[]>) => VoodooPoison>CastingData.get
 
     get progress(){return this.__progress}
     set progress(p: number){
@@ -63,6 +66,7 @@ export class VoodooPoisonData extends CastingData{
     time: number = 0
     readonly caster: hUnit
     readonly target: Vec2
+    readonly angle: number
     readonly area: number
 
     private __progress: number

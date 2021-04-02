@@ -1,9 +1,9 @@
 import * as Buff from '../../../Buff'
 
 import { hUnit } from "../../../Handle"
-import { BuffData } from "../BuffData"
+import { DurationData } from "../DurationData"
 
-export class TossUpData extends BuffData {
+export class TossUp extends DurationData {
     constructor(buff: Buff.IFace<any>, height: number){
         super(buff)
 
@@ -15,7 +15,7 @@ export class TossUpData extends BuffData {
         this._vel = -this._acc * t
     }
 
-    static get = <(buff: Buff.IFace<any>) => TossUpData>BuffData.get
+    static get = <(buff: Buff.IFace<any>) => TossUp>DurationData.get
 
     period(){
         this._vel += this._acc

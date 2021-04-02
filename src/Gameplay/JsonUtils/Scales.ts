@@ -10,56 +10,57 @@ const RES_MULT = ['resMult']
 const RES_ADD = ['resAdd']
 
 export class ScaleJson {
-    constructor(json: Json.Data){
-        this.base = 0
-        if (json.isExist(BASE)){
-            this.base = json.getNumber(BASE)
+    constructor(json?: Json.Data){
+        let base = 0
+        let base_add = undefined
+        let base_mult = undefined
+        let res_mult = undefined
+        let res_add = undefined
+
+        if (json){
+            base = json.isExist(BASE) ? json.getNumber(BASE) : 0
+            base_add = json.isExist(BASE_ADD) ? json.getSub(BASE_ADD) : undefined
+            base_mult = json.isExist(BASE_MULT) ? json.getSub(BASE_MULT) : undefined
+            res_mult = json.isExist(RES_MULT) ? json.getSub(RES_MULT) : undefined
+            res_add = json.isExist(RES_ADD) ? json.getSub(RES_ADD) : undefined
         }
-        if (json.isExist(BASE_MULT)){
-            this.baseMult = new ParamsJson(json.getSub(BASE_MULT), 1)
-        }
-        if (json.isExist(BASE_ADD)){
-            this.baseAdd = new ParamsJson(json.getSub(BASE_ADD), 0)
-        }
-        if (json.isExist(RES_MULT)){
-            this.resMult = new ParamsJson(json.getSub(RES_MULT), 1)
-        }
-        if (json.isExist(RES_ADD)){
-            this.resAdd = new ParamsJson(json.getSub(RES_ADD), 0)
-        }
+
+        this.base = base
+        this.baseAdd = new ParamsJson(base_add)
+        this.baseMult = new ParamsJson(base_mult)
+        this.resMult = new ParamsJson(res_mult)
+        this.resAdd = new ParamsJson(res_add)
+    }
+
+    copy(){
+        let copy = new ScaleJson();
+        (<number>copy.base) = this.base;
+        (<ParamsJson>copy.baseAdd) = this.baseAdd.copy();
+        (<ParamsJson>copy.baseMult) = this.baseMult.copy();
+        (<ParamsJson>copy.resMult) = this.resMult.copy();
+        (<ParamsJson>copy.resAdd) = this.resAdd.copy();
+        return copy
     }
 
     /** (BASE + BASE_ADD * BASE_MULT) * RES_MULT + RES_ADD */
     getResult(params: Param.Container){
-        let res = this.base
+        let base = this.base
+        let base_add = this.baseAdd.getResult(params)
+        let base_mult = 1 + this.baseMult.getResult(params)
+        let res_mult = 1 + this.resMult.getResult(params)
+        let res_add = this.resAdd.getResult(params)
 
-        if (this.baseAdd){
-            let add = this.baseAdd.getResult(params)
-            if (this.baseMult){
-                add *= 1 + this.baseMult.getResult(params)
-            }
-            res += add
-        }
-
-        if (this.resMult){
-            res *= 1 + this.resMult.getResult(params)
-        }
-
-        if (this.resAdd){
-            res += this.resAdd.getResult(params)
-        }
-
-        return res
+        return (base + base_add * base_mult) * res_mult + res_add
     }
 
     /** (BASE + BASE_ADD * BASE_MULT) * RES_MULT + RES_ADD */
     getFormula(prec_base: number = 0, prec_add: number = 0, prec_mult: number = 0){
 
-        let [done_base, f_base] = this.base != 0 ? [true, string.format('%.' + prec_base + 'f', this.base)] : [false, '']
-        let [done_base_add, f_base_add] = this.baseAdd ? this.baseAdd.getFormula(prec_add) : [false, '']
-        let [done_base_mult, f_base_mult] = this.baseMult ? this.baseMult.getFormula(prec_mult) : [false, '']
-        let [done_res_mult, f_res_mult] = this.resMult ? this.resMult.getFormula(prec_mult) : [false, '']
-        let [done_res_add, f_res_add] = this.resAdd ? this.resAdd.getFormula(prec_add) : [false, '']
+        let f_base = this.base != 0 ? string.format('%.' + prec_base + 'f', this.base) : ''
+        let [done_base_add, f_base_add] = this.baseAdd.getFormula(prec_add)
+        let [done_base_mult, f_base_mult] = this.baseMult.getFormula(prec_mult)
+        let [done_res_mult, f_res_mult] = this.resMult.getFormula(prec_mult)
+        let [done_res_add, f_res_add] = this.resAdd.getFormula(prec_add)
 
         let f = f_base
         if (done_base_add){
@@ -88,8 +89,8 @@ export class ScaleJson {
     }
     
     readonly base: number
-    readonly baseMult: ParamsJson | undefined
-    readonly baseAdd: ParamsJson | undefined
-    readonly resMult: ParamsJson | undefined
-    readonly resAdd: ParamsJson | undefined
+    readonly baseMult: ParamsJson
+    readonly baseAdd: ParamsJson
+    readonly resMult: ParamsJson
+    readonly resAdd: ParamsJson
 }
