@@ -11,7 +11,7 @@ export function getJson(abil: Abil.IFace<any>){
     return AbilityData.getJson(abil)
 }
 
-const FORMULA_COLOR = new Color(0.2, 0.2, 0.2, 1)
+const FORMULA_COLOR = new Color(0.8, 0.8, 0.8, 1)
 
 export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
     constructor(path: string, scales?: string[], extra?: Json.Tree[]){

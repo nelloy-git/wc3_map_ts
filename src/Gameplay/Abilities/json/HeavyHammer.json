@@ -3,7 +3,9 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNThunderclap.blp",
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNThunderclap.blp",
     "tooltip": [
-        "T\no\no\nl\nt\ni\np"
+        "Ogre creates an area with poisonous ground in selected ",
+        "area. Enemies in the area take {dmg:1:1:1} magic damage ",
+        "per second."
     ],
     "lifeCost": 0,
     "manaCost": 1,

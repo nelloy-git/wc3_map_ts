@@ -21,6 +21,12 @@ export class InterfaceAbilityPanel extends Frame.SimpleEmpty {
         this.__tooltip = new InterfaceAbilityTooltip()
         this.__tooltip.parent = this
         this.__tooltip.visible = false
+        WcIO.Keyboard.addAction((pl, key, meta, is_down)=>{
+            if (pl != GetLocalPlayer() || key != OSKEY_LCONTROL){return}
+            this.__tooltip.full = is_down
+            this.__tooltip.ability = this.__tooltip.ability
+            this.__tooltip.pos = new Vec2(0, -this.__tooltip.size.y)
+        })
 
         this.__backgrounds = []
         this.__buttons = []

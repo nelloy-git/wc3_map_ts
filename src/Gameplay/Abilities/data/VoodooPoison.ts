@@ -58,8 +58,6 @@ export class VoodooPoisonData extends CastingData{
         this.__line2.destroy()
         this.__line3.destroy()
         this.__line4.destroy()
-
-        super.destroy()
     }
 
     time: number = 0

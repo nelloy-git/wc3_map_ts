@@ -91,7 +91,10 @@ function stopAnim(u: hUnit){
 
 function clear(abil: Abil.IFace<[Vec2]>){
     let data = VoodooPoisonData.get(abil)
-    if (data){data.destroy()}
+    if (data){
+        data.detach()
+        data.destroy()
+    }
     stopAnim(abil.Data.owner)
 }
 

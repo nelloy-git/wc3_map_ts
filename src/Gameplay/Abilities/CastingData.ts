@@ -21,10 +21,6 @@ export abstract class CastingData {
     detach(){
         CastingData._abil2data.delete(this._abil)
     }
-
-    destroy(){
-        CastingData._abil2data.delete(this._abil)
-    }
     
     private _abil: Abil.IFace<Abil.TargetType[]>
     

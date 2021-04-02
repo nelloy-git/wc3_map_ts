@@ -140,7 +140,9 @@ function dealDamage(abil: Abil.IFace<[Vec2]>, target: Vec2){
 }
 
 function clearCasting(abil: Abil.IFace<[Vec2]>){
-    HeavyHammerData.get(abil).destroy()
+    let data = HeavyHammerData.get(abil)
+    data.detach()
+    data.destroy()
 
     let caster = abil.Data.owner
     caster.pause = false

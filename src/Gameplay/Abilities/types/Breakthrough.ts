@@ -24,9 +24,7 @@ let Casting = new Abil.TCasting<[Vec2]>()
 Casting.start = (abil, target) => {
     let caster = abil.Data.owner
     let data = new BreakthroughData(abil, caster, target[0])
-
-    print(getJson(abil).getFormula(SCALE_DMG))
-
+    
     caster.pause = true
     caster.angle = data.angle
     caster.animation = getJson(abil).data.getNumber(ANIM_WALK_ID, 0)

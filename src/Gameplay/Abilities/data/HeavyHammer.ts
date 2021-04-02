@@ -44,8 +44,6 @@ export class HeavyHammerData extends CastingData {
         this._line_r.destroy()
         this._arc_f.destroy()
         this._arc_b.destroy()
-
-        super.destroy()
     }
 
     cur_anim: 'START'|'PAUSE'|'END' = 'END'
