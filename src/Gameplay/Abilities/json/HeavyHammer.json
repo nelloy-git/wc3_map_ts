@@ -5,8 +5,8 @@
     "tooltip": [
         "Ogre charges a powerful swing in an area in front of himself ",
         "that will deal damage to enemies when released. Enemies hit by ",
-        "the swing will take {dmg:0:0:2} physical damage and will also be knocked ",
-        "up up to {tossDur:1:2:2} seconds."
+        "the swing will take {dmg:0:0:0:2} physical damage and will also be knocked ",
+        "up up to {tossDur:1:1:2:2} seconds."
     ],
     "lifeCost": 0,
     "manaCost": 1,
@@ -36,7 +36,7 @@
         },
 
         "tossDur": {
-            "base": 1.5
+            "base": 5
         }
     }
 }

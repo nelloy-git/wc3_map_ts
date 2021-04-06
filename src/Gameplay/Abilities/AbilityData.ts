@@ -82,13 +82,14 @@ export class AbilityData<T extends Abil.TargetType[]> extends Abil.TData<T> {
         let [tooltip, _] = string.gsub(template, '%b{}', (match: string) => {
             let field = match.slice(1, -1).split(':')
             let key = field[0]
-            let prec_base = field[1] ? tonumber(field[1]) : 0
-            let prec_add = field[2] ? tonumber(field[2]) : 0
-            let prec_mult = field[3] ? tonumber(field[3]) : 0
+            let prec_res = field[1] ? tonumber(field[1]) : 0
+            let prec_base = field[2] ? tonumber(field[2]) : 0
+            let prec_add = field[3] ? tonumber(field[3]) : 0
+            let prec_mult = field[4] ? tonumber(field[4]) : 0
 
             let val = ''
             if (json.scales.get(key)){
-                val = string.format('%.0f', json.getScaled(key, params))
+                val = string.format('%.' + prec_res + 'f', json.getScaled(key, params))
                 match = full ? FORMULA_COLOR.colorText(json.getFormula(key, prec_base, prec_add, prec_mult)) : ''
             }
             return val + ' ' + match

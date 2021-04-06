@@ -4,8 +4,8 @@
     "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNShadowPact.blp",
     "tooltip": [
         "Ogre creates an area with poisonous ground in selected ",
-        "area. Enemies in the area take {dmg:1:1:1} magic damage ",
-        "per tick. Area deals {ticksPerSec:1:2:2} ticks per second. Duration: {dur:1:2:2}"
+        "area. Enemies in the area take {dmg:1:1:1:1} magic damage ",
+        "per tick. Area deals {ticksPerSec:1:1:2:2} ticks per second. Duration: {dur:1:1:2:2}"
     ],
     "lifeCost": 0,
     "manaCost": 1,

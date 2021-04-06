@@ -1,0 +1,10 @@
+{
+    "name": "Acid",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNAcidBomb.blp",
+    "tooltip": [
+        "PDEF reduced by {0}"
+    ],
+
+    "stackable": true,
+    "appendDur": true
+}

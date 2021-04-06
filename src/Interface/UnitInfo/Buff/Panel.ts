@@ -4,6 +4,7 @@ import { Action, Vec2 } from "../../../Utils";
 
 import { IUnit } from "../../Unit";
 import { InterfaceBuff } from "./Buff";
+import { InterfaceBuffTooltip } from "./Tooltip";
 
 export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     constructor(cols: number, rows: number){
@@ -11,13 +12,29 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         this.cols = cols
         this.rows = rows
 
+        this.__tooltip = new InterfaceBuffTooltip()
+        this.__tooltip.parent = this
+        this.__tooltip.visible = false
+
         for (let y = 0; y < rows; y++){
             this.__buttons.push([])
 
             for (let x = 0; x < cols; x++){
                 let btn = new InterfaceBuff()
-                btn.parent = this
                 this.__buttons[y].push(btn)
+                btn.parent = this
+                btn.addAction(FRAMEEVENT_MOUSE_ENTER, () => {
+                    this.__tooltip.buff = btn.buff
+                    this.__tooltip.pos = btn.pos.add(btn.size)
+                    this.__tooltip.visible = true
+                })
+                btn.addAction(FRAMEEVENT_MOUSE_LEAVE, ()=>{
+                    this.__tooltip.visible = false
+                })
+
+                btn.addAction(FRAMEEVENT_CONTROL_CLICK, () => {
+                    print('click')
+                })
             }
         }
 
@@ -52,21 +69,6 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
             }
         }
     }
-
-    // protected _set_visible(flag: boolean){
-    //     super._set_visible(flag)
-
-    //     if (flag){
-    //         for (let y = 0; y < this.rows; y++){
-    //             for (let x = 0; x < this.cols; x++){
-    //                 let cur = this._buttons[y][x]
-    //                 if (cur.buff == undefined){
-    //                     cur.visible = false
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
     
     protected _updateBuffs(buffs: Buff.Container){
         let list = buffs.list
@@ -87,4 +89,5 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     private __buffs_changed: Action<[Buff.Container, Buff.Container.Event], void> | undefined
     
     private __buttons: InterfaceBuff[][] = []
+    private __tooltip: InterfaceBuffTooltip
 }

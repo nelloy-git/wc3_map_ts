@@ -1,7 +1,8 @@
+import * as Abil from '../../../AbilityExt'
 import * as Buff from '../../../Buff'
 import { Vec2 } from "../../../Utils";
 
-import { BuffData } from '../Data'
+import { BuffData } from '../BuffData'
 import { BuffJson } from "../../JsonUtils/Buff";
 
 import { Push as DurData } from "../data";
@@ -22,6 +23,10 @@ TDur.start = (buff) => {
     let data = new DurData(buff, owner, vel)
 
     owner.pause = true
+    let casting = Abil.Casting.getActive(owner)
+    if (casting){
+        casting.Casting.interrupt()
+    }
 }
 
 //========

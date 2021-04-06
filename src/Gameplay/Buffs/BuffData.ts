@@ -15,10 +15,6 @@ export class BuffData<T> extends Buff.TData<T> {
     private __getTooltip(buff: Buff.IFace<T>){
         let template = this.__buff_json_prototype.tooltip
         let [tooltip, _] = string.gsub(template, '%b{}', (match: string) => {
-            if (match == 'dur'){
-                return string.format('%.0f', buff.Dur.Timer.left)
-            }
-
             let num = tonumber(match)
             if (!num){
                 return match

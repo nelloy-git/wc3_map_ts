@@ -9,10 +9,13 @@ export class InterfaceBuff extends GlueTextButton {
 
     get buff(){return this.__buff}
     set buff(buff: Buff.IFace<any> | undefined){
+        this.__buff = buff
         this.visible = buff != undefined
         if (buff){
             let normal = this.getElement('NORMAL')
             if (normal){normal.texture = buff.Data.icon}
+            let pushed = this.getElement('PUSHED')
+            if (pushed){pushed.texture = buff.Data.icon}
         }
     }
 

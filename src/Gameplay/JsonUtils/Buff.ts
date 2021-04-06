@@ -14,7 +14,7 @@ const DEFAULT_TOOLTIP_LIST = new Json.Data('AbilityJsonDefaultTooltip', (() => {
 })())
 
 export class BuffJson {
-    static load(json: Json.Data){
+    static load(json: Json.Data, extra?: Json.Tree[]){
         let buff_json = new BuffJson();
         (<string>buff_json.name) = json.getString(NAME, 'undefined');
         (<string>buff_json.icon) = json.getString(ICON, 'undefined');
@@ -26,6 +26,20 @@ export class BuffJson {
             (<string>buff_json.tooltip) += tooltip_list.getString([i], '')
             i++
         }
+        
+        if (extra){
+            for (const tree of extra){
+                if (!json.isExist(tree)){
+                    return Utils.Log.err('can not find key\n' + json.tree2string(tree))
+                }
+                let val = json.getAny(tree)
+                if (typeof val === 'object'){
+                    return Utils.Log.err('extra value can not be of type "object"\n' + json.tree2string(tree))
+                }
+                buff_json.extra.set(tree, val)
+            }
+        }
+
         return buff_json
     }
 
@@ -33,9 +47,12 @@ export class BuffJson {
         this.name = 'undefined'
         this.icon = 'undefined'
         this.tooltip = 'undefined'
+        this.extra = new Map()
     }
 
     readonly name: string
     readonly icon: string
     readonly tooltip: string
+    
+    extra: Map<Json.Tree, any>
 }

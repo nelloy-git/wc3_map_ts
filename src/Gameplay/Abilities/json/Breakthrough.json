@@ -5,8 +5,8 @@
     "tooltip": [
         "Ogre charges in a direction. ",
         "When he collides with an enemy ",
-        "he deals {pushDmg:0:0:2} physic damage ",
-        "and pushes them away for {pushDur:1:2:2} seconds."
+        "he deals {pushDmg:0:0:0:2} physic damage ",
+        "and pushes them away for {pushDur:1:1:2:2} seconds."
     ],
     "lifeCost": 0,
     "manaCost": 1,

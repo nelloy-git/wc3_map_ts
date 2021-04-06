@@ -1,21 +1,24 @@
-import * as Abil from "../../AbilityExt";
-import * as Frame from "../../FrameExt"
-import * as Fdf from '../../Fdf'
-import { Color, Vec2 } from '../../Utils'
+import * as Buff from "../../../Buff";
+import * as Frame from "../../../FrameExt"
+import * as Fdf from '../../../Fdf'
+import { Color, Vec2 } from '../../../Utils'
 
-import { InterfaceBorderFdf } from '../Utils/BorderFdf'
+import { InterfaceBorderFdf } from '../../Utils/BorderFdf'
+import { hTimer } from "../../../Handle";
 
 const NAME_LINE_HEIGHT = 0.015
 const TOOL_LINE_HEIGHT = 0.012
+const DUR_LINE_HEIGHT = 0.012
 
 const NAME_CHAR_WIDTH = 0.008
 const TOOL_CHAR_WIDTH = 0.006
+const DUR_CHAR_WIDTH = 0.006
 
 const CHARS_PER_LINE = 35
 
 const NAME_COLOR = new Color(0.8, 0.8, 0, 1)
 
-export class InterfaceAbilityTooltip extends Frame.Backdrop {
+export class InterfaceBuffTooltip extends Frame.Backdrop {
     constructor(){
         super(InterfaceBorderFdf)
 
@@ -24,7 +27,13 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
 
         this.__tooltip = new Frame.Text(TooltipFdf)
         this.__tooltip.parent = this.__name
-        this.full = false
+
+        this.__duration = new Frame.Text(DurationFdf)
+        this.__duration.parent = this.__tooltip
+
+        this.__timer = new hTimer()
+        this.__timer.addAction(() => {this.__updateDuration()})
+        this.__timer.start(0.1, true)
 
         this.size = this.size
     }
@@ -32,9 +41,9 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
     get name(){return this.__name}
     get tooltip(){return this.__tooltip}
 
-    get ability(){return this.__ability}
-    set ability(abil: Abil.Ability<any> | undefined){
-        this.__ability = abil
+    get buff(){return this.__buff}
+    set buff(buff: Buff.IFace<any> | undefined){
+        this.__buff = buff
         this.__updateTooltip()
     }
 
@@ -43,17 +52,19 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
     }
 
     private __updateTooltip(){
-        if (!this.__ability){
+        if (!this.__buff){
             this.__name.text = ''
             this.__tooltip.text = ''
             return
         }
 
-        let abil_name = this.__ability.Data.name
-        let abil_tool = this.full ? this.__ability.Data.tooltipFull : this.__ability.Data.tooltip
+        let buff_name = this.__buff.Data.name
+        let buff_tool = this.__buff.Data.tooltip
 
-        let [name, name_chars, name_lines] = this.__splitLines(abil_name)
-        let [tool, tool_chars, tool_lines] = this.__splitLines(abil_tool)
+        print('Name:', buff_name)
+
+        let [name, name_chars, name_lines] = this.__splitLines(buff_name)
+        let [tool, tool_chars, tool_lines] = this.__splitLines(buff_tool)
 
         let name_w = name_chars * NAME_CHAR_WIDTH
         let name_h = name_lines * NAME_LINE_HEIGHT
@@ -62,7 +73,7 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
         let tool_h = tool_lines * TOOL_LINE_HEIGHT
 
         let w = 1.1 * math.max(name_w, tool_w)
-        let h = 1.15 * (name_h + tool_h)
+        let h = 1.15 * (name_h + tool_h + DUR_LINE_HEIGHT)
         let size = new Vec2(w, h)
         
         super._set_size(size)
@@ -74,6 +85,20 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
         this.__tooltip.pos = new Vec2(0, name_h)
         this.__tooltip.size = new Vec2(0.9 * w, tool_h)
         this.__tooltip.text = tool
+
+        this.__duration.pos = new Vec2(0, 0)
+        this.__duration.size = new Vec2(0.9 * w, DUR_LINE_HEIGHT)
+
+        this.__updateDuration()
+    }
+
+    private __updateDuration(){
+        if (!this.__buff){
+            return
+        }
+
+        let left =  this.__buff.Dur.Timer.left
+        this.__duration.text = string.format('%.1f sec', left)
     }
 
     private __splitLines(str: string){
@@ -118,23 +143,31 @@ export class InterfaceAbilityTooltip extends Frame.Backdrop {
         return $multi(splitted, max_chars, lines.length)
     }
 
-    full: boolean
-
     private __name: Frame.Text
     private __tooltip: Frame.Text
-    private __ability: Abil.Ability<any> | undefined
+    private __duration: Frame.Text
+    private __timer: hTimer
+
+    private __buff: Buff.IFace<any> | undefined
 }
 
-const NameFdf = new Fdf.Text(InterfaceAbilityTooltip.name + 'Name')
+const NameFdf = new Fdf.Text(InterfaceBuffTooltip.name + 'Name')
 NameFdf.width = 0.04
 NameFdf.height = 0.04
 NameFdf.font = 'fonts\\nim_____.ttf'
 NameFdf.fontSize = 0.9 * NAME_LINE_HEIGHT
 NameFdf.justification = ['JUSTIFYLEFT', 'JUSTIFYMIDDLE']
 
-const TooltipFdf = new Fdf.Text(InterfaceAbilityTooltip.name + 'Tooltip')
+const TooltipFdf = new Fdf.Text(InterfaceBuffTooltip.name + 'Tooltip')
 TooltipFdf.width = 0.04
 TooltipFdf.height = 0.04
 TooltipFdf.font = 'fonts\\nim_____.ttf'
 TooltipFdf.fontSize = 0.9 * TOOL_LINE_HEIGHT
 TooltipFdf.justification = ['JUSTIFYLEFT', 'JUSTIFYMIDDLE']
+
+const DurationFdf = new Fdf.Text(InterfaceBuffTooltip.name + 'Duration')
+DurationFdf.width = 0.04
+DurationFdf.height = 0.04
+DurationFdf.font = 'fonts\\nim_____.ttf'
+DurationFdf.fontSize = 0.9 * DUR_LINE_HEIGHT
+DurationFdf.justification = ['JUSTIFYRIGHT', 'JUSTIFYMIDDLE']

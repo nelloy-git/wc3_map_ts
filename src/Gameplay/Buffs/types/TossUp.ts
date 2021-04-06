@@ -1,6 +1,7 @@
+import * as Abil from '../../../AbilityExt'
 import * as Buff from '../../../Buff'
 
-import { BuffData } from '../Data'
+import { BuffData } from '../BuffData'
 import { BuffJson } from "../../JsonUtils/Buff";
 
 import { TossUp as DurData } from "../data";
@@ -21,6 +22,10 @@ TDur.start = (buff) => {
     let data = new DurData(buff, height)
 
     owner.pause = true
+    let casting = Abil.Casting.getActive(owner)
+    if (casting){
+        casting.Casting.interrupt()
+    }
 }
 
 //========

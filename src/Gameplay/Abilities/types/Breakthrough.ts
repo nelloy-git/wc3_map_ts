@@ -4,7 +4,7 @@ import * as Param from "../../../Parameter";
 import { hUnit } from "../../../Handle";
 import { Vec2 } from "../../../Utils";
 
-import { AbilityData, getJson } from "../Data";
+import { AbilityData, getJson } from "../AbilityData";
 import { AbilityJson } from "../../JsonUtils";
 
 import { Breakthrough as Cached } from '../json'

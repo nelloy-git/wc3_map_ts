@@ -54,6 +54,7 @@ export namespace Mouse {
     function _lerp(a: number, b: number, k: number){
         return a + (b - a) * k
     }
+    
     function _onLoop(this: void){
         for (let [pl, [cur, next]] of _pos){
             cur[0] = _lerp(cur[0], next[0], 0.3)

@@ -19,53 +19,62 @@ export class Container {
     }
     
     get list(): ReadonlyArray<Buff<any> | undefined>{
-        return this._list
+        return this.__list
     }
 
     add<T>(src: hUnit, dur: number, type: TBuff<T>, user_data: T){
         let buff = new Buff<T>(src, this.owner, type, user_data)
-        buff.Dur.addAction('CANCEL', () => {this._remove(buff)})
-        buff.Dur.addAction('FINISH', () => {this._remove(buff)})
-        this._list.push(buff)
+        buff.Dur.addAction('CANCEL', () => {this.__remove(buff)})
+        buff.Dur.addAction('FINISH', () => {this.__remove(buff)})
+        this.__list.push(buff)
         
         buff.Dur.start(dur)
-        this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
+        this.__actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
 
     del(i: number){
-        this._list.splice(i, 1)
-        this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
+        this.__list.splice(i, 1)
+        this.__actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
 
     get(i: number): Readonly<Buff<any>> | undefined{
-        return this._list[i]
+        return this.__list[i]
+    }
+
+    find(t: TBuff<any>){
+        for (const buff of this.__list){
+            if (buff && buff.type == t){
+                return buff
+            }
+        }
+        return undefined
     }
 
     addAction(event: Container.Event,
               callback: (this: void, cont: Container, event: Container.Event) => void){
-        return this._actions.get(event)?.add(callback)
+        return this.__actions.get(event)?.add(callback)
     }
 
     removeAction(action: Action<[Container, Container.Event], void> | undefined){
-        for (let [event, list] of this._actions){
+        for (let [event, list] of this.__actions){
             if (list.remove(action)){return true}
         }
         return false
     }
 
-    private _remove(buff: Buff<any>){
-        let pos = this._list.indexOf(buff)
+    private __remove(buff: Buff<any>){
+        let pos = this.__list.indexOf(buff)
         if (pos < 0){return false}
         
-        this._list.splice(pos, 1)
-        this._actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
+        this.__list.splice(pos, 1)
+        this.__actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
         return true
     }
 
     readonly owner: hUnit
 
-    private _list: (Buff<any> | undefined)[] = []
-    private _actions = new Map<Container.Event, ActionList<[Container, Container.Event]>>([
+    private __list: (Buff<any> | undefined)[] = []
+    private __actions = new Map<Container.Event, ActionList<[Container, Container.Event]>>([
         ['LIST_CHANGED', new ActionList()],
     ])
 

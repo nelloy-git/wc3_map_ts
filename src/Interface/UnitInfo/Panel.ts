@@ -58,7 +58,7 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
         this.__bars = new InterfaceUnitBars()
         this.__bars.parent = this
 
-        this.__buffs = new InterfaceBuffPanel(10, 2)
+        this.__buffs = new InterfaceBuffPanel(8, 3)
         this.__buffs.parent = this
 
         this.__params = new InterfaceUnitParameters()

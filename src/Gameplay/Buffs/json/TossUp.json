@@ -2,6 +2,6 @@
     "name": "Toos Up",
     "icon": "ReplaceableTextures\\CommandButtons\\BTNAttackGround.blp",
     "tooltip": [
-        "Duration: {dur}"
+        ""
     ]
 }
