@@ -2,7 +2,7 @@ import * as Abil from '../../../AbilityExt'
 import * as Buff from '../../../Buff'
 import * as Params from '../../../Parameter'
 
-import { BuffData } from '../BuffData'
+import { BuffTData } from '../BuffTData'
 import { BuffJson } from "../../JsonUtils/Buff";
 
 import { Acid as Cached } from '../json'
@@ -15,7 +15,7 @@ const APPEND_DUR = ['appendDur']
 // Init
 const BUFF_CACHED = BuffJson.load(Cached,
     [IS_STACKABLE, APPEND_DUR])
-const TData = new BuffData(BUFF_CACHED)
+const TData = new BuffTData(BUFF_CACHED)
 const TDur = new Buff.TDuration<[reduce_PDEF: number]>()
 
 //========

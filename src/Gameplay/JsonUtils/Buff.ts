@@ -6,6 +6,8 @@ let __path__ = Macro(Utils.getFilePath())
 const NAME = ['name']
 const ICON = ['icon']
 const TOOLTIP = ['tooltip']
+const STACKABLE = ['stackable']
+const APPEND_DUR = ['appendDur']
 
 const DEFAULT_TOOLTIP_LIST = new Json.Data('AbilityJsonDefaultTooltip', (() => {
     let tbl = new LuaTable()
@@ -18,6 +20,8 @@ export class BuffJson {
         let buff_json = new BuffJson();
         (<string>buff_json.name) = json.getString(NAME, 'undefined');
         (<string>buff_json.icon) = json.getString(ICON, 'undefined');
+        (<boolean>buff_json.stackable) = json.getBool(STACKABLE, false);
+        (<boolean>buff_json.append_dur) = json.getBool(APPEND_DUR, false);
 
         let tooltip_list = json.getSub(TOOLTIP, DEFAULT_TOOLTIP_LIST);
         (<string>buff_json.tooltip) = ''
@@ -47,12 +51,16 @@ export class BuffJson {
         this.name = 'undefined'
         this.icon = 'undefined'
         this.tooltip = 'undefined'
+        this.stackable = false
+        this.append_dur = false
         this.extra = new Map()
     }
 
     readonly name: string
     readonly icon: string
     readonly tooltip: string
+    readonly stackable: boolean
+    readonly append_dur: boolean
     
-    extra: Map<Json.Tree, any>
+    extra: Map<Json.Tree, any | undefined>
 }

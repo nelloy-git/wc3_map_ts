@@ -2,7 +2,7 @@ import * as Buff from '../../Buff'
 
 import { BuffJson } from '../JsonUtils'
 
-export class BuffData<T> extends Buff.TData<T> {
+export class BuffTData<T> extends Buff.TData<T> {
     constructor(prototype: BuffJson){
         super()
 

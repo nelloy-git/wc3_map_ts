@@ -2,7 +2,7 @@ import * as Abil from '../../../AbilityExt'
 import * as Buff from '../../../Buff'
 import { Vec2 } from "../../../Utils";
 
-import { BuffData } from '../BuffData'
+import { BuffTData } from '../BuffTData'
 import { BuffJson } from "../../JsonUtils/Buff";
 
 import { Push as DurData } from "../data";
@@ -12,7 +12,7 @@ import { Push as Cached } from '../json'
 
 // Init
 const BUFF_CHACHED = BuffJson.load(Cached)
-const TData = new BuffData(BUFF_CHACHED)
+const TData = new BuffTData(BUFF_CHACHED)
 const TDur = new Buff.TDuration<[vel: Vec2]>()
 
 //========

@@ -1,7 +1,7 @@
 import * as Abil from '../../../AbilityExt'
 import * as Buff from '../../../Buff'
 
-import { BuffData } from '../BuffData'
+import { BuffTData } from '../BuffTData'
 import { BuffJson } from "../../JsonUtils/Buff";
 
 import { TossUp as DurData } from "../data";
@@ -11,7 +11,7 @@ import { TossUp as Cached } from '../json'
 
 // Init
 const BUFF_CHACHED = BuffJson.load(Cached)
-const TData = new BuffData(BUFF_CHACHED)
+const TData = new BuffTData(BUFF_CHACHED)
 const TDur = new Buff.TDuration<[height: number]>()
 
 //========
