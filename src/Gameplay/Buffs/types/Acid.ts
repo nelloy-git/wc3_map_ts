@@ -9,12 +9,8 @@ import { Acid as Cached } from '../json'
 
 //========
 
-const IS_STACKABLE = ['stackable']
-const APPEND_DUR = ['appendDur']
-
 // Init
-const BUFF_CACHED = BuffJson.load(Cached,
-    [IS_STACKABLE, APPEND_DUR])
+const BUFF_CACHED = BuffJson.load(Cached)
 const TData = new BuffTData(BUFF_CACHED)
 const TDur = new Buff.TDuration<[reduce_PDEF: number]>()
 
@@ -23,36 +19,23 @@ const TDur = new Buff.TDuration<[reduce_PDEF: number]>()
 TDur.start = (buff) => {
     let owner = buff.Data.owner
     let val = buff.Data.user_data[0]
+    let params = Params.UnitContainer.get(owner)
 
-    if (BUFF_CACHED.extra.get(IS_STACKABLE)){
-        let buffs = <Buff.Container>Buff.Container.get(owner)
-        let main_buff = buffs.find(Acid)
+    if (params){
+        params.add('PDEF', 'ADD', -val)
+    }
+}
 
-        // No stacks found
-        if (!main_buff){
-            let params = Params.UnitContainer.get(owner)
-            if (params){
-                params.add('PDEF', 'ADD', -val)
-            } else {
-                buff.Dur.cancel()
-            }
-            return
-        }
+//========
 
-        // Apply debuff
-        let params = Params.UnitContainer.get(owner)
-        if (params){
-            main_buff.Data.user_data[0] += val
-            params.add('PDEF', 'ADD', -val)
-        } else {
-            buff.Dur.cancel()
-        }
+TDur.addStack = (buff, other) => {
+    let owner = buff.Data.owner
+    let extra_val = other.Data.user_data[0]
+    buff.Data.user_data[0] += extra_val
+    let params = Params.UnitContainer.get(owner)
 
-        if (BUFF_CACHED.extra.get(APPEND_DUR)){
-            main_buff.Dur.Timer.left += buff.Dur.Timer.left
-        } else {
-            main_buff.Dur.Timer.left = math.max(main_buff.Dur.Timer.left, buff.Dur.Timer.left)
-        }
+    if (params){
+        params.add('PDEF', 'ADD', -extra_val)
     }
 }
 
@@ -69,8 +52,8 @@ TDur.cancel = () => {}
 TDur.finish = (buff) => {
     let owner = buff.Data.owner
     let val = buff.Data.user_data[0]
-
     let params = Params.UnitContainer.get(owner)
+
     if (params){
         params.add('PDEF', 'ADD', val)
     }

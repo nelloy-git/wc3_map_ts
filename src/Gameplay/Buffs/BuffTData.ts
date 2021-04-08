@@ -10,6 +10,8 @@ export class BuffTData<T> extends Buff.TData<T> {
         this.name = (buff) => {return this.__buff_json_prototype.name}
         this.icon = (buff) => {return this.__buff_json_prototype.icon}
         this.tooltip = (buff) => {return this.__getTooltip(buff)}
+        this.stackable = () => {return this.__buff_json_prototype.stackable}
+        this.add_duration = () => {return this.__buff_json_prototype.add_duration}
     }
 
     private __getTooltip(buff: Buff.IFace<T>){

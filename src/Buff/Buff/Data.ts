@@ -15,6 +15,8 @@ export class Data<T> implements DataIFace<T> {
     get name(){return this._type.name(this.buff)}
     get icon(){return this._type.icon(this.buff)}
     get tooltip(){return this._type.tooltip(this.buff)}
+    get stackable(){return this._type.stackable()}
+    get add_duration(){return this._type.add_duration()}
 
     readonly id: number
     readonly owner: hUnit

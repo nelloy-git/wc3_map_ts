@@ -10,6 +10,8 @@ export interface DataIFace<T> {
     readonly name: string
     readonly icon: string
     readonly tooltip: string
+    readonly stackable: boolean
+    readonly add_duration: boolean
 }
 
 export interface DurationIFace<T> {
@@ -20,6 +22,7 @@ export interface DurationIFace<T> {
     extraPeriod(reduce_time_left: boolean): void
     cancel(): void
     finish(): void
+    addStack(other: IFace<T>): void
 }
 
 export interface IFace<T> {

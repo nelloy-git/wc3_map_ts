@@ -3,5 +3,8 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNAttackGround.blp",
     "tooltip": [
         ""
-    ]
+    ],
+
+    "stackable": false,
+    "appendDur": false
 }

@@ -24,6 +24,15 @@ export class Container {
 
     add<T>(src: hUnit, dur: number, type: TBuff<T>, user_data: T){
         let buff = new Buff<T>(src, this.owner, type, user_data)
+        
+        if (type.TData.stackable()){
+            let main = this.find(type)
+            if (main){
+                main.Dur.addStack(buff)
+                return
+            }
+        }
+
         buff.Dur.addAction('CANCEL', () => {this.__remove(buff)})
         buff.Dur.addAction('FINISH', () => {this.__remove(buff)})
         this.__list.push(buff)
@@ -32,7 +41,7 @@ export class Container {
         this.__actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }
 
-    del(i: number){
+    remove(i: number){
         this.__list.splice(i, 1)
         this.__actions.get('LIST_CHANGED')?.run(this, 'LIST_CHANGED')
     }

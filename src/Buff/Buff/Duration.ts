@@ -7,9 +7,9 @@ import { IFace, DurationIFace } from "./IFace";
 export class Duration<T> implements DurationIFace<T> {
     constructor(buff: IFace<T>, type: TDuration<T>){
         this.buff = buff
-        this._type = type
+        this.__type = type
 
-        this.Timer = Duration._timer_list.newTimerObj()
+        this.Timer = Duration.__timer_list.newTimerObj()
         this.Timer.addAction('PERIOD', () => {this._period()})
         this.Timer.addAction('FINISH', () => {this._stop('FINISH')})
     }
@@ -18,13 +18,13 @@ export class Duration<T> implements DurationIFace<T> {
     readonly period = Duration.period
 
     start(time: number){
-        if (!this._type.condition(this.buff)){return false}
+        if (!this.__type.condition(this.buff)){return false}
 
         time = time > 0 ? time : 0.01
         this.Timer.start(time)
 
-        this._type.start(this.buff)
-        this._actions.get('START')?.run(this.buff, 'START')
+        this.__type.start(this.buff)
+        this.__actions.get('START')?.run(this.buff, 'START')
     }
     
     extraPeriod(reduce_time_left: boolean){
@@ -39,21 +39,33 @@ export class Duration<T> implements DurationIFace<T> {
         this._stop('FINISH')
     }
 
+    addStack(other: IFace<T>){
+        if (this.buff.Data.stackable){
+            this.__type.addStack(this.buff, other)
+
+            if (this.buff.Data.add_duration){
+                this.Timer.left += other.Dur.Timer.left
+            } else {
+                this.Timer.left = math.max(this.Timer.left, other.Dur.Timer.left)
+            }
+        }
+    }
+
     addAction(event: Duration.Event,
               callback: (this: void, buff: IFace<T>, event: Duration.Event) => void){
-        return this._actions.get(event)?.add(callback)
+        return this.__actions.get(event)?.add(callback)
     }
 
     removeAction(action: Action<[IFace<T>, Duration.Event], void> | undefined){
-        for (let [event, list] of this._actions){
+        for (let [event, list] of this.__actions){
             if (list.remove(action)){return true}
         }
         return false
     }
 
     private _period(){
-        this._type.period(this.buff)
-        this._actions.get('PERIOD')?.run(this.buff, 'PERIOD')
+        this.__type.period(this.buff)
+        this.__actions.get('PERIOD')?.run(this.buff, 'PERIOD')
     }
 
     private _stop(event: 'CANCEL'|'FINISH'){
@@ -62,26 +74,25 @@ export class Duration<T> implements DurationIFace<T> {
         }
 
         if (event == 'CANCEL'){
-            this._type.cancel(this.buff)
+            this.__type.cancel(this.buff)
         } else {
-            this._type.finish(this.buff)
+            this.__type.finish(this.buff)
         }
-        this._actions.get(event)?.run(this.buff, event)
+        this.__actions.get(event)?.run(this.buff, event)
     }
     
     readonly buff: IFace<T>
     readonly Timer: hTimerObj
 
-    private _type: TDuration<T>
-    
-    private _actions = new Map<Duration.Event, ActionList<[IFace<any>, Duration.Event]>>([
+    private __type: TDuration<T>
+    private __actions = new Map<Duration.Event, ActionList<[IFace<any>, Duration.Event]>>([
         ['START', new ActionList()],
         ['PERIOD', new ActionList()],
         ['CANCEL', new ActionList()],
         ['FINISH', new ActionList()],
     ])
     
-    private static _timer_list = new hTimerList(Duration.period)
+    private static __timer_list = new hTimerList(Duration.period)
 }
 
 export namespace Duration {

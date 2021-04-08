@@ -3,5 +3,8 @@
     "icon": "ReplaceableTextures\\CommandButtons\\BTNGolemThunderclap.blp",
     "tooltip": [
         ""
-    ]
+    ],
+
+    "stackable": false,
+    "appendDur": false
 }

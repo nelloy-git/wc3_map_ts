@@ -21,7 +21,7 @@ export class BuffJson {
         (<string>buff_json.name) = json.getString(NAME, 'undefined');
         (<string>buff_json.icon) = json.getString(ICON, 'undefined');
         (<boolean>buff_json.stackable) = json.getBool(STACKABLE, false);
-        (<boolean>buff_json.append_dur) = json.getBool(APPEND_DUR, false);
+        (<boolean>buff_json.add_duration) = json.getBool(APPEND_DUR, false);
 
         let tooltip_list = json.getSub(TOOLTIP, DEFAULT_TOOLTIP_LIST);
         (<string>buff_json.tooltip) = ''
@@ -52,7 +52,7 @@ export class BuffJson {
         this.icon = 'undefined'
         this.tooltip = 'undefined'
         this.stackable = false
-        this.append_dur = false
+        this.add_duration = false
         this.extra = new Map()
     }
 
@@ -60,7 +60,7 @@ export class BuffJson {
     readonly icon: string
     readonly tooltip: string
     readonly stackable: boolean
-    readonly append_dur: boolean
+    readonly add_duration: boolean
     
     extra: Map<Json.Tree, any | undefined>
 }

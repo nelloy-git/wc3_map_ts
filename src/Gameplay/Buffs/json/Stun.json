@@ -4,6 +4,9 @@
     "tooltip": [
         "Duration: {dur}"
     ],
+
+    "stackable": false,
+    "appendDur": false,
     
     "model": "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl"
 }
