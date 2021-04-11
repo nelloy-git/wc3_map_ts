@@ -1,4 +1,4 @@
-import { Color, Import } from '../Utils'
+import { Color, Import, Vec3 } from '../Utils'
 import { hEffect, hImage } from '../Handle';
 
 export interface Pixel {
@@ -56,7 +56,8 @@ export function newEffectList(count: number, model?: string){
 
     let list: hEffect[] = []
     for (let i = 0; i < count; i++){
-        let eff = new hEffect(model, cx + w * Math.random(), cy + h * Math.random(), 0)
+        let v = new Vec3(cx + w * Math.random(), cy + h * Math.random(), 0)
+        let eff = new hEffect(model, v)
         list.push(eff)
         eff.visible = false
     }

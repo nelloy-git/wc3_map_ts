@@ -3,11 +3,11 @@
 
 import { hTimerList, hTimerObj, hUnit } from '../../Handle'
 import { hEffect } from '../../Handle'
-import { Import } from '../../Utils'
+import { Import, Vec3 } from '../../Utils'
 
 export class WorldBar extends hEffect {
     constructor(){
-        super(WorldBar._import_bar.dst, 0, 0, 1000)
+        super(WorldBar._import_bar.dst, new Vec3(0, 0, 1000))
     }
 
     get offset(): [number, number, number]{return [this._offset_x, this._offset_y, this._offset_z]}

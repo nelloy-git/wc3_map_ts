@@ -1,0 +1,50 @@
+{
+    "name": "Toxic fart",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNDarkSummoning.blp",
+    "disIcon": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNDarkSummoning.blp",
+    "tooltip": [
+        "Ogre prepares suprise for his enemies. Cloud of deadly Acid becomes larger over diration. ",
+        "It deals {dmg:1:1:1:2} magic damage per tick and applies Acid to enemies for {dur:1:1:1:2} sec. ",
+        "Every stack of Acid reduces PDEF by {acidVal:1:1:1:2}. ",
+        "Cloud applies {ticksPerSec:1:1:2:2} ticks per second. Duration: {cloudDur:1:1:2:2}"
+    ],
+    "lifeCost": 0,
+    "manaCost": 1,
+    "range": 0,
+    "area": 10,
+    "chargesUse": 1,
+    "chargesMax": 1,
+    "chargeCD": 5,
+
+    "model": "Abilities\\Spells\\Undead\\PlagueCloud\\PlagueCloudCaster.mdl",
+
+    "scales": {
+
+        "castTime": {
+            "base": 0
+        },
+        
+        "dmg": {
+            "base": 25,
+            "baseAdd": {
+                "MATK": 1
+            }
+        },
+
+        "cloudDur": {
+            "base": 10
+        },
+
+        "acidVal": {
+            "base": 2
+        },
+
+        "acidDur": {
+            "base": 2
+        },
+
+        "ticksPerSec": {
+            "base": 1
+        }
+    }
+}

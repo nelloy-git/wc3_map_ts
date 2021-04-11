@@ -1,29 +1,16 @@
 import { hUnit } from "./Unit";
-import { Color, getFilePath, Log, wcType } from "../Utils";
+import { Color, getFilePath, Log, wcType, Vec2, Vec3 } from "../Utils";
 import { Handle } from "./Handle";
 
 let __path__ = Macro(getFilePath())
 
 export class hEffect extends Handle<jeffect> {
-    constructor(model: string, pos: [number, number, number])
-    constructor(model: string, x: number, y:number, z: number)
-    constructor(model: string, x_or_pos: number | [number, number, number], y?:number, z?: number){
-        let x
-        if (typeof x_or_pos !== 'number'){
-            x = x_or_pos[0]
-            y = x_or_pos[1]
-            z = x_or_pos[2]
-        } else {
-            x = x_or_pos
-            y = <number> y
-            z = <number> z
-        }
-
-        super(AddSpecialEffect(model, x, y))
-        BlzSetSpecialEffectHeight(this.handle, z)
+    constructor(model: string, pos: Vec3){
+        super(AddSpecialEffect(model, pos.x, pos.y))
+        BlzSetSpecialEffectHeight(this.handle, pos.z)
         BlzPlaySpecialEffect(this.handle, ANIM_TYPE_STAND)
         
-        this.__pos = [x, y, z]
+        this.__pos = pos.copy()
         this.__visible = true
         this.__yaw = 0
         this.__pitch = 0
@@ -42,27 +29,27 @@ export class hEffect extends Handle<jeffect> {
         return instance as hEffect
     }
 
-    get pos(){return [this.__pos[0], this.__pos[1], this.__pos[2]]}
-    set pos(p: [number, number, number]){
-        this.__pos = [p[0], p[1], p[2]]
+    get pos(){return this.__pos.copy()}
+    set pos(v: Vec3){
+        this.__pos = v.copy()
         this.__updPos()
     }
 
-    get x(){return this.__pos[0]}
+    get x(){return this.__pos.x}
     set x(x: number){
-        this.__pos[0] = x
+        this.__pos.x = x
         this.__updPos()
     }
     
-    get y(){return this.__pos[1]}
+    get y(){return this.__pos.y}
     set y(y: number){
-        this.__pos[1] = y
+        this.__pos.y = y
         this.__updPos()
     }
     
-    get z(){return this.__pos[2]}
+    get z(){return this.__pos.z}
     set z(z: number){
-        this.__pos[2] = z
+        this.__pos.z = z
         this.__updPos()
     }
     
@@ -139,12 +126,12 @@ export class hEffect extends Handle<jeffect> {
     }
 
     private __updPos(){
-        BlzSetSpecialEffectPosition(this.handle, this.__pos[0],
-                                                 this.__pos[1],
-                                                 this.__visible ? this.__pos[2] : -10000)
+        BlzSetSpecialEffectPosition(this.handle, this.__pos.x,
+                                                 this.__pos.y,
+                                                 this.__visible ? this.__pos.z : -10000)
     }
 
-    private __pos: [number, number, number]
+    private __pos: Vec3
     private __visible: boolean
     private __yaw: number
     private __pitch: number

@@ -8,6 +8,10 @@ export class Vec2 {
         this.y = y
     }
 
+    static polar(a: number, r: number){
+        return new Vec2(r * Cos(a), r * Sin(a))
+    }
+
     static fromString(s: string){
         if (s.charAt(0) != LBORD || s.charAt(s.length - 1) != RBORD){
             return undefined

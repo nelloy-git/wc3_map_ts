@@ -1,14 +1,14 @@
-import { Action, ActionList } from "../../Utils";
+import { Action, ActionList, Vec3 } from "../../Utils";
 import { hEffect } from '../Effect';
 import { hTimer } from '../Timer'
 
 type ProjectileEvent = 'LOOP'|'FINISH'
 
 export class hProjectile extends hEffect {
-    constructor(model: string, x: number, y:number, z: number){
-        super(model, x, y, z)
+    constructor(model: string, pos: Vec3){
+        super(model, pos)
         this._timer_action = hProjectile._timer?.addAction(
-            (timer: hTimer): void => {this.loop()}
+            () => {this.loop()}
         )
     }
 

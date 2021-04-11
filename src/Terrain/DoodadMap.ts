@@ -58,7 +58,7 @@ export class DoodadMap {
             let [x, y, z] = data.pos
             let [sc_x, sc_y, sc_z] = data.scale
 
-            let eff = new hEffect(model, x + cx, y + cy, z + cz)
+            let eff = new hEffect(model, new Utils.Vec3(x + cx, y + cy, z + cz))
             this.__doodads.push(eff)
             eff.yaw = data.yaw
             eff.scale = [s_mult * sc_x, s_mult * sc_y, s_mult * sc_z]

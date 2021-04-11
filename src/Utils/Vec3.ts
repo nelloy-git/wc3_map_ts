@@ -1,3 +1,5 @@
+import { Vec2 } from "./Vec2"
+
 const LBORD = '['
 const RBORD = ']'
 const SEP = ','
@@ -7,6 +9,10 @@ export class Vec3 {
         this.x = x
         this.y = y
         this.z = z
+    }
+
+    static fromVec2(v: Vec2, z: number){
+        return new Vec3(v.x, v.y, z)
     }
 
     static fromString(s: string){
@@ -25,6 +31,10 @@ export class Vec3 {
         let z = parseFloat(s_list[1])
 
         return new Vec3(x, y, z)
+    }
+
+    copy(){
+        return new Vec3(this.x, this.y, this.z)
     }
 
     add(other: Vec3){
