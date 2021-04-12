@@ -1,21 +1,22 @@
 import { hUnit } from "./Unit";
-import { Color, getFilePath, Log, wcType, Vec2, Vec3 } from "../Utils";
+import { Color, getFilePath, Log, wcType, Vec3 } from "../Utils";
 import { Handle } from "./Handle";
 
 let __path__ = Macro(getFilePath())
 
 export class hEffect extends Handle<jeffect> {
-    constructor(model: string, pos: Vec3){
-        super(AddSpecialEffect(model, pos.x, pos.y))
-        BlzSetSpecialEffectHeight(this.handle, pos.z)
+    constructor(model: string){
+        super(AddSpecialEffect(model, 0, 0))
+        BlzSetSpecialEffectHeight(this.handle, 0)
         BlzPlaySpecialEffect(this.handle, ANIM_TYPE_STAND)
         
-        this.__pos = pos.copy()
-        this.__visible = true
+        this.__pos = new Vec3(0, 0, 0)
+        this.__scale = new Vec3(1, 1, 1)
         this.__yaw = 0
         this.__pitch = 0
         this.__roll = 0
-        this.__scale = [1, 1, 1]
+
+        this.__visible = true
         this.__color = new Color(1, 1, 1, 1)
     }
 
@@ -32,32 +33,20 @@ export class hEffect extends Handle<jeffect> {
     get pos(){return this.__pos.copy()}
     set pos(v: Vec3){
         this.__pos = v.copy()
-        this.__updPos()
+        BlzSetSpecialEffectPosition(this.handle, this.__pos.x,
+                                                 this.__pos.y,
+                                                 this.__visible ? this.__pos.z : -10000)
     }
 
-    get x(){return this.__pos.x}
-    set x(x: number){
-        this.__pos.x = x
-        this.__updPos()
-    }
-    
-    get y(){return this.__pos.y}
-    set y(y: number){
-        this.__pos.y = y
-        this.__updPos()
-    }
-    
-    get z(){return this.__pos.z}
-    set z(z: number){
-        this.__pos.z = z
-        this.__updPos()
-    }
-    
-    get visible(){return this.__visible}
-    set visible(flag: boolean){
-        this.__visible = flag
-        let true_z = flag ? this.z : -100000
-        BlzSetSpecialEffectHeight(this.handle, true_z)
+    get scale(){return this.__scale.copy()}
+    set scale(v: Vec3){
+        v.x = v.x < 0.001 ? 0.001 : v.x
+        v.y = v.y < 0.001 ? 0.001 : v.y
+        v.z = v.z < 0.001 ? 0.001 : v.z
+        BlzSetSpecialEffectMatrixScale(this.handle, v.x / this.__scale.x, 
+                                                    v.y / this.__scale.y,
+                                                    this.__visible ? v.z / this.__scale.z : -100000)
+        this.__scale = v.copy()
     }
 
     get yaw(){return this.__yaw}
@@ -77,42 +66,17 @@ export class hEffect extends Handle<jeffect> {
         this.__roll = roll
         BlzSetSpecialEffectRoll(this.handle, this.__roll)
     }
-
-    get scale(){return [this.__scale[0], this.__scale[1], this.__scale[2]]}
-    set scale(s: [number, number, number]){
-        let s_x = s[0] <= 0.001 ? 0.001 : s[0]
-        let s_y = s[1] <= 0.001 ? 0.001 : s[1]
-        let s_z = s[2] <= 0.001 ? 0.001 : s[2]
-        BlzSetSpecialEffectMatrixScale(this.handle, s_x / this.__scale[0], 
-                                                    s_y / this.__scale[1],
-                                                    s_z / this.__scale[2])
-        this.__scale = [s_x, s_y, s_z]
+    
+    get visible(){return this.__visible}
+    set visible(flag: boolean){
+        this.__visible = flag
+        let true_z = flag ? this.__pos.z : -100000
+        BlzSetSpecialEffectHeight(this.handle, true_z)
     }
 
-    get scaleX(){return this.__scale[0]}
-    set scaleX(scale: number){
-        scale = scale <= 0.002 ? 0.002 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, scale / this.__scale[0], 1, 1)
-        this.__scale[0] = scale
-    }
-
-    get scaleY(){return this.__scale[1]}
-    set scaleY(scale: number){
-        scale = scale <= 0.001 ? 0.001 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, 1, scale / this.__scale[1], 1)
-        this.__scale[1] = scale
-    }
-
-    get scaleZ(){return this.__scale[2]}
-    set scaleZ(scale: number){
-        scale = scale <= 0.001 ? 0.001 : scale
-        BlzSetSpecialEffectMatrixScale(this.handle, 1, 1, scale / this.__scale[2])
-        this.__scale[2] = scale
-    }
-
-    get color(){return new Color(this.__color)}
+    get color(){return this.__color.copy()}
     set color(color: Color){
-        this.__color = new Color(color)
+        this.__color = color.copy()
         BlzSetSpecialEffectColor(this.handle, Math.floor(255 * color.r),
                                               Math.floor(255 * color.g),
                                               Math.floor(255 * color.b))
@@ -125,18 +89,13 @@ export class hEffect extends Handle<jeffect> {
         super.destroy()
     }
 
-    private __updPos(){
-        BlzSetSpecialEffectPosition(this.handle, this.__pos.x,
-                                                 this.__pos.y,
-                                                 this.__visible ? this.__pos.z : -10000)
-    }
-
     private __pos: Vec3
-    private __visible: boolean
+    private __scale: Vec3
     private __yaw: number
     private __pitch: number
     private __roll: number
-    private __scale: [number, number, number]
+
+    private __visible: boolean
     private __color: Color
 }
 

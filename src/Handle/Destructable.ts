@@ -1,13 +1,23 @@
-import { getFilePath, Log, wcType } from "../Utils";
+import { getFilePath, Log, Vec3, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 let __path__ = Macro(getFilePath())
 
 export class hDestructable extends Handle<jdestructable> {
-    constructor(id: number, x: number, y:number, z: number, a: number,
-                size: number, variation: number){
-        super(CreateDestructableZ(id, x, y, z, a, size, variation))
+
+    constructor(id: number, pos: Vec3, size: number,
+                angle: number, variation: number){
+
+        super(CreateDestructableZ(id,
+                                  pos.x, pos.y, pos.z,
+                                  angle, size, variation))
+
+        this.pos = pos.copy()
+        this.size = size
+        this.angle = angle
+        this.variation = variation
     }
+    
     static get(id: jdestructable | number){
         let instance = Handle.get(id)
         if (!instance){return}
@@ -18,11 +28,13 @@ export class hDestructable extends Handle<jdestructable> {
         return instance as hDestructable
     }
 
-    get x(){return GetDestructableX(this.handle)}
-    get y(){return GetDestructableY(this.handle)}
-
     destroy(){
         RemoveDestructable(this.handle)
         super.destroy()
     }
+
+    readonly pos: Vec3
+    readonly size: number
+    readonly angle: number
+    readonly variation: number
 }

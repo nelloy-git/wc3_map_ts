@@ -9,7 +9,7 @@ export class ToxicFart {
         let v = Vec3.fromVec2(Vec2.polar(caster.angle, 100), 0)
 
         this.__cloud = new hEffect(model, v)
-        this.__cloud.scale = 
+        // this.__cloud.scale = 
     }
 
     destroy(){

@@ -193,6 +193,11 @@ export namespace hUnit {
         return u ? hUnit.get(u) : undefined
     }
 
+    export function getSpellCaster(){
+        let u = GetSpellAbilityUnit()
+        return u ? hUnit.get(u) : undefined
+    }
+
     export function getInRange(v: Vec2, r: number){
         GroupEnumUnitsInRange(_group, v.x, v.y, r)
 

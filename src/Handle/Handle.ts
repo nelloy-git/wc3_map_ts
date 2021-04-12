@@ -4,52 +4,68 @@ let __path__ = Macro(getFilePath())
 
 export abstract class Handle<T extends jhandle> {
     constructor(handle: T){
-        this._id = GetHandleId(handle)
-        this._handle = handle
-        Handle.id2instance.set(this._id, this)
+        this.valid = true
+        this.__id = GetHandleId(handle)
+        this.__handle = handle
+        Handle.__id2instance.set(this.__id, this)
     }
 
-    static get(id: jhandle | number): Handle<jhandle> | undefined{
+    static get(id: jhandle | number, wc3_type: string){
         if (typeof id !== 'number'){
             id = GetHandleId(id)
         }
-        return Handle.id2instance.get(id)
+
+        let h = Handle.__id2instance.get(id)
+        if (!h){
+            return undefined
+        }
+
+        if (wcType(h.handle) != wc3_type){
+            return undefined
+        }
+
+        return h
     }
 
-    isValid(): boolean{return typeof this._handle !== undefined}
-
     get id(){
-        if (!this._id){
+        if (!this.valid || this.__id == undefined){
             return Log.err('can not get id from destroyed instance.',
                             __path__, Handle, 2)
         }
-        return this._id
+        return this.__id
     }
     
     get handle(){
-        if (!this._handle){
+        if (!this.valid || this.__handle == undefined){
             return Log.err('can not get handle from destroyed instance.',
                             __path__, Handle, 2)
         }
-        return this._handle
+        return this.__handle
     }
 
     destroy(){
-        if (!this._handle || !this._id){
+        if (!this.valid){
             Log.err('can not destroy instance. Already destroyed.',
                     __path__, Handle, 2)
             return
         }
         
-        Handle.id2instance.delete(this._id)
-        this._id = undefined
-        this._handle = undefined
+        Handle.__id2instance.delete(<number>this.__id);
+        (<boolean>this.valid) = false
+        this.__id = undefined
+        this.__handle = undefined
     }
-    
-    private static id2instance = new Map<number, Handle<any>>();
 
-    private _id: number | undefined;
-    private _handle: T | undefined;
+    readonly valid: boolean
+    private __id: number | undefined;
+    private __handle: T | undefined;
+    
+    private static __id2instance = new Map<number, Handle<any>>();
 
 }
-//throw new Error('azaz')
+
+function wcType(handle: jhandle){
+    let s_handle = tostring(handle)
+    let [name, id] = s_handle.split(':')
+    return name
+}

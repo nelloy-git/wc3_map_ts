@@ -1,4 +1,4 @@
-import { Color, getFilePath, Log, wcType } from "../Utils";
+import { Color, getFilePath, Log, Vec2, wcType } from "../Utils";
 import { Handle } from "./Handle";
 
 let __path__ = Macro(getFilePath())
@@ -32,7 +32,8 @@ export class hFrame extends Handle<jframehandle> {
             }
         })())
     }
-    public static get(id: jframehandle | number){
+
+    static get(id: jframehandle | number){
         let instance = Handle.get(id)
         if (!instance){return}
         if (wcType(instance.handle) != 'framehandle'){
@@ -42,43 +43,64 @@ export class hFrame extends Handle<jframehandle> {
         return <hFrame>instance
     }
 
-    public get size():[w: number, h: number]{return [BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle)]}
-    public set size(size: [w: number, h: number]){BlzFrameSetSize(this.handle, size[0], size[1])}
+    get size(){return new Vec2(BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle))}
+    set size(size: Vec2){
+        BlzFrameSetSize(this.handle, size.x, size.y)
+    }
 
-    public get parent(){let h = BlzFrameGetParent(this.handle); return h ? Handle.get(h) as hFrame : null}
-    public set parent(parent: hFrame | null){BlzFrameSetParent(this.handle, parent ? parent.handle : undefined)}
+    get parent(){
+        let h = BlzFrameGetParent(this.handle)
+        return h ? Handle.get(h) as hFrame : null
+    }
+    set parent(parent: hFrame | null){
+        BlzFrameSetParent(this.handle, parent ? parent.handle : undefined)
+    }
 
-    public get visible(){return BlzFrameIsVisible(this.handle)};
-    public set visible(flag: boolean){BlzFrameSetVisible(this.handle, flag)};
+    get visible(){return BlzFrameIsVisible(this.handle)};
+    set visible(flag: boolean){
+        BlzFrameSetVisible(this.handle, flag)
+    }
 
-    public get enable(){return BlzFrameGetEnable(this.handle)}
-    public set enable(flag: boolean){BlzFrameSetEnable(this.handle, flag)}
+    get enable(){return BlzFrameGetEnable(this.handle)}
+    set enable(flag: boolean){
+        BlzFrameSetEnable(this.handle, flag)
+    }
 
-    public get level(){return this._level}
-    public set level(lvl: number){this._level = lvl; BlzFrameSetLevel(this.handle, lvl)}
+    get level(){return this.__level}
+    set level(lvl: number){
+        this.__level = lvl
+        BlzFrameSetLevel(this.handle, lvl)
+    }
 
-    public get color(){return new Color(this._color)}
-    public set color(color: Color){
-        this._color = new Color(color)
+    get color(){return this.__color.copy()}
+    set color(color: Color){
+        this.__color = color.copy()
         BlzFrameSetVertexColor(this.handle, color.getWcCode())
     }
 
-    public setPoint(relative: hFrame, 
-                    point: jframepointtype, relative_point: jframepointtype,
-                    x: number, y: number){
-        BlzFrameSetPoint(this.handle, point, relative.handle, relative_point, x, y)
+    setPoint(point: jframepointtype,
+             other: hFrame, relative_point: jframepointtype,
+             offset: Vec2){
+        BlzFrameSetPoint(this.handle, point, other.handle, relative_point, offset.x, offset.y)
     }
-    public setPointAbs(point: jframepointtype, x: number, y:number){
-        BlzFrameSetAbsPoint(this.handle, point, x, y)
+
+    setPointAbs(point: jframepointtype, offset: Vec2){
+        BlzFrameSetAbsPoint(this.handle, point, offset.x, offset.y)
     }
-    public setPointAll(relative: hFrame){BlzFrameSetAllPoints(this.handle, relative.handle)}
-    public freePointAll(){BlzFrameClearAllPoints(this.handle)}
+
+    setPointAll(other: hFrame){
+        BlzFrameSetAllPoints(this.handle, other.handle)
+    }
+
+    freePointAll(){
+        BlzFrameClearAllPoints(this.handle)
+    }
 
     destroy(){
         BlzDestroyFrame(this.handle)
         super.destroy()
     }
 
-    private _level = 0
-    private _color = new Color(1, 1, 1, 1)
+    private __level = 0
+    private __color = new Color(1, 1, 1, 1)
 }

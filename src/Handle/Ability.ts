@@ -6,8 +6,6 @@ import { hUnit } from './Unit'
 
 let __path__ = Macro(getFilePath())
 
-type AbilityEvent = 'CAST'|'CHANNEL'|'EFFECT'|'FINISH'|'ENDCAST'
-
 export class hAbility extends Handle<jability> {
     constructor(abil_id: number, owner: hUnit){
         super(((): jability=>{
@@ -15,92 +13,127 @@ export class hAbility extends Handle<jability> {
             return BlzGetUnitAbility(owner.handle, abil_id)
         })())
 
-        this._owner = owner
-        this._abil_id = abil_id
+        this.abil_id = abil_id
+        this.owner = owner
+        this.__actions = new Map()
     }
-    public static get(id: jability | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'ability'){
-            Log.err('got wrong type of handle.',
-                    __path__, hAbility, 2)
+
+    static get(id: jability | number): hAbility | undefined{
+        return Handle.get(id, 'ability') as hAbility | undefined
+    }
+
+    static addIdAction(id: number, event: hAbility.Event, callback: hAbility.IdCallback){
+        let id_events = hAbility.__id_actions.get(id)
+        if (!id_events){
+            id_events = new Map()
+            this.__id_actions.set(id, id_events)
         }
-        return instance as hAbility
-    }
-    public static getSpell(){return hAbility.get(GetSpellAbility())}
 
-    public owner(){ return this._owner }
-    public abil_id(){ return this._abil_id }
+        let id_actions = id_events.get(event)
+        if (!id_actions){
+            id_actions = new ActionList()
+            id_events.set(event, id_actions)
+        }
 
-    public addAction(event: AbilityEvent,
-                     callback: (this: void, abil: hAbility, event: AbilityEvent)=>void){
-        return this._actions.get(event)?.add(callback)
+        return id_actions.add(callback)
     }
 
-    public removeAction(action: Action<[hAbility, AbilityEvent], void>){
+    static removeIdAction(action: hAbility.IdAction){
         let found = false
-        for (let [event, list] of this._actions){
+        for (let [id, map] of this.__id_actions){
+            for (let [event, list] of map){
+                found = list.remove(action)
+                if (found){break}
+            }
+        }
+        return found
+    }
+
+    addAction(event: hAbility.Event, callback: hAbility.Callback){
+        let actions = this.__actions.get(event)
+        if (!actions){
+            actions = new ActionList()
+            this.__actions.set(event, actions)
+        }
+
+        return actions.add(callback)
+    }
+
+    removeAction(action: hAbility.hAction){
+        let found = false
+        for (let [event, list] of this.__actions){
             found = list.remove(action)
             if (found){break}
         }
         return found
     }
 
-    private static runActions(this: void,
-                              event: AbilityEvent){
-        let abil = hAbility.getSpell()
-        if (abil){
-            let event_actions = abil._actions.get(event)
-            if (event_actions){
-                event_actions.run(abil, event)
-            }
-        }
-    }
-
     destroy(){
-        if (!this._owner || ! this._abil_id){ return }
-        UnitRemoveAbility(this._owner.handle, this._abil_id)
-        this._owner = undefined
-        this._abil_id = undefined
+        UnitRemoveAbility(this.owner.handle, this.id)
         super.destroy()
     }
 
-    private _owner: hUnit | undefined;
-    private _abil_id: number | undefined;
-    private _actions = new Map<AbilityEvent, ActionList<[hAbility, AbilityEvent]>>([
-        ['CAST', new ActionList()],
-        ['CHANNEL', new ActionList()],
-        ['EFFECT', new ActionList()],
-        ['FINISH', new ActionList()],
-        ['ENDCAST', new ActionList()]
-    ])
+    readonly abil_id: number
+    readonly owner: hUnit
 
-    private static name2jevent = new Map<AbilityEvent, jplayerunitevent>([
+    private __actions: Map<hAbility.Event, ActionList<[hAbility, hAbility.Event]>>
+
+    private static __runActions(this: void,
+                                event: hAbility.Event){
+        let u = hUnit.getSpellCaster()
+        if (u == undefined){
+            return
+        }
+
+        let abil_id = GetSpellAbilityId()
+        let abil_events = hAbility.__id_actions.get(abil_id)
+        if (abil_events){
+            let id_actions = abil_events.get(event)
+            if (id_actions){
+                id_actions.run(abil_id, event, u)
+            }
+        }
+
+        let abil = hAbility.get(GetSpellAbility())
+        if (abil){
+            let actions = abil.__actions.get(event)
+            if (actions){
+                actions.run(abil, event)
+            }
+        }
+    }
+
+    private static __id_actions = new Map<number, Map<hAbility.Event, ActionList<[number, hAbility.Event, hUnit]>>>()
+
+    private static __triggers = IsGame() ? (() => {
+        let map = new Map<hAbility.Event, hTrigger>()
+
+        for (let [name, wc3_event] of hAbility.__event2jass){
+            let tr = new hTrigger()
+            map.set(name, tr)
+
+            for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
+                hTriggerEvent.newPlayerUnitEvent(Player(i), wc3_event).applyToTrigger(tr)
+            }
+            tr.addAction(() => {hAbility.__runActions(name)})
+        }
+        return map
+
+    })() : <Map<hAbility.Event, hTrigger>><unknown>undefined
+
+    private static __event2jass = new Map<hAbility.Event, jplayerunitevent>([
         ['CAST', EVENT_PLAYER_UNIT_SPELL_CAST],
         ['CHANNEL', EVENT_PLAYER_UNIT_SPELL_CHANNEL],
         ['EFFECT', EVENT_PLAYER_UNIT_SPELL_EFFECT],
-        ['FINISH', EVENT_PLAYER_UNIT_SPELL_FINISH],
         ['ENDCAST', EVENT_PLAYER_UNIT_SPELL_ENDCAST],
+        ['FINISH', EVENT_PLAYER_UNIT_SPELL_FINISH],
     ])
+}
 
-    private static newTrigger(event: AbilityEvent){
-        let trig = new hTrigger()
-        trig.addAction((trig: hTrigger):void => {hAbility.runActions(event)})
-        for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
-            let jevent = this.name2jevent.get(event)
-            if (jevent){
-                let trig_event = hTriggerEvent.newPlayerUnitEvent(Player(i), jevent)
-                trig_event.applyToTrigger(trig)
-            }
-        }
-        return trig
-    }
-
-    private static _triggers = IsGame() ? new Map<AbilityEvent, hTrigger>([
-        ['CAST', hAbility.newTrigger('CAST')],
-        ['CHANNEL', hAbility.newTrigger('CHANNEL')],
-        ['EFFECT', hAbility.newTrigger('EFFECT')],
-        ['FINISH', hAbility.newTrigger('FINISH')],
-        ['ENDCAST', hAbility.newTrigger('ENDCAST')],
-    ]) : undefined
+export namespace hAbility {
+    export type Event = 'CAST' | 'CHANNEL' | 'EFFECT' | 'FINISH' | 'ENDCAST'
+    export type IdCallback = (id: number, event: hAbility.Event, caster: hUnit) => void
+    export type Callback = (abil: hAbility, event: hAbility.Event) => void
+    export type IdAction = Action<[id: number, event: hAbility.Event, caster: hUnit], void>
+    export type hAction = Action<[abil: hAbility, event: hAbility.Event], void>
 }
