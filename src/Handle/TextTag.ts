@@ -1,83 +1,96 @@
-import { Color, getFilePath, Log, wcType } from "../Utils";
+import { Vec2, Vec3 } from "../Math";
+import { Color } from "../Utils";
 import { Handle } from "./Handle";
-
-let __path__ = Macro(getFilePath())
 
 export class hTextTag extends Handle<jtexttag> {
     constructor(){
         super(CreateTextTag())
+
+        this.__pos = new Vec3(0, 0, 0)
+        this.__vel = new Vec2(0, 0)
+        this.__text = ''
+        this.__font_size = 12
+        this.__color = new Color()
+        this.__visible = true
+        this.__permanent = false
+        this.__fadepoint = 0
     }
+
     static get(id: jtexttag | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'textjtexttag'){
-            Log.err('got wrong type of handle.',
-                    __path__, hTextTag, 2)
-        }
-        return instance as hTextTag
+        return Handle.get(id, 'textjtexttag') as hTextTag | undefined
     }
+
     static Timed(text: string, size: number, color: Color,
-                 x: number, y: number, z: number,
-                 x_vel: number, y_vel: number, lifetime: number){
+                 pos: Vec3, vel: Vec2, lifetime: number){
         let tt = CreateTextTag()
         SetTextTagText(tt, text, 0.0023 * size)
-        SetTextTagColor(tt, Math.floor(255 * color.r),
-                            Math.floor(255 * color.g),
-                            Math.floor(255 * color.b),
-                            Math.floor(255 * color.a))
-        SetTextTagPos(tt, x, y, z)
-        SetTextTagVelocity(tt, x_vel, y_vel)
+        SetTextTagColor(tt, color.r, color.g, color.b, color.a)
+        SetTextTagPos(tt, pos.x, pos.y, pos.z)
+        SetTextTagVelocity(tt, vel.x, vel.y)
         SetTextTagPermanent(tt, false)
         SetTextTagLifespan(tt, lifetime)
         SetTextTagFadepoint(tt, 0)
     }
 
-    get x(){return this._x}
-    set x(x: number){this._x = x; SetTextTagPos(this.handle, this._x, this._y, this._z)}
-    
-    get y(){return this._y}
-    set y(y: number){this._y = y; SetTextTagPos(this.handle, this._x, this._y, this._z)}
-    
-    get z(){return this._z}
-    set z(z: number){this._z = z; SetTextTagPos(this.handle, this._x, this._y, this._z)}
-
-    get text(){return this._text}
-    set text(text: string){this._text = text; SetTextTagText(this.handle, text, 0.0023 * this._font_size)}
-
-    get fontSize(){return this._font_size}
-    set fontSize(size: number){this._font_size = size; SetTextTagText(this.handle, this._text, 0.0023 * size)}
-
-    get color(){return new Color(this._color)}
-    set color(color: Color){
-        this._color = new Color(color)
-        SetTextTagColor(this.handle, Math.floor(255 * color.r),
-                                     Math.floor(255 * color.g),
-                                     Math.floor(255 * color.b),
-                                     Math.floor(255 * color.a))
+    get pos(){return this.__pos.copy()}
+    set pos(v: Vec3){
+        this.__pos = v.copy()
+        SetTextTagPos(this.handle, v.x, v.y, v.z)
     }
 
-    get velocity(): [x: number, y: number]{return this._velocity}
-    set velocity(vel: [x: number, y: number]){this._velocity = vel; SetTextTagVelocity(this.handle, vel[0], vel[1])}
-    
-    get visible(){return this._visible}
-    set visible(flag: boolean){this._visible = flag; SetTextTagVisibility(this.handle, flag)}
+    get text(){return this.__text}
+    set text(text: string){
+        this.__text = text
+        SetTextTagText(this.handle, text, 0.0023 * this.__font_size)
+    }
 
-    get fadepoint(){return this._fadepoint}
-    set fadepoint(val: number){this._fadepoint = val; SetTextTagFadepoint(this.handle, val)}
+    get fontSize(){return this.__font_size}
+    set fontSize(size: number){
+        this.__font_size = size
+        SetTextTagText(this.handle, this.__text, 0.0023 * size)
+    }
+
+    get color(){return this.__color.copy()}
+    set color(color: Color){
+        this.__color = color.copy()
+        SetTextTagColor(this.handle, color.r, color.g, color.b, color.a)
+    }
+
+    get velocity(){return this.__vel.copy()}
+    set velocity(v: Vec2){
+        this.__vel = v.copy()
+        SetTextTagVelocity(this.handle, v.x, v.y)
+    }
+    
+    get visible(){return this.__visible}
+    set visible(flag: boolean){
+        this.__visible = flag
+        SetTextTagVisibility(this.handle, flag)
+    }
+
+    get fadepoint(){return this.__fadepoint}
+    set fadepoint(val: number){
+        this.__fadepoint = val
+        SetTextTagFadepoint(this.handle, val)
+    }
+
+    get permanent(){return this.__permanent}
+    set permanent(flag: boolean){
+        this.__permanent = flag
+        SetTextTagPermanent(this.handle, flag)
+    }
 
     destroy(){
-        super.destroy()
         DestroyTextTag(this.handle)
+        super.destroy()
     }
 
-    private _x = 0;
-    private _y = 0;
-    private _z = 0;
-    private _text = ''
-    private _font_size = 12
-    private _color = new Color(1, 1, 1, 1);
-    private _velocity: [x: number, y: number] = [0, 0]
-    private _visible = true
-    private _permanent = true
-    private _fadepoint = 0
+    private __pos: Vec3
+    private __vel: Vec2
+    private __text: string
+    private __font_size: number
+    private __color: Color
+    private __visible: boolean
+    private __permanent: boolean
+    private __fadepoint: number
 }

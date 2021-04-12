@@ -130,9 +130,9 @@ export class Logger {
 
 export namespace Logger {
     let sep = IsGame() ? '\\' : _G.package.config.charAt(0);
-    export let Default = new Logger(true, true, true,
-                                    true,
-                                    true, true, true,
-                                    GetDst() + sep + '..' + sep + 'log.txt',
-                                    'log.txt')
+    export const Default = new Logger(true, true, true,
+                                      true,
+                                      true, true, true,
+                                      GetDst() + sep + '..' + sep + 'log.txt',
+                                      'log.txt')
 }

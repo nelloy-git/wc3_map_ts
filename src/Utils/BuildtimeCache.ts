@@ -1,4 +1,3 @@
-import { getFilePath } from './Funcs'
 import { Logger } from "./Logger"
 let Log = Logger.Default
 

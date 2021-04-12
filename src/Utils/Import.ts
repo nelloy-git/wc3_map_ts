@@ -1,21 +1,25 @@
 export class Import{
     constructor(src:string, dst:string){
-        src = string.gsub(src, '%\\', Import.sep)[0]
-        src = string.gsub(src, '/', Import.sep)[0]
+        src = string.gsub(src, '%\\', Import.__sep)[0]
+        src = string.gsub(src, '/', Import.__sep)[0]
         
-        dst = string.gsub(dst, '%\\', Import.sep)[0]
-        dst = string.gsub(dst, '/', Import.sep)[0]
+        dst = string.gsub(dst, '%\\', Import.__sep)[0]
+        dst = string.gsub(dst, '/', Import.__sep)[0]
 
         this.src = src;
         this.dst = dst
-        this.full_dst = GetDst() + Import.sep + dst
+        this.__full_dst = GetDst() + Import.__sep + dst
 
         if (!IsGame()){
-            Import.copy(src, this.full_dst)
+            Import.__copy(src, this.__full_dst)
         }
     }
 
-    private static isExist(path: string){
+    readonly src: string;
+    readonly dst: string;
+    private __full_dst: string;
+
+    private static __isExist(path: string){
         let [ok, err] = os.rename(path, path)
         if (!ok) {
             return false
@@ -23,13 +27,13 @@ export class Import{
         return true
     }
 
-    private static isDir(path: string){
-        return Import.isExist(path + Import.sep)
+    private static __isDir(path: string){
+        return Import.__isExist(path + Import.__sep)
     }
 
-    private static scanDir(path:string){
+    private static __scanDir(path:string){
         let f: LuaFile;
-        if (Import.sep == '/'){
+        if (Import.__sep == '/'){
             // Linux
             f = io.popen('ls -a "' + path + '"')
         } else {
@@ -46,8 +50,8 @@ export class Import{
         return list
     }
 
-    private static copyFile(src: string, dst: string){
-        if (!Import.isExist(src)){
+    private static __copyFile(src: string, dst: string){
+        if (!Import.__isExist(src)){
             error("Import: file " + src + " does not exist.", 2)
         }
 
@@ -63,44 +67,40 @@ export class Import{
         outfile.close()
     }
 
-    private static copyDir(src: string, dst: string){
-        if (!Import.isDir(dst)){
+    private static __copyDir(src: string, dst: string){
+        if (!Import.__isDir(dst)){
             os.execute('mkdir ' + dst)
         }  
 
-        let list = Import.scanDir(src)
+        let list = Import.__scanDir(src)
         for (let name of list){
-            let src_path = src + Import.sep + name
-            let dst_path = dst + Import.sep + name
-            if (Import.isDir(src_path)){
-                Import.copyDir(src_path, dst_path)
+            let src_path = src + Import.__sep + name
+            let dst_path = dst + Import.__sep + name
+            if (Import.__isDir(src_path)){
+                Import.__copyDir(src_path, dst_path)
             } else {
-                Import.copyFile(src_path, dst_path)
+                Import.__copyFile(src_path, dst_path)
             }
         }
     }
 
-    private static copy(src: string, dst:string){
-        let tree = dst.split(Import.sep)
+    private static __copy(src: string, dst:string){
+        let tree = dst.split(Import.__sep)
 
         // Make directories.
         for (let i = 1; i < tree.length - 1; i++){
-            tree[i] = tree[i - 1] + Import.sep + tree[i]
-            if (!Import.isExist(tree[i])){
+            tree[i] = tree[i - 1] + Import.__sep + tree[i]
+            if (!Import.__isExist(tree[i])){
                 os.execute('mkdir ' + tree[i])
             }
         }
 
-        if (Import.isDir(src)){
-            Import.copyDir(src, dst)
+        if (Import.__isDir(src)){
+            Import.__copyDir(src, dst)
         } else {
-            Import.copyFile(src, dst)
+            Import.__copyFile(src, dst)
         }
     }
 
-    readonly src: string;
-    readonly dst: string;
-    private full_dst: string;
-
-    private static sep = IsGame() ? '\\' : _G.package.config.charAt(0);
+    private static __sep = IsGame() ? '\\' : _G.package.config.charAt(0);
 }

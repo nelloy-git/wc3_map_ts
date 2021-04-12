@@ -1,5 +1,3 @@
-import { getFilePath, Log } from '../Utils'
-
 let __path__ = Macro(getFilePath())
 
 export abstract class Handle<T extends jhandle> {
@@ -29,25 +27,21 @@ export abstract class Handle<T extends jhandle> {
 
     get id(){
         if (!this.valid || this.__id == undefined){
-            return Log.err('can not get id from destroyed instance.',
-                            __path__, Handle, 2)
+            throw('can not get id from destroyed instance.')
         }
         return this.__id
     }
     
     get handle(){
         if (!this.valid || this.__handle == undefined){
-            return Log.err('can not get handle from destroyed instance.',
-                            __path__, Handle, 2)
+            throw('can not get handle from destroyed instance.')
         }
         return this.__handle
     }
 
     destroy(){
         if (!this.valid){
-            Log.err('can not destroy instance. Already destroyed.',
-                    __path__, Handle, 2)
-            return
+            throw('can not destroy instance. Already destroyed.')
         }
         
         Handle.__id2instance.delete(<number>this.__id);
@@ -66,6 +60,6 @@ export abstract class Handle<T extends jhandle> {
 
 function wcType(handle: jhandle){
     let s_handle = tostring(handle)
-    let [name, id] = s_handle.split(':')
+    let [name, _] = s_handle.split(':')
     return name
 }

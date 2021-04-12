@@ -1,37 +1,32 @@
 import { Logger } from './Logger'
-import { getFilePath } from './Funcs'
 let Log = Logger.Default
-
-let __path__ = Macro(getFilePath())
 
 export class Action<In extends any[], Out> {
 
-    constructor(callback: (this:void, ...args: In)=>Out){
-        this._callback = callback;
+    constructor(callback: (this:void, ...args: In) => Out, header?: string){
+        this.__callback = callback
+        this.__header = header ? header + ': ' : ''
     }
 
-    public run(...args: In): Out{
-        let res;
-        if (!Action.inside) {
-            Action.inside = true;
+    run(...args: In): Out | undefined{
+        let res
+        if (!Action.__inside_xpcall) {
+            Action.__inside_xpcall = true
             let success
-            [success, res] = xpcall(this._callback, (err)=>{Log.msg(err)}, ...args);
+            [success, res] = xpcall(this.__callback, (err) => {
+                Log.wrn(this.__header + err)
+            }, ...args)
 
-            if (!success) {
-                return Log.err(<string><unknown>res,
-                                __path__, Action, 2);
-            }
-
-            Action.inside = false;
-        }
-        else {
-            res = this._callback(...args);
+            Action.__inside_xpcall = false
+        } else {
+            res = this.__callback(...args)
         }
 
-        return (res as Out);
+        return res as Out | undefined
     }
-    
-    private static inside = false;
 
-    private _callback: (this:void, ...args: In)=>Out;
+    private __callback: (this:void, ...args: In) => Out
+    private __header: string
+    
+    private static __inside_xpcall = false
 }

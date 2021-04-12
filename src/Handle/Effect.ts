@@ -1,8 +1,6 @@
-import { hUnit } from "./Unit";
-import { Color, getFilePath, Log, wcType, Vec3 } from "../Utils";
+import { Vec3 } from '../Math'
+import { Color } from "../Utils";
 import { Handle } from "./Handle";
-
-let __path__ = Macro(getFilePath())
 
 export class hEffect extends Handle<jeffect> {
     constructor(model: string){
@@ -21,13 +19,7 @@ export class hEffect extends Handle<jeffect> {
     }
 
     static get(id: jeffect | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'effect'){
-            Log.err('got wrong type of handle.',
-                    __path__, hEffect, 2)
-        }
-        return instance as hEffect
+        return Handle.get(id, 'effect') as hEffect | undefined
     }
 
     get pos(){return this.__pos.copy()}
@@ -77,10 +69,10 @@ export class hEffect extends Handle<jeffect> {
     get color(){return this.__color.copy()}
     set color(color: Color){
         this.__color = color.copy()
-        BlzSetSpecialEffectColor(this.handle, Math.floor(255 * color.r),
-                                              Math.floor(255 * color.g),
-                                              Math.floor(255 * color.b))
-        BlzSetSpecialEffectAlpha(this.handle, Math.floor(255 * color.a))
+        BlzSetSpecialEffectColor(this.handle, color.r,
+                                              color.g,
+                                              color.b)
+        BlzSetSpecialEffectAlpha(this.handle, color.a)
     }
 
     destroy(){
@@ -99,37 +91,37 @@ export class hEffect extends Handle<jeffect> {
     private __color: Color
 }
 
-type AttachPoint = 'overhead'|'head'|'chest'|'origin'|'hand'|'foot'|'weapon'|'sprite'|'medium'|'large'|'right hand'|'left hand'|'right foot'|'left foot'
+// type AttachPoint = 'overhead'|'head'|'chest'|'origin'|'hand'|'foot'|'weapon'|'sprite'|'medium'|'large'|'right hand'|'left hand'|'right foot'|'left foot'
 
-export class hEffectAttached extends Handle<jeffect> {
-    constructor(model: string, targ: hUnit, point: AttachPoint){
-        super(AddSpecialEffectTarget(model , targ.handle, point))
-        BlzPlaySpecialEffect(this.handle, ANIM_TYPE_STAND)
-        hEffectAttached._is_attached.set(this, true)
-    }
+// export class hEffectAttached extends Handle<jeffect> {
+//     constructor(model: string, targ: hUnit, point: AttachPoint){
+//         super(AddSpecialEffectTarget(model , targ.handle, point))
+//         BlzPlaySpecialEffect(this.handle, ANIM_TYPE_STAND)
+//         hEffectAttached._is_attached.set(this, true)
+//     }
 
-    static get(id: jeffect | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
+//     static get(id: jeffect | number){
+//         let instance = Handle.get(id)
+//         if (!instance){return}
 
-        if (wcType(instance.handle) != 'effect'){
-            Log.err('got wrong type of handle.',
-                    __path__, hEffect, 2)
-        }
+//         if (wcType(instance.handle) != 'effect'){
+//             Log.err('got wrong type of handle.',
+//                     __path__, hEffect, 2)
+//         }
 
-        if (!hEffectAttached._is_attached.get(instance)){
-            return
-        }
+//         if (!hEffectAttached._is_attached.get(instance)){
+//             return
+//         }
 
-        return instance as hEffect
-    }
+//         return instance as hEffect
+//     }
 
-    destroy(){
-        hEffectAttached._is_attached.delete(this)
-        BlzSetSpecialEffectScale(this.handle, 0.001)
-        DestroyEffect(this.handle)
-        super.destroy()
-    }
+//     destroy(){
+//         hEffectAttached._is_attached.delete(this)
+//         BlzSetSpecialEffectScale(this.handle, 0.001)
+//         DestroyEffect(this.handle)
+//         super.destroy()
+//     }
 
-    private static _is_attached = new Map<Handle<jhandle>, boolean>()
-}
+//     private static _is_attached = new Map<Handle<jhandle>, boolean>()
+// }

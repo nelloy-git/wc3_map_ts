@@ -1,44 +1,43 @@
-import { Action, ActionList, getFilePath, Log, wcType } from "../Utils";
+import { Action, ActionList } from "../Utils";
 import { Handle } from "./Handle";
 
-let __path__ = Macro(getFilePath())
-
 export class hTimer extends Handle<jtimer> {
-    constructor(){super(CreateTimer())}
+    constructor(){
+        super(CreateTimer())
 
-    public static get(id: jtimer | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'timer'){
-            Log.err('got wrong type of handle.',
-                    __path__, hTimer, 2)
-        }
-        return instance as hTimer
+        this.__timeout = -1
+        this.__periodic = false
     }
-    public static getExpired(){return hTimer.get(GetExpiredTimer())}
 
-    public get timeout(){return this._timeout}
-    public get periodic(){return this._periodic}
+    static get(id: jtimer | number){
+        return Handle.get(id, 'timer') as hTimer | undefined
+    }
 
-    public start(timeout: number, periodic:boolean){
-        this._timeout = timeout
-        this._periodic = periodic
-        TimerStart(this.handle, timeout, periodic, hTimer.runActions)
-    }
-    public pause(){PauseTimer(this.handle)}
-    public resume(){ResumeTimer(this.handle)}
+    get timeout(){return this.__timeout}
+    get periodic(){return this.__periodic}
 
-    public addAction(callback: (this: void, timer: hTimer)=>void){
-        return this._actions.add(callback)
+    start(timeout: number, periodic:boolean){
+        this.__timeout = timeout
+        this.__periodic = periodic
+        TimerStart(this.handle, timeout, periodic, () => {
+            this.__actions.run(this)
+        })
     }
-    public removeAction(action: Action<[hTimer], void> | undefined){
-        this._actions.remove(action)
+
+    pause(){
+        PauseTimer(this.handle)
     }
-    private static runActions(this: void){
-        let timer = hTimer.getExpired()
-        if (timer){
-            timer._actions.run(timer)
-        }
+    
+    resume(){
+        ResumeTimer(this.handle)
+    }
+
+    addAction(callback: hTimer.Callback){
+        return this.__actions.add(callback)
+    }
+
+    removeAction(action: hTimer.hAction){
+        this.__actions.remove(action)
     }
 
     destroy(){
@@ -47,7 +46,12 @@ export class hTimer extends Handle<jtimer> {
         super.destroy()
     }
 
-    private _timeout = -1;
-    private _periodic = false;
-    private _actions = new ActionList<[hTimer]>();
+    private __timeout: number
+    private __periodic: boolean
+    private __actions = new ActionList<[hTimer]>();
+}
+
+export namespace hTimer{
+    export type Callback = (this: void, timer: hTimer) => void
+    export type hAction = Action<[hTimer], void>
 }

@@ -1,7 +1,5 @@
-import { getFilePath, Log, Vec3, wcType } from "../Utils";
+import { Vec3 } from "../Math";
 import { Handle } from "./Handle";
-
-let __path__ = Macro(getFilePath())
 
 export class hDestructable extends Handle<jdestructable> {
 
@@ -19,13 +17,7 @@ export class hDestructable extends Handle<jdestructable> {
     }
     
     static get(id: jdestructable | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'destructable'){
-            Log.err('got wrong type of handle.',
-                    __path__, hDestructable, 2)
-        }
-        return instance as hDestructable
+        return Handle.get(id, 'destructable') as hDestructable | undefined
     }
 
     destroy(){

@@ -1,7 +1,6 @@
-import { Color, getFilePath, Log, Vec2, wcType } from "../Utils";
+import { Vec2 } from '../Math'
+import { Color } from "../Utils";
 import { Handle } from "./Handle";
-
-let __path__ = Macro(getFilePath())
 
 function createFramehandle(name: string, is_simple: boolean){
     let handle: jframehandle|undefined
@@ -13,8 +12,7 @@ function createFramehandle(name: string, is_simple: boolean){
     if (tostring(handle) == tostring(test)){
         BlzDestroyFrame(handle)
         BlzDestroyFrame(test)
-        return Log.err('can not create framehandle with name ' + name,
-                        __path__, hFrame, 2)
+        throw('Can not create framehandle with name ' + name)
     }
     BlzDestroyFrame(test)
     return handle
@@ -22,37 +20,37 @@ function createFramehandle(name: string, is_simple: boolean){
 
 export class hFrame extends Handle<jframehandle> {
     constructor(name: string, is_simple: boolean)
-    constructor(name: jframehandle, is_simple: boolean)
-    constructor(name: string|jframehandle, is_simple: boolean){
-        super((():jframehandle => {
-            if (typeof name === 'string'){
-                return createFramehandle(name, is_simple)
-            } else {
-                return name
-            }
-        })())
+    constructor(handle: jframehandle, is_simple: boolean)
+    constructor(name_or_handle: string|jframehandle, is_simple: boolean){
+        let h
+        if (typeof name_or_handle === 'string'){
+            h = createFramehandle(name_or_handle, is_simple)
+        } else {
+            h = name_or_handle
+        }
+
+        super(h)
+        this.__level = 0
+        this.__color = new Color()
     }
 
     static get(id: jframehandle | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'framehandle'){
-            Log.err('got wrong type of handle.',
-                    __path__, hFrame, 2)
-        }
-        return <hFrame>instance
+        return Handle.get(id, 'framehandle') as hFrame | undefined
     }
 
-    get size(){return new Vec2(BlzFrameGetWidth(this.handle), BlzFrameGetHeight(this.handle))}
+    get size(){
+        return new Vec2(BlzFrameGetWidth(this.handle),
+                        BlzFrameGetHeight(this.handle))
+    }
     set size(size: Vec2){
         BlzFrameSetSize(this.handle, size.x, size.y)
     }
 
     get parent(){
         let h = BlzFrameGetParent(this.handle)
-        return h ? Handle.get(h) as hFrame : null
+        return h ? hFrame.get(h) : undefined
     }
-    set parent(parent: hFrame | null){
+    set parent(parent: hFrame | undefined){
         BlzFrameSetParent(this.handle, parent ? parent.handle : undefined)
     }
 
@@ -101,6 +99,6 @@ export class hFrame extends Handle<jframehandle> {
         super.destroy()
     }
 
-    private __level = 0
-    private __color = new Color(1, 1, 1, 1)
+    private __level: number
+    private __color: Color
 }

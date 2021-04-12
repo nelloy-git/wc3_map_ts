@@ -1,11 +1,11 @@
-import { Logger } from './Logger'
+// import { Logger } from '../Utils/Logger'
 
-let Log = Logger.Default
+// let Log = Logger.Default
 
 export class Mat {
     constructor(cols: number, rows: number, data: number[][]){
         if (data.length != rows){
-            Log.err(Mat.name + 
+            throw(Mat.name + 
                     string.format(': wrong size of input data. \n' + 
                                   'Input: [%d, %d]\n' + 
                                   'Data: [%d, %d]', cols, rows, data.length, data[1].length))
@@ -13,7 +13,7 @@ export class Mat {
 
         for (let row of data){
             if (row.length != cols){
-                Log.err(Mat.name + 
+                throw(Mat.name + 
                         ': wrong size of input data.')
             }
         }
@@ -25,7 +25,7 @@ export class Mat {
 
     static sum(m1: Mat, m2: Mat){
         if (m1.cols != m2.cols || m1.rows != m2.rows){
-            Log.err(Mat.name + 
+            throw(Mat.name + 
                     ': m1.cols != m2.cols || m1.rows != m2.rows')
         }
 
@@ -42,7 +42,7 @@ export class Mat {
 
     static mult(m1: Mat, m2: Mat){
         if (m1.cols != m2.rows){
-            Log.err(Mat.name + 
+            throw(Mat.name + 
                     ': m1.cols != m2.rows')
         }
 

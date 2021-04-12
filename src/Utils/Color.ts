@@ -1,73 +1,62 @@
 export class Color {
-    constructor(color: Color);
-    constructor(r: number, g: number, b: number, a: number)
-    constructor(r: number | Color, g?: number, b?: number, a?: number){
-        if (r instanceof Color) {
-            let color = r as Color
-
-            r = color._r
-            g = color._g
-            b = color._b
-            a = color._a
-        }
-
-        this._r = r
-        this._g = g ? g : 1
-        this._b = b ? b : 1
-        this._a = a ? a : 1
+    constructor(r: number = 255, g: number = 255, b: number = 255, a: number = 255){
+        this.__r = Math.floor(r)
+        this.__g = Math.floor(g)
+        this.__b = Math.floor(b)
+        this.__a = Math.floor(a)
     };
 
     copy(){
-        return new Color(this._r, this._g, this._b, this._a)
+        return new Color(this.__r, this.__g, this.__b, this.__a)
     }
 
     compare(other: Color){
-        return (this._r == other._r) &&
-               (this._g == other._g) &&
-               (this._b == other._b) &&
-               (this._a == other._a)
+        return (this.__r == other.__r) &&
+               (this.__g == other.__g) &&
+               (this.__b == other.__b) &&
+               (this.__a == other.__a)
     }
 
     colorText(text: string){
-        return '|c' + this.hex(this._a)
-                    + this.hex(this._r)
-                    + this.hex(this._g)
-                    + this.hex(this._b)
+        return '|c' + this.hex(this.__a)
+                    + this.hex(this.__r)
+                    + this.hex(this.__g)
+                    + this.hex(this.__b)
                     + text + '|r'
     }
 
     getWcCode(){
-        return BlzConvertColor(math.floor(255 * this._a),
-                               math.floor(255 * this._r),
-                               math.floor(255 * this._g),
-                               math.floor(255 * this._b))
+        return BlzConvertColor(this.__a,
+                               this.__r,
+                               this.__g,
+                               this.__b)
     }
 
     toString(){
-        return 'Color(' + this._r + ', ' +
-                          this._g + ', ' +
-                          this._b + ', ' +
-                          this._a + ')'
+        return 'Color(' + this.__r + ', ' +
+                          this.__g + ', ' +
+                          this.__b + ', ' +
+                          this.__a + ')'
     }
 
     private hex(val: number){
-        return string.format('%02X', math.floor(255 * val))
+        return string.format('%02X', val)
     }
 
-    get r(){return this._r}
-    set r(r: number){this._r = r > 1 ? 1 : r < 0 ? 0 : r}
+    get r(){return this.__r}
+    set r(r: number){this.__r = r > 255 ? 255 : r < 0 ? 0 : Math.floor(r)}
 
-    get g(){return this._g}
-    set g(g: number){this._g = g > 1 ? 1 : g < 0 ? 0 : g}
+    get g(){return this.__g}
+    set g(g: number){this.__g = g > 255 ? 255 : g < 0 ? 0 : Math.floor(g)}
 
-    get b(){return this._b}
-    set b(b: number){this._b = b > 1 ? 1 : b < 0 ? 0 : b}
+    get b(){return this.__b}
+    set b(b: number){this.__b = b > 255 ? 255 : b < 0 ? 0 : Math.floor(b)}
 
-    get a(){return this._a}
-    set a(a: number){this._a = a > 1 ? 1 : a < 0 ? 0 : a}
+    get a(){return this.__a}
+    set a(a: number){this.__a = a > 255 ? 255 : a < 0 ? 0 : Math.floor(a)}
 
-    private _r: number = 1;
-    private _g: number = 1;
-    private _b: number = 1;
-    private _a: number = 1;
+    private __r: number
+    private __g: number
+    private __b: number
+    private __a: number
 }

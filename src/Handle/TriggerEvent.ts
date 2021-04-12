@@ -1,10 +1,6 @@
 import { hTrigger } from "./Trigger";
 
 export class hTriggerEvent {
-    private constructor(func: (this: void, trig: jtrigger, ...args: any[])=>jevent, ...args:any[]){
-        this._func = func
-        this._args = [...args]
-    }
 
     static newVariableEvent(var_name: string, opcode: jlimitop, limitval: number){
         return new hTriggerEvent(TriggerRegisterVariableEvent, var_name, opcode, limitval)
@@ -83,9 +79,14 @@ export class hTriggerEvent {
     }
 
     public applyToTrigger(trigger: hTrigger){
-        this._func(trigger.handle, ...this._args)
+        this.__func(trigger.handle, ...this.__args)
     }
 
-    private _func: (this: void, trig: jtrigger, ...args: any[])=>jevent;
-    private _args: any[];
+    private __func: (this: void, trig: jtrigger, ...args: any[])=>jevent;
+    private __args: any[];
+    
+    private constructor(func: (this: void, trig: jtrigger, ...args: any[])=>jevent, ...args:any[]){
+        this.__func = func
+        this.__args = [...args]
+    }
 }
