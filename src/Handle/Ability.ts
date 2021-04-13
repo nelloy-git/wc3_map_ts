@@ -5,13 +5,13 @@ import { hTriggerEvent } from './TriggerEvent'
 import { hUnit } from './Unit'
 
 export class hAbility extends Handle<jability> {
-    constructor(abil_id: number, owner: hUnit){
+    constructor(type_id: number, owner: hUnit){
         super(((): jability=>{
-            UnitAddAbility(owner.handle, abil_id)
-            return BlzGetUnitAbility(owner.handle, abil_id)
+            UnitAddAbility(owner.handle, type_id)
+            return BlzGetUnitAbility(owner.handle, type_id)
         })())
 
-        this.abil_id = abil_id
+        this.type_id = type_id
         this.owner = owner
         this.__actions = new Map()
     }
@@ -51,7 +51,7 @@ export class hAbility extends Handle<jability> {
         super.destroy()
     }
 
-    readonly abil_id: number
+    readonly type_id: number
     readonly owner: hUnit
 
     private __actions: Map<hAbility.Event, ActionList<[hAbility, hAbility.Event]>>

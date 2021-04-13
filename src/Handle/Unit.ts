@@ -1,45 +1,39 @@
-import { Color, getFilePath, id2int, Log, Vec2, wcType } from "../Utils";
+import { Vec2 } from '../Math'
+import { Color, id2int } from "../Utils";
 import { Handle } from "./Handle";
 
-let __path__ = Macro(getFilePath())
-
 export class hUnit extends Handle<junit>{
-    constructor(unit_id: number, x: number, y: number, owner: jplayer){
-        super(CreateUnit(owner, unit_id, x, y, 0))
-        this._type_id = unit_id
+    constructor(type_id: number, owner: jplayer){
+        super(CreateUnit(owner, type_id, 0, 0, 0))
+        this.type_id = type_id
+        this.__color = new Color()
+        this.__dispersion_damage = -1
+        this.__attack_cooldown_default = BlzGetUnitWeaponRealField(this.handle, UNIT_WEAPON_RF_ATTACK_BASE_COOLDOWN, 0)
+        this.__modelScale = 1
+        this.__pause_counter = 0
+        this.__animation_scale = 1
 
         // Apply dispersion
         BlzSetUnitDiceNumber(this.handle, 1, 0)
-        this.dispersionDamage = this._dispersion_damage
-
-        // Get default attack cooldown
-        this._attack_cooldown_default = BlzGetUnitAttackCooldown(this.handle, 0)
+        this.dispersionDamage = this.__dispersion_damage
 
         // Enable Z coord
         UnitAddAbility(this.handle, id2int('Arav'))
         UnitRemoveAbility(this.handle, id2int('Arav'))
     }
+
     static get(id: junit | number){
-        let instance = Handle.get(id)
-        if (!instance){return}
-        if (wcType(instance.handle) != 'unit'){
-            Log.err('got wrong type of handle.',
-                    __path__, hUnit, 2)
-        }
-        return <hUnit> instance
+        return Handle.get(id, 'unit') as hUnit | undefined
     }
-
-    get x(){return GetUnitX(this.handle) - 16}
-    set x(x: number){SetUnitX(this.handle, x + 16)}
-
-    get y(){return GetUnitY(this.handle) - 16}
-    set y(y: number){SetUnitY(this.handle, y + 16)}
 
     get z(){return GetUnitFlyHeight(this.handle)}
     set z(z: number){SetUnitFlyHeight(this.handle, z, 0)}
 
-    get pos(){return new Vec2(this.x, this.y)}
-    set pos(v: Vec2){this.x = v.x; this.y = v.y}
+    get pos(){return new Vec2(GetUnitX(this.handle) - 16, GetUnitY(this.handle) - 16)}
+    set pos(v: Vec2){
+        SetUnitX(this.handle, v.x + 16)
+        SetUnitY(this.handle, v.y + 16)
+    }
 
     get angle(){return bj_DEGTORAD * GetUnitFacing(this.handle)}
     set angle(a: number){SetUnitFacingTimed(this.handle, bj_RADTODEG * a, 0.01)}
@@ -73,13 +67,13 @@ export class hUnit extends Handle<junit>{
     get baseDamage(){return BlzGetUnitBaseDamage(this.handle, 0)}
     set baseDamage(val: number){BlzSetUnitBaseDamage(this.handle, val, 0)}
 
-    get dispersionDamage(){return this._dispersion_damage}
+    get dispersionDamage(){return this.__dispersion_damage}
     set dispersionDamage(val: number){
-        this._dispersion_damage = val
+        this.__dispersion_damage = val
         BlzSetUnitDiceSides(this.handle, math.floor(val * this.baseDamage) + 1, 0)
     }
 
-    get attackCooldownDefault(){return this._attack_cooldown_default}
+    get attackCooldownDefault(){return this.__attack_cooldown_default}
 
     get attackCooldown(){return BlzGetUnitAttackCooldown(this.handle, 0)}
     set attackCooldown(val: number){BlzSetUnitAttackCooldown(this.handle, val, 0)}
@@ -87,9 +81,9 @@ export class hUnit extends Handle<junit>{
     get moveSpeed(){return GetUnitMoveSpeed(this.handle)}
     set moveSpeed(val: number){SetUnitMoveSpeed(this.handle, val)}
 
-    get color(){return new Color(this._color)}
+    get color(){return new Color(this.__color)}
     set color(color: Color){
-        this._color = new Color(color)
+        this.__color = new Color(color)
         SetUnitVertexColor(this.handle, math.floor(255 * color.r),
                                         math.floor(255 * color.g),
                                         math.floor(255 * color.b),
@@ -99,9 +93,9 @@ export class hUnit extends Handle<junit>{
     get owner(){return GetOwningPlayer(this.handle)}
     set owner(player: jplayer){SetUnitOwner(this.handle, player, true)}
 
-    get modelScale(){return this._modelScale}
+    get modelScale(){return this.__modelScale}
     set modelScale(scale: number){
-        this._modelScale = scale
+        this.__modelScale = scale
         SetUnitScale(this.handle, scale, scale, scale)
     }
 
@@ -114,35 +108,20 @@ export class hUnit extends Handle<junit>{
         }
     }
 
-    get animation_scale(){return this._animation_scale}
+    get animation_scale(){return this.__animation_scale}
     set animation_scale(scale: number){
-        this._animation_scale = scale
+        this.__animation_scale = scale
         SetUnitTimeScale(this.handle, scale)
     }
 
     get pause(){return IsUnitPaused(this.handle)}
     set pause(flag: boolean){
-        this._pause_counter += flag ? 1 : -1
-        if (this._pause_counter < 0){this._pause_counter = 0}
-        PauseUnit(this.handle, this._pause_counter > 0)
+        this.__pause_counter += flag ? 1 : -1
+        if (this.__pause_counter < 0){this.__pause_counter = 0}
+        PauseUnit(this.handle, this.__pause_counter > 0)
     }
 
-    get typeId(){return this._type_id}
-
-    getAngleTo(other: {x: number, y: number}): number
-    getAngleTo(x: number, y: number): number
-    getAngleTo(obj_or_x: {x: number, y: number}|number, y?: number){
-        let x: number
-        if (typeof obj_or_x == 'number'){
-            x = obj_or_x
-            y = <number>y
-        } else {
-            let obj = obj_or_x
-            x = obj.x
-            y = obj.y
-        } 
-        return Atan2(y - GetUnitY(this.handle), x - GetUnitX(this.handle))
-    }
+    get typeId(){return this.type_id}
 
     isEnemy(other: hUnit){return IsUnitEnemy(this.handle, other.owner)}
     isAlly(other: hUnit){return IsUnitAlly(this.handle, other.owner)}
@@ -157,13 +136,13 @@ export class hUnit extends Handle<junit>{
         super.destroy()
     }
     
-    private _type_id: number
-    private _color: Color = new Color(1, 1, 1, 1)
-    private _dispersion_damage: number = 0.3
-    private _attack_cooldown_default: number
-    private _modelScale: number = 1
-    private _pause_counter: number = 0
-    private _animation_scale: number = 1
+    readonly type_id: number
+    private __color: Color
+    private __dispersion_damage: number
+    private __attack_cooldown_default: number
+    private __modelScale: number
+    private __pause_counter: number
+    private __animation_scale: number
 }
 
 export namespace hUnit {
@@ -198,8 +177,8 @@ export namespace hUnit {
         return u ? hUnit.get(u) : undefined
     }
 
-    export function getInRange(v: Vec2, r: number){
-        GroupEnumUnitsInRange(_group, v.x, v.y, r)
+    export function getInRange(point: Vec2, r: number){
+        GroupEnumUnitsInRange(_group, point.x, point.y, r)
 
         let list: hUnit[] = []
         let u = FirstOfGroup(_group)
