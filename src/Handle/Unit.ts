@@ -9,11 +9,12 @@ export class hUnit extends Handle<junit>{
     constructor(type_id: number, owner: jplayer){
         super(CreateUnit(owner, type_id, 0, 0, 0))
         this.type_id = type_id
+        this.actions = new EventActions(<hUnit>this, tostring(this.handle))
+        
         this.__color = new Color()
         this.__modelScale = 1
         this.__pause_counter = 0
         this.__animation_scale = 1
-        this.actions = new EventActions(<hUnit>this, Handle.wcType(this.handle))
 
         // Enable Z coord
         UnitAddAbility(this.handle, id2int('Arav'))
@@ -74,8 +75,8 @@ export class hUnit extends Handle<junit>{
     get owner(){return GetOwningPlayer(this.handle)}
     set owner(player: jplayer){SetUnitOwner(this.handle, player, true)}
 
-    get modelScale(){return this.__modelScale}
-    set modelScale(scale: number){
+    get model_scale(){return this.__modelScale}
+    set model_scale(scale: number){
         this.__modelScale = scale
         SetUnitScale(this.handle, scale, scale, scale)
     }

@@ -12,9 +12,15 @@
           "./wc3-builder/common"
         ],
       "strict": true,
-      "rootDir": "src",
-      "outDir": "dst",
+      "rootDir": "./src",
+      "outDir": "./dst"
     },
+
+    "include": [
+      "src/**/*"
+    ],
+
+    "exclude": [],
 
     "tstl": {
       "luaTarget": "5.3",

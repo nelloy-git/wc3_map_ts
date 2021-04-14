@@ -1,10 +1,5 @@
-import { Logger } from '../Logger'
 import { BuildtimeCache } from "../BuildtimeCache"
-import { getFilePath } from "../Funcs"
 import { decode64, encode64 } from '../Encode64'
-let Log = Logger.Default
-
-const __path__ = Macro(getFilePath())
 
 export abstract class FileIFace {
     static isExist(path: string){
@@ -29,8 +24,7 @@ export abstract class FileIFace {
     loadCache(path: string, decode: (data: string) => string = decode64){
         let data = FileIFace.__cache.get(path)
         if (typeof data !== 'string'){
-            return Log.err('can not load file data from ' + path,
-                            __path__, FileIFace, 2)
+            return error('can not load file data from ' + path, 2)
         }
         this.data = decode(data)
     }

@@ -1,9 +1,9 @@
 export class Import{
     constructor(src:string, dst:string){
-        src = string.gsub(src, '%\\', Import.__sep)[0]
+        src = string.gsub(src, '\\', Import.__sep)[0]
         src = string.gsub(src, '/', Import.__sep)[0]
         
-        dst = string.gsub(dst, '%\\', Import.__sep)[0]
+        dst = string.gsub(dst, '\\', Import.__sep)[0]
         dst = string.gsub(dst, '/', Import.__sep)[0]
 
         this.src = src;

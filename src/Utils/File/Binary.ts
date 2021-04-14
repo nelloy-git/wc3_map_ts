@@ -1,9 +1,4 @@
-import { Logger } from '../Logger'
-import { getFilePath } from "../Funcs";
 import { FileIFace } from "./IFace";
-let Log = Logger.Default
-
-let __path__ = Macro(getFilePath)
 
 declare namespace string {
     function pack(this: void, fmt: string, ...data: any[]): string;
@@ -25,14 +20,12 @@ export class FileBinary extends FileIFace {
     read(path: string){
         let [f] = io.open(path, 'rb')
         if (!f){
-            return Log.err('can not open ' + path,
-                            __path__, FileBinary, 2)
+            error('can not open ' + path, 2)
         }
         let [data] = f.read('*a')
 
         if (!data){
-            return Log.err('can not read file ' + path,
-                            __path__, FileBinary, 2)
+            error('can not read file ' + path, 2)
         }
         f.close()
 
@@ -42,13 +35,11 @@ export class FileBinary extends FileIFace {
     write(path: string){
         let [f] = io.open(path, "wb")
         if (!f){
-            return Log.err('can not open ' + path,
-                            __path__, FileBinary, 2)
+            return error('can not open ' + path, 2)
         }
 
         if (!this.data){
-            Log.err('file data is empty ' + path,
-                    __path__, FileBinary, 2)
+            error('file data is empty ' + path, 2)
             return
         }
 
@@ -57,13 +48,11 @@ export class FileBinary extends FileIFace {
 
     startReading(){ 
         if (!this.data){
-            return Log.err('file data is empty.',
-                            __path__, FileBinary, 2)
+            return error('file data is empty.', 2)
         }
 
         if (this.__file_pos >= 0){
-            return Log.err('finish previous reading first.',
-                            __path__, FileBinary, 2)
+            return error('finish previous reading first.', 2)
         }
         
         this.__file_pos = 0 
@@ -73,31 +62,30 @@ export class FileBinary extends FileIFace {
         this.__file_pos = -1
     }
 
-    readBool(size: number){return this._parseNext('int', size) == 1}
-    readInt(size: number){return this._parseNext('int', size)}
-    readChar(size: number){return this._parseNext('char', size)}
-    readFloat(){return this._parseNext('float', 4)}
+    readBool(size: number){return this.__parseNext('int', size) == 1}
+    readInt(size: number){return this.__parseNext('int', size)}
+    readChar(size: number){return this.__parseNext('char', size)}
+    readFloat(){return this.__parseNext('float', 4)}
     readString(){
         let val = ''
         let c: string
         while (true){
-            c = this._parseNext('char', 1)
+            c = this.__parseNext('char', 1)
             if (c == '\0'){break}
             val += c
         }
         return val
     }
 
-    private _parseNext(type: 'char', size: number): string
-    private _parseNext(type: 'int', size: number): number
-    private _parseNext(type: 'float', size: number): number
-    private _parseNext(type: 'char'|'int'|'float', size: number){
+    private __parseNext(type: 'char', size: number): string
+    private __parseNext(type: 'int', size: number): number
+    private __parseNext(type: 'float', size: number): number
+    private __parseNext(type: 'char'|'int'|'float', size: number){
         if (this.__file_pos < 0){
-            return Log.err('start reading first.',
-                            __path__, FileBinary, 3)
+            return error('start reading first.', 3)
         }
 
-        let val = this._parseData(type, this.__file_pos, size)
+        let val = this.__parseData(type, this.__file_pos, size)
         this.__file_pos += size
 
         if (type == 'char'){
@@ -107,7 +95,7 @@ export class FileBinary extends FileIFace {
         }
     }
 
-    private _parseData(type: 'char'|'int'|'float', pos: number, size: number){
+    private __parseData(type: 'char'|'int'|'float', pos: number, size: number){
         let fmt
         if (type == 'char'){
             fmt = 'c' + size.toString()
@@ -115,8 +103,7 @@ export class FileBinary extends FileIFace {
             fmt = 'I' + size.toString()
         } else { // if (type == 'float'){
             if (size != 4){
-                return Log.err('float type can be only of size 4 bytes',
-                                __path__, FileBinary, 2)
+                return error('float type can be only 4 bytes size', 4)
             }
             fmt = 'f'
         }

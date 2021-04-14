@@ -1,24 +1,16 @@
-import { Logger } from '../Logger'
-import { getFilePath } from '../Funcs'
 import { FileIFace } from './IFace'
-let Log = Logger.Default
-
-let __path__ = Macro(getFilePath())
 
 export class FileText extends FileIFace {
 
     read(path: string){
         let [f] = io.open(path, 'r')
         if (!f){
-            return Log.err('can not open ' + path,
-                            __path__, FileText, 2)
+            error('can not open ' + path, 2)
         }
         let [data] = f.read('*a')
 
         if (!data){
-            Log.err('can not read file ' + path,
-                    __path__, FileText, 2)
-            return
+            error('can not read file ' + path, 2)
         }
         f.close()
 
@@ -28,14 +20,11 @@ export class FileText extends FileIFace {
     write(path: string){
         let [f] = io.open(path, "w")
         if (!f){
-            return Log.err('can not open ' + path,
-                            __path__, FileText, 2)
+            error('can not open ' + path, 2)
         }
 
         if (!this.data){
-            Log.err('file data is empty ' + path,
-                    __path__, FileText, 2)
-            return
+            error('file data is empty ' + path, 2)
         }
 
         f.write(this.data)
@@ -44,14 +33,11 @@ export class FileText extends FileIFace {
     append(path: string){
         let [f] = io.open(path, "a+")
         if (!f){
-            return Log.err('can not open ' + path,
-                            __path__, FileText, 2)
+            error('can not open ' + path, 2)
         }
 
         if (!this.data){
-            Log.err('file data is empty ' + path,
-                    __path__, FileText, 2)
-            return
+            error('file data is empty ' + path, 2)
         }
 
         f.write(this.data)

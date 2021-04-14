@@ -12,8 +12,6 @@ declare namespace string {
 }
 
 declare namespace math {
-    function log(v: number): number
-    function floor(this:void, v: number): number
     /** @tupleReturn */
     function frexp(this:void, v: number): [number, number]
 }
@@ -84,7 +82,7 @@ export function byte2float(data: bytes): number{
 }
 
 function grab_byte(v: number): [number, string]{
-    return [math.floor(v / 256), string.char(math.floor(v) % 256)]
+    return [Math.floor(v / 256), string.char(Math.floor(v) % 256)]
 }
 
 declare namespace string {

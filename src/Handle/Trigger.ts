@@ -5,7 +5,7 @@ export class hTrigger extends Handle<jtrigger> {
     constructor(){
         super(CreateTrigger())
 
-        this.actions = new ActionList(<hTrigger>this, Handle.wcType(this.handle))
+        this.actions = new ActionList(<hTrigger>this, tostring(this.handle))
         TriggerAddAction(this.handle, () => {
             this.actions.run()
         })

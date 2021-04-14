@@ -28,9 +28,10 @@ export class ActionList<Owner = void, Args extends any[] = []> {
         if (!action){return false}
 
         let pos = this.__actions.indexOf(action)
-        if (pos < 0){return false}
-        this.__actions.splice(pos, 1)
-        return true
+        if (pos >= 0){
+            this.__actions.splice(pos, 1)
+        }
+        return pos >= 0
     }
 
     readonly owner: Owner

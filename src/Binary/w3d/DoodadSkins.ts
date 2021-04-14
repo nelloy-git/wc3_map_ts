@@ -1,4 +1,4 @@
-import { BuildtimeCache, getFileDir, Log, FileText } from "../../Utils";
+import { BuildtimeCache, Log, FileText } from "../../Utils";
 
 const __dir__ = Macro(getFileDir())
 

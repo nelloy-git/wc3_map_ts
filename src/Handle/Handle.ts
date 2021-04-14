@@ -1,5 +1,3 @@
-let __path__ = Macro(getFilePath())
-
 export abstract class Handle<T extends jhandle> {
     constructor(handle: T){
         this.valid = true

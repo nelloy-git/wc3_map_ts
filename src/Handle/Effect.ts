@@ -25,9 +25,9 @@ export class hEffect extends Handle<jeffect> {
     get pos(){return this.__pos.copy()}
     set pos(v: Vec3){
         this.__pos = v.copy()
-        BlzSetSpecialEffectPosition(this.handle, this.__pos.x,
-                                                 this.__pos.y,
-                                                 this.__visible ? this.__pos.z : -10000)
+        BlzSetSpecialEffectPosition(this.handle, v.x,
+                                                 v.y,
+                                                 this.__visible ? v.z : -10000)
     }
 
     get scale(){return this.__scale.copy()}
@@ -81,14 +81,14 @@ export class hEffect extends Handle<jeffect> {
         super.destroy()
     }
 
-    private __pos: Vec3
-    private __scale: Vec3
-    private __yaw: number
-    private __pitch: number
-    private __roll: number
+    protected __pos: Vec3
+    protected __scale: Vec3
+    protected __yaw: number
+    protected __pitch: number
+    protected __roll: number
 
-    private __visible: boolean
-    private __color: Color
+    protected __visible: boolean
+    protected __color: Color
 }
 
 // type AttachPoint = 'overhead'|'head'|'chest'|'origin'|'hand'|'foot'|'weapon'|'sprite'|'medium'|'large'|'right hand'|'left hand'|'right foot'|'left foot'
