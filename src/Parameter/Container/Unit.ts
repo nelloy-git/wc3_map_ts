@@ -53,12 +53,12 @@ export class UnitContainer extends Container {
     protected _applyParam(param: Type, val: number){
         if (param == 'PATK'){this.owner.baseDamage = val} else
         // 0.5 attacks per sec is default (PSPD = 1 (100%))
-        if (param == 'PSPD'){this.owner.attackCooldown = 2 / val} else
-        if (param == 'LIFE'){this.owner.lifeMax = val} else
+        if (param == 'PSPD'){this.owner.atkCd = 2 / val} else
+        if (param == 'LIFE'){this.owner.life_max = val} else
         if (param == 'REGE'){this.owner.lifeRegen = val} else
-        if (param == 'MANA'){this.owner.manaMax = val} else
+        if (param == 'MANA'){this.owner.mana_max = val} else
         if (param == 'RECO'){this.owner.manaRegen = val} else
-        if (param == 'MOVE'){this.owner.moveSpeed = val}
+        if (param == 'MOVE'){this.owner.move_spd = val}
     }
 
     readonly owner: hUnit;

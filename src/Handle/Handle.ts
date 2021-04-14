@@ -8,7 +8,11 @@ export abstract class Handle<T extends jhandle> {
         Handle.__id2instance.set(this.__id, this)
     }
 
-    static get(id: jhandle | number, wc3_type: string){
+    static get(id: jhandle | number | undefined, wc3_type: string){
+        if (typeof id == 'undefined'){
+            return undefined
+        }
+
         if (typeof id !== 'number'){
             id = GetHandleId(id)
         }
@@ -18,7 +22,7 @@ export abstract class Handle<T extends jhandle> {
             return undefined
         }
 
-        if (wcType(h.handle) != wc3_type){
+        if (Handle.wcType(h.handle) != wc3_type){
             return undefined
         }
 
@@ -58,8 +62,18 @@ export abstract class Handle<T extends jhandle> {
 
 }
 
-function wcType(handle: jhandle){
-    let s_handle = tostring(handle)
-    let [name, _] = s_handle.split(':')
-    return name
+declare namespace string {
+    function unpack(fmt: string, s:string): number;
+}
+
+export namespace Handle{
+    export function wcType(handle: jhandle){
+        let s_handle = tostring(handle)
+        let [name, _] = s_handle.split(':')
+        return name
+    }
+    
+    export function id2int(id: string){
+        return string.unpack('>I4', id)
+    }
 }

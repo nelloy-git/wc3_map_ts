@@ -1,5 +1,5 @@
 
-import { getFileDir, Import } from "../../../../../Utils"
+import { Import } from "../../../../../Utils"
 
 const __dir__ = Macro(getFileDir())
 const dst = Macro(__dir__.substr((<string>GetSrc()).length)) + '/'

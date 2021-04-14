@@ -1,24 +1,18 @@
-import { Action, ActionList } from "../Utils";
+import { ActionList } from "../Utils";
 import { Handle } from "./Handle";
 
 export class hTrigger extends Handle<jtrigger> {
     constructor(){
         super(CreateTrigger())
+
+        this.actions = new ActionList(<hTrigger>this, Handle.wcType(this.handle))
         TriggerAddAction(this.handle, () => {
-            this.__actions.run(this)
+            this.actions.run()
         })
     }
 
-    public static get(id: jtrigger | number){
+    public static get(id?: jtrigger | number){
         return Handle.get(id, 'destructable') as hTrigger | undefined
-    }
-
-    public addAction(callback: (this: void, trig: hTrigger)=>void){
-        return this.__actions.add(callback)
-    }
-
-    public removeAction(action: Action<[hTrigger], void>){
-        return this.__actions.remove(action)
     }
 
     destroy(){
@@ -26,5 +20,5 @@ export class hTrigger extends Handle<jtrigger> {
         super.destroy()
     }
 
-    private __actions = new ActionList<[hTrigger]>()
+    readonly actions: ActionList<hTrigger>
 }

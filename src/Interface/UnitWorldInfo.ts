@@ -38,8 +38,8 @@ function getShieldMax(u: hUnit){
 }
 
 const BAR_FULLNESS = {
-    [BAR_TYPE.LIFE]: (u: hUnit) => {return u.life / u.lifeMax},
-    [BAR_TYPE.MANA]: (u: hUnit) => {return u.mana / u.manaMax},
+    [BAR_TYPE.LIFE]: (u: hUnit) => {return u.life / u.life_max},
+    [BAR_TYPE.MANA]: (u: hUnit) => {return u.mana / u.mana_max},
     [BAR_TYPE.PSHIELD]: (u: hUnit) => {return Shield.getCur('PHYS', u) / getShieldMax(u)},
     [BAR_TYPE.MSHELD]: (u: hUnit) => {return Shield.getCur('MAGIC', u) / getShieldMax(u)},
     [BAR_TYPE.SHIELD]: (u: hUnit) => {return Math.min(Shield.getCur('PHYS', u), Shield.getCur('MAGIC', u)) / getShieldMax(u)},

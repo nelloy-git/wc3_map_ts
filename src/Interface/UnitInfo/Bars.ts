@@ -44,7 +44,7 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
 
             // Life and shield
             let life = u.life
-            let max_life = u.lifeMax
+            let max_life = u.life_max
 
             let p_shield = Shield.getCur('PHYS', u)
             let max_p_shield = Shield.getMax('PHYS', u)
@@ -65,7 +65,7 @@ export class InterfaceUnitBars extends Frame.SimpleEmpty {
             // Mana
 
             let mana = u.mana
-            let max_mana = u.manaMax
+            let max_mana = u.mana_max
 
             this.__mana.fullness = mana / max_mana
             let mana_text = this.__mana.getElement('TEXT')

@@ -1,38 +1,36 @@
-import { Vec2 } from '../Math'
-import { Color, id2int } from "../Utils";
+import { Vec2, Vec3 } from '../Math'
+import { EventActions, EventActionsMap, Color, id2int } from "../Utils";
 import { Handle } from "./Handle";
+import { hTrigger } from './Trigger';
+import { hTriggerEvent } from './TriggerEvent';
+import { getEventList, getJEvent, getJUnit, Event as jEvent } from './Utils/UnitEvents'
 
 export class hUnit extends Handle<junit>{
     constructor(type_id: number, owner: jplayer){
         super(CreateUnit(owner, type_id, 0, 0, 0))
         this.type_id = type_id
         this.__color = new Color()
-        this.__dispersion_damage = -1
-        this.__attack_cooldown_default = BlzGetUnitWeaponRealField(this.handle, UNIT_WEAPON_RF_ATTACK_BASE_COOLDOWN, 0)
         this.__modelScale = 1
         this.__pause_counter = 0
         this.__animation_scale = 1
-
-        // Apply dispersion
-        BlzSetUnitDiceNumber(this.handle, 1, 0)
-        this.dispersionDamage = this.__dispersion_damage
+        this.actions = new EventActions(<hUnit>this, Handle.wcType(this.handle))
 
         // Enable Z coord
         UnitAddAbility(this.handle, id2int('Arav'))
         UnitRemoveAbility(this.handle, id2int('Arav'))
     }
 
-    static get(id: junit | number){
+    static get(id: junit | number| undefined){
         return Handle.get(id, 'unit') as hUnit | undefined
     }
 
-    get z(){return GetUnitFlyHeight(this.handle)}
-    set z(z: number){SetUnitFlyHeight(this.handle, z, 0)}
-
-    get pos(){return new Vec2(GetUnitX(this.handle) - 16, GetUnitY(this.handle) - 16)}
-    set pos(v: Vec2){
+    get pos(){return new Vec3(GetUnitX(this.handle) - 16,
+                              GetUnitY(this.handle) - 16,
+                              GetUnitFlyHeight(this.handle))}
+    set pos(v: Vec3){
         SetUnitX(this.handle, v.x + 16)
         SetUnitY(this.handle, v.y + 16)
+        SetUnitFlyHeight(this.handle, v.z, 0)
     }
 
     get angle(){return bj_DEGTORAD * GetUnitFacing(this.handle)}
@@ -44,50 +42,33 @@ export class hUnit extends Handle<junit>{
     get mana(){return GetUnitState(this.handle, UNIT_STATE_MANA)}
     set mana(val: number){SetUnitState(this.handle, UNIT_STATE_MANA, val)}
 
-    get lifeRegen(){return BlzGetUnitRealField(this.handle, UNIT_RF_HIT_POINTS_REGENERATION_RATE)}
-    set lifeRegen(val: number){BlzSetUnitRealField(this.handle, UNIT_RF_HIT_POINTS_REGENERATION_RATE, val)}
-
-    get manaRegen(){return BlzGetUnitRealField(this.handle, UNIT_RF_MANA_REGENERATION)}
-    set manaRegen(val: number){BlzSetUnitRealField(this.handle, UNIT_RF_MANA_REGENERATION, val)}
-
-    get lifeMax(){return GetUnitState(this.handle, UNIT_STATE_MAX_LIFE)}
-    set lifeMax(val: number){
+    get life_max(){return GetUnitState(this.handle, UNIT_STATE_MAX_LIFE)}
+    set life_max(val: number){
         let perc = GetUnitLifePercent(this.handle)
         BlzSetUnitMaxHP(this.handle, val < 1 ? 1 : val)
         SetUnitState(this.handle, UNIT_STATE_LIFE, 0.01 * perc * val)
     }
 
-    get manaMax(){return GetUnitState(this.handle, UNIT_STATE_MAX_MANA)}
-    set manaMax(val: number){
+    get mana_max(){return GetUnitState(this.handle, UNIT_STATE_MAX_MANA)}
+    set mana_max(val: number){
         let perc = GetUnitManaPercent(this.handle)
         BlzSetUnitMaxMana(this.handle, val < 1 ? 1 : val)
         SetUnitState(this.handle, UNIT_STATE_MAX_MANA, 0.01 * perc * val)
     }
 
-    get baseDamage(){return BlzGetUnitBaseDamage(this.handle, 0)}
-    set baseDamage(val: number){BlzSetUnitBaseDamage(this.handle, val, 0)}
+    get atkCd_0(){return BlzGetUnitAttackCooldown(this.handle, 0)}
+    set atkCd_0(val: number){BlzSetUnitAttackCooldown(this.handle, val, 0)}
 
-    get dispersionDamage(){return this.__dispersion_damage}
-    set dispersionDamage(val: number){
-        this.__dispersion_damage = val
-        BlzSetUnitDiceSides(this.handle, math.floor(val * this.baseDamage) + 1, 0)
-    }
+    get atkCd_1(){return BlzGetUnitAttackCooldown(this.handle, 1)}
+    set atkCd_1(val: number){BlzSetUnitAttackCooldown(this.handle, val, 1)}
 
-    get attackCooldownDefault(){return this.__attack_cooldown_default}
+    get move_spd(){return GetUnitMoveSpeed(this.handle)}
+    set move_spd(val: number){SetUnitMoveSpeed(this.handle, val)}
 
-    get attackCooldown(){return BlzGetUnitAttackCooldown(this.handle, 0)}
-    set attackCooldown(val: number){BlzSetUnitAttackCooldown(this.handle, val, 0)}
-
-    get moveSpeed(){return GetUnitMoveSpeed(this.handle)}
-    set moveSpeed(val: number){SetUnitMoveSpeed(this.handle, val)}
-
-    get color(){return new Color(this.__color)}
+    get color(){return this.__color.copy()}
     set color(color: Color){
-        this.__color = new Color(color)
-        SetUnitVertexColor(this.handle, math.floor(255 * color.r),
-                                        math.floor(255 * color.g),
-                                        math.floor(255 * color.b),
-                                        math.floor(255 * color.a))
+        this.__color = color.copy()
+        SetUnitVertexColor(this.handle, color.r, color.g, color.b, color.a)
     }
 
     get owner(){return GetOwningPlayer(this.handle)}
@@ -99,7 +80,6 @@ export class hUnit extends Handle<junit>{
         SetUnitScale(this.handle, scale, scale, scale)
     }
 
-    get animation(){Log.wrn(hUnit.name + ': unavailable getter.'); return 0}
     set animation(name_or_id: string|number){
         if (typeof name_or_id == 'string'){
             SetUnitAnimation(this.handle, name_or_id)
@@ -121,8 +101,6 @@ export class hUnit extends Handle<junit>{
         PauseUnit(this.handle, this.__pause_counter > 0)
     }
 
-    get typeId(){return this.type_id}
-
     isEnemy(other: hUnit){return IsUnitEnemy(this.handle, other.owner)}
     isAlly(other: hUnit){return IsUnitAlly(this.handle, other.owner)}
 
@@ -131,84 +109,223 @@ export class hUnit extends Handle<junit>{
 
     immediateOrder(order: string){IssueImmediateOrder(this.handle, order)}
 
+    getField(field: junitbooleanfield): boolean
+    getField(field: junitintegerfield): number
+    getField(field: junitrealfield): number
+    getField(field: junitstringfield): string
+    getField(field: junitweaponbooleanfield, atk_index: 0 | 1) : boolean
+    getField(field: junitweaponintegerfield, atk_index: 0 | 1) : number
+    getField(field: junitweaponrealfield, atk_index: 0 | 1) : number
+    getField(field: junitweaponstringfield, atk_index: 0 | 1) : string
+    getField(field: hUnit.Field, atk_index?: 0 | 1){
+        let t = Handle.wcType(field)
+        if (t == hUnit.FieldType.boolean){
+            return BlzGetUnitBooleanField(this.handle, <junitbooleanfield>field)
+        } else if (t == hUnit.FieldType.integer){
+            return BlzGetUnitIntegerField(this.handle, <junitintegerfield>field)
+        } else if (t == hUnit.FieldType.real){
+            return BlzGetUnitRealField(this.handle, <junitrealfield>field)
+        } else if (t == hUnit.FieldType.string){
+            return BlzGetUnitStringField(this.handle, <junitstringfield>field)
+        } else if (t == hUnit.FieldType.boolean_atk){
+            return BlzGetUnitWeaponBooleanField(this.handle, <junitweaponbooleanfield>field,
+                                                <number>atk_index)
+        } else if (t == hUnit.FieldType.integer_atk){
+            return BlzGetUnitWeaponIntegerField(this.handle, <junitweaponintegerfield>field,
+                                                <number>atk_index)
+        } else if (t == hUnit.FieldType.real_atk){
+            return BlzGetUnitWeaponRealField(this.handle, <junitweaponrealfield>field,
+                                             <number>atk_index)
+        } else if (t == hUnit.FieldType.string_atk){
+            return BlzGetUnitWeaponStringField(this.handle, <junitweaponstringfield>field,
+                                               <number>atk_index)
+        }
+    }
+
+    setField(val: boolean, field: junitbooleanfield): void
+    setField(val: number, field: junitintegerfield): void
+    setField(val: number, field: junitrealfield): void
+    setField(val: string, field: junitstringfield): void
+    setField(val: boolean, field: junitweaponbooleanfield, atk_index: 0 | 1) : void
+    setField(val: number, field: junitweaponintegerfield, atk_index: 0 | 1) : void
+    setField(val: number, field: junitweaponrealfield, atk_index: 0 | 1) : void
+    setField(val: string, field: junitweaponstringfield, atk_index: 0 | 1) : void
+    setField(val: hUnit.FieldVal, field: hUnit.Field, atk_index?: 0 | 1){
+        let t = Handle.wcType(field)
+        if (t == hUnit.FieldType.boolean){
+            BlzSetUnitBooleanField(this.handle, <junitbooleanfield>field, <boolean>val)
+        } else if (t == hUnit.FieldType.integer){
+            BlzSetUnitIntegerField(this.handle, <junitintegerfield>field, Math.floor(<number>val))
+        } else if (t == hUnit.FieldType.real){
+            BlzSetUnitRealField(this.handle, <junitrealfield>field, <number>val)
+        } else if (t == hUnit.FieldType.string){
+            BlzSetUnitStringField(this.handle, <junitstringfield>field, <string>val)
+        } else if (t == hUnit.FieldType.boolean_atk){
+            BlzSetUnitWeaponBooleanField(this.handle, <junitweaponbooleanfield>field,
+                                         <number>atk_index, <boolean>val)
+        } else if (t == hUnit.FieldType.integer_atk){
+            BlzSetUnitWeaponIntegerField(this.handle, <junitweaponintegerfield>field,
+                                         <number>atk_index, Math.floor(<number>val))
+        } else if (t == hUnit.FieldType.real_atk){
+            BlzSetUnitWeaponRealField(this.handle, <junitweaponrealfield>field,
+                                         <number>atk_index, <number>val)
+        } else if (t == hUnit.FieldType.string_atk){
+            BlzSetUnitWeaponStringField(this.handle, <junitweaponstringfield>field,
+                                         <number>atk_index, <string>val)
+        }
+    }
+
     destroy(){
         RemoveUnit(this.handle)
         super.destroy()
     }
     
     readonly type_id: number
+    readonly actions: EventActions<hUnit.Event, hUnit>
+
     private __color: Color
-    private __dispersion_damage: number
-    private __attack_cooldown_default: number
     private __modelScale: number
     private __pause_counter: number
     private __animation_scale: number
 }
 
 export namespace hUnit {
+    export const ActionAny = new EventActions<hUnit.Event,
+                                              typeof hUnit,
+                                              [hUnit]> (hUnit, hUnit.name)
+    export const ActionId = new EventActionsMap<number,
+                                                hUnit.Event,
+                                                typeof hUnit,
+                                                [hUnit]> (hUnit, hUnit.name)
 
-    export function getTriggered(){
-        let u = GetTriggerUnit()
-        return u ? hUnit.get(u) : undefined
-    }
+    export namespace Group {
 
-    export function getMouseFocus(){
-        let u = BlzGetMouseFocusUnit()
-        return u ? hUnit.get(u) : undefined
-    }
+        export function inRange(point: Vec2, range: number){
+            GroupEnumUnitsInRange(__group, point.x, point.y, range)
 
-    export function getDamageSource(){
-        let u = GetEventDamageSource()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    export function getDamageTarget(){
-        let u = BlzGetEventDamageTarget()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    export function getEntering(){
-        let u = GetEnteringUnit()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    export function getSpellCaster(){
-        let u = GetSpellAbilityUnit()
-        return u ? hUnit.get(u) : undefined
-    }
-
-    export function getInRange(point: Vec2, r: number){
-        GroupEnumUnitsInRange(_group, point.x, point.y, r)
-
-        let list: hUnit[] = []
-        let u = FirstOfGroup(_group)
-        while (u != undefined){
-            let hu = hUnit.get(u)
-            if (hu != undefined){list.push(hu)}
-            GroupRemoveUnit(_group, u)
-            u = FirstOfGroup(_group)
+            let list: hUnit[] = []
+            let u = FirstOfGroup(__group)
+            while (u != undefined){
+                let hu = hUnit.get(u)
+                if (hu != undefined){list.push(hu)}
+                GroupRemoveUnit(__group, u)
+                u = FirstOfGroup(__group)
+            }
+    
+            return list
         }
 
-        return list
-    }
+        export function inRect(rect: jrect){
+            GroupEnumUnitsInRect(__group, rect)
 
-    export function getInRect(r: jrect){
-        GroupEnumUnitsInRect(_group, r)
+            let list: hUnit[] = []
+            let u = FirstOfGroup(__group)
+            while (u != undefined){
+                let hu = hUnit.get(u)
+                if (hu != undefined){list.push(hu)}
+                GroupRemoveUnit(__group, u)
+                u = FirstOfGroup(__group)
+            }
 
-        let list: hUnit[] = []
-        let u = FirstOfGroup(_group)
-        while (u != undefined){
-            let hu = hUnit.get(u)
-            if (hu != undefined){list.push(hu)}
-            GroupRemoveUnit(_group, u)
-            u = FirstOfGroup(_group)
+            return list
         }
 
-        return list
+        const __group: jgroup = <jgroup><unknown> undefined
+        if (IsGame()){
+            (<jgroup>__group) = CreateGroup()
+        }
     }
 
-    let _group: jgroup = <jgroup><unknown> undefined
+    export type FieldVal = boolean | number | string
+    export type Field = junitbooleanfield | junitintegerfield | junitrealfield |
+                        junitstringfield | junitweaponbooleanfield |
+                        junitweaponintegerfield | junitweaponrealfield |
+                        junitweaponstringfield
+    
+    export const FieldType = {
+        boolean: Handle.wcType(UNIT_BF_DECAYABLE),
+        integer: Handle.wcType(UNIT_IF_AGILITY),
+        real: Handle.wcType(UNIT_RF_ACQUISITION_RANGE),
+        string: Handle.wcType(UNIT_SF_GROUND_TEXTURE),
+        boolean_atk: Handle.wcType(UNIT_WEAPON_BF_ATTACKS_ENABLED),
+        integer_atk: Handle.wcType(UNIT_WEAPON_IF_ATTACK_AREA_OF_EFFECT_TARGETS),
+        real_atk: Handle.wcType(UNIT_WEAPON_RF_ATTACK_AREA_OF_EFFECT_FULL_DAMAGE),
+        string_atk: Handle.wcType(UNIT_WEAPON_SF_ATTACK_PROJECTILE_ART),
+    }
+
+    export type Event = jEvent
+
+    function __runActions(event: hUnit.Event){
+        let unit = hUnit.get(getJUnit(event))
+        if (unit == undefined){
+            return
+        }
+
+        hUnit.ActionAny.run(event, unit)
+        hUnit.ActionId.run(unit.type_id, event, unit)
+        unit.actions.run(event)
+    }
+
+    // Create triggers
     if (IsGame()){
-        _group = CreateGroup()
+        let event_list = getEventList()
+
+        for (const event_name of event_list){
+            let tr = new hTrigger()
+
+            for (let i = 0; i < bj_MAX_PLAYER_SLOTS - 1; i++){
+                hTriggerEvent.newPlayerUnitEvent(Player(i), getJEvent(event_name)).applyToTrigger(tr)
+            }
+            
+            tr.actions.add(() => {
+                __runActions(event_name)
+            })
+        }
     }
 }
+
+
+// Apply dispersion
+// BlzSetUnitDiceNumber(this.handle, 1, 0)
+// this.dispersionDamage = this.__dispersion_damage
+
+// get baseDamage(){return BlzGetUnitBaseDamage(this.handle, 0)}
+// set baseDamage(val: number){BlzSetUnitBaseDamage(this.handle, val, 0)}
+
+// get dispersionDamage(){return this.__dispersion_damage}
+// set dispersionDamage(val: number){
+//     this.__dispersion_damage = val
+//     BlzSetUnitDiceSides(this.handle, math.floor(val * this.baseDamage) + 1, 0)
+// }
+
+// get attackCooldownDefault(){return this.__attack_cooldown_default}
+
+    // export function getTriggered(){
+    //     let u = GetTriggerUnit()
+    //     return u ? hUnit.get(u) : undefined
+    // }
+
+    // export function getMouseFocus(){
+    //     let u = BlzGetMouseFocusUnit()
+    //     return u ? hUnit.get(u) : undefined
+    // }
+
+    // export function getDamageSource(){
+    //     let u = GetEventDamageSource()
+    //     return u ? hUnit.get(u) : undefined
+    // }
+
+    // export function getDamageTarget(){
+    //     let u = BlzGetEventDamageTarget()
+    //     return u ? hUnit.get(u) : undefined
+    // }
+
+    // export function getEntering(){
+    //     let u = GetEnteringUnit()
+    //     return u ? hUnit.get(u) : undefined
+    // }
+
+    // export function getSpellCaster(){
+    //     let u = GetSpellAbilityUnit()
+    //     return u ? hUnit.get(u) : undefined
+    // }

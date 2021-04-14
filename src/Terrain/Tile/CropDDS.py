@@ -13,7 +13,7 @@ HD_OUT_W = 256
 HD_OUT_H = 256
 
 TILE_TS_HEADER = '''
-import { getFileDir, Import } from "../../../../../Utils"
+import { Import } from "../../../../../Utils"
 
 const __dir__ = Macro(getFileDir())
 const dst = Macro(__dir__.substr((<string>GetSrc()).length)) + '/'

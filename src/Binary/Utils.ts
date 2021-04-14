@@ -1,4 +1,4 @@
-import { getFilePath, Log } from "../Utils";
+import { Log } from "../Utils";
 
 let __path__ = Macro(getFilePath())
 
