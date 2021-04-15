@@ -1,5 +1,3 @@
-import * as Json from '../../Json'
-
 import { FileBinary } from "../../Utils";
 import { Obj } from "../Obj"
 import { int2byte } from '../Utils';

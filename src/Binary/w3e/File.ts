@@ -1,5 +1,3 @@
-import * as Json from '../../Json'
-
 import { FileBinary } from "../../Utils";
 import { File } from "../File";
 import { float2byte, int2byte } from '../Utils';

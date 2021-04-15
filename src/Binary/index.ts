@@ -3,6 +3,9 @@ export { Map } from './Map'
 export { w3eFile } from './w3e/File'
 export { Tile } from './w3e/Tile'
 
+export { w3iFile } from './w3i/File'
+// export { Tile } from './w3e/Tile'
+
 export { dooFile } from './doo/File'
 export { Doodad } from './doo/Doodad'
 

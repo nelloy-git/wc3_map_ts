@@ -1,4 +1,22 @@
 //import "common"
+import * as Binary from './Binary'
+import { FileBinary } from "./Utils";
+
+let f = new FileBinary()
+f.read(GetSrc() + '/map_data.w3m/war3map.w3i')
+
+let w3i = Binary.w3iFile.fromBinary(f)
+print('file_format: ', w3i.file_format)
+print('saves: ', w3i.saves)
+print('version: ', w3i.version)
+print('name: ', w3i.name)
+print('players: ', w3i.objects.length)
+
+for (let pl of w3i.objects){
+    for (let [k, v] of pairs(pl)){
+        print(k, v)
+    }
+}
 
 if (IsGame()){
     SetMapName("Just another Warcraft III map")
