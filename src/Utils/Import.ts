@@ -1,12 +1,13 @@
 export class Import{
     constructor(src:string, dst:string){
+
         src = string.gsub(src, '\\', Import.__sep)[0]
         src = string.gsub(src, '/', Import.__sep)[0]
         
         dst = string.gsub(dst, '\\', Import.__sep)[0]
         dst = string.gsub(dst, '/', Import.__sep)[0]
 
-        this.src = src;
+        this.src = src
         this.dst = dst
         this.__full_dst = GetDst() + Import.__sep + dst
 
@@ -20,8 +21,11 @@ export class Import{
     private __full_dst: string;
 
     private static __isExist(path: string){
-        let [ok, err] = os.rename(path, path)
+        let [ok, err, code] = os.rename(path, path)
         if (!ok) {
+            if (<number><unknown>code == 13){
+               return true
+            }
             return false
         }
         return true
@@ -90,7 +94,8 @@ export class Import{
         // Make directories.
         for (let i = 1; i < tree.length - 1; i++){
             tree[i] = tree[i - 1] + Import.__sep + tree[i]
-            if (!Import.__isExist(tree[i])){
+            print(dst, tree[i], Import.__isExist(tree[i]), Import.__isDir(tree[i]))
+            if (!Import.__isExist(tree[i]) && !Import.__isDir(tree[i])){
                 os.execute('mkdir ' + tree[i])
             }
         }
