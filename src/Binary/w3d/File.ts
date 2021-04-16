@@ -1,11 +1,10 @@
-import * as Json from '../../Json'
 import * as Utils from '../../Utils'
 
-import { File } from "../File";
+import { ObjList } from "../File";
 import { getFirstId, int2byte, nextId } from "../Utils";
 import { TDoodad } from "./TDoodad";
 
-export class w3dFile extends File<TDoodad> {
+export class w3dFile extends ObjList<TDoodad> {
 
     static fromBinary(file: Utils.FileBinary){
         file.startReading()

@@ -1,11 +1,10 @@
-import * as Json from '../../Json'
 
 import { FileBinary } from '../../Utils';
-import { File } from "../File";
+import { ObjList } from "../File";
 import { int2byte } from "../Utils";
 import { Doodad } from "./Doodad";
 
-export class dooFile extends File<Doodad> {
+export class dooFile extends ObjList<Doodad> {
 
     static fromBinary(file: FileBinary){
         file.startReading()

@@ -1,11 +1,10 @@
-import * as Json from '../../Json'
 import * as Utils from '../../Utils'
 
-import { File } from "../File";
+import { ObjList } from "../File";
 import { getFirstId, int2byte, nextId } from "../Utils";
 import { TUnit } from "./TUnit";
 
-export class w3uFile extends File<TUnit> {
+export class w3uFile extends ObjList<TUnit> {
 
     static fromBinary(file: Utils.FileBinary){
         file.startReading()

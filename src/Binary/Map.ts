@@ -1,6 +1,6 @@
 import * as Utils from '../Utils'
 
-import { File } from './File'
+import { ObjList } from './File'
 import { w3dFile } from "./w3d/File";
 import { w3uFile } from "./w3u/File";
 
@@ -12,7 +12,7 @@ export class Map {
         Map.saveFile(this.w3d, path + '/war3map.w3d')
     }
 
-    private static saveFile(f: File<any>, path: string){
+    private static saveFile(f: ObjList<any>, path: string){
         let bfile = new Utils.FileBinary()
         bfile.data = f.toBinary()
         bfile.write(path)

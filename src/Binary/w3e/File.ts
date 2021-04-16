@@ -1,9 +1,9 @@
 import { FileBinary } from "../../Utils";
-import { File } from "../File";
+import { ObjList } from "../File";
 import { float2byte, int2byte } from '../Utils';
 import { Tile } from "./Tile";
 
-export class w3eFile extends File<Tile> {
+export class w3eFile extends ObjList<Tile> {
 
     static fromBinary(file: FileBinary){
         file.startReading()

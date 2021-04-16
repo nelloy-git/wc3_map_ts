@@ -1,6 +1,6 @@
-import { Color, FileBinary } from "../../Utils";
+import { FileBinary } from "../../Utils";
 import { Obj } from "../Obj";
-import { float2byte, int2byte } from '../Utils';
+import { int2byte } from '../Utils';
 
 import { w3iMapInfo } from './MapInfo'
 import { w3iLoadingScreen } from './LoadingScreen'
@@ -59,21 +59,20 @@ export class w3iFile extends Obj {
     }
 
     toBinary(){
-        let raw = ''
+        let raw = int2byte(this.file_format)
+                  + int2byte(this.unknown_byte_1)
+                  + int2byte(this.unknown_byte_2)
+                  + this.info.toBinary()
+                  + this.loading.toBinary()
+                  + int2byte(this.game_data_set)
+                  + this.prologue.toBinary()
+                  + this.fog.toBinary()
+                  + this.env.toBinary()
+                  + int2byte(this.unknown_byte_3)
+                  + int2byte(this.unknown_byte_4)
+                  + int2byte(this.unknown_byte_5)
+                  + int2byte(this.players.length)
 
-        raw += int2byte(this.file_format)
-        raw += int2byte(this.unknown_byte_1)
-        raw += int2byte(this.unknown_byte_2)
-        raw += this.info.toBinary()
-        raw += this.loading.toBinary()
-        raw += int2byte(this.game_data_set)
-        raw += this.prologue.toBinary()
-        raw += this.fog.toBinary()
-        raw += this.env.toBinary()
-        raw += int2byte(this.unknown_byte_3)
-        raw += int2byte(this.unknown_byte_4)
-        raw += int2byte(this.unknown_byte_5)
-        raw += int2byte(this.players.length)
         for (let i = 0; i < this.players.length; i++){
             raw += this.players[i].toBinary()
         }
@@ -84,9 +83,9 @@ export class w3iFile extends Obj {
 
         // TODO
         raw += int2byte(this.updates.length)
-        raw += int2byte(this.techs.length)
-        raw += int2byte(this.unit_tbls.length)
-        raw += int2byte(this.item_tbls.length)
+               + int2byte(this.techs.length)
+               + int2byte(this.unit_tbls.length)
+               + int2byte(this.item_tbls.length)
 
         return raw
     }
