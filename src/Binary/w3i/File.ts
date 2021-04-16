@@ -1,78 +1,55 @@
-import { FileBinary } from "../../Utils";
-import { File } from "../File";
+import { Color, FileBinary } from "../../Utils";
+import { Obj } from "../Obj";
 import { float2byte, int2byte } from '../Utils';
 
+import { w3iMapInfo } from './MapInfo'
+import { w3iLoadingScreen } from './LoadingScreen'
+import { w3iPrologueScreen } from './PrologueScreen'
+import { w3iFog } from './Fog'
+import { w3iEnviroment } from './Enviroment'
 import { w3iPlayerData } from "./Player";
 import { w3iForceData } from "./Force";
 
-export class w3iFile extends File<w3iPlayerData> {
+export class w3iFile extends Obj {
 
     static fromBinary(file: FileBinary){
         file.startReading()
         let w3i = new w3iFile()
 
         w3i.file_format = file.readInt(4)
-        file.readInt(4) // unknown
-        file.readInt(4) // unknown
-        w3i.version = tostring(file.readInt(4)) + '.' + tostring(file.readInt(4)) + '.' + 
-                      tostring(file.readInt(4)) + '.' + tostring(file.readInt(4))
 
-        w3i.name = file.readString()
-        w3i.author = file.readString()
-        w3i.description = file.readString()
-        w3i.players_commended = file.readString()
-
-        for (let i = 0; i < 8; i++){
-            w3i.camera_bounds[i] = file.readFloat()
+        if (w3i.file_format != 31){
+            print('Unknown w3i format.')
         }
-        for (let i = 0; i < 4; i++){
-            w3i.camera_bounds_complements[i] = file.readInt(4)
-        }
-        w3i.playable_width = file.readInt(4)
-        w3i.playable_height = file.readInt(4)
-        w3i.flags = file.readInt(4)
-        w3i.main_ground = file.readChar(1)
 
-        w3i.loading_screen_backgound = file.readInt(4)
-        w3i.loading_screen_model = file.readString()
-        w3i.loading_screen_text = file.readString()
-        w3i.loading_screen_title = file.readString()
-        w3i.loading_screen_subtitle = file.readString()
+        w3i.unknown_byte_1 = file.readInt(4)
+        w3i.unknown_byte_2 = file.readInt(4)
+
+        w3i.info = w3iMapInfo.fromBinary(file)
+        w3i.loading = w3iLoadingScreen.fromBinary(file)
 
         w3i.game_data_set = file.readInt(4)
-        w3i.prologue_screen_path = file.readString()
-        w3i.prologue_screen_text = file.readString()
-        w3i.prologue_screen_title = file.readString()
-        w3i.prologue_screen_subtitle = file.readString()
+        w3i.prologue = w3iPrologueScreen.fromBinary(file)
 
-        w3i.uses_terrain_fog = file.readInt(4)
-        w3i.fog_start_height = file.readFloat()
-        w3i.fog_end_height = file.readFloat()
-        w3i.fog_density = file.readFloat()
-        w3i.fog_red = file.readInt(1)
-        w3i.fog_green = file.readInt(1)
-        w3i.fog_blue = file.readInt(1)
-        w3i.fog_alpha = file.readInt(1)
+        w3i.fog = w3iFog.fromBinary(file)
+        w3i.env = w3iEnviroment.fromBinary(file)
 
-        w3i.weather = file.readInt(4)
-        w3i.custom_sound = file.readString()
-        w3i.tileset_of_light = file.readChar(1)
-        w3i.water_red = file.readInt(1)
-        w3i.water_green = file.readInt(1)
-        w3i.water_blue = file.readInt(1)
-        w3i.water_alpha = file.readInt(1)
+        w3i.unknown_byte_3 = file.readInt(4)
+        w3i.unknown_byte_4 = file.readInt(4)
+        w3i.unknown_byte_5 = file.readInt(4)
 
         let max_pl = file.readInt(4)
         for (let i = 0; i < max_pl; i++){
-            w3i.objects.push(w3iPlayerData.fromBinary(file))
+            w3i.players.push(w3iPlayerData.fromBinary(file))
         }
 
-        // let max_forces = file.readInt(4)
-        // for (let i = 0; i < max_forces; i++){
-        //     w3i.forces.push(w3iForceData.fromBinary(file))
-        // }
+        let max_forces = file.readInt(4)
+        for (let i = 0; i < max_forces; i++){
+            w3i.forces.push(w3iForceData.fromBinary(file))
+        }
 
-        // let udp_count = file.readInt(4)
+        // TODO
+        // let upd_count = file.readInt(4)
         // let tech_count = file.readInt(4)
         // let utbl_count = file.readInt(4)
         // let itbl_count = file.readInt(4)
@@ -84,49 +61,58 @@ export class w3iFile extends File<w3iPlayerData> {
     toBinary(){
         let raw = ''
 
+        raw += int2byte(this.file_format)
+        raw += int2byte(this.unknown_byte_1)
+        raw += int2byte(this.unknown_byte_2)
+        raw += this.info.toBinary()
+        raw += this.loading.toBinary()
+        raw += int2byte(this.game_data_set)
+        raw += this.prologue.toBinary()
+        raw += this.fog.toBinary()
+        raw += this.env.toBinary()
+        raw += int2byte(this.unknown_byte_3)
+        raw += int2byte(this.unknown_byte_4)
+        raw += int2byte(this.unknown_byte_5)
+        raw += int2byte(this.players.length)
+        for (let i = 0; i < this.players.length; i++){
+            raw += this.players[i].toBinary()
+        }
+        raw += int2byte(this.forces.length)
+        for (let i = 0; i < this.forces.length; i++){
+            raw += this.forces[i].toBinary()
+        }
+
+        // TODO
+        raw += int2byte(this.updates.length)
+        raw += int2byte(this.techs.length)
+        raw += int2byte(this.unit_tbls.length)
+        raw += int2byte(this.item_tbls.length)
+
         return raw
     }
     
-    file_format: number = 0
-    saves: number = 0
-    version: string = ''
+    file_format: number = 31
+    game_data_set: number = 0   // ? used game data set (index in the preset list, 0 = standard)
 
-    name: string = ''
-    author: string = ''
-    description: string = ''
-    players_commended: string = ''
+    info: w3iMapInfo = new w3iMapInfo()
+    loading: w3iLoadingScreen = new w3iLoadingScreen()
+    prologue: w3iPrologueScreen = new w3iPrologueScreen()
 
-    camera_bounds: number[] = []
-    camera_bounds_complements: number[] = []
-    playable_width: number = 0
-    playable_height: number = 0
-    flags: number = 0
-    main_ground: string = ''
-    loading_screen_backgound: number = 0
-    loading_screen_model: string = ''
-    loading_screen_text: string = ''
-    loading_screen_title: string = ''
-    loading_screen_subtitle: string = ''
-    game_data_set: number = 0
-    prologue_screen_path: string = ''
-    prologue_screen_text: string = ''
-    prologue_screen_title: string = ''
-    prologue_screen_subtitle: string = ''
-    uses_terrain_fog: number = 0
-    fog_start_height: number = 0
-    fog_end_height: number = 0
-    fog_density: number = 0
-    fog_red: number = 0
-    fog_green: number = 0
-    fog_blue: number = 0
-    fog_alpha: number = 0
-    weather: number = 0
-    custom_sound: string = ''
-    tileset_of_light: string = ''
-    water_red: number = 0
-    water_green: number = 0
-    water_blue: number = 0
-    water_alpha: number = 0
+    fog: w3iFog = new w3iFog()
+    env: w3iEnviroment = new w3iEnviroment()
 
+    players: w3iPlayerData[] = []
     forces: w3iForceData[] = []
+
+    // TODO
+    updates: void[] = []
+    techs: void[] = []
+    unit_tbls: void[] = []
+    item_tbls: void[] = []
+
+    unknown_byte_1: number = 6
+    unknown_byte_2: number = 6112
+    unknown_byte_3: number = 1
+    unknown_byte_4: number = 3
+    unknown_byte_5: number = 2
 }

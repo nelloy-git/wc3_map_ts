@@ -1,28 +1,39 @@
 import { FileBinary } from "../../Utils";
 import { Obj } from "../Obj";
+import { float2byte, int2byte, str2byte } from "../Utils";
 
 export class w3iPlayerData extends Obj {
 
     static fromBinary(file: FileBinary){
-        let pl_data = new w3iPlayerData()
+        let pl = new w3iPlayerData()
 
-        pl_data.id = file.readInt(4)
-        pl_data.type = file.readInt(4)
-        pl_data.race = file.readInt(4)
-        pl_data.fixed_start_pos = file.readInt(4)
-        pl_data.name = file.readString()
-        pl_data.start_x = file.readFloat()
-        pl_data.start_y = file.readFloat()
-        pl_data.ally_low_flags = file.readInt(4)
-        pl_data.ally_high_flags = file.readInt(4)
+        pl.id = file.readInt(4)
+        pl.type = file.readInt(4)
+        pl.race = file.readInt(4)
+        pl.fixed_start_pos = file.readInt(4)
+        pl.name = file.readString()
+        pl.start_x = file.readFloat()
+        pl.start_y = file.readFloat()
+        pl.ally_low_flags = file.readInt(4)
+        pl.ally_high_flags = file.readInt(4)
+        pl.unknown_byte_1 = file.readInt(4)
+        pl.unknown_byte_2 = file.readInt(4)
 
-        return pl_data
+        return pl
     }
 
     toBinary(){
-        let raw = ''
-
-        return raw
+        return int2byte(this.id)
+               + int2byte(this.type)
+               + int2byte(this.race)
+               + int2byte(this.fixed_start_pos)
+               + str2byte(this.name)
+               + float2byte(this.start_x)
+               + float2byte(this.start_y)
+               + int2byte(this.ally_low_flags)
+               + int2byte(this.ally_high_flags)
+               + int2byte(this.unknown_byte_1)
+               + int2byte(this.unknown_byte_2)
     }
 
     id: number = -1
@@ -32,6 +43,9 @@ export class w3iPlayerData extends Obj {
     name: string = ''
     start_x: number = 0
     start_y: number = 0
-    ally_low_flags: number = 0
-    ally_high_flags: number = 0
+    ally_low_flags: number = -1
+    ally_high_flags: number = -1
+
+    unknown_byte_1: number = 0
+    unknown_byte_2: number = 0
 }

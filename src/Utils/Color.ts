@@ -17,6 +17,7 @@ export class Color {
                (this.__a == other.__a)
     }
 
+    // ARGB
     colorText(text: string){
         return '|c' + this.hex(this.__a)
                     + this.hex(this.__r)
@@ -30,6 +31,14 @@ export class Color {
                                this.__r,
                                this.__g,
                                this.__b)
+    }
+
+    // RGBA
+    toBinary(){
+        return string.char(this.__r)
+               + string.char(this.__g)
+               + string.char(this.__b)
+               + string.char(this.__a)
     }
 
     toString(){

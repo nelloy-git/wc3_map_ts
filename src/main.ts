@@ -27,6 +27,7 @@ if (IsGame()){
                     3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP),
                     3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT),
                     -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
-    SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
+    SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl",
+                      "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     InitBlizzard()
 }

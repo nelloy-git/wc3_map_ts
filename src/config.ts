@@ -7,16 +7,20 @@ f.read(GetSrc() + '/map_data.w3m/war3map.w3i')
 
 let w3i = Binary.w3iFile.fromBinary(f)
 print('file_format: ', w3i.file_format)
-print('saves: ', w3i.saves)
-print('version: ', w3i.version)
-print('name: ', w3i.name)
-print('players: ', w3i.objects.length)
 
-for (let pl of w3i.objects){
-    for (let [k, v] of pairs(pl)){
-        print(k, v)
-    }
-}
+print(w3i.env.weather)
+print(w3i.env.custom_sound)
+print(w3i.env.tileset_of_light.charCodeAt(0))
+print(w3i.env.water_color)
+
+print(w3i.players[0].start_x)
+print(w3i.players[0].start_y)
+print(w3i.players[0].ally_low_flags)
+print(w3i.players[0].ally_high_flags)
+print(w3i.forces.length)
+
+f.data = w3i.toBinary()
+f.write('./test.w3i')
 
 if (IsGame()){
     SetMapName("Just another Warcraft III map")
