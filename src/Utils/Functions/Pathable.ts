@@ -11,9 +11,9 @@ let _item = IsGame() ? (()=>{
     return it
 })() : <jitem><unknown>undefined
 
-export function isPathable(v: Vec2) : boolean
-export function isPathable(x: number, y: number) : boolean
-export function isPathable(x_or_v: number | Vec2, y?: number){
+export function isPathable(this:void, v: Vec2) : boolean
+export function isPathable(this:void, x: number, y: number) : boolean
+export function isPathable(this:void, x_or_v: number | Vec2, y?: number){
     let x
     if (typeof x_or_v === 'number'){
         x = x_or_v

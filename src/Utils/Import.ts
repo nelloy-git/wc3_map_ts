@@ -94,7 +94,7 @@ export class Import{
         // Make directories.
         for (let i = 1; i < tree.length - 1; i++){
             tree[i] = tree[i - 1] + Import.__sep + tree[i]
-            print(dst, tree[i], Import.__isExist(tree[i]), Import.__isDir(tree[i]))
+            // print(dst, tree[i], Import.__isExist(tree[i]), Import.__isDir(tree[i]))
             if (!Import.__isExist(tree[i]) && !Import.__isDir(tree[i])){
                 os.execute('mkdir ' + tree[i])
             }

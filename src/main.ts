@@ -6,7 +6,7 @@ if (!IsGame()){
     new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.shd', 'war3map.shd')
     new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.w3c', 'war3map.w3c')
     new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.w3e', 'war3map.w3e')
-    new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.w3i', 'war3map.w3i')
+    // new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.w3i', 'war3map.w3i')
     new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.w3r', 'war3map.w3r')
     new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.wct', 'war3map.wct')
     new Utils.Import(GetSrc() + '\\map_data.w3m\\war3map.wpm', 'war3map.wpm')

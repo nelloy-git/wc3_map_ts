@@ -24,6 +24,7 @@
 
     "tstl": {
       "luaTarget": "5.3",
+      "noImplicitSelf": true
     },
 
     "wc3-builder": {

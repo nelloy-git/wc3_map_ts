@@ -7,7 +7,7 @@ import { w3iLoadingScreen } from './LoadingScreen'
 import { w3iPrologueScreen } from './PrologueScreen'
 import { w3iFog } from './Fog'
 import { w3iEnviroment } from './Enviroment'
-import { w3iPlayerData } from "./Player";
+import { w3iPlayer } from "./Player";
 import { w3iForceData } from "./Force";
 
 export class w3iFile extends Obj {
@@ -40,7 +40,7 @@ export class w3iFile extends Obj {
 
         let max_pl = file.readInt(4)
         for (let i = 0; i < max_pl; i++){
-            w3i.players.push(w3iPlayerData.fromBinary(file))
+            w3i.players.push(w3iPlayer.fromBinary(file))
         }
 
         let max_forces = file.readInt(4)
@@ -100,7 +100,7 @@ export class w3iFile extends Obj {
     fog: w3iFog = new w3iFog()
     env: w3iEnviroment = new w3iEnviroment()
 
-    players: w3iPlayerData[] = []
+    players: w3iPlayer[] = []
     forces: w3iForceData[] = []
 
     // TODO

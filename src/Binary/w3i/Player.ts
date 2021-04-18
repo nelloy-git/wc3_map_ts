@@ -2,10 +2,10 @@ import { FileBinary } from "../../Utils";
 import { Obj } from "../Obj";
 import { float2byte, int2byte, str2byte } from "../Utils";
 
-export class w3iPlayerData extends Obj {
+export class w3iPlayer extends Obj {
 
     static fromBinary(file: FileBinary){
-        let pl = new w3iPlayerData()
+        let pl = new w3iPlayer()
 
         pl.id = file.readInt(4)
         pl.type = file.readInt(4)
@@ -37,15 +37,34 @@ export class w3iPlayerData extends Obj {
     }
 
     id: number = -1
-    type: number = -1
-    race: number = -1
+    type: w3iPlayer.Type = w3iPlayer.Type.None
+    race: w3iPlayer.Race = w3iPlayer.Race.None
     fixed_start_pos: number = 1
     name: string = ''
     start_x: number = 0
     start_y: number = 0
-    ally_low_flags: number = -1
-    ally_high_flags: number = -1
+    ally_low_flags: number = 0
+    ally_high_flags: number = 0
 
     unknown_byte_1: number = 0
     unknown_byte_2: number = 0
+}
+
+export namespace w3iPlayer {
+    
+    export enum Type {
+        None,
+        Human,
+        Computer,
+        Neutral,
+        Resquable
+    }
+
+    export enum Race {
+        None,
+        Human,
+        Orc,
+        Undead,
+        NightElf
+    }
 }

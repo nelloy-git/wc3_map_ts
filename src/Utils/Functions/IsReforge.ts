@@ -14,7 +14,7 @@ if (IsGame()){
     is_reforged = GetLocalizedString("ASSET_MODE") == 'HD'
 }
 
-export function isReforged(pl: jplayer){
+export function isReforged(this:void, pl: jplayer){
     if (pl != GetLocalPlayer()){
         return Log.err('IsReforged: can be used for local player only.')
     }

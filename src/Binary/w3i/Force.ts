@@ -38,7 +38,7 @@ export class w3iForceData extends Obj {
 
         let players = 0
         for (let pl of this.players){
-            players += Math.pow(2, pl)
+            players = players | pl
         }
 
         return int2byte(flags)
