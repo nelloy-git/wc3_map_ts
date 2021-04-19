@@ -87,43 +87,12 @@ function InitCustomPlayerSlots takes nothing returns nothing
     call SetPlayerRaceSelectable(Player(0), true)
     call SetPlayerController(Player(0), MAP_CONTROL_USER)
 
-    // Player 1
-    call SetPlayerStartLocation(Player(1), 1)
-    call SetPlayerColor(Player(1), ConvertPlayerColor(1))
-    call SetPlayerRacePreference(Player(1), RACE_PREF_ORC)
-    call SetPlayerRaceSelectable(Player(1), true)
-    call SetPlayerController(Player(1), MAP_CONTROL_USER)
-
-    // Player 2
-    call SetPlayerStartLocation(Player(2), 2)
-    call SetPlayerColor(Player(2), ConvertPlayerColor(2))
-    call SetPlayerRacePreference(Player(2), RACE_PREF_UNDEAD)
-    call SetPlayerRaceSelectable(Player(2), true)
-    call SetPlayerController(Player(2), MAP_CONTROL_USER)
-
 endfunction
 
 function InitCustomTeams takes nothing returns nothing
-    // Force: TRIGSTR_004
+    // Force: TRIGSTR_002
     call SetPlayerTeam(Player(0), 0)
-    call SetPlayerTeam(Player(1), 0)
 
-    // Force: TRIGSTR_005
-    call SetPlayerTeam(Player(2), 1)
-
-endfunction
-
-function InitAllyPriorities takes nothing returns nothing
-
-    call SetStartLocPrioCount(0, 1)
-    call SetStartLocPrio(0, 0, 2, MAP_LOC_PRIO_HIGH)
-
-    call SetStartLocPrioCount(1, 2)
-    call SetStartLocPrio(1, 0, 0, MAP_LOC_PRIO_HIGH)
-    call SetStartLocPrio(1, 1, 2, MAP_LOC_PRIO_LOW)
-
-    call SetStartLocPrioCount(2, 1)
-    call SetStartLocPrio(2, 0, 0, MAP_LOC_PRIO_HIGH)
 endfunction
 
 //***************************************************************************
@@ -158,18 +127,16 @@ endfunction
 function config takes nothing returns nothing
     call SetMapName("Just another Warcraft III map")
     call SetMapDescription("Nondescript")
-    call SetPlayers(3)
-    call SetTeams(3)
-    call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)
+    call SetPlayers(1)
+    call SetTeams(1)
+    call SetGamePlacement(MAP_PLACEMENT_USE_MAP_SETTINGS)
 
-    call DefineStartLocation(0, - 523.4, 451.1)
-    call DefineStartLocation(1, - 1458.2, 1594.8)
-    call DefineStartLocation(2, - 686.5, - 481.0)
+    call DefineStartLocation(0, 831.1, 1960.2)
 
     // Player setup
     call InitCustomPlayerSlots()
-    call InitCustomTeams()
-    call InitAllyPriorities()
+    call SetPlayerSlotAvailable(Player(0), MAP_CONTROL_USER)
+    call InitGenericPlayerSlots()
 endfunction
 
 

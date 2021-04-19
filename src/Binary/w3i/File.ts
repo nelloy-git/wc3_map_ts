@@ -34,7 +34,7 @@ export class w3iFile extends Obj {
         w3i.fog = w3iFog.fromBinary(file)
         w3i.env = w3iEnviroment.fromBinary(file)
 
-        w3i.unknown_byte_3 = file.readInt(4)
+        w3i.use_lua = file.readInt(4)
         w3i.unknown_byte_4 = file.readInt(4)
         w3i.unknown_byte_5 = file.readInt(4)
 
@@ -68,7 +68,7 @@ export class w3iFile extends Obj {
                   + this.prologue.toBinary()
                   + this.fog.toBinary()
                   + this.env.toBinary()
-                  + int2byte(this.unknown_byte_3)
+                  + int2byte(1)
                   + int2byte(this.unknown_byte_4)
                   + int2byte(this.unknown_byte_5)
                   + int2byte(this.players.length)
@@ -111,7 +111,7 @@ export class w3iFile extends Obj {
 
     unknown_byte_1: number = 6
     unknown_byte_2: number = 6112
-    unknown_byte_3: number = 1
+    use_lua: number = 1
     unknown_byte_4: number = 3
     unknown_byte_5: number = 2
 }

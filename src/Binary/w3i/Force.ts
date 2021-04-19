@@ -7,12 +7,13 @@ export class w3iForceData extends Obj {
     static fromBinary(file: FileBinary){
         let force = new w3iForceData()
 
-        let flags = file.readInt(4)
-        force.allied = (flags & 0x0001) != 0
-        force.allied_victory = (flags & 0x0002) != 0
-        force.share_vision = (flags & 0x0004) != 0
-        force.share_unit_control = (flags & 0x0008) != 0
-        force.share_advanced_control = (flags & 0x0010) != 0
+        file.readChar(3)
+        let flags = file.readChar(1).charCodeAt(0)
+        force.allied = (flags & 0x01) != 0
+        force.allied_victory = (flags & 0x02) != 0
+        force.share_vision = (flags & 0x04) != 0
+        force.share_unit_control = (flags & 0x08) != 0
+        force.share_advanced_control = (flags & 0x10) != 0
 
         let players = file.readInt(4)
         let val = 0x0001
@@ -30,18 +31,20 @@ export class w3iForceData extends Obj {
 
     toBinary(){
         let flags = 0
-        if (this.allied){flags = flags | 0x0001}
-        if (this.allied_victory){flags = flags | 0x0002}
-        if (this.share_vision){flags = flags | 0x0004}
-        if (this.share_unit_control){flags = flags | 0x0008}
-        if (this.share_advanced_control){flags = flags | 0x0010}
+        if (this.allied){flags |= 0x01}
+        if (this.allied_victory){flags |= 0x02}
+        if (this.share_vision){flags |= 0x04}
+        if (this.share_unit_control){flags |= 0x08}
+        if (this.share_advanced_control){flags |= 0x10}
 
         let players = 0
         for (let pl of this.players){
-            players = players | pl
+            players = players | math.pow(2, pl)
         }
+        
 
-        return int2byte(flags)
+        return '\0\0\0'
+               + string.char(flags)
                + int2byte(players)
                + str2byte(this.name)
     }

@@ -76,7 +76,7 @@ export function addPlayer(id: number, name: string,
     pl.type = <Binary.w3iPlayer.Type><number>controller
     pl.race = <Binary.w3iPlayer.Race><number>race
 
-    pl.fixed_start_pos = 1
+    pl.fixed_start_pos = 0
     pl.start_x = start_x
     pl.start_y = start_y
     pl.ally_low_flags = 0
