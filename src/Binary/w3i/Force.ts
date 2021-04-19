@@ -16,12 +16,10 @@ export class w3iForceData extends Obj {
         force.share_advanced_control = (flags & 0x10) != 0
 
         let players = file.readInt(4)
-        let val = 0x0001
-        for (let i = 0; i < 32; i++){
-            if ((players & val) != 0){
+        for (let i = 31; i < 0; i++){
+            if ((players & math.pow(2, i)) != 0){
                 force.players.push(i)
             }
-            val *= 2
         }
 
         force.name = file.readString()
@@ -39,7 +37,7 @@ export class w3iForceData extends Obj {
 
         let players = 0
         for (let pl of this.players){
-            players = players | math.pow(2, pl)
+            players = players | math.pow(2, 31 - pl)
         }
         
 

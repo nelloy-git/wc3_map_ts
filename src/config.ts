@@ -1,10 +1,11 @@
 import * as Pl from './Configure/Player'
 
 if (!IsGame()){
-    Pl.addPlayer(0, 'Player1', Pl.Race.Human, Pl.Control.Human, -1984, -3136)
-    Pl.addForce('Force1', [0, 1, 2, 3, 4, 5, 6, 7, 8], false, false, false, false, false)
-    Pl.applyConfig()
+    Pl.addPlayer(0, 'TRIGSTR_005', Pl.Race.Human, Pl.Control.Human, -1984, -3136)
+    Pl.addForce('TRIGSTR_006', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], false, false, false, false, false)
 }
+// Pl.applyConfig()
+
 // Pl.addPlayer(1, 'Player2', RACE_PREF_RANDOM, MAP_CONTROL_USER, 0, 0)
 // Pl.addPlayer(2, 'Player3', RACE_PREF_RANDOM, MAP_CONTROL_USER, 0, 0)
 // Pl.addPlayer(3, 'Player4', RACE_PREF_RANDOM, MAP_CONTROL_USER, 0, 0)
@@ -15,8 +16,6 @@ if (IsGame()){
     SetPlayers(1)
     SetTeams(1)
     SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)
-
-    print('aaaa')
 
     // Player 0
     DefineStartLocation(0, 0, 0)

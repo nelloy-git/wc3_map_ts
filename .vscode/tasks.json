@@ -16,7 +16,7 @@
         {
             "label": "Run Reforged",
             "type": "shell",
-            "command": "E:\\'Warcraft III'\\_retail_\\x86_64\\'Warcraft III.exe' -launch -loadfile ${workspaceFolder}\\dst\\map -windowmode windowed"
+            "command": "E:\\'Warcraft III'\\_retail_\\x86_64\\'Warcraft III.exe' -launch -loadfile ${workspaceFolder}\\dst\\map.w3x -windowmode windowed"
         },
         {
             "label": "Run Linux Reforged",
