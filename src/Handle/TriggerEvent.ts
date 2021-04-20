@@ -1,6 +1,6 @@
 import { hTrigger } from "./Trigger";
 
-export class hTriggerEvent {
+export class hTriggerEvent<T extends any[]> {
 
     static newVariableEvent(var_name: string, opcode: jlimitop, limitval: number){
         return new hTriggerEvent(TriggerRegisterVariableEvent, var_name, opcode, limitval)
@@ -47,7 +47,15 @@ export class hTriggerEvent {
     }
 
     static newPlayerUnitEvent(player: jplayer, playerunitevent: jplayerunitevent){
-        return new hTriggerEvent(TriggerRegisterPlayerUnitEvent, player, playerunitevent, null)
+        return new hTriggerEvent(TriggerRegisterPlayerUnitEvent, player, playerunitevent)
+    }
+
+    static newPlayerKeyEvent(player: jplayer, key: joskeytype, meta: number, is_down: boolean){
+        return new hTriggerEvent(BlzTriggerRegisterPlayerKeyEvent, player, key, meta, is_down)
+    }
+
+    static newPlayerSyncEvent(pl: jplayer, prefix: string, from_server: boolean){
+        return new hTriggerEvent(BlzTriggerRegisterPlayerSyncEvent, pl, prefix, from_server)
     }
 
     static newPlayerAllianceChange(player: jplayer, alliancetype: jalliancetype){
@@ -71,7 +79,7 @@ export class hTriggerEvent {
     }
 
     static newUnitEvent(unitevent: junitevent, unit: junit){
-        return new hTriggerEvent(TriggerRegisterUnitEvent, unitevent, unit)
+        return new hTriggerEvent(TriggerRegisterUnitEvent, unit, unitevent)
     }
 
     static newUnitInRange(unit: junit, range: number){
@@ -82,10 +90,10 @@ export class hTriggerEvent {
         this.__func(trigger.handle, ...this.__args)
     }
 
-    private __func: (this: void, trig: jtrigger, ...args: any[])=>jevent;
-    private __args: any[];
+    private __func: (this: void, trig: jtrigger, ...args: T)=>jevent;
+    private __args: [...T];
     
-    private constructor(func: (this: void, trig: jtrigger, ...args: any[])=>jevent, ...args:any[]){
+    private constructor(func: (this: void, trig: jtrigger, ...args: T)=>jevent, ...args: T){
         this.__func = func
         this.__args = [...args]
     }

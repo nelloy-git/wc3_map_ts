@@ -17,8 +17,7 @@ export class Action<Owner = void, Args extends any[] = [], Out = void> {
             Action.__inside_xpcall = true
             let success
             [success, res] = xpcall(this.__callback, (err) => {
-
-                Log.wrn(this.err_header + err)
+                Log.wrn(this.err_header + '.Action: ' + err)
             }, this.owner, ...args)
 
             Action.__inside_xpcall = false

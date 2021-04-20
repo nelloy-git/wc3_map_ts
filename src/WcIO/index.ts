@@ -1,4 +1,4 @@
-export { Camera } from './Camera'
+// export { Camera } from './Camera'
 export { File } from './File'
 export { Keyboard } from './Keyboard'
 export { Mouse } from './Mouse'

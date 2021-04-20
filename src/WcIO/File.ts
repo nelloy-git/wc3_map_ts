@@ -76,7 +76,7 @@ export class File {
         if (this.__data_size < 0){
             this.__data_size = count
         } else if (this.__data_size != count){
-            Log.err('')
+            return error(File.name + ' different messages mixed.')
         }
 
 
@@ -88,7 +88,7 @@ export class File {
         }
 
         if (!this.__path || !this.__reader || !this.__cb){
-            return Log.err('')
+            return error(File.name + ' currupted queue.')
         }
 
         let data = ''
@@ -127,7 +127,7 @@ export class File {
 
     private static __read_queue: {path: string, pl: jplayer, cb: IOFileCallback}[] = []
 
-    private static _trigger = IsGame() ? ((): jtrigger => {
+    private static __trigger = IsGame() ? ((): jtrigger => {
         let trig = CreateTrigger()
         for (let i = 0; i < GetBJMaxPlayers(); i++) {
             BlzTriggerRegisterPlayerSyncEvent(trig, Player(i), SYNC, false);
