@@ -1,7 +1,7 @@
-import { hUnit } from "../../../src/Handle";
-import { hTrigger } from "../../../src/Handle/Trigger";
-import { hTriggerEvent } from "../../../src/Handle/TriggerEvent";
-import { Action, Color, Log } from "../../../src/Utils";
+import { hUnit } from "../../Handle";
+import { hTrigger } from "../../Handle/Trigger";
+import { hTriggerEvent } from "../../Handle/TriggerEvent";
+import { Action, Color, Log } from "../../Utils";
 
 import { Shield } from "./Shield";
 import { DamageType, type2wc, wc2type } from "./Type";

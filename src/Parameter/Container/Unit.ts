@@ -1,6 +1,6 @@
-import { getFilePath, Log } from "../../../src/Utils";
+import { getFilePath, Log } from "../../Utils";
 import { ValueType } from "../Value";
-import { hUnit } from "../../../src/Handle";
+import { hUnit } from "../../Handle";
 
 import { Container } from "../Container"
 import { Damage } from "../Damage/Damage";
