@@ -21,7 +21,7 @@ export function id2byte(int: number): bytes{
 }
 
 export function int2byte(int: number, size: number = 4): bytes{
-    return string.pack('<I4', int)
+    return string.pack('<I' + tostring(size), int)
 }
 
 export function str2byte(str: string): bytes{

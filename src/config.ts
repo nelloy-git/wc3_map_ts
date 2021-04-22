@@ -1,7 +1,9 @@
-import * as Pl from './Configure/Player'
-
 if (!IsGame()){
-    Pl.addPlayer(0, 'TRIGSTR_005', Pl.Race.Human, Pl.Control.Human, -1984, -3136)
+    const Pl = require('./Configure/Player')
+
+    let addPlayer = Pl.addPlayer
+    print(Pl)
+    addPlayer(0, 'TRIGSTR_005', Pl.Race.Human, Pl.Control.Human, -1984, -3136)
     Pl.addForce('TRIGSTR_006', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], false, false, false, false, false)
 }
 // Pl.applyConfig()
@@ -11,8 +13,8 @@ if (!IsGame()){
 // Pl.addPlayer(3, 'Player4', RACE_PREF_RANDOM, MAP_CONTROL_USER, 0, 0)
 
 if (IsGame()){
-    SetMapName("Just another Warcraft III map")
-    SetMapDescription("Nondescript")
+    SetMapName("TRIGSTR_001")
+    SetMapDescription("TRIGSTR_004")
     SetPlayers(1)
     SetTeams(1)
     SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)

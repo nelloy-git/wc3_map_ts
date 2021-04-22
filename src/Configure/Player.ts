@@ -1,6 +1,6 @@
 import * as Binary from '../Binary'
-import { w3iForceData } from '../Binary/w3i/Force'
 import { Vec2 } from '../Math'
+import { w3iForceData } from '../Binary/w3i/Force'
 import { FileBinary } from '../Utils'
 
 const __dir__ = Macro(getFileDir())
@@ -59,10 +59,12 @@ export function setPlayableMap(size: Vec2, top_left: Vec2, bot_right: Vec2){
     __w3i.info.camera_bounds_complements[3] = math.floor(bot_right.y)
 }
 
-export function addPlayer(id: number, name: string,
+export function addPlayer(_: undefined, id: number, name: string,
                           race: Race,
                           controller: Control,
                           start_x: number, start_y: number){
+
+    print(id, name)
 
     for (let pl of __w3i.players){
         if (pl.id == id){
@@ -85,7 +87,7 @@ export function addPlayer(id: number, name: string,
     __w3i.players.push(pl)
 }
 
-export function addForce(name: string, player_ids: number[],
+export function addForce(_: undefined, name: string, player_ids: number[],
                          allied: boolean, allied_victory: boolean,
                          share_vision: boolean, share_unit_control: boolean,
                          share_advanced_control: boolean){
