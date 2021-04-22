@@ -1,4 +1,4 @@
-import { Log, encode64, decode64 } from "../../src/Utils"
+import { encode64, decode64 } from "../../src/Utils"
 
 const CHUNK_SIZE = 180
 const SYNC = 'S_D'

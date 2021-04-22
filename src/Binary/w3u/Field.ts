@@ -1,5 +1,5 @@
 
-import { FileBinary, Log } from "../../Utils"
+import { FileBinary, log } from "../../Utils"
 import { Field, FieldBool, FieldChange, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
 import { float2byte, int2byte, str2byte } from "../Utils"
 import { UnitsMeta } from './UnitsMeta'
@@ -39,14 +39,14 @@ export class TUnitFieldChange<T extends Field.ValueType> extends FieldChange<T>{
         let code = file.readChar(4)
         let field = findTUnitField(code)
         if (!field){
-            return Log.err('unknown field ' + code)
+            error(TUnitFieldChange.name + ': unknown field ' + code)
         }
 
         let b_type = file.readChar(4)
         if (Field.type2byte(field.type) != b_type){
-            return Log.err(code + ' field.type != typeof(value)\n' +
-                            'field: ' + Field.type2byte(field.type).charCodeAt(0) + '\n' +
-                            'value: ' + b_type.charCodeAt(0))
+            error(TUnitFieldChange.name + ': ' + code + ' field.type != typeof(value)\n' +
+                  'field: ' + Field.type2byte(field.type).charCodeAt(0) + '\n' +
+                  'value: ' + b_type.charCodeAt(0))
         }
 
         let val = Field.byte2val(field.type, file)
@@ -381,7 +381,7 @@ if (!IsGame()){
     for (const id of meta){
         let field = findTUnitField(id)
         if (!field){
-            Log.wrn('id "' + id + '" is not registered')
+            log(TUnitFieldChange.name + ': id "' + id + '" is not registered')
         }
     }
 }

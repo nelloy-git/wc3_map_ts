@@ -11,7 +11,8 @@ export namespace Mouse {
 
     export const actions = new EventActions<Mouse.Event,
                                             typeof Mouse,
-                                            [pl: jplayer]> (Mouse, Mouse.name)
+                                            [pl: jplayer]>
+                                            (Mouse, Mouse.name)
 
     export function pos(pl: jplayer){
         let pos = __pos.get(pl)

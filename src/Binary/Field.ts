@@ -1,6 +1,6 @@
-import { FileBinary, Log } from "../Utils";
+import { FileBinary } from "../Utils";
 import { Obj } from "./Obj";
-import { byte2float, byte2int, byte2str, float2byte, int2byte, str2byte } from "./Utils";
+import { float2byte, int2byte, str2byte } from "./Utils";
 
 export abstract class Field<T extends Field.ValueType> {
     protected constructor(
@@ -63,7 +63,7 @@ export namespace Field {
         } else if (t == 'string' && typeof val === 'string'){
             return str2byte(<string>val)
         } else {
-            return Log.err('unknown value type.')
+            return error(tostring(val) + ': unknown value type.', 2)
         }
     }
 
@@ -77,7 +77,7 @@ export namespace Field {
         } else if (t == 'string'){
             return file.readString()
         } else {
-            return Log.err('unknown value type.')
+            return error(tostring(t) + ': unknown value type.', 2)
         }
     }
 }

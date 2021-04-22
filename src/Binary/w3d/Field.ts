@@ -1,6 +1,6 @@
 
-import { FileBinary, Log } from "../../Utils"
-import { Field, FieldBool, FieldChange, FieldInt, FieldReal, FieldString, FieldUnreal } from "../Field"
+import { FileBinary, log } from "../../Utils"
+import { Field, FieldBool, FieldChange, FieldInt, FieldString, FieldUnreal } from "../Field"
 import { int2byte } from '../Utils'
 import { DoodadsMeta } from './DoodadsMeta'
 
@@ -14,7 +14,7 @@ export class TDoodadFieldChange<T extends Field.ValueType> extends FieldChange<T
         let code = file.readChar(4)
         let field = findTDoodadField(code)
         if (!field){
-            return Log.err('unknown field ' + code)
+            return error('TDoodadFieldChange: unknown field ' + code)
         }
 
         let b_type = file.readChar(4)
@@ -22,9 +22,9 @@ export class TDoodadFieldChange<T extends Field.ValueType> extends FieldChange<T
         file.readInt(4) // data pointer unused
 
         if (Field.type2byte(field.type) != b_type){
-            return Log.err(code + ' field.type != typeof(value)\n' +
-                            'field: ' + Field.type2byte(field.type).charCodeAt(0) + '\n' +
-                            'value: ' + b_type.charCodeAt(0))
+            return error(code + ' field.type != typeof(value)\n' +
+                         'field: ' + Field.type2byte(field.type).charCodeAt(0) + '\n' +
+                         'value: ' + b_type.charCodeAt(0))
         }
 
         let val = Field.byte2val(field.type, file)
@@ -93,7 +93,7 @@ if (!IsGame()){
     for (const id of meta){
         let field = findTDoodadField(id)
         if (!field){
-            Log.wrn('id "' + id + '" is not registered')
+            log(TDoodadFieldChange.name + ': id "' + id + '" is not registered', 'Wrn')
         }
     }
 }

@@ -1,7 +1,3 @@
-import { Log } from "../Utils";
-
-let __path__ = Macro(getFilePath())
-
 export type bytes = string;
 
 declare namespace string {
@@ -108,8 +104,7 @@ export function nextId(this: void, cur_id: string){
         p3++
         while (p3 >= 48 && p3 <= 57){p3++}
     } else {
-        return Log.err('no valid ids left.', 
-                        __path__, undefined, 2)
+        return error('BinaryUtils: no valid ids left.', 2)
     }
     return string.char(p4) + string.char(p3) + string.char(p2) + string.char(p1)
 }
@@ -124,6 +119,5 @@ export function getFirstId(type: IdType){
     if (type == 'ITEM'){return 'IM##'}
     if (type == 'UPGR'){return 'RM##'}
     if (type == 'DECO'){return 'D###'}
-    return Log.err('unknow id type.', 
-                    __path__, undefined, 2)
+    return error('BinaryUtils: unknow id type.', 2)
 }

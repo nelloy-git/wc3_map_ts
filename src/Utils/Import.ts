@@ -54,24 +54,24 @@ export class Import{
         return list
     }
 
-    private static __copyFile(src: string, dst: string){
+    private static __copyFile(src: string, dst: string, err_lvl: number){
         if (!Import.__isExist(src)){
-            error("Import: file " + src + " does not exist.", 2)
+            error("Import: file " + src + " does not exist.", err_lvl)
         }
 
         let [infile] = io.open(src, "rb")
-        if (!infile){error('Import: can not open file ' + src)}
+        if (!infile){error('Import: can not open file ' + src, err_lvl)}
         let [instr] = infile.read('*a')
-        if (!instr){error('Import: can not open file ' + src)}
+        if (!instr){error('Import: can not open file ' + src, err_lvl)}
         infile.close()
     
         let [outfile] = io.open(dst, "wb")
-        if (!outfile){error('Import: can not open file ' + dst)}
+        if (!outfile){error('Import: can not open file ' + dst, err_lvl)}
         outfile.write(instr)
         outfile.close()
     }
 
-    private static __copyDir(src: string, dst: string){
+    private static __copyDir(src: string, dst: string, err_lvl: number){
         if (!Import.__isDir(dst)){
             os.execute('mkdir ' + dst)
         }  
@@ -81,9 +81,9 @@ export class Import{
             let src_path = src + Import.__sep + name
             let dst_path = dst + Import.__sep + name
             if (Import.__isDir(src_path)){
-                Import.__copyDir(src_path, dst_path)
+                Import.__copyDir(src_path, dst_path, err_lvl + 1)
             } else {
-                Import.__copyFile(src_path, dst_path)
+                Import.__copyFile(src_path, dst_path, err_lvl + 1)
             }
         }
     }
@@ -94,16 +94,16 @@ export class Import{
         // Make directories.
         for (let i = 1; i < tree.length - 1; i++){
             tree[i] = tree[i - 1] + Import.__sep + tree[i]
-            // print(dst, tree[i], Import.__isExist(tree[i]), Import.__isDir(tree[i]))
+            
             if (!Import.__isExist(tree[i]) && !Import.__isDir(tree[i])){
                 os.execute('mkdir ' + tree[i])
             }
         }
 
         if (Import.__isDir(src)){
-            Import.__copyDir(src, dst)
+            Import.__copyDir(src, dst, 4)
         } else {
-            Import.__copyFile(src, dst)
+            Import.__copyFile(src, dst, 4)
         }
     }
 

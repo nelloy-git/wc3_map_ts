@@ -28,7 +28,8 @@ export namespace Selection {
     export const actions = new EventActionsMap<jplayer,
                                                Selection.Event,
                                                typeof Selection,
-                                               [pl: jplayer, group: hUnit[]]>(Selection, Selection.name)
+                                               [pl: jplayer, u: hUnit, group: hUnit[]]>
+                                               (Selection, Selection.name)
 
     function __runActios(event: Selection.Event, pl: jplayer, u: hUnit){
         let gr = __groups.get(pl)
@@ -49,7 +50,7 @@ export namespace Selection {
                 gr.splice(found, 1)
             }
             let gr_copy = Object.assign([], gr)
-            actions.run(pl, event, pl, gr_copy)
+            actions.run(pl, event, pl, u, gr_copy)
         }
     }
 
