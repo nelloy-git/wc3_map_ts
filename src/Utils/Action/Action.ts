@@ -1,5 +1,4 @@
-import { Logger } from '../Logger'
-let Log = Logger.Default
+import { log } from '../Log'
 
 export class Action<Owner = void, Args extends any[] = [], Out = void> {
 
@@ -17,7 +16,7 @@ export class Action<Owner = void, Args extends any[] = [], Out = void> {
             Action.__inside_xpcall = true
             let success
             [success, res] = xpcall(this.__callback, (err) => {
-                Log.wrn(this.err_header + '.Action: ' + err)
+                log(this.err_header + '.Action: ' + err, 'Err')
             }, this.owner, ...args)
 
             Action.__inside_xpcall = false

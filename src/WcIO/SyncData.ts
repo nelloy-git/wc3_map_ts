@@ -20,7 +20,11 @@ export abstract class SyncData<T extends any[]> {
         return SyncData.__id2sync.get(id)
     }
 
-    public send(...data: T): void{
+    public send(pl: jplayer, ...data: T): void{
+        if (pl != GetLocalPlayer()){
+            return
+        }
+        
         let raw = this.data2raw(...data)
         BlzSendSyncData(this.id, raw)
     }
@@ -29,7 +33,7 @@ export abstract class SyncData<T extends any[]> {
     abstract raw2data(raw: string): T
 
     readonly id: string
-    readonly actions: ActionList<SyncData<T>, [T]>
+    readonly actions: ActionList<SyncData<T>, [jplayer, T]>
 
     private static __runActions(this: void){
         let id = BlzGetTriggerSyncPrefix()
@@ -42,7 +46,7 @@ export abstract class SyncData<T extends any[]> {
         let raw = BlzGetTriggerSyncData()
         let data = sync.raw2data(raw)
 
-        sync.actions.run(data)
+        sync.actions.run(pl, data)
     }
 
     private static __id2sync = new Map<string, SyncData<any>>()
@@ -72,7 +76,7 @@ export abstract class SyncData<T extends any[]> {
                 p3++
             }
         } else {
-            return error(SyncData.name + ' no valid ids left.', 2)
+            return error(SyncData.name + ': no valid ids left.', 3)
         }
         SyncData.__last_id = string.char(p4) + 
                              string.char(p3) + 

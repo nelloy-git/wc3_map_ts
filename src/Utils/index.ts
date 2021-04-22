@@ -11,9 +11,7 @@ export { Color } from './Color'
 export { FileBinary, FileText } from './File'
 export { Import } from './Import'
 
-import { Logger } from './Logger'
-export { Logger }
-export const Log = Logger.Default
+export { log, save } from './Log'
 
 import { BuildtimeCache } from './BuildtimeCache'
 export { BuildtimeCache as BuildtimeCache }

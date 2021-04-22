@@ -1,5 +1,5 @@
 import * as JsonLua from './JsonLua'
-import { Log } from "../Utils";
+import { log } from "../Utils";
 
 let __path__ = Macro(getFilePath())
 
@@ -160,10 +160,9 @@ export class Data {
         let res = this.__read<T>(tree, t)
         if (!res[0]){
             if (rt == ReadType.Err){
-                return Log.err('Can not find "' + t + '" value\n' + res[1],
-                                __path__, Data, 4)
+                error('Can not find "' + t + '" value\n' + res[1], 4)
             } else if (rt == ReadType.Wrn) {
-                Log.wrn('Can not find "' + t + '" value\n' + res[1])
+                log('Can not find "' + t + '" value\n' + res[1], 'Wrn')
             }
             return def
         }

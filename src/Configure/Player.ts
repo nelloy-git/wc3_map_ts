@@ -68,7 +68,7 @@ export function addPlayer(_: undefined, id: number, name: string,
 
     for (let pl of __w3i.players){
         if (pl.id == id){
-            error('Player id: ' + id + ' already reserved.')
+            error('Player id: ' + id + ' already reserved.', 2)
         }
     }
     

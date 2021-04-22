@@ -1,8 +1,3 @@
-import { Logger } from "./Logger"
-let Log = Logger.Default
-
-let __path__ = Macro(getFilePath())
-
 export class BuildtimeCache <T extends BuildtimeData> {
     constructor(id: number | string){
         this.id = id
@@ -10,16 +5,14 @@ export class BuildtimeCache <T extends BuildtimeData> {
 
         if (cache == undefined){
             if (IsGame()){
-                Log.err('can not load cache data for id: ' + this.id.toString(),
-                        __path__, BuildtimeCache, 3)
+                error(this.toString() + ': can not load data', 2)
             }
             
             cache = new LuaTable<number | string, BuildtimeData>();
             BuildtimeCache.__global_cache.set(id, cache)
         } else {
             if (!IsGame()){
-                Log.err('id ' + this.id.toString() + ' is already used.',
-                        __path__, BuildtimeCache, 3)
+                error(this.toString() + ': already exist.', 2)
             }
         }
 
@@ -33,11 +26,14 @@ export class BuildtimeCache <T extends BuildtimeData> {
 
     set(key: string, val: T){
         if (IsGame()){
-            return Log.err('can be used in buildtime only.',
-                            __path__, BuildtimeCache, 2)
+            error(this.toString() + ': can be used in buildtime only.', 2)
         }
         // print(this.id, key)
         this.__cache.set(key, val)
+    }
+
+    toString(){
+        return BuildtimeCache.name + '<' + this.id.toString() + '>'
     }
 
     readonly id: string | number

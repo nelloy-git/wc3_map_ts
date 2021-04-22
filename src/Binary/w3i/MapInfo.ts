@@ -58,7 +58,7 @@ export class w3iMapInfo extends Obj{
 
         let v = this.version.split('.')
         if (v.length != 4){
-            error('wrong warcraft version format')
+            error('wrong warcraft version format', 2)
         }
         raw += int2byte(<number>tonumber(v[0]))
         raw += int2byte(<number>tonumber(v[1]))

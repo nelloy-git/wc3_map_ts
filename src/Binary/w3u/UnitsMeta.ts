@@ -1,4 +1,4 @@
-import { BuildtimeCache, Log, FileText } from "../../Utils";
+import { BuildtimeCache, FileText } from "../../Utils";
 
 const __dir__ = Macro(getFileDir())
 
@@ -14,7 +14,7 @@ export namespace UnitsMeta {
                 cache.set(path, f.data)
             }
         } else {
-            Log.err('can not find file ' + path)
+            error('UnitsMeta: can not find file ' + path)
         }
     }
     

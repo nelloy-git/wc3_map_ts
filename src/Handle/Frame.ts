@@ -30,6 +30,7 @@ export class hFrame extends Handle<jframehandle> {
         }
 
         super(h)
+        this.is_simple = is_simple
         this.__level = 0
         this.__color = new Color()
     }
@@ -51,6 +52,9 @@ export class hFrame extends Handle<jframehandle> {
         return h ? hFrame.get(h) : undefined
     }
     set parent(parent: hFrame | undefined){
+        if (parent && this.is_simple != parent.is_simple){
+            error(hFrame.name + ': simple and non-sinple frames can not be mixed.')
+        }
         BlzFrameSetParent(this.handle, parent ? parent.handle : undefined)
     }
 
@@ -99,6 +103,7 @@ export class hFrame extends Handle<jframehandle> {
         super.destroy()
     }
 
+    readonly is_simple: boolean
     private __level: number
     private __color: Color
 }

@@ -12,7 +12,8 @@ export namespace Keyboard {
 
     export const actions = new EventActionsMap<joskeytype,
                                                Keyboard.Event,
-                                               typeof Keyboard, [pl: jplayer, key: joskeytype, meta: number]>
+                                               typeof Keyboard,
+                                               [pl: jplayer, key: joskeytype, meta: number]>
                                                (Keyboard, Keyboard.name)
 
     const __was_down = new Map<jplayer, Map<joskeytype, boolean>>()
@@ -35,6 +36,7 @@ export namespace Keyboard {
     // Create triggers
     if (IsGame()){
         let tr = new hTrigger()
+        tr.actions.add(__runActions)
 
         for (let i = 0; i < bj_MAX_PLAYER_SLOTS; i++){
             let pl = Player(i)
@@ -50,8 +52,6 @@ export namespace Keyboard {
                 }
                 __was_down.set(pl, new Map())
             }
-        }
-            
-        tr.actions.add(__runActions)
+        } 
     }
 }
