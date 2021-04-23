@@ -25,6 +25,10 @@ export class hUnit extends Handle<junit>{
         return Handle.get(id, 'unit') as hUnit | undefined
     }
 
+    toString(){
+        return hUnit.name + '<' + this.id + '>'
+    }
+
     get pos(){return new Vec3(GetUnitX(this.handle) - 16,
                               GetUnitY(this.handle) - 16,
                               GetUnitFlyHeight(this.handle))}
@@ -57,8 +61,26 @@ export class hUnit extends Handle<junit>{
         SetUnitState(this.handle, UNIT_STATE_MAX_MANA, 0.01 * perc * val)
     }
 
+    get atkDmg_0(){return BlzGetUnitBaseDamage(this.handle, 0)}
+    set atkDmg_0(val: number){BlzSetUnitBaseDamage(this.handle, val, 0)}
+
+    get atkDices_0(){return BlzGetUnitDiceNumber(this.handle, 0)}
+    set atkDices_0(val: number){BlzSetUnitDiceNumber(this.handle, val, 0)}
+
+    get atkDiceSides_0(){return BlzGetUnitDiceSides(this.handle, 0)}
+    set atkDiceSides_0(val: number){BlzSetUnitDiceSides(this.handle, val, 0)}
+
     get atkCd_0(){return BlzGetUnitAttackCooldown(this.handle, 0)}
     set atkCd_0(val: number){BlzSetUnitAttackCooldown(this.handle, val, 0)}
+
+    get atkDmg_1(){return BlzGetUnitBaseDamage(this.handle, 1)}
+    set atkDmg_1(val: number){BlzSetUnitBaseDamage(this.handle, val, 1)}
+
+    get atkDices_1(){return BlzGetUnitDiceNumber(this.handle, 1)}
+    set atkDices_1(val: number){BlzSetUnitDiceNumber(this.handle, val, 1)}
+
+    get atkDiceSides_1(){return BlzGetUnitDiceSides(this.handle, 1)}
+    set atkDiceSides_1(val: number){BlzSetUnitDiceSides(this.handle, val, 1)}
 
     get atkCd_1(){return BlzGetUnitAttackCooldown(this.handle, 1)}
     set atkCd_1(val: number){BlzSetUnitAttackCooldown(this.handle, val, 1)}

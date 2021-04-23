@@ -5,65 +5,150 @@ import { Container } from "./Container"
 import { Type, List } from "./Type";
 import { Value, ValueType } from "./Value";
 
-let __path__ = Macro(getFilePath())
-
 export class ContainerUnit extends Container {
     constructor(owner: hUnit){
         super()
         this.owner = owner
+        this.actions = new ActionList(<ContainerUnit>this, this.toString())
         
-        if (ContainerUnit._owner2container.get(owner)){
-            return Log.err('already exists.',
-                            __path__, ContainerUnit, 2)
+        if (ContainerUnit.__owner2container.get(owner)){
+            error(ContainerUnit.name + ': container for ' + owner.toString() + ' already exists.', 2)
         }
-        ContainerUnit._owner2container.set(owner, this)
+        ContainerUnit.__owner2container.set(owner, this)
 
-        for (let [param, value] of this._values){                       
-            this.set(param, 'BASE', Type.defaultUnitBase(param))
+        for (const p of List){
+            this.set(ContainerUnit.Default[p], p, 'BAS')
         }
     }
 
     static get(owner: hUnit){
-        return ContainerUnit._owner2container.get(owner)
+        return ContainerUnit.__owner2container.get(owner)
     }
 
-    set(param: Type, type: ValueType, val: number){
-        let min = Type.unitMin(param)
-        let max = Type.unitMax(param)
+    toString(){
+        return ContainerUnit.name + '<' + this.owner.toString() + '>'
+    }
 
-        let res = super.set(param, type, val)
+    set(val: number, param: Type, type: Exclude<ValueType, 'RES'>){
+        let min = ContainerUnit.Min[param]
+        let max = ContainerUnit.Max[param]
+
+        super.set(val, param, type)
+        let res = super.get(param, type)
         res = res < min ? min : res > max ? max : res
-        this._applyParam(param, res)
+        ContainerUnit.Apply[param](this.owner, res)
+
         return res
     }
 
-    add(param: Type, type: ValueType, val: number){
-        let min = Type.unitMin(param)
-        let max = Type.unitMax(param)
-        let cur = super.get(param, type)
-        val += cur
-        
-        let res = super.set(param, type, val)
+    add(val: number, param: Type, type: Exclude<ValueType, 'RES'>){
+        let min = ContainerUnit.Min[param]
+        let max = ContainerUnit.Max[param]
+
+        super.add(val, param, type)
+        let res = super.get(param, type)
         res = res < min ? min : res > max ? max : res
-        this._applyParam(param, res)
+        ContainerUnit.Apply[param](this.owner, res)
+
         return res
     }
 
-    protected _applyParam(param: Type, val: number){
-        if (param == 'PATK'){this.owner.baseDamage = val} else
-        // 0.5 attacks per sec is default (PSPD = 1 (100%))
-        if (param == 'PSPD'){this.owner.atkCd = 2 / val} else
-        if (param == 'LIFE'){this.owner.life_max = val} else
-        if (param == 'REGE'){this.owner.lifeRegen = val} else
-        if (param == 'MANA'){this.owner.mana_max = val} else
-        if (param == 'RECO'){this.owner.manaRegen = val} else
-        if (param == 'MOVE'){this.owner.move_spd = val}
-    }
-
-    readonly actions: ActionList<ContainerUnit, [Type]>
     readonly owner: hUnit
+    readonly actions: ActionList<ContainerUnit, [Type]>
     
-    private static _owner2container = new Map<hUnit, ContainerUnit>()
+    private static __owner2container = new Map<hUnit, ContainerUnit>()
+}
+
+export namespace ContainerUnit {
+    export const Default: Record<Type, number> = {
+        PATK: 1,
+        PSPD: 1,
+        PDEF: 0,
+        PRES: 0,
+        MATK: 0,
+        MSPD: 1,
+        MDEF: 0,
+        MRES: 0,
+        CRIT: 0,
+        LIFE: 10,
+        REGE: 0,
+        MANA: 10,
+        RECO: 0,
+        MOVE: 300,
+    }
+
+    let def_min = Macro(-math.pow(10, 10))
+    export const Min: Record<Type, number> = {
+        PATK: def_min,
+        PSPD: 0.01,
+        PDEF: def_min,
+        PRES: -1,
+        MATK: def_min,
+        MSPD: 0.01,
+        MDEF: def_min,
+        MRES: -1,
+        CRIT: 0,
+        LIFE: 10,
+        REGE: def_min,
+        MANA: 10,
+        RECO: def_min,
+        MOVE: def_min,
+    }
+
+    let def_max = Macro(math.pow(10, 10))
+    export const Max: Record<Type, number> = {
+        PATK: def_max,
+        PSPD: def_max,
+        PDEF: def_max,
+        PRES: 1,
+        MATK: def_max,
+        MSPD: def_max,
+        MDEF: def_max,
+        MRES: 1,
+        CRIT: 1,
+        LIFE: def_max,
+        REGE: def_max,
+        MANA: def_max,
+        RECO: def_max,
+        MOVE: 500,
+    }
+
+    export const ATK_Dispersion = 0.3
+    export const ATK_PER_SEC = 2
+    export const Apply: Record<Type, (u: hUnit, val: number) => void> = {
+        PATK: (u, val) => {
+            u.atkDmg_0 = val
+            u.atkDices_0 = 1
+            u.atkDiceSides_0 =  math.ceil(val * ATK_Dispersion)
+        },
+        PSPD: (u, val) => {
+            u.atkCd_0 = ATK_PER_SEC / val
+        },
+        PDEF: (u, val) => {},
+        PRES: (u, val) => {},
+        MATK: (u, val) => {},
+        MSPD: (u, val) => {},
+        MDEF: (u, val) => {},
+        MRES: (u, val) => {},
+        CRIT: (u, val) => {},
+        LIFE: (u, val) => {
+            let cur = u.life / u.life_max
+            u.life_max = val
+            u.life = cur * val
+        },
+        REGE: (u, val) => {
+            u.setField(val, UNIT_RF_HIT_POINTS_REGENERATION_RATE)
+        },
+        MANA: (u, val) => {
+            let cur = u.mana / u.mana_max
+            u.mana_max = val
+            u.mana = cur * val
+        },
+        RECO: (u, val) => {
+            u.setField(val, UNIT_RF_MANA_REGENERATION)
+        },
+        MOVE: (u, val) => {u.move_spd = val},
+    }
 }
 
 // function addMagicAttack(this: void, src: hUnit, dst: hUnit, dmg: number, type: Damage.Type){
