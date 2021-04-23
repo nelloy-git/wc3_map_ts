@@ -64,7 +64,7 @@ export function addPlayer(_: undefined, id: number, name: string,
                           controller: Control,
                           start_x: number, start_y: number){
 
-    print(id, name)
+    // print(id, name)
 
     for (let pl of __w3i.players){
         if (pl.id == id){

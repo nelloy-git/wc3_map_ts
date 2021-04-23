@@ -1,4 +1,4 @@
-import { Color, Log, Vec2 } from '../../src/Utils'
+import { Color } from '../Utils'
 import { Pixel, PixelList } from "./Pixel";
 
 
