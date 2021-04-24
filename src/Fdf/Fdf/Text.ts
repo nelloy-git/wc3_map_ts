@@ -1,4 +1,4 @@
-import { Color } from "../../../src/Utils";
+import { Color } from "../../Utils";
 import { Fdf } from "../Fdf";
 
 export class Text extends Fdf {
@@ -15,20 +15,20 @@ export class Text extends Fdf {
         this.__just_vert = 'JUSTIFYMIDDLE'
     }
 
-    public get width(){return this.__width}
-    public set width(w: number){
+    get width(){return this.__width}
+    set width(w: number){
         this._setParam('Width', w.toString())
         this.__width = w
     }
 
-    public get height(){return this.__height}
-    public set height(h: number){
+    get height(){return this.__height}
+    set height(h: number){
         this._setParam('Height', h.toString())
         this.__height = h
     }
 
-    public get decorateFileNames(){return this.__decorate}
-    public set decorateFileNames(flag: boolean){
+    get decorateFileNames(){return this.__decorate}
+    set decorateFileNames(flag: boolean){
         if (flag){
             this._setParam('DecorateFileNames')
         } else {
@@ -37,28 +37,28 @@ export class Text extends Fdf {
         this.__decorate = flag
     }
 
-    public get text(){return this.__text}
-    public set text(text: string){
+    get text(){return this.__text}
+    set text(text: string){
         this._setParam('Text',  '\"' + text + '\"')
         this.__text = text
     }
 
-    public get font(){return this.__font}
-    public set font(path: string){
+    get font(){return this.__font}
+    set font(path: string){
         this.__font = path
         this._setParam('FrameFont',
                        string.format('\"%s\", %f, \"\"', this.__font, this.__font_size))
     }
 
-    public get fontSize(){return this.__font_size}
-    public set fontSize(size: number){
+    get fontSize(){return this.__font_size}
+    set fontSize(size: number){
         this.__font_size = size
         this._setParam('FrameFont',
                        string.format('\"%s\", %f, \"\"', this.__font, this.__font_size))
     }
 
-    public get justification(){return [this.__just_horz, this.__just_vert]}
-    public set justification(val: [FdfText.JustificationHorz, FdfText.JustificationVert]){
+    get justification(){return [this.__just_horz, this.__just_vert]}
+    set justification(val: [FdfText.JustificationHorz, FdfText.JustificationVert]){
         this.__just_horz = val[0]
         this.__just_vert = val[1]
         

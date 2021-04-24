@@ -5,20 +5,20 @@ export class SimpleStatusBar extends Fdf {
         super(name, 'SIMPLESTATUSBAR', true)
     }
 
-    public get width(){return this._width}
-    public set width(w: number){
+    get width(){return this._width}
+    set width(w: number){
         this._setParam('Width', w.toString())
         this._width = w
     }
 
-    public get height(){return this._height}
-    public set height(h: number){
+    get height(){return this._height}
+    set height(h: number){
         this._setParam('Height', h.toString())
         this._height = h
     }
 
-    public get decorateFileNames(){return this._decorate}
-    public set decorateFileNames(flag: boolean){
+    get decorateFileNames(){return this._decorate}
+    set decorateFileNames(flag: boolean){
         if (flag){
             this._setParam('DecorateFileNames')
         } else {
@@ -27,8 +27,8 @@ export class SimpleStatusBar extends Fdf {
         this._decorate = flag
     }
 
-    public get setAllPoints(){return this._all_points}
-    public set setAllPoints(flag: boolean){
+    get setAllPoints(){return this._all_points}
+    set setAllPoints(flag: boolean){
         if (flag){
             this._setParam('SetAllPoints')
         } else {
@@ -37,8 +37,8 @@ export class SimpleStatusBar extends Fdf {
         this._all_points = flag
     }
 
-    public get barTexture(){return this._bar_texture}
-    public set barTexture(path: string){
+    get barTexture(){return this._bar_texture}
+    set barTexture(path: string){
         this._bar_texture = path
         this._setParam('BarTexture', '\"' + path + '\"')
     }

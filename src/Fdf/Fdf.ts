@@ -9,41 +9,42 @@ export abstract class Fdf implements IFace{
         this.file = file ? file : Fdf._file
 
         if (Fdf._name2fdf.get(name)){
-            error('frame with the same name already exists. "' + name + '"',
-                            __path__, Fdf, 2)
+            error(Fdf.name + ': frame with the name "' + name + '" already exists.', 2)
         }
         Fdf._name2fdf.set(name, this)
 
         this.file.add(this)
     }
 
-    public get inherit(){return this._inherit}
-    public set inherit(other: Fdf | undefined){
+    toString(){
+        return this.constructor.name + '<' + this.name + '>'
+    }
+
+    get inherit(){return this._inherit}
+    set inherit(other: Fdf | undefined){
         if (other && other.base_type != this.base_type){
-            Log.err('can not inherit from different base type.',
-                    __path__, Fdf, 2)
+            error(this.toString() + ': can not inherit from different base type.', 2)
         }
         this._inherit = other
     }
 
-    public addSubframe(fdf: Fdf){
+    addSubframe(fdf: Fdf){
         if (fdf.is_simple != this.is_simple){
-            Log.err('simple and normal frames can not be combined.',
-                    __path__, Fdf, 2)
+            error(this.toString() + ': simple and normal frames can not be combined.', 2)
         }
         this._subframes.set(fdf.name, fdf)
         this.file.remove(fdf)
     }
 
-    public getSubframe(name: string){
+    getSubframe(name: string){
         return this._subframes.get(name)
     }
 
-    public removeSubframe(name: string){
+    removeSubframe(name: string){
         return this._subframes.delete(name)
     }
 
-    public serialize(){
+    serialize(){
         let res = string.format('Frame \"%s\" \"%s\"', this.base_type, this.name)
         if (this.inherit){res += ' INHERITS ' + this.inherit.name}
         res += ' {\n'

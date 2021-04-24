@@ -1,4 +1,4 @@
-import { Color } from "../../../src/Utils";
+import { Color } from "../../Utils";
 import { Fdf } from "../Fdf";
 
 export class Highlight extends Fdf {
@@ -6,59 +6,59 @@ export class Highlight extends Fdf {
         super(name, 'HIGHLIGHT', false)
     }
 
-    public get width(){return this._width}
-    public set width(w: number){
+    get width(){return this.__width}
+    set width(w: number){
         this._setParam('Width', w.toString())
-        this._width = w
+        this.__width = w
     }
 
-    public get height(){return this._height}
-    public set height(h: number){
+    get height(){return this.__height}
+    set height(h: number){
         this._setParam('Height', h.toString())
-        this._height = h
+        this.__height = h
     }
 
-    public get decorateFileNames(){return this._decorate}
-    public set decorateFileNames(flag: boolean){
+    get decorateFileNames(){return this.__decorate}
+    set decorateFileNames(flag: boolean){
         if (flag){
             this._setParam('DecorateFileNames')
         } else {
             this._removeParam('DecorateFileNames')
         }
-        this._decorate = flag
+        this.__decorate = flag
     }
 
-    public get highlightType(){return this._highlight_type}
-    public set highlightType(type: FdfHighlight.Type){
+    get highlightType(){return this.__highlight_type}
+    set highlightType(type: FdfHighlight.Type){
         this._setParam('HighlightType',  '\"' + type + '\"')
-        this._highlight_type = type
+        this.__highlight_type = type
     }
 
-    public get alphaFile(){return this._alpha_path}
-    public set alphaFile(path: string){
+    get alphaFile(){return this.__alpha_path}
+    set alphaFile(path: string){
         this._setParam('HighlightAlphaFile',  '\"' + path + '\"')
-        this._alpha_path = path
+        this.__alpha_path = path
     }
 
-    public get alphaMode(){return this._alpha_mode}
-    public set alphaMode(mode: FdfHighlight.Mode){
+    get alphaMode(){return this.__alpha_mode}
+    set alphaMode(mode: FdfHighlight.Mode){
         this._setParam('HighlightAlphaMode', '\"' + mode + '\"')
-        this._alpha_mode = mode
+        this.__alpha_mode = mode
     }
 
-    public get color(){return new Color(this._color)}
-    public set color(c: Color){
+    get color(){return this.__color.copy()}
+    set color(c: Color){
         this._setParam('HighlightColor', string.format('%f %f %f %f', c.r, c.g, c.b, c.a))
-        this._color = new Color(c)
+        this.__color = c.copy()
     }
 
-    private _width: number = -1;
-    private _height: number = -1;
-    private _decorate: boolean = false;
-    private _highlight_type: FdfHighlight.Type = 'SHADE';
-    private _alpha_path: string = ''
-    private _alpha_mode: FdfHighlight.Mode = 'ADD'
-    private _color: Color = new Color(1, 1, 1, 1)
+    private __width: number = -1;
+    private __height: number = -1;
+    private __decorate: boolean = false;
+    private __highlight_type: FdfHighlight.Type = 'SHADE';
+    private __alpha_path: string = ''
+    private __alpha_mode: FdfHighlight.Mode = 'ADD'
+    private __color: Color = new Color(1, 1, 1, 1)
 }
 
 export namespace FdfHighlight {

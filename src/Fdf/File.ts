@@ -21,11 +21,11 @@ export class File {
         }
     }
 
-    public add(fdf: IFace){
+    add(fdf: IFace){
         this._list.push(fdf)
     }
 
-    public remove(fdf: IFace){
+    remove(fdf: IFace){
         let i = this._list.indexOf(fdf)
         if (i < 0){return false}
 

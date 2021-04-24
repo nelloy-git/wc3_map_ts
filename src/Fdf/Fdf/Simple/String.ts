@@ -1,51 +1,46 @@
-import { getFilePath, Color, Log } from "../../../../src/Utils";
+import { Color } from "../../../Utils";
 import { Fdf } from "../../Fdf";
-
-let __path__ = Macro(getFilePath())
 
 export class SimpleString extends Fdf {
     constructor(name: string){
         super(name, 'String', true)
     }
 
-    public get text(){return this._text}
-    public set text(text: string){
+    get text(){return this._text}
+    set text(text: string){
         this._setParam('Text', '\"' + text + '\"')
         this._text = text
     }
 
-    public get font(){return this._font}
-    public set font(path: string){
+    get font(){return this._font}
+    set font(path: string){
         this._setParam('Font', '\"' + path + '\", ' + this._font_size.toString())
         this._font = path
     }
 
-    public get fontSize(){return this._font_size}
-    public set fontSize(size: number){
+    get fontSize(){return this._font_size}
+    set fontSize(size: number){
         this._setParam('Font', '\"' + this._font + '\", ' + size.toString())
         this._font_size = size
     }
 
-    public get color(){return new Color(this._color)}
-    public set color(c: Color){
+    get color(){return this._color.copy()}
+    set color(c: Color){
         this._setParam('FontColor', string.format('%f %f %f %f', c.r, c.g, c.b, c.a))
-        this._color = new Color(c)
+        this._color = c.copy()
     }
 
-    public addSubframe(){
-        return Log.err('can not have subframes.',
-                       __path__, SimpleString, 2)
+    addSubframe(){
+        return error(this.toString() + ': can not have subframes.', 2)
     }
-    public getSubframe(){
-        return Log.err('can not have subframes.',
-                       __path__, SimpleString, 2)
+    getSubframe(){
+        return error(this.toString() + ': can not have subframes.', 2)
     }
-    public removeSubframe(){
-        return Log.err('can not have subframes.',
-                       __path__, SimpleString, 2)
+    removeSubframe(){
+        return error(this.toString() + ': can not have subframes.', 2)
     }
 
-    public serialize(){
+    serialize(){
         let res = string.format("%s \"%s\" {\n", this.base_type, this.name)
         for (let [param, value] of this._parameters){
             res += '    ' + param + ' ' + value + ',\n'

@@ -5,124 +5,124 @@ export class Backdrop extends Fdf {
         super(name, 'BACKDROP', false)
     }
 
-    public get width(){return this._width}
-    public set width(w: number){
+    get width(){return this.__width}
+    set width(w: number){
         this._setParam('Width', w.toString())
-        this._width = w
+        this.__width = w
     }
 
-    public get height(){return this._height}
-    public set height(h: number){
+    get height(){return this.__height}
+    set height(h: number){
         this._setParam('Height', h.toString())
-        this._height = h
+        this.__height = h
     }
 
-    public get decorateFileNames(){return this._decorate}
-    public set decorateFileNames(flag: boolean){
+    get decorateFileNames(){return this.__decorate}
+    set decorateFileNames(flag: boolean){
         if (flag){
             this._setParam('DecorateFileNames')
         } else {
             this._removeParam('DecorateFileNames')
         }
-        this._decorate = flag
+        this.__decorate = flag
     }
 
-    public get setAllPoints(){return this._all_points}
-    public set setAllPoints(flag: boolean){
+    get setAllPoints(){return this.__all_points}
+    set setAllPoints(flag: boolean){
         if (flag){
             this._setParam('SetAllPoints')
         } else {
             this._removeParam('SetAllPoints')
         }
-        this._all_points = flag
+        this.__all_points = flag
     }
 
-    public get backgroundTileMode(){return this._tile_mode}
-    public set backgroundTileMode(flag: boolean){
+    get backgroundTileMode(){return this.__tile_mode}
+    set backgroundTileMode(flag: boolean){
         if (flag){
             this._setParam('BackdropTileBackground')
         } else {
             this._removeParam('BackdropTileBackground')
         }
-        this._tile_mode = flag
+        this.__tile_mode = flag
     }
 
-    public get backgroudTileSize(){return this._tile_size}
-    public set backgroudTileSize(size: number){
+    get backgroudTileSize(){return this.__tile_size}
+    set backgroudTileSize(size: number){
         this._setParam('BackdropBackgroundSize', size.toString())
-        this._tile_size = size
+        this.__tile_size = size
     }
 
-    public get background(){return this._background}
-    public set background(path: string){
+    get background(){return this.__background}
+    set background(path: string){
         this._setParam('BackdropBackground', '\"' + path + '\"')
-        this._background = path
+        this.__background = path
     }
 
-    public get insets(){return this._insets}
-    public set insets(insets: [right: number, top: number, bottom: number, left: number]){
+    get insets(){return this.__insets}
+    set insets(insets: [right: number, top: number, bottom: number, left: number]){
         let [right, top, bottom, left] = insets
         this._setParam('BackdropBackgroundInsets',
                         string.format('%f %f %f %f', right, top, bottom, left))
-        this._insets = insets
+        this.__insets = insets
     }
 
-    public get cornerFlags(){return this._cornerFlags}
-    public set cornarFlags(flags: Backdrop.CornerFlags[]){
+    get cornerFlags(){return this.__cornerFlags}
+    set cornarFlags(flags: Backdrop.CornerFlags[]){
         let s_flags = flags.length > 0 ? flags[0] : ''
         for (let i = 1; i < flags.length; i++){
             s_flags += '|' + flags[i]
         }
         this._setParam('BackdropCornerFlags', '\"' + s_flags + '\"')
-        this._cornerFlags = flags
+        this.__cornerFlags = flags
     }
 
-    public get cornerSize(){return this._cornerSize}
-    public set cornerSize(size: number){
+    get cornerSize(){return this.__cornerSize}
+    set cornerSize(size: number){
         size = size > 1 ? 1 : size < 0 ? 0 : size
         this._setParam('BackdropCornerSize', size.toString())
-        this._cornerSize = size
+        this.__cornerSize = size
     }
 
-    public get edgeFile(){return this._edgeFile}
-    public set edgeFile(path: string){
+    get edgeFile(){return this.__edgeFile}
+    set edgeFile(path: string){
         this._setParam('BackdropEdgeFile', '\"' + path + '\"')
-        this._edgeFile = path
+        this.__edgeFile = path
     }
     
-    public get blendAll(){return this._blend}
-    public set blendAll(flag: boolean){
+    get blendAll(){return this.__blend}
+    set blendAll(flag: boolean){
         if (flag){
             this._setParam('BackdropBlendAll')
         } else {
             this._removeParam('BackdropBlendAll')
         }
-        this._blend = flag
+        this.__blend = flag
     }
 
-    public get mirrored(){return this._mirrored}
-    public set mirrored(flag: boolean){
+    get mirrored(){return this.__mirrored}
+    set mirrored(flag: boolean){
         if (flag){
             this._setParam('BackdropMirrored')
         } else {
             this._removeParam('BackdropMirrored')
         }
-        this._mirrored = flag
+        this.__mirrored = flag
     }
 
-    private _width: number = -1;
-    private _height: number = -1;
-    private _decorate: boolean = false;
-    private _all_points: boolean = false;
-    private _tile_mode: boolean = false;
-    private _tile_size: number = 1;
-    private _background: string = '';
-    private _insets: [number, number, number, number] = [0, 0, 0, 0];
-    private _cornerFlags: Backdrop.CornerFlags[] = [];
-    private _cornerSize: number = 0;
-    private _edgeFile: string = '';
-    private _blend: boolean = false;
-    private _mirrored: boolean = false;
+    private __width: number = -1;
+    private __height: number = -1;
+    private __decorate: boolean = false;
+    private __all_points: boolean = false;
+    private __tile_mode: boolean = false;
+    private __tile_size: number = 1;
+    private __background: string = '';
+    private __insets: [number, number, number, number] = [0, 0, 0, 0];
+    private __cornerFlags: Backdrop.CornerFlags[] = [];
+    private __cornerSize: number = 0;
+    private __edgeFile: string = '';
+    private __blend: boolean = false;
+    private __mirrored: boolean = false;
 }
 
 export namespace Backdrop {

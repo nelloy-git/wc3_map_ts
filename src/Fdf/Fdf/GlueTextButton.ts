@@ -1,4 +1,3 @@
-import { Log } from "../../../src/Utils";
 import { Fdf } from "../Fdf";
 
 import { Backdrop } from './Backdrop'
@@ -11,55 +10,54 @@ export class GlueTextButton extends Fdf {
         this._setParam('ControlStyle', '\"AUTOTRACK\"')
     }
 
-    public get width(){return this._width}
-    public set width(w: number){
+    get width(){return this.__width}
+    set width(w: number){
         this._setParam('Width', w.toString())
-        this._width = w
+        this.__width = w
     }
 
-    public get height(){return this._height}
-    public set height(h: number){
+    get height(){return this.__height}
+    set height(h: number){
         this._setParam('Height', h.toString())
-        this._height = h
+        this.__height = h
     }
 
-    public get decorateFileNames(){return this._decorate}
-    public set decorateFileNames(flag: boolean){
+    get decorateFileNames(){return this.__decorate}
+    set decorateFileNames(flag: boolean){
         if (flag){
             this._setParam('DecorateFileNames')
         } else {
             this._removeParam('DecorateFileNames')
         }
-        this._decorate = flag
+        this.__decorate = flag
     }
 
-    public get pushedTextOffset(){return this._text_offset}
-    public set pushedTextOffset(offset: [x: number, y: number]){
+    get pushedTextOffset(){return this.__text_offset}
+    set pushedTextOffset(offset: [x: number, y: number]){
         let [x, y] = offset
         this._setParam('ButtonPushedTextOffset', x.toString() + ' ' + y.toString())
-        this._text_offset = offset
+        this.__text_offset = offset
     }
 
-    public hasElement(elem: GlueTextButton.Element){
-        return this._elements.get(elem) != undefined
+    hasElement(elem: GlueTextButton.Element){
+        return this.__elements.get(elem) != undefined
     }
 
-    public getElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop | undefined
-    public getElement(elem: 'MOUSE' | 'FOCUS'): Highlight | undefined
-    public getElement(elem: 'TEXT'): Text | undefined
-    public getElement(elem: GlueTextButton.Element): Backdrop | Highlight | Text | undefined
-    public getElement(elem: GlueTextButton.Element){
-        let res = this._elements.get(elem)
+    getElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop | undefined
+    getElement(elem: 'MOUSE' | 'FOCUS'): Highlight | undefined
+    getElement(elem: 'TEXT'): Text | undefined
+    getElement(elem: GlueTextButton.Element): Backdrop | Highlight | Text | undefined
+    getElement(elem: GlueTextButton.Element){
+        let res = this.__elements.get(elem)
         if (res){return res}
     }
 
-    public newElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop
-    public newElement(elem: 'MOUSE' | 'FOCUS'): Highlight
-    public newElement(elem: 'TEXT'): Text
-    public newElement(elem: GlueTextButton.Element){
+    newElement(elem: 'NORMAL' | 'PUSHED' | 'DISABLED'): Backdrop
+    newElement(elem: 'MOUSE' | 'FOCUS'): Highlight
+    newElement(elem: 'TEXT'): Text
+    newElement(elem: GlueTextButton.Element){
         if (this.hasElement(elem)){
-            Log.err(GlueTextButton.name + 
-                    ': element already exists')
+            error(this.toString() + ': element already exists', 2)
         }
 
         let res
@@ -76,32 +74,32 @@ export class GlueTextButton extends Fdf {
     }
 
     private _applyElement(elem: GlueTextButton.Element, sub: Backdrop | Highlight | Text){
-        let param = GlueTextButton._elem2param.get(elem) as string
+        let param = GlueTextButton.__elem2param.get(elem) as string
         this._setParam(param, '\"' + this.name + elem + '\"')
-        if (elem == 'MOUSE' && !this._track_mouse){
-            this._track_mouse = true
+        if (elem == 'MOUSE' && !this.__track_mouse){
+            this.__track_mouse = true
             let style = this._getParam('ControlStyle') as string
             this._setParam('ControlStyle', style.slice(0, style.length - 1) + '|HIGHLIGHTONMOUSEOVER\"')
         }
-        if (elem == 'FOCUS' && !this._track_focus){
-            this._track_focus = true
+        if (elem == 'FOCUS' && !this.__track_focus){
+            this.__track_focus = true
             let style = this._getParam('ControlStyle') as string
             this._setParam('ControlStyle', style.slice(0, style.length - 1) + '|HIGHLIGHTONFOCUS\"')
         }
-        this._elements.set(elem, sub)
+        this.__elements.set(elem, sub)
         this.addSubframe(sub)
     }
     
-    private _width: number = -1;
-    private _height: number = -1;
-    private _decorate: boolean = false;
-    private _text_offset: [number, number] = [0, 0]
+    private __width: number = -1;
+    private __height: number = -1;
+    private __decorate: boolean = false;
+    private __text_offset: [number, number] = [0, 0]
 
-    private _track_mouse: boolean = false
-    private _track_focus: boolean = false
-    private _elements = new Map<GlueTextButton.Element, Backdrop | Highlight | Text>()
+    private __track_mouse: boolean = false
+    private __track_focus: boolean = false
+    private __elements = new Map<GlueTextButton.Element, Backdrop | Highlight | Text>()
 
-    private static _elem2param = new Map<GlueTextButton.Element, string>([
+    private static __elem2param = new Map<GlueTextButton.Element, string>([
         ['NORMAL', 'ControlBackdrop'],
         ['PUSHED', 'ControlPushedBackdrop'],
         ['DISABLED', 'ControlDisabledBackdrop'],
@@ -112,5 +110,5 @@ export class GlueTextButton extends Fdf {
 }
 
 export namespace GlueTextButton {
-    export type Element = 'NORMAL'|'PUSHED'|'DISABLED'|'MOUSE'|'FOCUS'|'TEXT'
+    export type Element = 'NORMAL' | 'PUSHED' | 'DISABLED' | 'MOUSE' | 'FOCUS' | 'TEXT'
 }
