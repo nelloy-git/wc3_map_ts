@@ -29,6 +29,13 @@ export class hUnit extends Handle<junit>{
         return hUnit.name + '<' + this.id + '>'
     }
 
+    get pos2(){return new Vec2(GetUnitX(this.handle) - 16,
+                               GetUnitY(this.handle) - 16)}
+    set pos2(v: Vec2){
+        SetUnitX(this.handle, v.x + 16)
+        SetUnitY(this.handle, v.y + 16)
+    }
+
     get pos(){return new Vec3(GetUnitX(this.handle) - 16,
                               GetUnitY(this.handle) - 16,
                               GetUnitFlyHeight(this.handle))}

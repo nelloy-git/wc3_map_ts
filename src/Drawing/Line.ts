@@ -74,7 +74,7 @@ export class Line<T extends Pixel> {
     }
 
     toString(){
-        return Line.name + '<' + this.__p1.toString + ';' + this.__p2.toString() + '>'
+        return Line.name + '<' + this.__p1.toString() + ';' + this.__p2.toString() + '>'
     }
 
     destroy(){
@@ -90,7 +90,7 @@ export class Line<T extends Pixel> {
 
         this.__in_use = math.floor(this.__length / this.__step) + 1
         if (this.__in_use > this.__pixels.length){
-            log(this.toString + ': is not enought pixels to fill line.')
+            log(this.toString() + ': is not enought pixels to fill.', 'Wrn')
         }
 
         let start = new Vec3(this.__p1.x, this.__p2.y, this.__z)
@@ -100,7 +100,7 @@ export class Line<T extends Pixel> {
         for (let i = 0; i < rly_used; i++){
             let pixel = this.__pixels[i]
             pixel.visible = this.__visible
-            pixel.pos = start.add(step.mult(i))
+            pixel.pos = step.mult(i).add(start)
         }
 
         for (let i = rly_used; i < this.__pixels.length; i++){
@@ -118,6 +118,6 @@ export class Line<T extends Pixel> {
     private __in_use: number
     private __pixels: PixelList<T>
 
-    private __color = new Color(1, 1, 1, 1)
+    private __color = new Color()
     private __visible = true
 }

@@ -76,7 +76,7 @@ export class File {
         if (this.__data_size < 0){
             this.__data_size = count
         } else if (this.__data_size != count){
-            return error(File.name + ' different messages mixed.')
+            error(File.name + ' different messages mixed.')
         }
 
 
@@ -88,7 +88,7 @@ export class File {
         }
 
         if (!this.__path || !this.__reader || !this.__cb){
-            return error(File.name + ' currupted queue.')
+            error(File.name + ' currupted queue.')
         }
 
         let data = ''

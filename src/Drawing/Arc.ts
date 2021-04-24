@@ -1,93 +1,137 @@
-import { Color } from '../Utils'
+import { Vec2, Vec3 } from '../Math'
+import { Color, log } from '../Utils'
 import { Pixel, PixelList } from "./Pixel";
 
-
 export class Arc<T extends Pixel> {
-    constructor(pixels: PixelList<T>,
-                pixel_step: number = 8, z: number = 0){
+    constructor(pixels: PixelList<T>, step: number = 8, z: number = 0){
         this.__c = new Vec2(0, 0)
         this.__r = 0
         this.__a1 = 0
         this.__a2 = 0
         this.__z = 0
 
-        this.__pixels = pixels
-        this.__step = pixel_step
+        this.__step = step
         this.__in_use = 0
+        this.__pixels = pixels
 
-        if (z != 0){this.z = z}
+        this.z = z
     }
 
-    public setPolarPos(c: Vec2, r: number, a1: number, a2: number){
-        this.__c = c.copy()
+    get center(){return this.__c.copy()}
+    set center(v: Vec2){
+        this.__c = v.copy()
+        this.__updPos()
+    }
+
+    get range(){return this.__r}
+    set range(r: number){
         this.__r = r
-        this.__a1 = a1
-        this.__a2 = a2
-
-        this._update()
+        this.__updPos()
     }
 
-    public get c(){return this.__c.copy()}
-    public get r(){return this.__r}
-    public get a1(){return this.__a1}
-    public get a2(){return this.__a2}
+    get angle1(){return this.__a1}
+    set angle1(a1: number){
+        this.__a1 = a1
+        this.__updPos()
+    }
 
-    public get z(){return this.__z}
-    public set z(z: number){
+    get angle2(){return this.__a2}
+    set angle2(a2: number){
+        this.__a2 = a2
+        this.__updPos()
+    }
+
+    setPolarPos(center: Vec2, range: number,
+                angle1: number, angle2: number){
+        this.__c = center.copy()
+        this.__r = range
+        this.__a1 = angle1
+        this.__a2 = angle2
+
+        this.__updPos()
+    }
+
+    get z(){return this.__z}
+    set z(z: number){
         this.__z = z
         for (let pixel of this.__pixels){
-            pixel.z = z
+            let v = pixel.pos
+            v.z = z
+            pixel.pos = v
         }
     }
     
-    public get color(){return new Color(this._color)}
-    public set color(color: Color){
-        this._color = new Color(color)
+    get color(){return this._color.copy()}
+    set color(color: Color){
+        this._color = color.copy()
         for (let pixel of this.__pixels){
             pixel.color = color
         }
     }
 
-    public get visible(){return this._visible}
-    public set visible(flag: boolean){
+    get visible(){return this._visible}
+    set visible(flag: boolean){
         this._visible = flag
         for (let i = 0; i < math.min(this.__in_use, this.__pixels.length); i++){
             this.__pixels[i].visible = flag
         }
     }
 
-    public destroy(){
+    toString(){
+        return Arc.name + '<' + this.__c.toString() + ';' + this.__r.toString() + ';'
+                              + this.__a1.toString() + ';' + this.__a2.toString() + '>'
+    }
+
+    destroy(){
         for (let pixel of this.__pixels){
             pixel.destroy()
         }
     }
 
-    private _update(){
-        let da = math.max(this.__a2, this.__a1) - math.min(this.__a2, this.__a1)
+    private __updPos(){
+        let a_min = math.min(this.__a2, this.__a1)
+        let a_max = math.max(this.__a2, this.__a1)
+        let da = a_max - a_min
         let arc_length = this.__r * (da)
 
         this.__in_use = math.floor(arc_length / this.__step) + 1
         if (this.__in_use > this.__pixels.length){
-            Log.wrn(Arc.name + 
-                    ': is not enought pixels to fill arc.')
+            log(this.toString() + ': is not enought pixels to fill.', 'Wrn')
         }
-
-        let c = this.__c
-        let r = this.__r
-        let a = math.min(this.__a2, this.__a1)
+        
+        let center = new Vec3(this.__c.x, this.__c.y, this.__z)
         let step_a = da / this.__in_use
         let rly_used = math.min(this.__in_use, this.__pixels.length)
-        for (let i = 0; i < rly_used; i++){
-            let pixel = this.__pixels[i]
+
+        let sin_cur = Sin(a_min)
+        let cos_cur = Cos(a_min)
+        let sin_step = Sin(step_a)
+        let cos_step = Cos(step_a)
+
+        let i = 0
+        for (let a = a_min; a < a_max; a += step_a){
+            let pixel = this.__pixels[i++]
+
             pixel.visible = this._visible
-            pixel.x = c.x + r * Cos(a)
-            pixel.y = c.y + r * Sin(a)
-            a += step_a
+            pixel.pos = new Vec3(cos_cur, sin_cur, 0).mult(this.__r).add(center)
+
+            sin_cur = this.sinSum(sin_cur, cos_cur, sin_step, cos_step)
+            cos_cur = this.cosSum(sin_cur, cos_cur, sin_step, cos_step)
         }
 
         for (let i = rly_used; i < this.__pixels.length; i++){
             this.__pixels[i].visible = false
         }
+    }
+
+    // sin(a + b) = sin(a) * cos(b) + cos(a) * sin(b)
+    private sinSum(sin_a: number, cos_a: number, sin_b: number, cos_b: number){
+        return sin_a * cos_b + cos_a * sin_b
+    }
+
+    // cos(a + b) = cos(a) * cos(b) - sin(a) * sin(b)
+    private cosSum(sin_a: number, cos_a: number, sin_b: number, cos_b: number){
+        return cos_a * cos_b - sin_a * sin_b
     }
 
     private __c: Vec2
@@ -100,7 +144,6 @@ export class Arc<T extends Pixel> {
     private __in_use: number
     private __pixels: PixelList<T>
 
-    private _color = new Color(1, 1, 1, 1)
-    // private _render_always = true
+    private _color = new Color()
     private _visible = true
 }

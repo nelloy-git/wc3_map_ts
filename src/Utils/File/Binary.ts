@@ -35,7 +35,7 @@ export class FileBinary extends FileIFace {
     write(path: string){
         let [f] = io.open(path, "wb")
         if (!f){
-            return error(FileBinary.name + ' can not open ' + path, 2)
+            error(FileBinary.name + ' can not open ' + path, 2)
         }
 
         if (!this.data){
@@ -48,11 +48,11 @@ export class FileBinary extends FileIFace {
 
     startReading(){ 
         if (!this.data){
-            return error(FileBinary.name + ' file data is empty.', 2)
+            error(FileBinary.name + ' file data is empty.', 2)
         }
 
         if (this.__file_pos >= 0){
-            return error(FileBinary.name + ' finish previous reading first.', 2)
+            error(FileBinary.name + ' finish previous reading first.', 2)
         }
         
         this.__file_pos = 0 
@@ -82,7 +82,7 @@ export class FileBinary extends FileIFace {
     private __parseNext(type: 'float', size: number): number
     private __parseNext(type: 'char'|'int'|'float', size: number){
         if (this.__file_pos < 0){
-            return error(FileBinary.name + ' start reading first.', 3)
+            error(FileBinary.name + ' start reading first.', 3)
         }
 
         let val = this.__parseData(type, this.__file_pos, size)
@@ -103,7 +103,7 @@ export class FileBinary extends FileIFace {
             fmt = 'I' + size.toString()
         } else { // if (type == 'float'){
             if (size != 4){
-                return error(FileBinary.name + ' float type can be only 4 bytes size', 4)
+                error(FileBinary.name + ' float type can be only 4 bytes size', 4)
             }
             fmt = 'f'
         }

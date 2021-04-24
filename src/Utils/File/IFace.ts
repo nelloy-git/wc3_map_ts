@@ -24,7 +24,7 @@ export abstract class FileIFace {
     loadCache(path: string, decode: (data: string) => string = decode64){
         let data = FileIFace.__cache.get(path)
         if (typeof data !== 'string'){
-            return error('can not load file data from ' + path, 2)
+            error('can not load file data from ' + path, 2)
         }
         this.data = decode(data)
     }

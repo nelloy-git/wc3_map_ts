@@ -24,9 +24,9 @@ export class hMultiTimer extends hTimer {
 
                 if (sub.pause){
                     sub.left += this.timeout
+                } else {
+                    sub.period()
                 }
-
-                sub.period()
             }
 
             (<number>this.cur_time) += period
@@ -34,7 +34,7 @@ export class hMultiTimer extends hTimer {
     }
 
     add(){
-        return new hMultiTimerSub(this)
+        return new hMultiTimerSubHidden(this) as hMultiTimerSub
     }
 
     remove(sub: hMultiTimerSub){
@@ -50,11 +50,11 @@ export class hMultiTimer extends hTimer {
     private __sub_timers: hMultiTimerSub[]
 }
 
-class hMultiTimerSub {
+class hMultiTimerSubHidden {
     constructor(owner: hMultiTimer){
         this.owner = owner
-        this.actions = new EventActions(<hMultiTimerSub>this,
-                                        hMultiTimerSub.name + ':' + tostring(owner.id))
+        this.actions = new EventActions(<hMultiTimerSubHidden>this,
+                                         hMultiTimerSubHidden.name + ':' + tostring(owner.id))
 
         this.__start = -1
         this.__end = -1
@@ -102,6 +102,10 @@ class hMultiTimerSub {
         this.__end = -1
     }
 
+    destroy(){
+        this.owner.remove(this)
+    }
+
     pause: boolean = false
     readonly owner: hMultiTimer
     readonly actions: EventActions<hMultiTimerSub.Event, hMultiTimerSub, [dt: number]>
@@ -109,6 +113,12 @@ class hMultiTimerSub {
     private __start: number
     private __end: number
     private __dt: number
+}
+
+export class hMultiTimerSub extends hMultiTimerSubHidden {
+    private constructor(owner: hMultiTimer){
+        super(owner)
+    }
 }
 
 export namespace hMultiTimerSub {

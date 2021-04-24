@@ -4,7 +4,7 @@ import { hTrigger, hTriggerEvent } from '../Handle'
 export abstract class SyncData<T extends any[]> {
     constructor(){
         this.id = SyncData.__newId()
-        this.actions = new ActionList(<SyncData<T>>this, SyncData.name + '<' + this.id + '>')
+        this.actions = new ActionList(<SyncData<T>>this, this.toString())
 
         SyncData.__id2sync.set(this.id, this)
         if (IsGame()){
@@ -20,7 +20,11 @@ export abstract class SyncData<T extends any[]> {
         return SyncData.__id2sync.get(id)
     }
 
-    public send(pl: jplayer, ...data: T): void{
+    toString(){
+        return this.constructor.name + '<' + this.id + '>'
+    }
+
+    send(pl: jplayer, ...data: T): void{
         if (pl != GetLocalPlayer()){
             return
         }
@@ -76,7 +80,7 @@ export abstract class SyncData<T extends any[]> {
                 p3++
             }
         } else {
-            return error(SyncData.name + ': no valid ids left.', 3)
+            error(SyncData.name + ': no valid ids left.', 3)
         }
         SyncData.__last_id = string.char(p4) + 
                              string.char(p3) + 

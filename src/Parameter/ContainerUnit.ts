@@ -3,7 +3,7 @@ import { ActionList } from "../Utils";
 
 import { Container } from "./Container"
 import { Type, List } from "./Type";
-import { Value, ValueType } from "./Value";
+import { ValueType } from "./Value";
 
 export class ContainerUnit extends Container {
     constructor(owner: hUnit){
@@ -12,7 +12,7 @@ export class ContainerUnit extends Container {
         this.actions = new ActionList(<ContainerUnit>this, this.toString())
         
         if (ContainerUnit.__owner2container.get(owner)){
-            error(ContainerUnit.name + ': container for ' + owner.toString() + ' already exists.', 2)
+            error(ContainerUnit.name + ': parameter container for ' + owner.toString() + ' already exists.', 2)
         }
         ContainerUnit.__owner2container.set(owner, this)
 
@@ -26,7 +26,7 @@ export class ContainerUnit extends Container {
     }
 
     toString(){
-        return ContainerUnit.name + '<' + this.owner.toString() + '>'
+        return this.constructor.name + '<' + this.owner.toString() + '>'
     }
 
     set(val: number, param: Type, type: Exclude<ValueType, 'RES'>){

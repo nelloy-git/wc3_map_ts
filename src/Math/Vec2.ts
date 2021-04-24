@@ -60,6 +60,12 @@ export class Vec2 {
         }
         return this.__length
     }
+    set length(len: number){
+        let k = len / this.__length
+        this.__length = len
+        this.__x *= k
+        this.__y *= k
+    }
 
     /** @return [0; 2 * Pi] */
     get angle(){

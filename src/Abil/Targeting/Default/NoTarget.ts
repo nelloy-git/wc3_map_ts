@@ -1,3 +1,3 @@
-import { TTargeting } from '../Targeting'
+import { TTargeting } from '../../Targeting/Type'
 
 export let TTargetingNoTarget = new TTargeting<[]>(() => {return []})
