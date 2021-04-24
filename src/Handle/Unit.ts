@@ -220,13 +220,10 @@ export class hUnit extends Handle<junit>{
 }
 
 export namespace hUnit {
-    export const ActionAny = new EventActions<hUnit.Event,
-                                              typeof hUnit,
-                                              [hUnit]> (hUnit, hUnit.name)
-    export const ActionId = new EventActionsMap<number,
-                                                hUnit.Event,
-                                                typeof hUnit,
-                                                [hUnit]> (hUnit, hUnit.name)
+    export type Event = jEvent
+    export const actions = new EventActions<hUnit.Event,
+                                            typeof hUnit,
+                                            [hUnit]> (hUnit, hUnit.name)
 
     export namespace Group {
 
@@ -283,16 +280,13 @@ export namespace hUnit {
         string_atk: Handle.wcType(UNIT_WEAPON_SF_ATTACK_PROJECTILE_ART),
     }
 
-    export type Event = jEvent
-
     function __runActions(event: hUnit.Event){
         let unit = hUnit.get(getJUnit(event))
         if (unit == undefined){
             return
         }
 
-        hUnit.ActionAny.run(event, unit)
-        hUnit.ActionId.run(unit.type_id, event, unit)
+        hUnit.actions.run(event, unit)
         unit.actions.run(event)
     }
 

@@ -73,6 +73,10 @@ export class Casting<T extends TargetType[]> {
         this.__stop('FINISH')
     }
 
+    destroy(){
+        this.timer.destroy()
+    }
+
     private __period(){
         if (this.__target == 'NO_TARGET'){
             error(this.toString() + ': ability is not casting.')

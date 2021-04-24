@@ -62,17 +62,17 @@ export namespace Selection {
         }
     }
 
-    hUnit.ActionAny.add('SELECTED', (_, event, u) => {
+    hUnit.actions.add('SELECTED', (_, event, u) => {
         let pl = GetTriggerPlayer()
         __runActios('SELECT', pl, u)
     })
 
-    hUnit.ActionAny.add('DESELECTED', (_, event, u) => {
+    hUnit.actions.add('DESELECTED', (_, event, u) => {
         let pl = GetTriggerPlayer()
         __runActios('DESELECT', pl, u)
     })
 
-    hUnit.ActionAny.add('DEATH', (_, event, u) => {
+    hUnit.actions.add('DEATH', (_, event, u) => {
         __checkDied(u)
     })
 

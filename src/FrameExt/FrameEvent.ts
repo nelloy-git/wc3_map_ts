@@ -1,0 +1,37 @@
+export function getEventList(){
+    return Object.keys(__event2const) as jEvent[]
+}
+
+export function getJEvent(event: jEvent){
+    return __event2const[event]
+}
+
+export function getEvent(jevent: jframeeventtype){
+    for (const k in __event2const){
+        if (__event2const[<jEvent>k] == jevent){
+            return <jEvent>k
+        }
+    }
+    return 'CONTROL_CLICK'
+}
+
+export type jEvent = keyof typeof __event2const
+
+const __event2const = {
+    CONTROL_CLICK: FRAMEEVENT_CONTROL_CLICK,
+    MOUSE_ENTER: FRAMEEVENT_MOUSE_ENTER,
+    MOUSE_LEAVE: FRAMEEVENT_MOUSE_LEAVE,
+    MOUSE_UP: FRAMEEVENT_MOUSE_UP,
+    MOUSE_DOWN: FRAMEEVENT_MOUSE_DOWN,
+    MOUSE_WHEEL: FRAMEEVENT_MOUSE_WHEEL,
+    CHECKBOX_CHECKED: FRAMEEVENT_CHECKBOX_CHECKED,
+    CHECKBOX_UNCHECKED: FRAMEEVENT_CHECKBOX_UNCHECKED,
+    EDITBOX_TEXT_CHANGED: FRAMEEVENT_EDITBOX_TEXT_CHANGED,
+    POPUPMENU_ITEM_CHANGED: FRAMEEVENT_POPUPMENU_ITEM_CHANGED,
+    MOUSE_DOUBLECLICK: FRAMEEVENT_MOUSE_DOUBLECLICK,
+    SPRITE_ANIM_UPDATE: FRAMEEVENT_SPRITE_ANIM_UPDATE,
+    SLIDER_VALUE_CHANGED: FRAMEEVENT_SLIDER_VALUE_CHANGED,
+    DIALOG_CANCEL: FRAMEEVENT_DIALOG_CANCEL,
+    DIALOG_ACCEPT: FRAMEEVENT_DIALOG_ACCEPT,
+    EDITBOX_ENTER: FRAMEEVENT_EDITBOX_ENTER,
+}

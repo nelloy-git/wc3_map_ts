@@ -46,7 +46,7 @@ export namespace Damage {
     let __modifiers = new Map<number, Action<typeof Damage, [hUnit, hUnit, number, Type], number>[]>()
 
     if (IsGame()){
-        hUnit.ActionAny.add('DAMAGING', (_, event, src) => {
+        hUnit.actions.add('DAMAGING', (_, event, src) => {
             let dst = hUnit.get(BlzGetEventDamageTarget())
             let type = find(__type2wc, BlzGetEventDamageType())
 

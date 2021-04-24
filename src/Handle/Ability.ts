@@ -76,11 +76,11 @@ export namespace hAbility {
                                                 [hAbility]> (hAbility, hAbility.name)
 
 
-    hUnit.ActionAny.add('SPELL_CAST', __runActions)
-    hUnit.ActionAny.add('SPELL_CHANNEL', __runActions)
-    hUnit.ActionAny.add('SPELL_EFFECT', __runActions)
-    hUnit.ActionAny.add('SPELL_FINISH', __runActions)
-    hUnit.ActionAny.add('SPELL_ENDCAST', __runActions)
+    hUnit.actions.add('SPELL_CAST', __runActions)
+    hUnit.actions.add('SPELL_CHANNEL', __runActions)
+    hUnit.actions.add('SPELL_EFFECT', __runActions)
+    hUnit.actions.add('SPELL_FINISH', __runActions)
+    hUnit.actions.add('SPELL_ENDCAST', __runActions)
 
     function __runActions(this: void, owner: typeof hUnit, event: hUnit.Event, caster: hUnit){
 

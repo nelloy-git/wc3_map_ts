@@ -34,25 +34,14 @@ export class Abil<T extends TargetType[]> {
     }
 
     destroy(){
-        // TODO
+        this.Casting.destroy()
+        this.Charges.destroy()
     }
-
-    // static addAction(event: Ability.Event,
-    //                  callback: (this: void, abil: Abil<TargetType[]>, event: Ability.Event) => void){
-    //     // return this.__actions.get(event)?.add(callback)
-    // }
-
-    // static removeAction(action: Action<[Abil<TargetType[]>], void> | undefined){
-    //     // for (let [event, list] of this.__actions){
-    //     //     if (list.remove(action)){return true}
-    //     // }
-    //     // return false
-    // }
 
     readonly id: number
     readonly owner: hUnit
     readonly type: TAbil<T>
-    // readonly actions: EventActions
+    // readonly actions: EventActions<>
 
     readonly Casting: Casting<T>
     readonly Charges: Charges<T>
