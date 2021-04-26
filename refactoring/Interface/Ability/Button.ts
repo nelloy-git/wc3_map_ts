@@ -1,13 +1,13 @@
-import * as Abil from "../../AbilityExt";
-import * as Frame from '../../FrameExt'
-import * as Handle from '../../../src/Handle'
-import { Vec2 } from '../../../src/Utils'
+import { Abil, TTargeting } from "../../Abil";
+import { GlueTextButton } from '../../FrameExt'
+import { hMultiTimer, hMultiTimerSub } from '../../Handle'
+import { Vec2 } from '../../Math'
 
 import { InterfaceAbilityCharges } from "./Charges";
 import { InterfaceAbilityCooldown } from "./Cooldown";
 import { InterfaceHotkey } from '../Utils/Hotkey'
 
-export class InterfaceAbilityButton extends Frame.GlueTextButton {
+export class InterfaceAbilityButton extends GlueTextButton {
     constructor(){
         super()
 
@@ -24,18 +24,16 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
         this.__hotkey.action = (pl, meta, is_down)=>{this.__hotkeyUsed(pl, meta, is_down)}
 
         this.size = this.size
-        this.addAction(FRAMEEVENT_CONTROL_CLICK, 
-                       (f: Frame.FrameActive, e: jframeeventtype, pl:jplayer) =>
-                            {this.__clicked(pl)})
+        this.actions.add('CONTROL_CLICK', (frame, event, pl) => {this.__clicked(pl)})
 
-        this.__timer = InterfaceAbilityButton.__timer_list.newTimerObj()
-        this.__timer.addAction('PERIOD', ()=>{this.__checkEnable()})
-        this.__timer.addAction('FINISH', (tm)=>{tm.start(3600)})
+        this.__timer = InterfaceAbilityButton.__multitimer.add()
+        this.__timer.actions.add('LOOP', () => {this.__checkEnable()})
+        this.__timer.actions.add('FINISH', (t) => {t.start(3600)})
         this.__timer.start(3600)
     }
 
     get ability(){return this.__abil}
-    set ability(abil: Abil.Ability<any> | undefined){
+    set ability(abil: Abil<any> | undefined){
         this.__clearAbility()
         this.__applyAbility(abil)
         this.__checkEnable()
@@ -47,8 +45,8 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
     }
 
     destroy(){
+        this.__timer.destroy()
         super.destroy()
-        InterfaceAbilityButton.__timer_list.removeTimerObj(this.__timer)
     }
 
     protected _set_size(size: Vec2){
@@ -73,7 +71,7 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
         this.visible = false
     }
 
-    private __applyAbility(abil: Abil.Ability<any> | undefined){
+    private __applyAbility(abil: Abil<any> | undefined){
         if (abil){
             let normal = this.getElement('NORMAL')
             if (normal){normal.texture = abil.Data.icon_normal}
@@ -95,7 +93,7 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
     private __clicked(pl: jplayer){
         if (!this.__abil || !this.visible){return}
 
-        let active = Abil.TTargeting.activeAbility(pl)
+        let active = TTargeting.activeAbility(pl)
         if (active == undefined){
             this.__abil.Targeting.start(pl)
         } else if (active == this.__abil) {
@@ -110,7 +108,7 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
     private __hotkeyUsed(pl: jplayer, meta: number, is_down: boolean){
         if (!this.__abil){return}
 
-        let active = Abil.TTargeting.activeAbility(pl)
+        let active = TTargeting.activeAbility(pl)
         if (this.smartCast){
             if (is_down && active == undefined){
                 this.__abil.Targeting.start(pl)
@@ -129,11 +127,12 @@ export class InterfaceAbilityButton extends Frame.GlueTextButton {
 
     smartCast: boolean = true
 
-    private __abil: Abil.Ability<any> | undefined
+    private __abil: Abil<any> | undefined
     private __charges: InterfaceAbilityCharges
     private __cooldown: InterfaceAbilityCooldown
     private __hotkey: InterfaceHotkey
-    private __timer: Handle.hTimerObj
+    private __timer: hMultiTimerSub
     
-    private static __timer_list = new Handle.hTimerList(0.05);
+    private static __multitimer = IsGame() ? new hMultiTimer(0.05)
+                                           : <hMultiTimer><unknown>undefined
 }

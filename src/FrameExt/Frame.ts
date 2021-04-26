@@ -115,7 +115,7 @@ export abstract class Frame extends FrameIFace  {
     protected _set_color(c: Color){
         this.__color = c.copy()
         BlzFrameSetVertexColor(this.handle, c.getWcCode())
-        BlzFrameSetAlpha(this.handle, Math.floor(255 * c.a))
+        BlzFrameSetAlpha(this.handle, c.a)
     }
 
     protected _update(){

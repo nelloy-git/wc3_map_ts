@@ -5,9 +5,9 @@ export class hTrigger extends Handle<jtrigger> {
     constructor(){
         super(CreateTrigger())
 
-        this.actions = new ActionList(<hTrigger>this, tostring(this.handle))
+        this.actions = new ActionList(this.toString())
         TriggerAddAction(this.handle, () => {
-            this.actions.run()
+            this.actions.run(this)
         })
     }
 
@@ -20,5 +20,5 @@ export class hTrigger extends Handle<jtrigger> {
         super.destroy()
     }
 
-    readonly actions: ActionList<hTrigger>
+    readonly actions: ActionList<[hTrigger]>
 }

@@ -9,7 +9,7 @@ export class Damage {
 
 export namespace Damage {
 
-    export type Modifier = (this: void, _: typeof Damage, src: hUnit, dst: hUnit, dmg: number, t: Type) => number
+    export type Modifier = (this: void, src: hUnit, dst: hUnit, dmg: number, t: Type) => number
 
     export function deal(src: hUnit, dst: hUnit,
                          amount: number, type: Type,
@@ -24,7 +24,7 @@ export namespace Damage {
         let list = __modifiers.get(priority)
         list = list ? list : []
 
-        let action = new Action(Damage, modif, Damage.name)
+        let action = new Action(modif, Damage.name)
         list.push(action)
         __modifiers.set(priority, list)
 
@@ -43,10 +43,10 @@ export namespace Damage {
         BlzSetEventDamage(dmg < 0 ? 0 : dmg)
     }
 
-    let __modifiers = new Map<number, Action<typeof Damage, [hUnit, hUnit, number, Type], number>[]>()
+    let __modifiers = new Map<number, Action<[hUnit, hUnit, number, Type], number>[]>()
 
     if (IsGame()){
-        hUnit.actions.add('DAMAGING', (_, event, src) => {
+        hUnit.actions.add('DAMAGING', (event, src) => {
             let dst = hUnit.get(BlzGetEventDamageTarget())
             let type = find(__type2wc, BlzGetEventDamageType())
 

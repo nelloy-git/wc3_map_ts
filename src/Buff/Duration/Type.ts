@@ -2,6 +2,15 @@ import type { Buff } from "../Buff";
 
 export class TDuration<T> {
 
+    constructor(){
+        this._start = () => {}
+        this._period = () => {}
+        this._cancel = () => {}
+        this._finish = () => {}
+        this._condition = () => {return true}
+        this._addStack = () => {}
+    }
+
     get start(){return this._start}
     set start(f: ((buff: Buff<T>) => void)){this._start = f}
     
@@ -20,10 +29,10 @@ export class TDuration<T> {
     get addStack(){return this._addStack}
     set addStack(f: ((buff: Buff<T>, base: Buff<T>) => void)){this._addStack = f}
 
-    protected _start: (buff: Buff<T>) => void = ()=>{}
-    protected _period: (buff: Buff<T>) => void = ()=>{}
-    protected _cancel: (buff: Buff<T>) => void = ()=>{}
-    protected _finish: (buff: Buff<T>) => void = ()=>{}
-    protected _condition: (buff: Buff<T>) => boolean = ()=>{return true}
-    protected _addStack: (buff: Buff<T>, base: Buff<T>) => void = ()=>{}
+    protected _start: ((buff: Buff<T>) => void)
+    protected _period: ((buff: Buff<T>) => void)
+    protected _cancel: ((buff: Buff<T>) => void)
+    protected _finish: ((buff: Buff<T>) => void)
+    protected _condition: ((buff: Buff<T>) => boolean)
+    protected _addStack: ((buff: Buff<T>, base: Buff<T>) => void)
 }

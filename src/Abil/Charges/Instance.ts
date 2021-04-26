@@ -8,19 +8,21 @@ export class Charges<T extends TargetType[]> {
     constructor(abil: Abil<T>, type: TCharges<T>){
         this.abil = abil
         this.period = Charges.period
-        this.actions = new EventActions(<Charges<T>>this, this.toString())
+        this.actions = new EventActions(this.toString())
 
         this.__type = type
         this.__count = 1
         this.__count_max = 1
         this.__timer = Charges.__multitimer.add()
         this.__timer.actions.add('FINISH', () => {this.cur++})
-        this.__timer.actions.add('LOOP', () => {this.actions.run('LOOP')})
+        this.__timer.actions.add('LOOP', () => {this.actions.run('LOOP', this)})
 
         this.update()
     }
 
-    static readonly period = 0.05
+    toString(){
+        return this.abil.toString() + '.' + this.constructor.name
+    }
 
     get cur(){return this.__count}
     set cur(count: number){
@@ -31,7 +33,7 @@ export class Charges<T extends TargetType[]> {
 
         this.update()
         if (changed){
-            this.actions.run('CHANGED')
+            this.actions.run('CHANGED', this)
         }
     }
 
@@ -66,13 +68,14 @@ export class Charges<T extends TargetType[]> {
 
     readonly abil: Abil<T>
     readonly period: number
-    readonly actions: EventActions<Charges.Event, Charges<T>>
+    readonly actions: EventActions<Charges.Event, [Charges<T>]>
 
     private __type: TCharges<T>
     private __count: number
     private __count_max: number
     private __timer: hMultiTimerSub
 
+    static readonly period = 0.05
     private static __multitimer = IsGame() ? new hMultiTimer(Charges.period)
                                            : <hMultiTimer><unknown>undefined
 }

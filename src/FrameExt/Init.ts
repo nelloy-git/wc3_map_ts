@@ -3,7 +3,6 @@ import { hTimer } from '../Handle'
 function newTimer(delay: number){
     let t = new hTimer()
     t.start(delay, false)
-    t.actions.add(t => t.destroy())
     return t
 }
 

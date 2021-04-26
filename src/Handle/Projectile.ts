@@ -8,7 +8,7 @@ export class hProjectile extends hEffect {
     constructor(model: string){
         super(model)
         
-        this.actions = new EventActions(<hProjectile>this, tostring(this.handle))
+        this.actions = new EventActions(this.toString())
 
         this.__target = new Vec3(0, 0, 0)
         this.__vel = new Vec3(0, 0, 0)
@@ -54,9 +54,9 @@ export class hProjectile extends hEffect {
 
         let range = this.__target.sub(this.pos).length
         if (range > this.__vel_len){
-            this.actions.run('LOOP', hProjectile.__period)
+            this.actions.run('LOOP', this, hProjectile.__period)
         } else {
-            this.actions.run('DONE', hProjectile.__period)
+            this.actions.run('DONE', this, hProjectile.__period)
             this.destroy()
         }
     }
@@ -66,12 +66,12 @@ export class hProjectile extends hEffect {
         this.__vel = norm.mult(hProjectile.__period * this.__vel_len)
     }
 
-    readonly actions: EventActions<hProjectile.Event, hProjectile, [dt: number]>
+    readonly actions: EventActions<hProjectile.Event, [proj: hProjectile, dt: number]>
 
     private __target: Vec3
     private __vel: Vec3
     private __vel_len: number
-    private __timer_action: Action<hTimer>
+    private __timer_action: Action<[hTimer]>
 
     private static __period = 0.05
     private static __timer = IsGame() ? (() => {

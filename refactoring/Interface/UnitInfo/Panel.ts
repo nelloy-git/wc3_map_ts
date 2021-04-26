@@ -1,5 +1,5 @@
 import * as Frame from "../../FrameExt"
-import { Vec2 } from '../../../src/Utils'
+import { Vec2 } from '../../Utils'
 
 import { InterfaceBuffPanel } from "./Buff/Panel";
 import { InterfaceUnitBars } from "./Bars";

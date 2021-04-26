@@ -1,5 +1,5 @@
 import { Vec2, Vec3 } from '../Math'
-import { EventActions, EventActionsMap, Color, id2int } from "../Utils";
+import { EventActions, Color, id2int, log } from "../Utils";
 import { Handle } from "./Handle";
 import { hTrigger } from './Trigger';
 import { hTriggerEvent } from './TriggerEvent';
@@ -9,7 +9,7 @@ export class hUnit extends Handle<junit>{
     constructor(type_id: number, owner: jplayer){
         super(CreateUnit(owner, type_id, 0, 0, 0))
         this.type_id = type_id
-        this.actions = new EventActions(<hUnit>this, tostring(this.handle))
+        this.actions = new EventActions(this.toString())
         
         this.__color = new Color()
         this.__modelScale = 1
@@ -19,14 +19,13 @@ export class hUnit extends Handle<junit>{
         // Enable Z coord
         UnitAddAbility(this.handle, id2int('Arav'))
         UnitRemoveAbility(this.handle, id2int('Arav'))
+
+        hUnit.actions.run('NEW', this)
+        this.actions.run('NEW', this)
     }
 
     static get(id: junit | number| undefined){
         return Handle.get(id, 'unit') as hUnit | undefined
-    }
-
-    toString(){
-        return hUnit.name + '<' + this.id + '>'
     }
 
     get pos2(){return new Vec2(GetUnitX(this.handle) - 16,
@@ -206,12 +205,15 @@ export class hUnit extends Handle<junit>{
     }
 
     destroy(){
+        hUnit.actions.run('DESTROY', this)
+        this.actions.run('DESTROY', this)
+
         RemoveUnit(this.handle)
         super.destroy()
     }
     
     readonly type_id: number
-    readonly actions: EventActions<hUnit.Event, hUnit>
+    readonly actions: EventActions<hUnit.Event, [hUnit]>
 
     private __color: Color
     private __modelScale: number
@@ -220,10 +222,9 @@ export class hUnit extends Handle<junit>{
 }
 
 export namespace hUnit {
-    export type Event = jEvent
+    export type Event = 'NEW' | 'DESTROY' | jEvent
     export const actions = new EventActions<hUnit.Event,
-                                            typeof hUnit,
-                                            [hUnit]> (hUnit, hUnit.name)
+                                            [hUnit]> (hUnit.name)
 
     export namespace Group {
 
@@ -280,14 +281,14 @@ export namespace hUnit {
         string_atk: Handle.wcType(UNIT_WEAPON_SF_ATTACK_PROJECTILE_ART),
     }
 
-    function __runActions(event: hUnit.Event){
-        let unit = hUnit.get(getJUnit(event))
+    function __runActions(event: Exclude<hUnit.Event, 'NEW' | 'DESTROY'>){
+        let unit = hUnit.get(getJUnit(event))    
         if (unit == undefined){
             return
         }
 
         hUnit.actions.run(event, unit)
-        unit.actions.run(event)
+        unit.actions.run(event, unit)
     }
 
     // Create triggers

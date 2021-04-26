@@ -1,5 +1,5 @@
 import { hTimer, hTrigger, hTriggerEvent, hUnit } from "../../src/Handle";
-import { Shield } from "../Parameter";
+import { Shield } from "../../src/Parameter";
 import { Action, Color } from "../../src/Utils";
 import { WorldBar } from "./Utils/WorldBar";
 

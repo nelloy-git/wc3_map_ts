@@ -10,7 +10,7 @@ SYNCER.actions.add((sync, pl, [abil, targets]) => {
 
 export class TTargeting<T extends TargetType[]> {
     constructor(func: (this: void, abil: Abil<T>) => T){
-        this.actions = new EventActions(<TTargeting<T>>this, this.toString())
+        this.actions = new EventActions(this.toString())
         this.__getTarget = func
     }
 
@@ -37,7 +37,7 @@ export class TTargeting<T extends TargetType[]> {
         TTargeting.__active[pl_id] = this
         TTargeting.__abil[pl_id] = abil
 
-        this.actions.run('START', pl, abil)
+        this.actions.run('START', this, pl, abil)
     }
 
     cancel(pl: jplayer, abil: Abil<T>){
@@ -47,7 +47,7 @@ export class TTargeting<T extends TargetType[]> {
             error(this.toString() + ': can not stop inactive ability targeting.', 2)
         }
 
-        this.actions.run('END', pl, abil)
+        this.actions.run('END', this, pl, abil)
 
         TTargeting.__active[pl_id] = undefined
         TTargeting.__abil[pl_id] = undefined
@@ -64,7 +64,7 @@ export class TTargeting<T extends TargetType[]> {
         this.cancel(pl, abil)
     }
 
-    readonly actions: EventActions<TTargeting.Event, TTargeting<T>, [jplayer, Abil<T>]>
+    readonly actions: EventActions<TTargeting.Event, [TTargeting<T>, jplayer, Abil<T>]>
 
     private __getTarget: (this: void, abil: Abil<T>) => T
 

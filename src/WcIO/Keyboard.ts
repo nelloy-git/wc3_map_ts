@@ -12,9 +12,8 @@ export namespace Keyboard {
 
     export const actions = new EventActionsMap<joskeytype,
                                                Keyboard.Event,
-                                               typeof Keyboard,
                                                [pl: jplayer, key: joskeytype, meta: number]>
-                                               (Keyboard, Keyboard.name)
+                                               (Keyboard.name)
 
     const __was_down = new Map<jplayer, Map<joskeytype, boolean>>()
 

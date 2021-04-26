@@ -4,7 +4,7 @@ import { hTrigger, hTriggerEvent } from '../Handle'
 export abstract class SyncData<T extends any[]> {
     constructor(){
         this.id = SyncData.__newId()
-        this.actions = new ActionList(<SyncData<T>>this, this.toString())
+        this.actions = new ActionList(this.toString())
 
         SyncData.__id2sync.set(this.id, this)
         if (IsGame()){
@@ -37,7 +37,7 @@ export abstract class SyncData<T extends any[]> {
     abstract raw2data(raw: string): T
 
     readonly id: string
-    readonly actions: ActionList<SyncData<T>, [jplayer, T]>
+    readonly actions: ActionList<[SyncData<T>, jplayer, T]>
 
     private static __runActions(this: void){
         let id = BlzGetTriggerSyncPrefix()
@@ -50,7 +50,7 @@ export abstract class SyncData<T extends any[]> {
         let raw = BlzGetTriggerSyncData()
         let data = sync.raw2data(raw)
 
-        sync.actions.run(pl, data)
+        sync.actions.run(sync, pl, data)
     }
 
     private static __id2sync = new Map<string, SyncData<any>>()

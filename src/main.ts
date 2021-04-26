@@ -1,5 +1,12 @@
 import * as Utils from "./Utils"
 
+import { hUnit } from './Handle'
+import * as Buff from './Buff'
+import * as Param from './Parameter'
+import * as Frame from './FrameExt'
+
+import { Init } from './Interface/Init'
+
 if (!IsGame()){
     new Utils.Import(GetSrc() + '\\maps\\map_data.w3m\\war3map.doo', 'war3map.doo')
     new Utils.Import(GetSrc() + '\\maps\\map_data.w3m\\war3map.mmp', 'war3map.mmp')
@@ -18,6 +25,21 @@ if (!IsGame()){
 }
 
 if (IsGame()){
+    let u = new hUnit(Utils.id2int('hfoo'), Player(0))
+    let buffs = new Buff.Container(u)
+    let param = new Param.ContainerUnit(u)
+
+    buffs.add(u, 10, Buff.TestType, undefined)
+    buffs.add(u, 10, Buff.TestType, undefined)
+    buffs.add(u, 10, Buff.TestType, undefined)
+    buffs.add(u, 10, Buff.TestType, undefined)
+    buffs.add(u, 10, Buff.TestType, undefined)
+
+    // Frame.onInit(() => {
+    //     let frame = new Frame.Backdrop()
+    // })
+    
+    Init()
 
     SetCameraBounds(-3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT),
                     -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM),

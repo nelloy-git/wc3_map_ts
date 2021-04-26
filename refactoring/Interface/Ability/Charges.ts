@@ -1,6 +1,6 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
-import { Action, Vec2 } from '../../../src/Utils'
+import { Action, Vec2 } from '../../Utils'
 
 export class InterfaceAbilityCharges extends Frame.Backdrop {
     constructor(){

@@ -1,10 +1,10 @@
 import * as Buff from "../../../Buff";
 import * as Frame from "../../../FrameExt"
 import * as Fdf from '../../../Fdf'
-import { Color, Vec2 } from '../../../../src/Utils'
+import { Color, Vec2 } from '../../../Utils'
 
 import { InterfaceBorderFdf } from '../../Utils/BorderFdf'
-import { hTimer } from "../../../../src/Handle";
+import { hTimer } from "../../../Handle";
 
 const NAME_LINE_HEIGHT = 0.015
 const TOOL_LINE_HEIGHT = 0.012

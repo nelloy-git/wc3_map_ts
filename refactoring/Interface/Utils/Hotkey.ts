@@ -1,7 +1,7 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt";
 import * as WcIO from '../../WcIO'
-import { Action, Vec2 } from '../../../src/Utils'
+import { Action, Vec2 } from '../../Utils'
 
 export class InterfaceHotkey extends Frame.Backdrop {
     constructor(){

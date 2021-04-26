@@ -1,5 +1,5 @@
 import * as Frame from '../../FrameExt'
-import { Color, Vec2 } from '../../../src/Utils'
+import { Color, Vec2 } from '../../Utils'
 
 const COLOR = new Color(0, 0, 0, 0)
 

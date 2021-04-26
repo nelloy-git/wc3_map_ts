@@ -1,4 +1,4 @@
-import { EventActions, EventActionsMap } from "../Utils";
+import { EventActions } from "../Utils";
 import { Handle } from "./Handle";
 import { hUnit } from './Unit'
 
@@ -11,7 +11,7 @@ export class hAbility extends Handle<jability> {
 
         this.type_id = type_id
         this.owner = owner
-        this.actions = new EventActions(this as hAbility, Handle.wcType(this.handle))
+        this.actions = new EventActions(this.toString())
     }
 
     static get(id: jability | number): hAbility | undefined{
@@ -59,22 +59,15 @@ export class hAbility extends Handle<jability> {
 
     readonly type_id: number
     readonly owner: hUnit
-    readonly actions: EventActions<hUnit.Event, hAbility>
+    readonly actions: EventActions<hUnit.Event, [hAbility]>
 }
 
 export namespace hAbility {
     export type Event = 'SPELL_CAST' | 'SPELL_CHANNEL' | 'SPELL_EFFECT' | 'SPELL_FINISH' | 'SPELL_ENDCAST'
     export type FieldVal = boolean | number | string
     export type Field = jabilitybooleanfield | jabilityintegerfield | jabilityrealfield | jabilitystringfield 
-    export const ActionAny = new EventActions<hAbility.Event,
-                                              typeof hAbility,
-                                              [hAbility]> (hAbility, hAbility.name)
-
-    export const ActionId = new EventActionsMap<number,
-                                                hAbility.Event,
-                                                typeof hAbility,
-                                                [hAbility]> (hAbility, hAbility.name)
-
+    export const actions = new EventActions<hAbility.Event,
+                                            [hAbility]> (hAbility.name)
 
     hUnit.actions.add('SPELL_CAST', __runActions)
     hUnit.actions.add('SPELL_CHANNEL', __runActions)
@@ -82,16 +75,15 @@ export namespace hAbility {
     hUnit.actions.add('SPELL_FINISH', __runActions)
     hUnit.actions.add('SPELL_ENDCAST', __runActions)
 
-    function __runActions(this: void, owner: typeof hUnit, event: hUnit.Event, caster: hUnit){
+    function __runActions(this: void, event: hUnit.Event, caster: hUnit){
 
         let abil = hAbility.get(GetSpellAbility())
         if (!abil){
             return
         }
 
-        ActionAny.run(event as Event, abil)
-        ActionId.run(abil.type_id, event as Event, abil)
-        abil.actions.run(event as Event)
+        hAbility.actions.run(<Event>event, abil)
+        abil.actions.run(<Event>event, abil)
     }
 
 }

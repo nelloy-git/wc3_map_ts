@@ -9,7 +9,7 @@ function __format(text: string, lvl?: Log.Level){
 }
 
 export function log(msg: string, lvl: Log.Level = 'Msg'){
-    let flags = Log.flags.get(lvl)
+    let flags = Log.flags[lvl]
     if (!flags){
         flags = {chat: true, file: true, autosave: true}
     }
@@ -58,18 +58,20 @@ export function save(){
 const file_buffer: string[] = []
 
 export namespace Log {
-    export type Level = 'Msg' | 'Wrn' | 'Err'
+    export type Level = 'Msg' | 'Wrn' | 'Err' | 'Info'
     export type Flags = {
         chat: boolean       // print msg in game
         file: boolean       // save msg to file buffer
         autosave: boolean   // save buffer to file when msg received
     }
 
-    export const flags = new Map<Log.Level, Log.Flags>([
-        ['Msg', {chat: true, file: true, autosave: false}],
-        ['Wrn', {chat: true, file: true, autosave: false}],
-        ['Err', {chat: true, file: true, autosave: true}],
-    ])
+    type FlagsConfig = Record<Log.Level, Log.Flags>
+    export const flags: FlagsConfig = {
+        Msg: {chat: true, file: true, autosave: false},
+        Wrn: {chat: true, file: true, autosave: false},
+        Err: {chat: true, file: true, autosave: true},
+        Info: {chat: false, file: true, autosave: false},
+    }
 
     export const INIT_TIME = os.clock()
     export const LOG_OUT_FILE = 'rename_to_bat_and_run.txt'

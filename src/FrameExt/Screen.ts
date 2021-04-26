@@ -30,7 +30,7 @@ export class Screen {
                            Screen.__size.copy())
     }
 
-    static actions: ActionList<Screen, [pos: Vec2, size: Vec2]>
+    static readonly actions = new ActionList<[pos: Vec2, size: Vec2]>(Screen.name)
 
     private static __pos: Vec2 = new Vec2(0, 0)
     private static __size: Vec2 = new Vec2(0.8, 0.6)

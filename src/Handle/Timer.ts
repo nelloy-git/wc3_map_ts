@@ -7,7 +7,7 @@ export class hTimer extends Handle<jtimer> {
 
         this.timeout = -1
         this.periodic = false
-        this.actions = new ActionList(<hTimer>this, tostring(this.handle))
+        this.actions = new ActionList(this.toString())
     }
 
     static get(id: jtimer | number){
@@ -19,7 +19,7 @@ export class hTimer extends Handle<jtimer> {
         (<boolean>this.periodic) = periodic
 
         TimerStart(this.handle, timeout, periodic, () => {
-            this.actions.run()
+            this.actions.run(this)
         })
     }
 
@@ -39,5 +39,5 @@ export class hTimer extends Handle<jtimer> {
     
     readonly timeout: number
     readonly periodic: boolean
-    readonly actions: ActionList<hTimer>
+    readonly actions: ActionList<[hTimer]>
 }

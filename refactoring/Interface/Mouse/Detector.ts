@@ -1,6 +1,6 @@
 import * as Frame from '../../FrameExt'
-import { hTimer } from '../../../src/Handle'
-import { Vec2 } from '../../../src/Utils'
+import { hTimer } from '../../Handle'
+import { Vec2 } from '../../Utils'
 
 import { MouseDetectGrid } from './Grid'
 

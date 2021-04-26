@@ -7,7 +7,7 @@ import type { TTargeting } from "./Type";
 export class Targeting<T extends TargetType[]> {
     constructor(abil: Abil<T>, type: TTargeting<T>){
         this.abil = abil
-        this.actions = new EventActions(<Targeting<T>>this, this.toString())
+        this.actions = new EventActions(this.toString())
         
         this.__type = type
     }
@@ -22,22 +22,22 @@ export class Targeting<T extends TargetType[]> {
         }
 
         this.__type.start(pl, this.abil)
-        this.actions.run('START', pl)
+        this.actions.run('START', this, pl)
         return true
     }
 
     cancel(pl: jplayer){
         this.__type.cancel(pl, this.abil)
-        this.actions.run('CANCEL', pl)
+        this.actions.run('CANCEL', this, pl)
     }
 
     finish(pl: jplayer, target?: T){
         this.__type.finish(pl, this.abil, target)
-        this.actions.run('FINISH', pl)
+        this.actions.run('FINISH', this, pl)
     }
 
     readonly abil: Abil<T>
-    readonly actions: EventActions<Targeting.Event, Targeting<T>, [jplayer]>
+    readonly actions: EventActions<Targeting.Event, [Targeting<T>, jplayer]>
 
     private __type: TTargeting<T>
 }

@@ -27,6 +27,10 @@ export abstract class Handle<T extends jhandle> {
         return h
     }
 
+    toString(){
+        return this.constructor.name + '<' + this.id + '>'
+    }
+
     get id(){
         if (!this.valid || this.__id == undefined){
             throw('can not get id from destroyed instance.')

@@ -1,8 +1,8 @@
 import * as Frame from "../../FrameExt"
-import { Vec2 } from '../../../src/Utils'
+import { Vec2 } from '../../Utils'
 
-import { hTimerList } from "../../../src/Handle";
-import { Action } from "../../../src/Utils";
+import { hTimerList } from "../../Handle";
+import { Action } from "../../Utils";
 
 export class InterfaceAutoBar extends Frame.SimpleStatusBarExt {
     constructor(){

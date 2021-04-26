@@ -1,6 +1,6 @@
 export type { Abil, TargetType } from './Abil'
 export { TAbil } from './TAbil'
-export { Container } from './Container'
+export { AbilContainer as Container } from './Container'
 
 export { TCasting } from './Casting/Type'
 export { TCharges } from './Charges/Type'

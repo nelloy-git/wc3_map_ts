@@ -10,9 +10,8 @@ export namespace Mouse {
     export type Event = 'UP' | 'DOWN'
 
     export const actions = new EventActions<Mouse.Event,
-                                            typeof Mouse,
                                             [pl: jplayer]>
-                                            (Mouse, Mouse.name)
+                                            (Mouse.name)
 
     export function pos(pl: jplayer){
         let pos = __pos.get(pl)

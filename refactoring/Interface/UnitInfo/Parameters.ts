@@ -1,6 +1,6 @@
 import * as Frame from "../../FrameExt"
 import * as Param from "../../Parameter";
-import { Action, Color, Vec2 } from "../../../src/Utils";
+import { Action, Color, Vec2 } from "../../Utils";
 import { IUnit } from "../Unit";
 
 import { InterfaceBorderFdf } from "../Utils/BorderFdf"

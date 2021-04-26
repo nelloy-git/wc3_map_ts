@@ -25,7 +25,7 @@ export abstract class FrameActive extends Frame {
                     
         super(handle, is_simple)
 
-        this.actions = new EventActions(<FrameActive>this, this.toString())
+        this.actions = new EventActions(this.toString())
 
         this.__events = []
         for (const event of events){
@@ -43,11 +43,10 @@ export abstract class FrameActive extends Frame {
         FrameActive.__trigger_events.splice(FrameActive.__trigger_events.indexOf(this.__events), 1)
         FrameActive.__trigger.destroy()
         FrameActive.__trigger = FrameActive.__updateTrigger()
-
         super.destroy()
     }
 
-    readonly actions: EventActions<FrameActive.Event, FrameActive, [jplayer]>
+    readonly actions: EventActions<FrameActive.Event, [FrameActive, jplayer]>
 
     private __events: hTriggerEvent<[jframehandle, jframeeventtype]>[]
 
@@ -61,7 +60,7 @@ export abstract class FrameActive extends Frame {
         let pl = GetTriggerPlayer()
 
         FrameActive.Actions.run(event, frame, pl)
-        frame.actions.run(event, pl)
+        frame.actions.run(event, frame, pl)
     }
 
     private static __updateTrigger(){
@@ -85,6 +84,6 @@ export abstract class FrameActive extends Frame {
 export namespace FrameActive {
     export type Event = jEvent
     export const Actions = new EventActions<FrameActive.Event,
-                                            typeof FrameActive,
-                                            [FrameActive, jplayer]>(FrameActive, FrameActive.name)
+                                            [FrameActive, jplayer]>
+                                            (FrameActive.name)
 }

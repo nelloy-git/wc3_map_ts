@@ -1,5 +1,5 @@
-import { hUnit } from '../../src/Handle'
-import { hTextTag } from '../../src/Handle/TextTag'
+import { hUnit } from '../Handle'
+import { hTextTag } from '../Handle/TextTag'
 import { Damage } from '../Parameter'
 
 export namespace InterfaceDamage {

@@ -27,14 +27,14 @@ export namespace Selection {
 
     export const actions = new EventActionsMap<jplayer,
                                                Selection.Event,
-                                               typeof Selection,
                                                [pl: jplayer, u: hUnit, group: hUnit[]]>
-                                               (Selection, Selection.name)
+                                               (Selection.name)
 
     function __runActios(event: Selection.Event, pl: jplayer, u: hUnit){
         let gr = __groups.get(pl)
         if (!gr){
-            return
+            gr = []
+            __groups.set(pl, gr)
         }
 
         let found = gr.indexOf(u)
@@ -62,17 +62,17 @@ export namespace Selection {
         }
     }
 
-    hUnit.actions.add('SELECTED', (_, event, u) => {
+    hUnit.actions.add('SELECTED', (event, u) => {
         let pl = GetTriggerPlayer()
         __runActios('SELECT', pl, u)
     })
 
-    hUnit.actions.add('DESELECTED', (_, event, u) => {
+    hUnit.actions.add('DESELECTED', (event, u) => {
         let pl = GetTriggerPlayer()
         __runActios('DESELECT', pl, u)
     })
 
-    hUnit.actions.add('DEATH', (_, event, u) => {
+    hUnit.actions.add('DEATH', (event, u) => {
         __checkDied(u)
     })
 

@@ -1,6 +1,6 @@
 import * as Buff from "../../../Buff";
 import * as Frame from "../../../FrameExt";
-import { Action, Vec2 } from "../../../../src/Utils";
+import { Action, Vec2 } from "../../../Utils";
 
 import { IUnit } from "../../Unit";
 import { InterfaceBuff } from "./Buff";

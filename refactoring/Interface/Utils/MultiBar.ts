@@ -1,5 +1,5 @@
 import * as Frame from '../../FrameExt'
-import { Vec2 } from '../../../src/Utils'
+import { Vec2 } from '../../Utils'
 
 export class InterfaceMultiBar extends Frame.SimpleEmpty {
     constructor(count: number){

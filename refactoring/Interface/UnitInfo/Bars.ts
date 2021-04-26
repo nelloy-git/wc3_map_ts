@@ -1,7 +1,7 @@
 import * as Frame from "../../FrameExt";
-import { Vec2 } from '../../../src/Utils'
+import { Vec2 } from '../../Utils'
 
-import { hTimerList, hTimerObj } from "../../../src/Handle";
+import { hTimerList, hTimerObj } from "../../Handle";
 import { Shield } from "../../Parameter";
 import { IUnit } from "../Unit";
 import { InterfaceMultiBar } from "../Utils/MultiBar";

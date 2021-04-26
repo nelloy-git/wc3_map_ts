@@ -10,7 +10,7 @@ export class Casting<T extends TargetType[]> {
     constructor(abil: Abil<T>, type: TCasting<T>){
         this.abil = abil
         this.period = Casting.period
-        this.actions = new EventActions(<Casting<T>>this, this.toString())
+        this.actions = new EventActions(this.toString())
         this.timer = Casting.__multitimer.add()
         this.timer.actions.add('LOOP', () => {this.__period()})
         this.timer.actions.add('FINISH', () => {this.__stop('FINISH')})
@@ -24,10 +24,8 @@ export class Casting<T extends TargetType[]> {
         return Casting.__caster2abil.get(caster)
     }
 
-    static readonly period = 0.025
-
     toString(){
-        return this.abil.toString() + '.' + Casting.name
+        return this.abil.toString() + '.' + this.constructor.name
     }
     
     start(target: T){
@@ -54,7 +52,7 @@ export class Casting<T extends TargetType[]> {
         
         this.__target = target
         this.__type.start(this.abil, target)
-        this.actions.run('START', target)
+        this.actions.run('START', this, target)
     }
 
     extraPeriod(reduce_time_left: boolean){
@@ -82,7 +80,7 @@ export class Casting<T extends TargetType[]> {
             error(this.toString() + ': ability is not casting.')
         }
 
-        this.actions.run('LOOP', this.__target)
+        this.actions.run('LOOP', this, this.__target)
         this.__type.casting(this.abil, this.__target)
     }
 
@@ -98,7 +96,7 @@ export class Casting<T extends TargetType[]> {
         } else {
             this.__type.finish(this.abil, this.__target)
         }
-        this.actions.run(event, this.__target)
+        this.actions.run(event, this, this.__target)
 
         if (this.timer.left > 0){
             this.timer.stop()
@@ -111,11 +109,12 @@ export class Casting<T extends TargetType[]> {
     readonly abil: Abil<T>
     readonly period: number
     readonly timer: hMultiTimerSub
-    readonly actions: EventActions<Casting.Event, Casting<T>, [T]>
+    readonly actions: EventActions<Casting.Event, [Casting<T>, T]>
 
     private __type: TCasting<T>
     private __target: T | NO_TARGET
 
+    static readonly period = 0.025
     private static __multitimer = IsGame() ? new hMultiTimer(Casting.period)
                                            : <hMultiTimer><unknown>undefined
     private static __caster2abil = new Map<hUnit, Abil<any>>()

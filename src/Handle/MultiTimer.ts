@@ -18,8 +18,8 @@ export class hMultiTimer extends hTimer {
         this.actions.add(() => {
             const t = this.cur_time
             for (const sub of this.__sub_timers){
-                if (t > sub.endTime){
-                    break
+                if (sub.endTime < 0){
+                    continue
                 }
 
                 if (sub.pause){
@@ -34,7 +34,9 @@ export class hMultiTimer extends hTimer {
     }
 
     add(){
-        return new hMultiTimerSubHidden(this) as hMultiTimerSub
+        let sub: hMultiTimerSub = new hMultiTimerSubHidden(this)
+        this.__sub_timers.push(sub)
+        return sub
     }
 
     remove(sub: hMultiTimerSub){
@@ -53,12 +55,14 @@ export class hMultiTimer extends hTimer {
 class hMultiTimerSubHidden {
     constructor(owner: hMultiTimer){
         this.owner = owner
-        this.actions = new EventActions(<hMultiTimerSubHidden>this,
-                                         hMultiTimerSubHidden.name + ':' + tostring(owner.id))
+        this.actions = new EventActions(this.toString())
 
         this.__start = -1
         this.__end = -1
-        this.__dt = owner.timeout
+    }
+
+    toString(){
+        return this.owner.toString() + '.' + this.constructor.name
     }
 
     get left(){return this.__end - this.owner.cur_time}
@@ -68,6 +72,7 @@ class hMultiTimerSubHidden {
         }
     }
 
+    get dt(){return this.owner.timeout}
     get startTime(){return this.__start}
     get endTime(){return this.__end}
     get fullTime(){return this.__end - this.__start}
@@ -75,29 +80,29 @@ class hMultiTimerSubHidden {
     start(timeout: number){
         this.__start = this.owner.cur_time
         this.__end = this.__start + timeout
-        this.actions.run('START', this.__dt)
+        this.actions.run('START', this)
     }
 
     period(is_extra: boolean = false){
         if (is_extra){
-            this.__end -= this.__dt
+            this.__end -= this.dt
         }
 
-        if (this.left < this.__dt){
+        if (this.left <= this.dt){
             this.finish()
         } else {
-            this.actions.run('LOOP', this.__dt)
+            this.actions.run('LOOP', this)
         }
     }
 
     stop(){
-        this.actions.run('STOP', this.__dt)
+        this.actions.run('STOP', this)
         this.__start = -1
         this.__end = -1
     }
 
     finish(){
-        this.actions.run('FINISH', this.__dt)
+        this.actions.run('FINISH', this)
         this.__start = -1
         this.__end = -1
     }
@@ -108,11 +113,10 @@ class hMultiTimerSubHidden {
 
     pause: boolean = false
     readonly owner: hMultiTimer
-    readonly actions: EventActions<hMultiTimerSub.Event, hMultiTimerSub, [dt: number]>
+    readonly actions: EventActions<hMultiTimerSub.Event, [mtimer: hMultiTimerSub]>
 
     private __start: number
     private __end: number
-    private __dt: number
 }
 
 export class hMultiTimerSub extends hMultiTimerSubHidden {

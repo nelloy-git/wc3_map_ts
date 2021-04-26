@@ -5,61 +5,73 @@ import { Container } from "./Container"
 import { Type, List } from "./Type";
 import { ValueType } from "./Value";
 
-export class ContainerUnit extends Container {
+export class ParamContainerUnit extends Container {
     constructor(owner: hUnit){
         super()
         this.owner = owner
-        this.actions = new ActionList(<ContainerUnit>this, this.toString())
+        this.actions = new ActionList(this.toString())
         
-        if (ContainerUnit.__owner2container.get(owner)){
-            error(ContainerUnit.name + ': parameter container for ' + owner.toString() + ' already exists.', 2)
+        if (ParamContainerUnit.__owner2container.get(owner)){
+            error(ParamContainerUnit.name + ': parameter container for ' + owner.toString() + ' already exists.', 2)
         }
-        ContainerUnit.__owner2container.set(owner, this)
+        ParamContainerUnit.__owner2container.set(owner, this)
 
         for (const p of List){
-            this.set(ContainerUnit.Default[p], p, 'BAS')
+            this.set(ParamContainerUnit.Default[p], p, 'BAS')
         }
     }
 
     static get(owner: hUnit){
-        return ContainerUnit.__owner2container.get(owner)
+        return ParamContainerUnit.__owner2container.get(owner)
     }
 
     toString(){
-        return this.constructor.name + '<' + this.owner.toString() + '>'
+        return this.owner.toString() + '.' + this.constructor.name
+    }
+
+    get(param: Type, type: ValueType){
+        let val = super.get(param, type)
+        if (type == 'RES'){
+            let min = ParamContainerUnit.Min[param]
+            let max = ParamContainerUnit.Max[param]
+            val = val < min ? min : val > max ? max : val
+        }
+        return val
     }
 
     set(val: number, param: Type, type: Exclude<ValueType, 'RES'>){
-        let min = ContainerUnit.Min[param]
-        let max = ContainerUnit.Max[param]
+        let min = ParamContainerUnit.Min[param]
+        let max = ParamContainerUnit.Max[param]
 
         super.set(val, param, type)
         let res = super.get(param, type)
         res = res < min ? min : res > max ? max : res
-        ContainerUnit.Apply[param](this.owner, res)
+        ParamContainerUnit.Apply[param](this.owner, res)
+        this.actions.run(this, param)
 
         return res
     }
 
     add(val: number, param: Type, type: Exclude<ValueType, 'RES'>){
-        let min = ContainerUnit.Min[param]
-        let max = ContainerUnit.Max[param]
+        let min = ParamContainerUnit.Min[param]
+        let max = ParamContainerUnit.Max[param]
 
         super.add(val, param, type)
         let res = super.get(param, type)
         res = res < min ? min : res > max ? max : res
-        ContainerUnit.Apply[param](this.owner, res)
+        ParamContainerUnit.Apply[param](this.owner, res)
+        this.actions.run(this, param)
 
         return res
     }
 
     readonly owner: hUnit
-    readonly actions: ActionList<ContainerUnit, [Type]>
+    readonly actions: ActionList<[ParamContainerUnit, Type]>
     
-    private static __owner2container = new Map<hUnit, ContainerUnit>()
+    private static __owner2container = new Map<hUnit, ParamContainerUnit>()
 }
 
-export namespace ContainerUnit {
+export namespace ParamContainerUnit {
     export const Default: Record<Type, number> = {
         PATK: 1,
         PSPD: 1,

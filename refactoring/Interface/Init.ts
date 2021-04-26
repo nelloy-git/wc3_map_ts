@@ -1,7 +1,7 @@
 import * as Frame from "../FrameExt";
 
-import { hTimer, hUnit } from "../../src/Handle";
-import { Vec2 } from "../../src/Utils";
+import { hTimer, hUnit } from "../Handle";
+import { Vec2 } from "../Utils";
 import { Selection } from "../WcIO";
 // import { UnitInst } from "../Gameplay/Units/UnitType";
 import { InterfaceAbilityPanel } from "./Ability/Panel";

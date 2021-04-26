@@ -1,7 +1,7 @@
 import * as Abil from "../../AbilityExt";
 import * as Frame from "../../FrameExt"
 import * as Fdf from '../../Fdf'
-import { Color, Vec2 } from '../../../src/Utils'
+import { Color, Vec2 } from '../../Utils'
 
 import { InterfaceBorderFdf } from '../Utils/BorderFdf'
 
