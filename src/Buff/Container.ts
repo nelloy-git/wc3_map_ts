@@ -1,26 +1,21 @@
 import { hUnit } from "../Handle";
-import { Action, EventActions, log } from "../Utils";
+import { EventActions} from "../Utils";
 
 import { Buff } from './Buff'
 import type { TBuff } from './TBuff'
 
 export class BuffContainer {
     constructor(owner: hUnit){
-        this.owner = owner
-        this.actions = new EventActions(this.toString())
-        this.__list = []
-        this.__list_actions = new Map()
-        this.__buff_event_mapped = new Map([
-            ['START', (event, buff) => {this.__runBuffEvent(event, buff)}],
-            ['LOOP', (event, buff) => {this.__runBuffEvent(event, buff)}],
-            ['CANCEL', (event, buff) => {this.__runBuffEvent(event, buff)}],
-            ['FINISH', (event, buff) => {this.__runBuffEvent(event, buff)}]
-        ])
-
         if (BuffContainer.__owner2container.get(owner)){
             error(BuffContainer.name + ': buff container already exists.', 2)
         }
         BuffContainer.__owner2container.set(owner, this)
+
+        this.owner = owner
+        this.actions = new EventActions(this.toString())
+        BuffContainer.actions.link(BuffContainer.__global_event_map, this.actions)
+
+        this.__list = []
     }
 
     static get(owner: hUnit | undefined){
@@ -47,87 +42,77 @@ export class BuffContainer {
             if (base.type == buff.type && buff.Data.stackable(base)){
                 base.Dur.addStack(buff)
                 stacked = true
+                break
             }
         }
 
-        if (!stacked){
-            buff.actions.addMap(this.__buff_event_mapped)
-            this.__list.push(buff)
-            buff.Dur.start(dur)
-        } else {
+        if (stacked){
             buff.destroy()
+            return
         }
+
+        buff.actions.add('FAIL', () => {this.__removeFromList(buff)})
+        buff.actions.add('CANCEL', () => {this.__removeFromList(buff)})
+        buff.actions.add('FINISH', () => {this.__removeFromList(buff)})
+        this.actions.link(BuffContainer.__buff_event_map,
+                          buff.actions,
+                          (event, [buff]) => {return [this, buff]})
+        buff.actions.add('FAIL', () => {this.__destroyBuff(buff)})
+        buff.actions.add('CANCEL', () => {this.__destroyBuff(buff)})
+        buff.actions.add('FINISH', () => {this.__destroyBuff(buff)})
+                    
+        this.__list.push(buff)
+        buff.Dur.start(dur)
     }
 
-    remove(buff_or_pos: Buff<any> | number | undefined, event?: 'CANCEL' | 'FINISH'){
-        if (!buff_or_pos){
-            return false
-        }
-
-        let pos: number
-        if (typeof buff_or_pos === 'number'){
-            pos = buff_or_pos
-        } else {
-            pos = this.__list.indexOf(buff_or_pos)
-            if (pos < 0){
-                return false
-            }
-        }
-
-        const [buff] = this.__list.splice(pos, 1)
-        if (event){
-            if (event == 'CANCEL'){
-                buff.Dur.cancel()
-            } else {
-                buff.Dur.finish()
-            }
-        } else {
-            buff.destroy()
-        }
-        return true
-    }
-
-    get(i: number): Buff<any> | undefined{
+    get(i: number): Buff<any> | undefined {
         return this.__list[i]
     }
 
     destroy(){
         for (let i = 0; i < this.__list.length; i++){
-            this.remove(i)
+            this.__removeFromList(this.__list[i])
+            this.__destroyBuff(this.__list[i])
         }
         BuffContainer.__owner2container.delete(this.owner);
     }
 
-    private __runBuffEvent(event: BuffContainer.Event, buff: Buff<any>){
-        let remove = event == 'CANCEL' || event == 'FINISH'
-        if (remove){
-            let pos = this.__list.indexOf(buff)
-            this.__list.splice(pos, 1)
+    private __removeFromList(buff: Buff<any>){
+        let pos = this.__list.indexOf(buff)
+        if (pos < 0){
+            return false
         }
+        this.__list.splice(pos, 1)
+        return true
+    }
 
-        BuffContainer.actions.run(event, this, buff)
-        this.actions.run(event, this, buff)
-
-        if (remove){
-            buff.destroy()
-        }
+    private __destroyBuff(buff: Buff<any>){
+        this.actions.unlink(buff.actions)
+        buff.destroy()
     }
 
     readonly owner: hUnit
     readonly actions: EventActions<BuffContainer.Event, [BuffContainer, Buff<any>]>
 
     private __list: Buff<any>[]
-    private __list_actions: Map<Buff<any>, Action<[Buff.Event, Buff<any>]>[]>
-
-    private readonly __buff_event_mapped: Map<Buff.Event, (event: Buff.Event, buff: Buff<any>) => void>
 
     private static __owner2container = new Map<hUnit, BuffContainer>()
-    private static __linked_events: BuffContainer.Event[] = [
-        'START',
-        'LOOP',
-        'CANCEL', 
-        'FINISH'
-    ]
+
+    private static readonly __global_event_map: ReadonlyMap<BuffContainer.Event, BuffContainer.Event> = new Map([
+        ['START', 'START'],
+        ['FAIL', 'FAIL'],
+        ['LOOP', 'LOOP'],
+        ['CANCEL', 'CANCEL'],
+        ['FINISH', 'FINISH'],
+    ])
+
+    private static readonly __buff_event_map: ReadonlyMap<Buff.Event, BuffContainer.Event> = new Map([
+        ['START', 'START'],
+        ['FAIL', 'FAIL'],
+        ['LOOP', 'LOOP'],
+        ['CANCEL', 'CANCEL'],
+        ['FINISH', 'FINISH'],
+    ])
 }
 
 export namespace BuffContainer {

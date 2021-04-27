@@ -1,6 +1,6 @@
 import * as Utils from "./Utils"
 
-import { hUnit } from './Handle'
+import { hTimer, hUnit } from './Handle'
 import * as Buff from './Buff'
 import * as Param from './Parameter'
 import * as Frame from './FrameExt'
@@ -29,15 +29,9 @@ if (IsGame()){
     let buffs = new Buff.Container(u)
     let param = new Param.ContainerUnit(u)
 
-    buffs.add(u, 10, Buff.TestType, undefined)
-    buffs.add(u, 10, Buff.TestType, undefined)
-    buffs.add(u, 10, Buff.TestType, undefined)
-    buffs.add(u, 10, Buff.TestType, undefined)
-    buffs.add(u, 10, Buff.TestType, undefined)
-
-    // Frame.onInit(() => {
-    //     let frame = new Frame.Backdrop()
-    // })
+    let t = new hTimer()
+    t.actions.add(() => {buffs.add(u, 5, Buff.TestType, undefined)})
+    t.start(0.02, true)
     
     Init()
 

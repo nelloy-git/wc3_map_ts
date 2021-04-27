@@ -15,13 +15,8 @@ export class Buff<T> {
         this.Dur = new Duration(this, type.TDuration)
 
         this.actions = new EventActions(this.toString())
-        this.actions.link(Buff.__duration_event_map, this.Dur.actions)
+        this.actions.link(Buff.__duration_event_map, this.Dur.actions, () => {return [this]})
         Buff.actions.link(Buff.__global_event_map, this.actions)
-
-        // this.Dur.actions.add('START', () => {this.__runActions('START')})
-        // this.Dur.actions.add('LOOP', () => {this.__runActions('LOOP')})
-        // this.Dur.actions.add('CANCEL', () => {this.__runActions('CANCEL')})
-        // this.Dur.actions.add('FINISH', () => {this.__runActions('FINISH')})
     }
 
     toString(){
@@ -31,11 +26,6 @@ export class Buff<T> {
     destroy(){
         this.Dur.destroy()
         Buff.__id2buff.delete(this.id)
-    }
-
-    private __runActions(event: Buff.Event){
-        Buff.actions.run(event, this)
-        this.actions.run(event, this)
     }
 
     readonly id: number
@@ -54,15 +44,17 @@ export class Buff<T> {
         return Buff.__last_id
     }
 
-    private static __global_event_map = new Map<Buff.Event, Buff.Event>([
+    private static readonly __global_event_map: ReadonlyMap<Buff.Event, Buff.Event> = new Map([
         ['START', 'START'],
+        ['FAIL', 'FAIL'],
         ['LOOP', 'LOOP'],
         ['CANCEL', 'CANCEL'],
         ['FINISH', 'FINISH'],
     ])
 
-    private static __duration_event_map = new Map<Duration.Event, Buff.Event>([
+    private static readonly __duration_event_map: ReadonlyMap<Duration.Event, Buff.Event> = new Map([
         ['START', 'START'],
+        ['FAIL', 'FAIL'],
         ['LOOP', 'LOOP'],
         ['CANCEL', 'CANCEL'],
         ['FINISH', 'FINISH'],
@@ -70,7 +62,7 @@ export class Buff<T> {
 }
 
 export namespace Buff {
-    export type Event = 'START' | 'LOOP' | 'CANCEL' | 'FINISH'
+    export type Event = 'START' | 'FAIL' | 'LOOP' | 'CANCEL' | 'FINISH'
     
     export const actions = new EventActions<Buff.Event,
                                             [Buff<any>]>

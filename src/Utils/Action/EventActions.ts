@@ -99,18 +99,21 @@ export class EventActions<Event, Args extends any[] = []> {
         return removed
     }
 
-    link(events: Map<Partial<Event>, Event>,
-         provider: EventActions<Event, Args>,
-         convert?: DefaultConvert<Args>): void
+    link<ProviderEvent>(
+        events: ReadonlyMap<ProviderEvent, Event>,
+        provider: EventActions<ProviderEvent, Args>,
+        convert?: (event: ProviderEvent, args: Args) => Args): void
 
-    link<ProviderArgs extends any[]>(events: Map<Partial<Event>, Event>,
-                                     provider: EventActions<Event, ProviderArgs>,
-                                     convert: (args: ProviderArgs) => Args): void
+    link<ProviderEvent, ProviderArgs extends any[]>(
+        events: ReadonlyMap<ProviderEvent, Event>,
+        provider: EventActions<ProviderEvent, ProviderArgs>,
+        convert: (event: ProviderEvent, args: ProviderArgs) => Args): void
 
-    link<LinkedEvent, LinkedArgs extends any[]>(events: Map<LinkedEvent, Event>,
-                                                provider: EventActions<LinkedEvent, LinkedArgs>,
-                                                convert: (args: LinkedArgs) => Args,
-                                                append: boolean = false){
+    link<ProviderEvent, ProviderArgs extends any[]>(
+        events: ReadonlyMap<ProviderEvent, Event>,
+        provider: EventActions<ProviderEvent, ProviderArgs>,
+        convert: (event: ProviderEvent, args: ProviderArgs) => Args = (event, args) => {return <Args><unknown>args},
+        append: boolean = false){
 
         let list = this.__linked.get(provider)
         if (!append && list){
@@ -119,7 +122,7 @@ export class EventActions<Event, Args extends any[] = []> {
 
         list = list ? list : []
         for (const [linked_event, this_event] of events){
-            const act = provider.add(linked_event, (e, ...args) => {this.run(this_event, ...convert(args))})
+            const act = provider.add(linked_event, (e, ...args) => {this.run(this_event, ...convert(e, args))})
             list.push(act)
         }
 

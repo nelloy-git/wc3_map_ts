@@ -13,7 +13,7 @@ export class Duration<T> {
         this.period = Duration.period
 
         this.actions = new EventActions(this.toString())
-        Duration.actions.link()
+        Duration.actions.link(Duration.__global_event_map, this.actions)
 
         this.__type = type
     }
@@ -24,6 +24,7 @@ export class Duration<T> {
 
     start(time: number){
         if (!this.__type.condition(this.buff)){
+            this.actions.run('FAIL', this)
             return false
         }
 
@@ -32,6 +33,7 @@ export class Duration<T> {
 
         this.__type.start(this.buff)
         this.actions.run('START', this)
+        return true
     }
     
     extraPeriod(reduce_time_left: boolean){
@@ -90,10 +92,18 @@ export class Duration<T> {
     static readonly period = 0.05
     private static __multitimer = IsGame() ? new hMultiTimer(Duration.period)
                                            : <hMultiTimer><unknown>undefined
+                                           
+    private static __global_event_map = new Map<Buff.Event, Buff.Event>([
+        ['START', 'START'],
+        ['FAIL', 'FAIL'],
+        ['LOOP', 'LOOP'],
+        ['CANCEL', 'CANCEL'],
+        ['FINISH', 'FINISH'],
+    ])
 }
 
 export namespace Duration {
-    export type Event = 'START' | 'LOOP' | 'CANCEL' | 'FINISH'
+    export type Event = 'START' | 'FAIL' | 'LOOP' | 'CANCEL' | 'FINISH'
     export const actions = new EventActions<Duration.Event,
                                             [Duration<any>]>
                                             (Duration.name)
