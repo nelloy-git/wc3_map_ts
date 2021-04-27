@@ -151,7 +151,8 @@ export class InterfaceBuffTooltip extends Frame.Backdrop {
 
     private __buff: Buff<any> | undefined
 
-    private static __multitimer = new hMultiTimer(0.2)
+    private static __multitimer = IsGame() ? new hMultiTimer(0.2)
+                                           : <hMultiTimer><unknown>undefined
 }
 
 const NameFdf = new Fdf.Text(InterfaceBuffTooltip.name + 'Name')

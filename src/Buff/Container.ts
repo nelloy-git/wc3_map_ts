@@ -10,6 +10,12 @@ export class BuffContainer {
         this.actions = new EventActions(this.toString())
         this.__list = []
         this.__list_actions = new Map()
+        this.__buff_event_mapped = new Map([
+            ['START', (event, buff) => {this.__runBuffEvent(event, buff)}],
+            ['LOOP', (event, buff) => {this.__runBuffEvent(event, buff)}],
+            ['CANCEL', (event, buff) => {this.__runBuffEvent(event, buff)}],
+            ['FINISH', (event, buff) => {this.__runBuffEvent(event, buff)}]
+        ])
 
         if (BuffContainer.__owner2container.get(owner)){
             error(BuffContainer.name + ': buff container already exists.', 2)
@@ -45,7 +51,7 @@ export class BuffContainer {
         }
 
         if (!stacked){
-            this.__linkActions(buff)
+            buff.actions.addMap(this.__buff_event_mapped)
             this.__list.push(buff)
             buff.Dur.start(dur)
         } else {
@@ -76,7 +82,6 @@ export class BuffContainer {
                 buff.Dur.finish()
             }
         } else {
-            this.__unlinkActions(buff)
             buff.destroy()
         }
         return true
@@ -93,51 +98,18 @@ export class BuffContainer {
         BuffContainer.__owner2container.delete(this.owner);
     }
 
-    private __runActions(event: BuffContainer.Event, buff: Buff<any>){
+    private __runBuffEvent(event: BuffContainer.Event, buff: Buff<any>){
+        let remove = event == 'CANCEL' || event == 'FINISH'
+        if (remove){
+            let pos = this.__list.indexOf(buff)
+            this.__list.splice(pos, 1)
+        }
+
         BuffContainer.actions.run(event, this, buff)
         this.actions.run(event, this, buff)
-    }
 
-    private __removeByEvent(event: 'CANCEL' | 'FINISH', buff: Buff<any>){
-        let pos = this.__list.indexOf(buff)
-        this.__list.splice(pos, 1)
-        this.__runActions(event, buff)
-        this.__unlinkActions(buff)
-        buff.destroy()
-    }
-
-    private __linkActions(buff: Buff<any>){
-        if (this.__list_actions.get(buff)){
-            log(this.toString() + ': previous linked action list is not empty.', 'Wrn')
-        }
-
-        let list: Action<[Buff.Event, Buff<any>]>[] = []
-        this.__list_actions.set(buff, list)
-
-        for (const event of BuffContainer.__linked_events){
-            let act
-            if (event == 'CANCEL' || event == 'FINISH'){
-                act = buff.actions.add(event, () => {this.__removeByEvent(event, buff)})
-            } else {
-                act = buff.actions.add(event, () => {this.__runActions(event, buff)})
-            }
-            list.push(act)
-        }
-    }
-
-    private __unlinkActions(buff: Buff<any>){
-        const list = this.__list_actions.get(buff)
-        this.__list_actions.delete(buff)
-        if (!list){
-            log(this.toString() + ': linked action list is empty.', 'Wrn')
-            return
-        }
-
-        for (const act of list){
-            let removed = buff.actions.remove(act)
-            if (!removed){
-                log(this.toString() + ': can not remove linked action', 'Wrn')
-            }
+        if (remove){
+            buff.destroy()
         }
     }
 
@@ -146,6 +118,8 @@ export class BuffContainer {
 
     private __list: Buff<any>[]
     private __list_actions: Map<Buff<any>, Action<[Buff.Event, Buff<any>]>[]>
+
+    private readonly __buff_event_mapped: Map<Buff.Event, (event: Buff.Event, buff: Buff<any>) => void>
 
     private static __owner2container = new Map<hUnit, BuffContainer>()
     private static __linked_events: BuffContainer.Event[] = [

@@ -7,11 +7,13 @@ import type { TDuration } from "./Type";
 export class Duration<T> {
     constructor(buff: Buff<T>, type: TDuration<T>){
         this.buff = buff
-        this.actions = new EventActions(this.toString())
         this.timer = Duration.__multitimer.add()
         this.timer.actions.add('LOOP', () => {this.__period()})
         this.timer.actions.add('FINISH', () => {this.__stop('FINISH')})
         this.period = Duration.period
+
+        this.actions = new EventActions(this.toString())
+        Duration.actions.link()
 
         this.__type = type
     }
@@ -92,4 +94,7 @@ export class Duration<T> {
 
 export namespace Duration {
     export type Event = 'START' | 'LOOP' | 'CANCEL' | 'FINISH'
+    export const actions = new EventActions<Duration.Event,
+                                            [Duration<any>]>
+                                            (Duration.name)
 }

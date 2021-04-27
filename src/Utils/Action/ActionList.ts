@@ -4,6 +4,11 @@ export class ActionList<Args extends any[] = []> {
     constructor(err_header?: string){
         this.err_header = err_header
         this.__actions = []
+        this.__linked = new Map()
+    }
+
+    toString(){
+        return this.err_header + '.' + this.constructor.name
     }
 
     get length(){
@@ -30,27 +35,38 @@ export class ActionList<Args extends any[] = []> {
         return action
     }
 
-    remove(pos: number): boolean
-    remove(action: Action<Args> | undefined): boolean
-    remove(action_or_pos: Action<Args> | number | undefined): boolean
-    remove(action_or_pos: Action<Args> | number | undefined){
-        if (!action_or_pos){
+    remove(act: Action<Args> | undefined){
+        if (!act){
             return false
         }
 
-        let pos: number
-        if (typeof action_or_pos === 'number'){
-            pos = action_or_pos
-        } else {
-            pos = this.__actions.indexOf(action_or_pos)
-        }
-
+        let pos = this.__actions.indexOf(act)
         if (pos >= 0){
             this.__actions.splice(pos, 1)
         }
         return pos >= 0
     }
 
+    link<LinkedArgs extends any[]>(convert: (...args: LinkedArgs) => Args, provider: ActionList<LinkedArgs>){
+        if (this.__linked.get(provider)){
+            error(this.toString() + ': can not link actions. Already linked.')
+        }
+
+        const act = provider.add((...args) => {this.run(...convert(...args))})
+        this.__linked.set(provider, act)
+    }
+
+    unlink<LinkedArgs extends any[]>(provider: ActionList<LinkedArgs>){
+        if (!this.__linked.get(provider)){
+            return false
+        }
+        this.__linked.delete(provider)
+        return true
+    }
+
     readonly err_header: string | undefined
+    
     private __actions: Action<Args>[]
+    private __linked: Map<ActionList<any>, Action<any, void>>
+
 }

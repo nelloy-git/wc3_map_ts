@@ -34,25 +34,15 @@ export class EventActionsMap<K, Event, Args extends any[] = []> {
         return event_actions.add(event, actions_or_callback)
     }
 
-
-    remove(key: K, pos: number, event?: Event): boolean
-    remove(key: K, 
+    remove(key: K,
            action: Action<[Event, ...Args]> | undefined,
-           event?: Event)
-           : boolean
-    remove(key: K,
-           action_or_pos: Action<[Event, ...Args]> | number | undefined,
-           event?: Event)
-           : boolean
-    remove(key: K,
-           action_or_pos: Action<[Event, ...Args]> | number | undefined,
            event?: Event){
 
         let event_actions = this.__events.get(key)
         if (!event_actions){
             return false
         }
-        return event_actions.remove(action_or_pos, event)
+        return event_actions.remove(action, event)
     }
 
     run(key: K,

@@ -9,6 +9,10 @@ export class InterfaceBuff extends GlueTextButton {
 
     get buff(){return this.__buff}
     set buff(buff: Buff<any> | undefined){
+        if (this.__buff == buff){
+            return
+        }
+
         this.__buff = buff
         this.visible = buff != undefined
         if (buff){
