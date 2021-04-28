@@ -2,7 +2,7 @@ import * as Frame from "../../../FrameExt";
 
 import { Buff, Container } from "../../../Buff";
 import { Vec2 } from '../../../Math'
-import { log } from "../../../Utils";
+import { Action, log } from "../../../Utils";
 
 import { InterfaceBuff } from "./Buff";
 import { InterfaceBuffTooltip } from "./Tooltip";
@@ -12,11 +12,6 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         super()
         this.cols = cols
         this.rows = rows
-        this.__buffs_event_map = new Map([
-            ['START', () => {this.__updateBuffs()}],
-            ['CANCEL', () => {this.__updateBuffs()}],
-            ['FINISH', () => {this.__updateBuffs()}]
-        ])
 
         this.__tooltip = new InterfaceBuffTooltip()
         this.__tooltip.parent = this
@@ -50,7 +45,12 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     get buffs(){return this.__buffs}
     set buffs(buffs: Container | undefined){
         if (this.__buffs){
-            let removed = this.__buffs.actions.removeMap(this.__buffs_event_map)
+            let removed = true
+
+            removed = removed && this.__buffs.actions.remove(this.__act_start)
+            removed = removed && this.__buffs.actions.remove(this.__act_cancel)
+            removed = removed && this.__buffs.actions.remove(this.__act_finish)
+
             if (!removed){
                 log(this.toString() + ': can not remove actions of previous buff container.', "Wrn")
             }
@@ -58,7 +58,9 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
 
         this.__buffs = buffs
         if (buffs){
-            buffs.actions.addMap(this.__buffs_event_map)
+            this.__act_start = buffs.actions.add('START', () => {this.__updateBuffs()})
+            this.__act_cancel = buffs.actions.add('CANCEL', () => {this.__updateBuffs()})
+            this.__act_finish = buffs.actions.add('FINISH', () => {this.__updateBuffs()})
         }
         this.__updateBuffs()
     }
@@ -70,8 +72,11 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
             }
         }
         this.__tooltip.destroy()
+        
         if (this.__buffs){
-            this.__buffs.actions.removeMap(this.__buffs_event_map)
+            this.__buffs.actions.remove(this.__act_start)
+            this.__buffs.actions.remove(this.__act_cancel)
+            this.__buffs.actions.remove(this.__act_finish)
         }
     }
 
@@ -106,8 +111,12 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     readonly rows: number
 
     private __buffs: Container | undefined
-    private readonly __buffs_event_map: Map<Container.Event, (e: Container.Event, c: Container, b: Buff<any>) => void>
+    private __act_start: ContAct | undefined
+    private __act_cancel: ContAct | undefined
+    private __act_finish: ContAct | undefined
     
     private __buttons: InterfaceBuff[][]
     private __tooltip: InterfaceBuffTooltip
 }
+
+type ContAct = Action<[Container.Event, Container, Buff<any>], void> 
