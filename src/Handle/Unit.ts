@@ -3,13 +3,14 @@ import { EventActions, Color, id2int, log } from "../Utils";
 import { Handle } from "./Handle";
 import { hTrigger } from './Trigger';
 import { hTriggerEvent } from './TriggerEvent';
-import { getEventList, getJEvent, getJUnit, Event as jEvent } from './Utils/UnitEvents'
+import { getEventList, getJEvent, getJUnit, Event as jEvent, event_map } from './Utils/UnitEvents'
 
 export class hUnit extends Handle<junit>{
     constructor(type_id: number, owner: jplayer){
         super(CreateUnit(owner, type_id, 0, 0, 0))
         this.type_id = type_id
         this.actions = new EventActions(this.toString())
+        this.actions.link(hUnit.__event_map, hUnit.actions)
         
         this.__color = new Color()
         this.__modelScale = 1
@@ -208,6 +209,7 @@ export class hUnit extends Handle<junit>{
         hUnit.actions.run('DESTROY', this)
         this.actions.run('DESTROY', this)
 
+        this.actions.destroy()
         RemoveUnit(this.handle)
         super.destroy()
     }
@@ -219,6 +221,8 @@ export class hUnit extends Handle<junit>{
     private __modelScale: number
     private __pause_counter: number
     private __animation_scale: number
+
+    private static readonly __event_map = event_map
 }
 
 export namespace hUnit {

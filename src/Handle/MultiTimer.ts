@@ -108,6 +108,7 @@ class hMultiTimerSubHidden {
     }
 
     destroy(){
+        this.actions.destroy()
         this.owner.remove(this)
     }
 

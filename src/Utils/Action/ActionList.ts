@@ -64,6 +64,14 @@ export class ActionList<Args extends any[] = []> {
         return true
     }
 
+    destroy(){
+        for (const act of this.__actions){
+            act.destroy()
+        }
+        this.__actions = []
+        this.__linked = new Map()
+    }
+
     readonly err_header: string | undefined
     
     private __actions: Action<Args>[]

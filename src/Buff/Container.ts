@@ -54,12 +54,15 @@ export class BuffContainer {
         buff.actions.add('FAIL', () => {this.__removeFromList(buff)})
         buff.actions.add('CANCEL', () => {this.__removeFromList(buff)})
         buff.actions.add('FINISH', () => {this.__removeFromList(buff)})
-        this.actions.link(BuffContainer.__buff_event_map,
-                          buff.actions,
-                          (event, [buff]) => {return [this, buff]})
-        buff.actions.add('FAIL', () => {this.__destroyBuff(buff)})
-        buff.actions.add('CANCEL', () => {this.__destroyBuff(buff)})
-        buff.actions.add('FINISH', () => {this.__destroyBuff(buff)})
+
+        let converter: (e: Buff.Event, args: [Buff<any>]) => [BuffContainer, Buff<any>] = 
+            (event, [buff]) => {return [this, buff]}
+        buff.actions.link(BuffContainer.__buff_event_map,
+                          this.actions, converter)
+
+        buff.actions.add('FAIL', () => {buff.destroy()})
+        buff.actions.add('CANCEL', () => {buff.destroy()})
+        buff.actions.add('FINISH', () => {buff.destroy()})
                     
         this.__list.push(buff)
         buff.Dur.start(dur)
@@ -71,9 +74,14 @@ export class BuffContainer {
 
     destroy(){
         for (let i = 0; i < this.__list.length; i++){
-            this.__removeFromList(this.__list[i])
-            this.__destroyBuff(this.__list[i])
-        }
+            this.__list[i].Dur.finish()
+        }        
+        this.actions.destroy();
+
+        (<any>this.owner) = undefined;
+        (<any>this.actions) = undefined;
+        (<any>this.__list) = undefined;
+
         BuffContainer.__owner2container.delete(this.owner);
     }
 
@@ -84,11 +92,6 @@ export class BuffContainer {
         }
         this.__list.splice(pos, 1)
         return true
-    }
-
-    private __destroyBuff(buff: Buff<any>){
-        this.actions.unlink(buff.actions)
-        buff.destroy()
     }
 
     readonly owner: hUnit

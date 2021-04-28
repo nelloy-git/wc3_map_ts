@@ -15,8 +15,8 @@ export class Buff<T> {
         this.Dur = new Duration(this, type.TDuration)
 
         this.actions = new EventActions(this.toString())
-        this.actions.link(Buff.__duration_event_map, this.Dur.actions, () => {return [this]})
-        Buff.actions.link(Buff.__global_event_map, this.actions)
+        this.Dur.actions.link(Buff.__duration_event_map, this.actions, () => {return [this]})
+        this.actions.link(Buff.__global_event_map, Buff.actions)
     }
 
     toString(){
@@ -24,7 +24,16 @@ export class Buff<T> {
     }
 
     destroy(){
-        this.Dur.destroy()
+        this.actions.destroy()
+        this.Dur.destroy();
+
+        (<any>this.id) = undefined;
+        (<any>this.owner) = undefined;
+        (<any>this.source) = undefined;
+        (<any>this.type) = undefined;
+        (<any>this.Data) = undefined;
+        (<any>this.Dur) = undefined;
+        (<any>this.actions) = undefined;
         Buff.__id2buff.delete(this.id)
     }
 

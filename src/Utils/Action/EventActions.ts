@@ -1,18 +1,17 @@
 import { Action } from "./Action";
 import { ActionList } from "./ActionList";
 
-type DefaultConvert<T> = (args: T) => T
-
 export class EventActions<Event, Args extends any[] = []> {
-    constructor(err_header?: string){
-        this.err_header = err_header
+    constructor(header?: string){
+        this.header = header
         this.__actions = new Map()
-        this.__mapped = new Map()
-        this.__linked = new Map()
+        // this.__mapped = new Map()
+        this.__senders = []
+        this.__links = new Map()
     }
 
     toString(){
-        return this.err_header + '.' + this.constructor.name
+        return this.header + '.' + this.constructor.name
     }
 
     run(event: Event, ...args: Args){
@@ -26,19 +25,19 @@ export class EventActions<Event, Args extends any[] = []> {
         action: Action<[Event, ...Args]>)
         : Action<[Event, ...Args]>
     add(event: Event,
-        callback: (this: void, event: Event, ...args: Args) => void)
+        callback: Callback<Event, Args>)
         : Action<[Event, ...Args]>
     add(event: Event,
         actions_or_callback: Action<[Event, ...Args]> |
-                            ((this: void, event: Event, ...args: Args) => void))
+                            (Callback<Event, Args>))
         : Action<[Event, ...Args]>
     add(event: Event,
         actions_or_callback: Action<[Event, ...Args]> |
-                            ((this: void, event: Event, ...args: Args) => void)){
+                            (Callback<Event, Args>)){
 
         let actions = this.__actions.get(event)
         if (!actions){
-            actions = new ActionList(this.err_header)
+            actions = new ActionList(this.header)
             this.__actions.set(event, actions)
         }
 
@@ -70,83 +69,93 @@ export class EventActions<Event, Args extends any[] = []> {
         return false
     }
 
-    //** To update actions use removeMap first. */
-    addMap(map: Map<Event, (this: void, event: Event, ...args: Args) => void>){
-        if (this.__mapped.get(map)){
-            error(this.toString() + ': can not add mapped actions. This map is already added.')
+    link<ReceiverEvent>(
+        events: ReadonlyMap<Event, ReceiverEvent>,
+        receiver: EventActions<ReceiverEvent, Args>,
+        convert?: Convert<Event, Args, Args>): void
+
+    link<ReceiverEvent, ReceiverArgs extends any[]>(
+        events: ReadonlyMap<Event, ReceiverEvent>,
+        receiver: EventActions<ReceiverEvent, ReceiverArgs>,
+        convert: Convert<Event, Args, ReceiverArgs>): void
+
+    link<ReceiverEvent, ReceiverArgs extends any[]>(
+        events: ReadonlyMap<Event, ReceiverEvent>,
+        receiver: EventActions<ReceiverEvent, ReceiverArgs>,
+        convert: Convert<Event, Args, ReceiverArgs> =
+            (e, args) => {return <ReceiverArgs><unknown>args}){
+
+        // Register receiver for this instance
+        let list = this.__links.get(receiver)
+        if (!list){
+            list = []
+            this.__links.set(receiver, list)
         }
 
-        const list: Action<[Event, ...Args]>[] = []
-        for (const [event, callback] of map){
-            const act = this.add(event, callback)
+        // Register this as sender
+        let found = receiver.__senders.indexOf(this) >= 0
+        if (!found){
+            receiver.__senders.push(this)
+        }
+        
+        // Creates actions for sending events
+        for (const [event, receiver_event] of events){
+            const act = this.add(event, (e, ...args) => {receiver.run(receiver_event, ...convert(e, args))})
             list.push(act)
         }
-        this.__mapped.set(map, list)
     }
 
-    removeMap(map: Map<Event, (this: void, event: Event, ...args: Args) => void>){
-        const list = this.__mapped.get(map)
+    unlink(receiver: EventActions<any, any>){
+        let list = this.__links.get(receiver)
         if (!list){
             return false
         }
+        this.__links.delete(receiver)
+
+        let found = receiver.__senders.indexOf(this)
+        if (found < 0){
+            return false
+        }
+        this.__senders.splice(found, 1)
 
         let removed = true
         for (const act of list){
             removed = removed && this.remove(act)
         }
-        this.__mapped.delete(map)
 
         return removed
     }
 
-    link<ProviderEvent>(
-        events: ReadonlyMap<ProviderEvent, Event>,
-        provider: EventActions<ProviderEvent, Args>,
-        convert?: (event: ProviderEvent, args: Args) => Args): void
-
-    link<ProviderEvent, ProviderArgs extends any[]>(
-        events: ReadonlyMap<ProviderEvent, Event>,
-        provider: EventActions<ProviderEvent, ProviderArgs>,
-        convert: (event: ProviderEvent, args: ProviderArgs) => Args): void
-
-    link<ProviderEvent, ProviderArgs extends any[]>(
-        events: ReadonlyMap<ProviderEvent, Event>,
-        provider: EventActions<ProviderEvent, ProviderArgs>,
-        convert: (event: ProviderEvent, args: ProviderArgs) => Args = (event, args) => {return <Args><unknown>args},
-        append: boolean = false){
-
-        let list = this.__linked.get(provider)
-        if (!append && list){
-            error(this.toString() + ': can not link actions. Already linked.')
-        }
-
-        list = list ? list : []
-        for (const [linked_event, this_event] of events){
-            const act = provider.add(linked_event, (e, ...args) => {this.run(this_event, ...convert(e, args))})
-            list.push(act)
-        }
-
-        this.__linked.set(provider, list)
+    islinked(provider: EventActions<any, any>){
+        return this.__links.get(provider) != undefined
     }
 
-    unlink<LinkedEvent, LinkedArgs extends any[]>(provider: EventActions<LinkedEvent, LinkedArgs>){
-        const list = this.__linked.get(provider)
-        if (!list){
-            return false
+    destroy(){
+        for (const sender of this.__senders){
+            sender.unlink(this)
         }
-
-        let removed = true
-        for (const act of list){
-            removed = removed && provider.remove(act)
+        (<any>this.__senders) = undefined
+        
+        for (const [receiver, act_list] of this.__links){
+            this.unlink(receiver)
         }
-        this.__linked.delete(provider)
+        (<any>this.__links) = undefined
 
-        return removed
+        for (const [event, act_list] of this.__actions){
+            act_list.destroy()
+        }
+        (<any>this.__actions) = undefined
     }
 
-    readonly err_header: string | undefined
+    readonly header: string | undefined
     
-    private readonly __actions: Map<Event, ActionList<[Event, ...Args]>>
-    private readonly __mapped: Map<Map<Event, (this: void, event: Event, ...args: Args) => void>, Action<[Event, ...Args]>[]>
-    private readonly __linked: Map<EventActions<any, any>, Action<any, void>[]>
+    private __senders: Sender[]
+    private __links: Map<Receiver, Action<any, void>[]>
+    private __actions: Map<Event, ActionList<[Event, ...Args]>>
+
 }
+
+type Convert<E, In, Out> = (event: E, args: In) => Out
+type Callback<E, In extends any[]> = (this: void, event: E, ...args: In) => void
+type Receiver = EventActions<any, any>
+type Sender = EventActions<any, any>

@@ -16,6 +16,7 @@ export class hTrigger extends Handle<jtrigger> {
     }
 
     destroy(){
+        this.actions.destroy()
         DestroyTrigger(this.handle)
         super.destroy()
     }

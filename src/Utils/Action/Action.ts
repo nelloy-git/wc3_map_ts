@@ -3,13 +3,13 @@ import { log } from '../Log'
 export class Action<Args extends any[] = [], Out = void> {
 
     constructor(callback: (this: void, ...args: Args) => Out,
-                err_header?: string){
+                header?: string){
+        this.header = header ? header : '<Empty>'
         this.__callback = callback
-        this.err_header = err_header ? err_header : ''
     }
 
     toString(){
-        return this.err_header + '.' + this.constructor.name
+        return this.header + '.' + this.constructor.name
     }
 
     run(...args: Args): Out{
@@ -28,8 +28,12 @@ export class Action<Args extends any[] = [], Out = void> {
 
         return res as Out
     }
+    
+    destroy(){
+        (<any>this.__callback) = undefined
+    }
 
-    readonly err_header: string
+    readonly header: string
     private __callback: (this: void, ...args: Args) => Out
     
     private static __inside_xpcall = false

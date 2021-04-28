@@ -12,6 +12,8 @@ export class hAbility extends Handle<jability> {
         this.type_id = type_id
         this.owner = owner
         this.actions = new EventActions(this.toString())
+        this.owner.actions.link(hAbility.__unit_event_map, this.actions, () => {return [this]})
+        this.actions.link(hAbility.__global_event_map, hAbility.actions)
     }
 
     static get(id: jability | number): hAbility | undefined{
@@ -53,37 +55,37 @@ export class hAbility extends Handle<jability> {
     }
 
     destroy(){
+        this.actions.destroy()
         UnitRemoveAbility(this.owner.handle, this.id)
         super.destroy()
     }
 
     readonly type_id: number
     readonly owner: hUnit
-    readonly actions: EventActions<hUnit.Event, [hAbility]>
+    readonly actions: EventActions<hAbility.Event, [hAbility]>
+
+    static readonly __global_event_map: ReadonlyMap<hAbility.Event, hAbility.Event> = new Map([
+        ['CAST', 'CAST'],
+        ['CHANNEL', 'CHANNEL'],
+        ['EFFECT', 'EFFECT'],
+        ['FINISH', 'FINISH'],
+        ['ENDCAST', 'ENDCAST'],
+    ])
+
+    static readonly __unit_event_map: ReadonlyMap<hUnit.Event, hAbility.Event> = new Map([
+        ['SPELL_CAST', 'CAST'],
+        ['SPELL_CHANNEL', 'CHANNEL'],
+        ['SPELL_EFFECT', 'EFFECT'],
+        ['SPELL_FINISH', 'FINISH'],
+        ['SPELL_ENDCAST', 'ENDCAST'],
+    ])
 }
 
 export namespace hAbility {
-    export type Event = 'SPELL_CAST' | 'SPELL_CHANNEL' | 'SPELL_EFFECT' | 'SPELL_FINISH' | 'SPELL_ENDCAST'
+    export type Event = 'CAST' | 'CHANNEL' | 'EFFECT' | 'FINISH' | 'ENDCAST'
+    // export type Event = 'SPELL_CAST' | 'SPELL_CHANNEL' | 'SPELL_EFFECT' | 'SPELL_FINISH' | 'SPELL_ENDCAST'
     export type FieldVal = boolean | number | string
     export type Field = jabilitybooleanfield | jabilityintegerfield | jabilityrealfield | jabilitystringfield 
     export const actions = new EventActions<hAbility.Event,
                                             [hAbility]> (hAbility.name)
-
-    hUnit.actions.add('SPELL_CAST', __runActions)
-    hUnit.actions.add('SPELL_CHANNEL', __runActions)
-    hUnit.actions.add('SPELL_EFFECT', __runActions)
-    hUnit.actions.add('SPELL_FINISH', __runActions)
-    hUnit.actions.add('SPELL_ENDCAST', __runActions)
-
-    function __runActions(this: void, event: hUnit.Event, caster: hUnit){
-
-        let abil = hAbility.get(GetSpellAbility())
-        if (!abil){
-            return
-        }
-
-        hAbility.actions.run(<Event>event, abil)
-        abil.actions.run(<Event>event, abil)
-    }
-
 }

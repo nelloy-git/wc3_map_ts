@@ -7,13 +7,13 @@ import type { TDuration } from "./Type";
 export class Duration<T> {
     constructor(buff: Buff<T>, type: TDuration<T>){
         this.buff = buff
-        this.timer = Duration.__multitimer.add()
-        this.timer.actions.add('LOOP', () => {this.__period()})
-        this.timer.actions.add('FINISH', () => {this.__stop('FINISH')})
+        this.__timer = Duration.__multitimer.add()
+        this.__timer.actions.add('LOOP', () => {this.__period()})
+        this.__timer.actions.add('FINISH', () => {this.__stop('FINISH')})
         this.period = Duration.period
 
         this.actions = new EventActions(this.toString())
-        Duration.actions.link(Duration.__global_event_map, this.actions)
+        this.actions.link(Duration.__global_event_map, Duration.actions)
 
         this.__type = type
     }
@@ -29,7 +29,7 @@ export class Duration<T> {
         }
 
         time = time > 0 ? time : 0.01
-        this.timer.start(time)
+        this.__timer.start(time)
 
         this.__type.start(this.buff)
         this.actions.run('START', this)
@@ -37,7 +37,7 @@ export class Duration<T> {
     }
     
     extraPeriod(reduce_time_left: boolean){
-        this.timer.period(reduce_time_left)
+        this.__timer.period(reduce_time_left)
     }
 
     cancel(){
@@ -53,15 +53,16 @@ export class Duration<T> {
             this.__type.addStack(this.buff, base)
 
             if (this.buff.Data.add_duration(base)){
-                this.timer.left += base.Dur.timer.left
+                this.__timer.left += base.Dur.__timer.left
             } else {
-                this.timer.left = math.max(this.timer.left, base.Dur.timer.left)
+                this.__timer.left = math.max(this.__timer.left, base.Dur.__timer.left)
             }
         }
     }
 
     destroy(){
-        this.timer.destroy()
+        this.actions.destroy()
+        this.__timer.destroy()
     }
 
     private __period(){
@@ -70,8 +71,8 @@ export class Duration<T> {
     }
 
     private __stop(event: Exclude<Duration.Event, 'START' | 'LOOP'>){
-        if (this.timer.left > this.timer.dt){
-            this.timer.stop()
+        if (this.__timer.left > this.__timer.dt){
+            this.__timer.stop()
         }
 
         if (event == 'CANCEL'){
@@ -84,10 +85,10 @@ export class Duration<T> {
     
     readonly buff: Buff<T>
     readonly actions: EventActions<Duration.Event, [Duration<T>]>
-    readonly timer: hMultiTimerSub
     readonly period: number
 
-    private __type: TDuration<T>
+    private readonly __type: TDuration<T>
+    private readonly __timer: hMultiTimerSub
     
     static readonly period = 0.05
     private static __multitimer = IsGame() ? new hMultiTimer(Duration.period)

@@ -1,3 +1,5 @@
+import type { hUnit } from '../Unit'
+
 export function getJUnit(event: Event){
     let getter = __event2getter.get(event)
     if (!getter){
@@ -101,3 +103,51 @@ const __event2getter = new Map<Event, () => junit>([
     ['SPELL_ENDCAST', GetSpellAbilityUnit],
     ['PAWN_ITEM', GetManipulatingUnit],
 ])
+
+let __all_events: Record<hUnit.Event, hUnit.Event> = {
+    NEW: 'NEW',
+    DESTROY: 'DESTROY',
+    ATTACKED: 'ATTACKED',
+    RESCUED: 'RESCUED',
+    DEATH: 'DEATH',
+    DECAY: 'DECAY',
+    DETECTED: 'DETECTED',
+    HIDDEN: 'HIDDEN',
+    SELECTED: 'SELECTED',
+    DESELECTED: 'DESELECTED',
+    CONSTRUCT_START: 'CONSTRUCT_START',
+    CONSTRUCT_CANCEL: 'CONSTRUCT_CANCEL',
+    CONSTRUCT_FINISH: 'CONSTRUCT_FINISH',
+    UPGRADE_START: 'UPGRADE_START',
+    UPGRADE_CANCEL: 'UPGRADE_CANCEL',
+    UPGRADE_FINISH: 'UPGRADE_FINISH',
+    TRAIN_START: 'TRAIN_START',
+    TRAIN_CANCEL: 'TRAIN_CANCEL',
+    TRAIN_FINISH: 'TRAIN_FINISH',
+    RESEARCH_START: 'RESEARCH_START',
+    RESEARCH_CANCEL: 'RESEARCH_CANCEL',
+    RESEARCH_FINISH: 'RESEARCH_FINISH',
+    ISSUED_ORDER: 'ISSUED_ORDER',
+    ISSUED_POINT_ORDER: 'ISSUED_POINT_ORDER',
+    ISSUED_TARGET_ORDER: 'ISSUED_TARGET_ORDER',
+    ISSUED_UNIT_ORDER: 'ISSUED_UNIT_ORDER',
+    SUMMON: 'SUMMON',
+    DROP_ITEM: 'DROP_ITEM',
+    PICKUP_ITEM: 'PICKUP_ITEM',
+    USE_ITEM: 'USE_ITEM',
+    LOADED: 'LOADED',
+    DAMAGED: 'DAMAGED',
+    DAMAGING: 'DAMAGING',
+    SELL: 'SELL',
+    CHANGE_OWNER: 'CHANGE_OWNER',
+    SELL_ITEM: 'SELL_ITEM',
+    SPELL_CHANNEL: 'SPELL_CHANNEL',
+    SPELL_CAST: 'SPELL_CAST',
+    SPELL_EFFECT: 'SPELL_EFFECT',
+    SPELL_FINISH: 'SPELL_FINISH',
+    SPELL_ENDCAST: 'SPELL_ENDCAST',
+    PAWN_ITEM: 'PAWN_ITEM',
+}
+
+export const event_map: ReadonlyMap<hUnit.Event, hUnit.Event> = 
+    new Map(<[hUnit.Event, hUnit.Event][]>Object.entries(__all_events))
