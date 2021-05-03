@@ -10,7 +10,7 @@ export namespace Mouse {
     export type Event = 'UP' | 'DOWN'
 
     export const actions = new EventActions<Mouse.Event,
-                                            [pl: jplayer]>
+                                            [pl: jplayer, btn: jmousebuttontype]>
                                             (Mouse.name)
 
     export function pos(pl: jplayer){
@@ -56,10 +56,11 @@ export namespace Mouse {
 
     function __runActions(event?: Event){
         let pl = GetTriggerPlayer()
+        let btn = BlzGetTriggerPlayerMouseButton()
         __setNextPos(pl)
 
         if (event){
-            actions.run(event, pl)
+            actions.run(event, pl, btn)
         }
     }
 

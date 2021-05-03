@@ -33,11 +33,11 @@ export function save(){
         PreloadGenClear()
         PreloadGenStart()
 
-        Preload("\")\r\n\tDEL " + Log.BAT_OUT_FILE + "\r\n\t(\"")
+        Preload("\")\r\n\tDEL " + Log.BAT_LOG_FILE + "\r\n\t(\"")
         Preload("\")\r\n\tDEL " + Log.LOG_OUT_FILE + "\r\n\t(\"")
 
         for (let i = 0; i < file_buffer.length; i++){
-            let bat_msg = string.format("\")\r\n\techo %s >> %s \r\n\t(\"",
+            let bat_msg = string.format("\")\r\n\techo \"%s\" >> %s \r\n\t(\"",
                                         file_buffer[i],
                                         Log.BAT_OUT_FILE)
             Preload(bat_msg)
@@ -75,5 +75,6 @@ export namespace Log {
 
     export const INIT_TIME = os.clock()
     export const LOG_OUT_FILE = 'rename_to_bat_and_run.txt'
+    export const BAT_LOG_FILE = 'rename_to_bat_and_run.bat'
     export const BAT_OUT_FILE = 'log.txt'
 }

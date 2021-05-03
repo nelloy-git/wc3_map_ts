@@ -23,7 +23,7 @@ export class InterfaceUnitInfoPanel extends Frame.SimpleEmpty {
 
         // this.__bars.unit = u
         this.__buffs.buffs = u ? u.buffs : undefined
-        this.__params.unit = u
+        // this.__params.unit = u
     }
 
     protected _set_size(size: Vec2){

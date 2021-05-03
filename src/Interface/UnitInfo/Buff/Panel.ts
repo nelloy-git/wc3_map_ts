@@ -13,9 +13,9 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         this.cols = cols
         this.rows = rows
 
-        this.__tooltip = new InterfaceBuffTooltip()
-        this.__tooltip.parent = this
-        this.__tooltip.visible = false
+        // this.__tooltip = new InterfaceBuffTooltip()
+        // this.__tooltip.parent = this
+        // this.__tooltip.visible = false
 
         this.__buttons = []
         for (let y = 0; y < rows; y++){
@@ -25,14 +25,14 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
                 let btn = new InterfaceBuff()
                 this.__buttons[y].push(btn)
                 btn.parent = this
-                btn.actions.add('MOUSE_ENTER', () => {
-                    this.__tooltip.buff = btn.buff
-                    this.__tooltip.pos = btn.pos.add(btn.size)
-                    this.__tooltip.visible = true
-                })
-                btn.actions.add('MOUSE_LEAVE', ()=>{
-                    this.__tooltip.visible = false
-                })
+                // btn.actions.add('MOUSE_ENTER', () => {
+                //     this.__tooltip.buff = btn.buff
+                //     this.__tooltip.pos = btn.pos.add(btn.size)
+                //     this.__tooltip.visible = true
+                // })
+                // btn.actions.add('MOUSE_LEAVE', ()=>{
+                //     this.__tooltip.visible = false
+                // })
 
                 // btn.actions.add('CONTROL_CLICK', () => {
                 // })
@@ -45,11 +45,8 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     get buffs(){return this.__buffs}
     set buffs(buffs: Container | undefined){
         if (this.__buffs){
-            let removed = true
-
-            removed = removed && this.__buffs.actions.remove(this.__act_start)
-            removed = removed && this.__buffs.actions.remove(this.__act_cancel)
-            removed = removed && this.__buffs.actions.remove(this.__act_finish)
+            let removed = this.__buffs.actions.remove(this.__act_added)
+            removed = removed && this.__buffs.actions.remove(this.__act_removed)
 
             if (!removed){
                 log(this.toString() + ': can not remove actions of previous buff container.', "Wrn")
@@ -58,9 +55,10 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
 
         this.__buffs = buffs
         if (buffs){
-            this.__act_start = buffs.actions.add('START', () => {this.__updateBuffs()})
-            this.__act_cancel = buffs.actions.add('CANCEL', () => {this.__updateBuffs()})
-            this.__act_finish = buffs.actions.add('FINISH', () => {this.__updateBuffs()})
+            this.__act_added = buffs.actions.add('START',
+                (e, cont, buff, pos) => {this.__updateBuffs(pos)})
+            this.__act_removed = buffs.actions.add('REMOVED',
+                (e, cont, buff, pos) => {this.__updateBuffs(pos)})
         }
         this.__updateBuffs()
     }
@@ -71,12 +69,11 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
                 this.__buttons[x][y].destroy()
             }
         }
-        this.__tooltip.destroy()
+        // this.__tooltip.destroy()
         
         if (this.__buffs){
-            this.__buffs.actions.remove(this.__act_start)
-            this.__buffs.actions.remove(this.__act_cancel)
-            this.__buffs.actions.remove(this.__act_finish)
+            this.__buffs.actions.remove(this.__act_added)
+            this.__buffs.actions.remove(this.__act_removed)
         }
     }
 
@@ -95,12 +92,15 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
         }
     }
     
-    protected __updateBuffs(){
+    protected __updateBuffs(start_pos: number = 0){
         let list = this.__buffs ? this.__buffs.list : []
 
-        let i = 0
-        for (let y = 0; y < this.rows; y++){
-            for (let x = 0; x < this.cols; x++){
+        let s_y = Math.floor(start_pos / this.cols)
+        let s_x = start_pos % this.cols
+
+        let i = start_pos
+        for (let y = s_y; y < this.rows; y++){
+            for (let x = s_x; x < this.cols; x++){
                 this.__buttons[y][x].buff = list[i]
                 i++
             }
@@ -111,12 +111,11 @@ export class InterfaceBuffPanel extends Frame.SimpleEmpty {
     readonly rows: number
 
     private __buffs: Container | undefined
-    private __act_start: ContAct | undefined
-    private __act_cancel: ContAct | undefined
-    private __act_finish: ContAct | undefined
+    private __act_added: ContAct | undefined
+    private __act_removed: ContAct | undefined
     
     private __buttons: InterfaceBuff[][]
-    private __tooltip: InterfaceBuffTooltip
+    // private __tooltip: InterfaceBuffTooltip
 }
 
-type ContAct = Action<[Container.Event, Container, Buff<any>], void> 
+type ContAct = Action<[Container.Event, Container, Buff<any>, number], void> 

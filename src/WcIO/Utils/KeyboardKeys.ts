@@ -385,7 +385,7 @@ if (IsGame()){
     ])
 }
 
-export function keyToString(this: void, key: joskeytype): string{
+export function keyToString(this: void, key: joskeytype): string {
     let s = __key2str.get(key)
     return s ? s : ''
 }

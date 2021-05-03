@@ -55,7 +55,6 @@ export class hAbility extends Handle<jability> {
     }
 
     destroy(){
-        this.actions.destroy()
         UnitRemoveAbility(this.owner.handle, this.id)
         super.destroy()
     }

@@ -206,10 +206,8 @@ export class hUnit extends Handle<junit>{
     }
 
     destroy(){
-        hUnit.actions.run('DESTROY', this)
         this.actions.run('DESTROY', this)
 
-        this.actions.destroy()
         RemoveUnit(this.handle)
         super.destroy()
     }

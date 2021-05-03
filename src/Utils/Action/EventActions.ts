@@ -1,12 +1,13 @@
 import { Action } from "./Action";
 import { ActionList } from "./ActionList";
+import { log } from '../Log'
 
 export class EventActions<Event, Args extends any[] = []> {
     constructor(header?: string){
         this.header = header
         this.__actions = new Map()
         // this.__mapped = new Map()
-        this.__senders = []
+        this.__senders = new Map()
         this.__links = new Map()
     }
 
@@ -93,10 +94,7 @@ export class EventActions<Event, Args extends any[] = []> {
         }
 
         // Register this as sender
-        let found = receiver.__senders.indexOf(this) >= 0
-        if (!found){
-            receiver.__senders.push(this)
-        }
+        receiver.__senders.set(this, true)
         
         // Creates actions for sending events
         for (const [event, receiver_event] of events){
@@ -112,11 +110,7 @@ export class EventActions<Event, Args extends any[] = []> {
         }
         this.__links.delete(receiver)
 
-        let found = receiver.__senders.indexOf(this)
-        if (found < 0){
-            return false
-        }
-        this.__senders.splice(found, 1)
+        receiver.__senders.delete(this)
 
         let removed = true
         for (const act of list){
@@ -130,26 +124,9 @@ export class EventActions<Event, Args extends any[] = []> {
         return this.__links.get(provider) != undefined
     }
 
-    destroy(){
-        for (const sender of this.__senders){
-            sender.unlink(this)
-        }
-        (<any>this.__senders) = undefined
-        
-        for (const [receiver, act_list] of this.__links){
-            this.unlink(receiver)
-        }
-        (<any>this.__links) = undefined
-
-        for (const [event, act_list] of this.__actions){
-            act_list.destroy()
-        }
-        (<any>this.__actions) = undefined
-    }
-
     readonly header: string | undefined
     
-    private __senders: Sender[]
+    private __senders: Map<Sender, boolean>
     private __links: Map<Receiver, Action<any, void>[]>
     private __actions: Map<Event, ActionList<[Event, ...Args]>>
 

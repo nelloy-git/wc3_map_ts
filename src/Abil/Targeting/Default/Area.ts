@@ -17,10 +17,11 @@ if (IsGame()){
     timer.start(0.02, true)
 }
 
-// TTargetingArea.actions.add('START', (inst, pl) => {enableDrawing(true, pl)})
-// TTargetingArea.actions.add('END', (event, pl) => {enableDrawing(false, pl, abil)})
+TTargetingArea.actions.add('START', (e, inst, pl, abil) => {enableDrawing(true, pl, abil)})
+TTargetingArea.actions.add('END', (e, inst, pl, abil) => {enableDrawing(false, pl, abil)})
 
 function enableDrawing(flag: boolean, pl: jplayer, abil: Abil<[Vec2]>){
+    print('Targeting: ', flag)
     if (pl != GetLocalPlayer()){
         return
     }

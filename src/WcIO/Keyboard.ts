@@ -1,7 +1,7 @@
 import { hTrigger, hTriggerEvent } from '../Handle'
 import { EventActionsMap } from '../Utils'
 
-import { KeyboardKeys } from './Utils/KeyboardKeys'
+import { KeyboardKeys, keyToString as k2s } from './Utils/KeyboardKeys'
 
 export class Keyboard {
     private constructor(){}
@@ -14,6 +14,8 @@ export namespace Keyboard {
                                                Keyboard.Event,
                                                [pl: jplayer, key: joskeytype, meta: number]>
                                                (Keyboard.name)
+
+    export const keyToString = k2s
 
     const __was_down = new Map<jplayer, Map<joskeytype, boolean>>()
 

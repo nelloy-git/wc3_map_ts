@@ -1,4 +1,4 @@
-import { Action, EventActions, log } from "../Utils";
+import { EventActions } from "../Utils";
 import { hUnit } from "../Handle";
 
 import { Abil, TargetType } from './Abil'
@@ -6,16 +6,17 @@ import { TAbil } from './TAbil'
 
 export class AbilContainer {
     constructor(owner: hUnit){
-        this.owner = owner
-        this.actions = new EventActions(this.toString())
-
-        this.__list = new Map()
-        this.__list_actions = new Map()
-
         if (AbilContainer.__owner2container.get(owner)){
             error(AbilContainer.name + ': ability container for ' + owner.toString() + ' already exists.', 2)
         }
         AbilContainer.__owner2container.set(owner, this)
+
+        this.owner = owner
+        this.actions = new EventActions(this.toString())
+        this.actions.link(AbilContainer.__global_event_map, AbilContainer.actions)
+
+        this.__list = new Map()
+        this.__convert = (e, [abil]) => {return [this, abil]}
     }
 
     static get(owner: hUnit | undefined){
@@ -36,17 +37,24 @@ export class AbilContainer {
     set(pos: number, type: TAbil<any> | undefined){
         let prev = this.__list.get(pos)
         if (prev){
-            this.__list.delete(pos)
-            this.__runActions('REMOVED', prev, pos)
-            this.__unlinkActions(prev, pos)
             prev.destroy()
         }
 
         if (type){
             let abil = new Abil<any>(this.owner, type)
             this.__list.set(pos, abil)
-            this.__linkActions(abil, pos)
-            this.__runActions('ADDED', abil, pos)
+
+            abil.actions.link(AbilContainer.__abil_event_map, this.actions, this.__convert)
+
+            abil.actions.add('DESTROY', () => {
+                let pos = find(this.__list, abil)
+                if (pos){
+                    this.__list.delete(pos)
+                    this.actions.run('REMOVED', this, abil)
+                }
+            })
+
+            this.actions.run('ADDED', this, abil)
         }
     }
 
@@ -56,77 +64,68 @@ export class AbilContainer {
 
     destroy(){
         for (const [pos, abil] of this.__list){
-            this.__unlinkActions(abil, pos)
             abil.destroy()
         }
         AbilContainer.__owner2container.delete(this.owner)
     }
 
-    private __runActions(event: AbilContainer.Event, abil: Abil<any>, pos: number){
-        AbilContainer.actions.run(event, this, abil, pos)
-        this.actions.run(event, this, abil, pos)
-    }
-
-    private __linkActions(abil: Abil<any>, pos: number){
-        if (this.__list_actions.get(pos)){
-            log(this.toString() + ': previous linked action list is not empty.', 'Wrn')
-        }
-
-        let list: Action<[Abil.Event, Abil<any>]>[] = []
-        this.__list_actions.set(pos, list)
-
-        for (const event of AbilContainer.__linked_events){
-            let act = abil.actions.add(event, () => {this.__runActions(event, abil, pos)})
-            list.push(act)
-        }
-    }
-
-    private __unlinkActions(abil: Abil<any>, pos: number){
-        const list = this.__list_actions.get(pos)
-        this.__list_actions.delete(pos)
-        if (!list){
-            log(this.toString() + ': linked action list is empty.', 'Wrn')
-            return
-        }
-
-        for (const act of list){
-            let removed = abil.actions.remove(act)
-            if (!removed){
-                log(this.toString() + ': can not remove linked action', 'Wrn')
-            }
-        }
-    }
-
     readonly owner: hUnit;
-    readonly actions: EventActions<AbilContainer.Event, [inst: AbilContainer, abil: Abil<any> | undefined, pos: number]>
+    readonly actions: EventActions<AbilContainer.Event, [inst: AbilContainer, abil: Abil<any>]>
 
     private __list: Map<number, Abil<TargetType[]>>
-    private __list_actions: Map<number, Action<[Abil.Event, Abil<any>]>[]>
+    private __convert: (this: void, e: Abil.Event, abil: [Abil<any>]) => [AbilContainer, Abil<any>]
 
     private static __owner2container = new Map<hUnit, AbilContainer>()
-    private static __linked_events: Exclude<AbilContainer.Event, 'ADDED' | 'REMOVED'>[] = [
-        'CASTING_START',
-        'CASTING_LOOP',
-        'CASTING_CANCEL', 
-        'CASTING_INTERRUPT',
-        'CASTING_FINISH', 
-        'CHARGES_CHANGED',
-        'CHARGES_LOOP',
-        'TARGETING_START',
-        'TARGETING_CANCEL',
-        'TARGETING_FINISH'
-    ]
+
+    private static __global_event_map: ReadonlyMap<AbilContainer.Event, AbilContainer.Event> = new Map([
+        ['ADDED', 'ADDED'],
+        ['REMOVED', 'REMOVED'],
+        ['CASTING_START', 'CASTING_START'],
+        ['CASTING_LOOP', 'CASTING_LOOP'],
+        ['CASTING_CANCEL', 'CASTING_CANCEL'], 
+        ['CASTING_INTERRUPT', 'CASTING_INTERRUPT'],
+        ['CASTING_FINISH', 'CASTING_FINISH'],
+        ['CHARGES_ADDED', 'CHARGES_ADDED'],
+        ['CHARGES_REMOVED', 'CHARGES_REMOVED'],
+        ['CHARGES_LOOP', 'CHARGES_LOOP'],
+        ['TARGETING_START', 'TARGETING_START'],
+        ['TARGETING_CANCEL', 'TARGETING_CANCEL'],
+        ['TARGETING_FINISH', 'TARGETING_FINISH']
+    ])
+
+    private static __abil_event_map: ReadonlyMap<Abil.Event, AbilContainer.Event> = new Map([
+        ['CASTING_START', 'CASTING_START'],
+        ['CASTING_LOOP', 'CASTING_LOOP'],
+        ['CASTING_CANCEL', 'CASTING_CANCEL'], 
+        ['CASTING_INTERRUPT', 'CASTING_INTERRUPT'],
+        ['CASTING_FINISH', 'CASTING_FINISH'],
+        ['CHARGES_ADDED', 'CHARGES_ADDED'],
+        ['CHARGES_REMOVED', 'CHARGES_REMOVED'],
+        ['CHARGES_LOOP', 'CHARGES_LOOP'],
+        ['TARGETING_START', 'TARGETING_START'],
+        ['TARGETING_CANCEL', 'TARGETING_CANCEL'],
+        ['TARGETING_FINISH', 'TARGETING_FINISH']
+    ])
 }
 
 export namespace AbilContainer {
     export type Event = 'ADDED' | 'REMOVED' |
                         'CASTING_START' | 'CASTING_LOOP' |'CASTING_CANCEL' | 
                         'CASTING_INTERRUPT' | 'CASTING_FINISH' | 
-                        'CHARGES_CHANGED' | 'CHARGES_LOOP' |
+                        'CHARGES_ADDED' | 'CHARGES_REMOVED' | 'CHARGES_LOOP' |
                         'TARGETING_START' | 'TARGETING_CANCEL' | 'TARGETING_FINISH'
 
     export const actions = new EventActions<AbilContainer.Event,
-                                            [AbilContainer, Abil<any>, number]>
+                                            [AbilContainer, Abil<any>]>
                                             (AbilContainer.name)
 
+}
+
+function find<K,V>(map: Map<K, V>, val: V){
+    for (const [k,v] of map){
+        if (v == val){
+            return k
+        }
+    }
+    return undefined
 }

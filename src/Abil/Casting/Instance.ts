@@ -52,7 +52,7 @@ export class Casting<T extends TargetType[]> {
         
         this.__target = target
         this.__type.start(this.abil, target)
-        this.actions.run('START', this, target)
+        this.actions.run('START', this.abil, target)
     }
 
     extraPeriod(reduce_time_left: boolean){
@@ -80,7 +80,7 @@ export class Casting<T extends TargetType[]> {
             error(this.toString() + ': ability is not casting.')
         }
 
-        this.actions.run('LOOP', this, this.__target)
+        this.actions.run('LOOP', this.abil, this.__target)
         this.__type.casting(this.abil, this.__target)
     }
 
@@ -96,7 +96,7 @@ export class Casting<T extends TargetType[]> {
         } else {
             this.__type.finish(this.abil, this.__target)
         }
-        this.actions.run(event, this, this.__target)
+        this.actions.run(event, this.abil, this.__target)
 
         if (this.timer.left > 0){
             this.timer.stop()
@@ -109,7 +109,7 @@ export class Casting<T extends TargetType[]> {
     readonly abil: Abil<T>
     readonly period: number
     readonly timer: hMultiTimerSub
-    readonly actions: EventActions<Casting.Event, [Casting<T>, T]>
+    readonly actions: EventActions<Casting.Event, [Abil<T>, T]>
 
     private __type: TCasting<T>
     private __target: T | NO_TARGET

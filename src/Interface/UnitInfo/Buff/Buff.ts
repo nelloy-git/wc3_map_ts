@@ -17,9 +17,9 @@ export class InterfaceBuff extends GlueTextButton {
         this.visible = buff != undefined
         if (buff){
             let normal = this.getElement('NORMAL')
-            if (normal){normal.texture = buff.Data.icon}
+            if (normal){normal.texture = buff.type.TData.icon(buff)}
             let pushed = this.getElement('PUSHED')
-            if (pushed){pushed.texture = buff.Data.icon}
+            if (pushed){pushed.texture = buff.type.TData.icon(buff)}
         }
     }
 

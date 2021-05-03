@@ -13,9 +13,10 @@ export class BuffContainer {
 
         this.owner = owner
         this.actions = new EventActions(this.toString())
-        BuffContainer.actions.link(BuffContainer.__global_event_map, this.actions)
+        this.actions.link(BuffContainer.__global_event_map, BuffContainer.actions)
 
         this.__list = []
+        this.__convert = (event, [buff]) => {return [this, buff, this.__list.indexOf(buff)]}
     }
 
     static get(owner: hUnit | undefined){
@@ -33,39 +34,36 @@ export class BuffContainer {
         return this.__list
     }
 
-    add<T>(src: hUnit, dur: number, type: TBuff<T>, user_data: T){
-        let buff = new Buff<T>(src, this.owner, type, user_data)
-
-        let stacked = false
+    add<T>(dur: number, type: TBuff<T>, user_data: T){
+        let buff = new Buff<T>(this.owner, type, user_data)
         for (let i = 0; i < this.__list.length; i++){
-            let base = this.__list[i]
-            if (base.type == buff.type && buff.Data.stackable(base)){
-                base.Dur.addStack(buff)
-                stacked = true
-                break
+            let destroy = type.TDuration.interaction(buff, this.__list[i])
+            if (destroy){
+                buff.destroy()
+                return
             }
         }
 
-        if (stacked){
+        buff.actions.link(BuffContainer.__buff_event_map, this.actions, this.__convert)
+        this.__list.push(buff)
+
+        let started = buff.start(dur)
+        if (!started){
             buff.destroy()
             return
         }
 
-        buff.actions.add('FAIL', () => {this.__removeFromList(buff)})
-        buff.actions.add('CANCEL', () => {this.__removeFromList(buff)})
-        buff.actions.add('FINISH', () => {this.__removeFromList(buff)})
+        buff.actions.add('DESTROY', () => {
+            let pos = this.__list.indexOf(buff)
+            if (pos >= 0){
+                this.__list.splice(pos, 1)
+            }
+            this.actions.run('REMOVED', this, buff, pos)
+        })
+    }
 
-        let converter: (e: Buff.Event, args: [Buff<any>]) => [BuffContainer, Buff<any>] = 
-            (event, [buff]) => {return [this, buff]}
-        buff.actions.link(BuffContainer.__buff_event_map,
-                          this.actions, converter)
-
-        buff.actions.add('FAIL', () => {buff.destroy()})
-        buff.actions.add('CANCEL', () => {buff.destroy()})
-        buff.actions.add('FINISH', () => {buff.destroy()})
-                    
-        this.__list.push(buff)
-        buff.Dur.start(dur)
+    find(buff: Buff<any>){
+        return this.__list.indexOf(buff)
     }
 
     get(i: number): Buff<any> | undefined {
@@ -74,30 +72,16 @@ export class BuffContainer {
 
     destroy(){
         for (let i = 0; i < this.__list.length; i++){
-            this.__list[i].Dur.finish()
-        }        
-        this.actions.destroy();
-
-        (<any>this.owner) = undefined;
-        (<any>this.actions) = undefined;
-        (<any>this.__list) = undefined;
-
+            this.__list[i].destroy()
+        }
         BuffContainer.__owner2container.delete(this.owner);
     }
 
-    private __removeFromList(buff: Buff<any>){
-        let pos = this.__list.indexOf(buff)
-        if (pos < 0){
-            return false
-        }
-        this.__list.splice(pos, 1)
-        return true
-    }
-
     readonly owner: hUnit
-    readonly actions: EventActions<BuffContainer.Event, [BuffContainer, Buff<any>]>
+    readonly actions: EventActions<BuffContainer.Event, [BuffContainer, Buff<any>, number]>
 
     private __list: Buff<any>[]
+    private __convert: (this: void, e: Buff.Event, args: [Buff<any>]) => [BuffContainer, Buff<any>, number]
 
     private static __owner2container = new Map<hUnit, BuffContainer>()
 
@@ -107,6 +91,7 @@ export class BuffContainer {
         ['LOOP', 'LOOP'],
         ['CANCEL', 'CANCEL'],
         ['FINISH', 'FINISH'],
+        ['REMOVED', 'REMOVED'],
     ])
 
     private static readonly __buff_event_map: ReadonlyMap<Buff.Event, BuffContainer.Event> = new Map([
@@ -119,8 +104,8 @@ export class BuffContainer {
 }
 
 export namespace BuffContainer {
-    export type Event = Buff.Event
+    export type Event = 'START' | 'FAIL' | 'LOOP' | 'CANCEL' | 'FINISH' | 'REMOVED'
     export const actions = new EventActions<BuffContainer.Event,
-                                            [BuffContainer, Buff<any>]>
+                                            [BuffContainer, Buff<any>, number]>
                                             (BuffContainer.name)
 }

@@ -45,7 +45,6 @@ export class hProjectile extends hEffect {
     }
 
     destroy(){
-        this.actions.destroy()
         hProjectile.__timer.actions.remove(this.__timer_action)
         super.destroy()
     }

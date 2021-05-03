@@ -18,7 +18,7 @@ export class Action<Args extends any[] = [], Out = void> {
             Action.__inside_xpcall = true
             let success
             [success, res] = xpcall(this.__callback, (err) => {
-                log(this.toString + ' ' + err, 'Err')
+                log(this.toString() + ' ' + err, 'Err')
             }, ...args)
 
             Action.__inside_xpcall = false
@@ -27,10 +27,6 @@ export class Action<Args extends any[] = [], Out = void> {
         }
 
         return res as Out
-    }
-    
-    destroy(){
-        (<any>this.__callback) = undefined
     }
 
     readonly header: string

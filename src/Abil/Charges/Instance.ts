@@ -15,7 +15,7 @@ export class Charges<T extends TargetType[]> {
         this.__count_max = 1
         this.__timer = Charges.__multitimer.add()
         this.__timer.actions.add('FINISH', () => {this.cur++})
-        this.__timer.actions.add('LOOP', () => {this.actions.run('LOOP', this)})
+        this.__timer.actions.add('LOOP', () => {this.actions.run('LOOP', this.abil)})
 
         this.update()
     }
@@ -28,12 +28,15 @@ export class Charges<T extends TargetType[]> {
     set cur(count: number){
         count = count < 0 ? 0 : count
         count = count > this.__count_max ? this.__count_max : count
-        let changed = count != this.__count
+        let added = count > this.__count
+        let removed = count < this.__count
         this.__count = count
 
         this.update()
-        if (changed){
-            this.actions.run('CHANGED', this)
+        if (added){
+            this.actions.run('ADDED', this.abil)
+        } else if (removed){
+            this.actions.run('REMOVED', this.abil)
         }
     }
 
@@ -58,7 +61,9 @@ export class Charges<T extends TargetType[]> {
                 this.__timer.start(this.__type.cd(this.abil))
             }
         } else {
-            this.__timer.stop()
+            if (this.__timer.running){
+                this.__timer.stop()
+            }
         }
     }
 
@@ -68,18 +73,18 @@ export class Charges<T extends TargetType[]> {
 
     readonly abil: Abil<T>
     readonly period: number
-    readonly actions: EventActions<Charges.Event, [Charges<T>]>
+    readonly actions: EventActions<Charges.Event, [Abil<T>]>
 
     private __type: TCharges<T>
     private __count: number
     private __count_max: number
     private __timer: hMultiTimerSub
 
-    static readonly period = 0.05
+    static readonly period = 0.1
     private static __multitimer = IsGame() ? new hMultiTimer(Charges.period)
                                            : <hMultiTimer><unknown>undefined
 }
 
 export namespace Charges {
-    export type Event = 'LOOP' | 'CHANGED'
+    export type Event = 'ADDED' | 'REMOVED' | 'LOOP'
 }

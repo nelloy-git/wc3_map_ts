@@ -1,86 +1,100 @@
-// import * as Abil from "../../AbilityExt";
-// import * as Frame from "../../FrameExt";
-// import { Action, Vec2 } from '../../Utils'
+import { Abil } from "../../Abil";
+import * as Frame from "../../FrameExt";
+import { Vec2 } from '../../Math'
+import { Action, log } from '../../Utils'
 
-// export class InterfaceAbilityCooldown extends Frame.SimpleImage {
-//     constructor(){
-//         super()
+export class InterfaceAbilityCooldown extends Frame.SimpleImage {
+    constructor(){
+        super()
 
-//         this.__full_size = super._get_size()
-//         this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
+        this.__full_size = super._get_size()
+        this.texture = 'Replaceabletextures\\Teamcolor\\Teamcolor27.blp'
 
-//         this.__text = new Frame.SimpleText()
-//         this.__text.parent = this
-//         this.__text.pos = new Vec2(0, 0)
-//         this.__text.size = this.size
-//         this.__text.font = 'fonts\\nim_____.ttf'
-//         this.__text.fontSize = 0.35 * this.size.y
-//     }
+        this.__text = new Frame.SimpleText()
+        this.__text.parent = this
+        this.__text.pos = new Vec2(0, 0)
+        this.__text.size = this.size
+        this.__text.font = 'fonts\\nim_____.ttf'
+        this.__text.fontSize = 0.35 * this.size.y
+    }
 
-//     get ability(){return this.__abil}
-//     set ability(abil: Abil.Ability<any> | undefined){
-//         if (this.__abil){
-//             this.__abil.Data.Charges.removeAction(this.__changed_action)
-//             this.__abil.Data.Charges.removeAction(this.__cooldown_action)
-//         }
+    get ability(){return this.__abil}
+    set ability(abil: Abil<any> | undefined){
+        if (this.__abil){
+            let removed = true
 
-//         this.__abil = abil
-//         this.visible = abil != undefined
-//         if (!abil){return}
+            removed = removed && this.__abil.actions.remove(this.__action_added)
+            removed = removed && this.__abil.actions.remove(this.__action_loop)
+            removed = removed && this.__abil.actions.remove(this.__action_removed)
 
-//         this.__changed_action = abil.Data.Charges.addAction('CHARGE_CHANGED',
-//                                                             charges => {this.__chargesChanged(charges)})
+            if (!removed){
+                log(this.toString() + ': can not remove actions from previous ability ' +
+                    this.__abil.toString() + '.', 'Wrn')
+            }
+        }
 
-//         this.__cooldown_action = abil.Data.Charges.addAction('CHARGE_CD',
-//                                                             charges => {this.__cooldownLoop(charges)})
+        this.__abil = abil
+        this.visible = abil != undefined
+        if (!abil){
+            return
+        }
 
-//         this.__chargesChanged(abil.Data.Charges)
-//         this.__cooldownLoop(abil.Data.Charges)
-//     }
+        this.__action_added = abil.actions.add('CHARGES_ADDED', () => {this.__chargesChanged(abil)})
+        this.__action_removed = abil.actions.add('CHARGES_REMOVED', () => {this.__chargesChanged(abil)})
+        this.__action_loop = abil.actions.add('CHARGES_LOOP', () => {this.__cooldownLoop(abil)})
 
-//     protected _get_size(){return this.__full_size}
-//     protected _set_size(size: Vec2){
-//         this.__full_size = size.copy()
+        this.__chargesChanged(abil)
+        this.__cooldownLoop(abil)
+    }
 
-//         this.__text.size = size
-//         this.__text.fontSize = 0.35 * size.y
+    protected _get_size(){return this.__full_size}
+    protected _set_size(size: Vec2){
+        this.__full_size = size.copy()
+
+        this.__text.size = size
+        this.__text.fontSize = 0.35 * size.y
         
-//         if (this.__abil){
-//             this.__chargesChanged(this.__abil.Data.Charges)
-//             this.__cooldownLoop(this.__abil.Data.Charges)
-//         }
-//     }
+        if (this.__abil){
+            this.__chargesChanged(this.__abil)
+            this.__cooldownLoop(this.__abil)
+        }
+    }
 
-//     protected _set_visible(f: boolean){
-//         super._set_visible(f && (this.__abil != undefined))
-//     }
+    protected _set_visible(f: boolean){
+        super._set_visible(f && (this.__abil != undefined))
+    }
 
-//     private __chargesChanged(charges: Abil.Charges){
-//         let color = this.color
-//         color.a = charges.count < 1 ? 0.85 : 0.35
-//         this.color = color
-//         this.__text.visible = charges.count != charges.countMax
-//     }
+    private __chargesChanged(abil: Abil<any>){
+        let color = this.color
+        let cur = abil.Charges.cur
+        color.a = cur < 1 ? 0.85 : 0.35
+        this.color = color
+        this.__text.visible = cur != abil.Charges.max
+    }
 
-//     private __cooldownLoop(charges: Abil.Charges){
-//         let left = charges.left
-//         if (left <= 0){this.__text.text = ''; return}
+    private __cooldownLoop(abil: Abil<any>){
+        let left = abil.Charges.left_cd
+        if (left <= 0){
+            this.__text.text = ''
+            return
+        }
 
-//         let full = charges.cooldown
-//         this.__cd_part = left / full
+        let full = abil.Charges.cd
+        this.__cd_part = left / full
 
-//         let s = this.__full_size
-//         s.x = this.__cd_part * s.x
-//         super._set_size(s)
-//         this.__text.text = string.format('%.1f', left)
-//     }
+        let s = this.__full_size
+        s.x = this.__cd_part * s.x
+        super._set_size(s)
+        this.__text.text = string.format('%.1f', left)
+    }
 
-//     private __full_size: Vec2
+    private __full_size: Vec2
 
-//     private __cd_part: number = 0
-//     private __abil: Abil.Ability<any> | undefined
-//     private __changed_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
-//     private __cooldown_action: Action<[Abil.Charges, Abil.Charges.Event], void> | undefined
+    private __cd_part: number = 0
+    private __abil: Abil<any> | undefined
+    private __action_added: Action<[Abil.Event, Abil<any>], void> | undefined
+    private __action_removed: Action<[Abil.Event, Abil<any>], void> | undefined
+    private __action_loop: Action<[Abil.Event, Abil<any>], void> | undefined
 
-//     private __text: Frame.SimpleText
-// }
+    private __text: Frame.SimpleText
+}

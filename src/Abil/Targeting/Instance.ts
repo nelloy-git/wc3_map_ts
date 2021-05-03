@@ -22,22 +22,22 @@ export class Targeting<T extends TargetType[]> {
         }
 
         this.__type.start(pl, this.abil)
-        this.actions.run('START', this, pl)
+        this.actions.run('START', this.abil, pl)
         return true
     }
 
     cancel(pl: jplayer){
         this.__type.cancel(pl, this.abil)
-        this.actions.run('CANCEL', this, pl)
+        this.actions.run('CANCEL', this.abil, pl)
     }
 
     finish(pl: jplayer, target?: T){
         this.__type.finish(pl, this.abil, target)
-        this.actions.run('FINISH', this, pl)
+        this.actions.run('FINISH', this.abil, pl)
     }
 
     readonly abil: Abil<T>
-    readonly actions: EventActions<Targeting.Event, [Targeting<T>, jplayer]>
+    readonly actions: EventActions<Targeting.Event, [Abil<T>, jplayer]>
 
     private __type: TTargeting<T>
 }

@@ -33,8 +33,8 @@ export class InterfaceBuffTooltip extends Frame.Backdrop {
         this.__duration.parent = this.__tooltip
 
         this.__timer = InterfaceBuffTooltip.__multitimer.add()
-        this.__timer.actions.add('LOOP', () => {this.__updateDuration()})
-        this.__timer.actions.add('FINISH', () => {this.__timer.start(3600)})
+        // this.__timer.actions.add('LOOP', () => {this.__updateDuration()})
+        // this.__timer.actions.add('FINISH', () => {this.__timer.start(3600)})
         this.__timer.start(3600)
 
         this.size = this.size
@@ -60,8 +60,8 @@ export class InterfaceBuffTooltip extends Frame.Backdrop {
             return
         }
 
-        let buff_name = this.__buff.Data.name
-        let buff_tool = this.__buff.Data.tooltip
+        let buff_name = this.__buff.type.TData.name(this.__buff)
+        let buff_tool = this.__buff.type.TData.tooltip(this.__buff)
 
         let [name, name_chars, name_lines] = this.__splitLines(buff_name)
         let [tool, tool_chars, tool_lines] = this.__splitLines(buff_tool)
@@ -97,7 +97,7 @@ export class InterfaceBuffTooltip extends Frame.Backdrop {
             return
         }
 
-        let left =  this.__buff.Dur.timer.left
+        let left =  this.__buff.left
         left = left < 0 ? 0 : left
         this.__duration.text = string.format('%.1f sec', left)
     }

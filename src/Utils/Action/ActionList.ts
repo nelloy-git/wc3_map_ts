@@ -17,6 +17,9 @@ export class ActionList<Args extends any[] = []> {
 
     run(...args: Args){
         for (let i = 0; i < this.__actions.length; i++){
+            if (!this.__actions[i]){
+                return
+            }
             this.__actions[i].run(...args)
         }
     }
@@ -62,14 +65,6 @@ export class ActionList<Args extends any[] = []> {
         }
         this.__linked.delete(provider)
         return true
-    }
-
-    destroy(){
-        for (const act of this.__actions){
-            act.destroy()
-        }
-        this.__actions = []
-        this.__linked = new Map()
     }
 
     readonly err_header: string | undefined

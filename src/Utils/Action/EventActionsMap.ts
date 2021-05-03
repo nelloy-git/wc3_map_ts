@@ -55,13 +55,6 @@ export class EventActionsMap<K, Event, Args extends any[] = []> {
         }
     }
 
-    destroy(){
-        for (const [event, list] of this.__events){
-            list.destroy()
-        }
-        (<any>this.__events) = undefined
-    }
-
     readonly err_header: string | undefined
     private readonly __events: Map<K, EventActions<Event, Args>>
 }

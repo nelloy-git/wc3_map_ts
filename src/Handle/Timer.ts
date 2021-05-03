@@ -32,7 +32,7 @@ export class hTimer extends Handle<jtimer> {
     }
 
     destroy(){
-        this.actions.destroy()
+        // this.actions.destroy()
         PauseTimer(this.handle)
         DestroyTimer(this.handle)
         super.destroy()

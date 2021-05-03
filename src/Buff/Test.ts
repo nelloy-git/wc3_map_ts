@@ -1,6 +1,6 @@
 import { TBuff } from './TBuff'
-import { TData } from './Data/Type'
-import { TDuration } from './Duration/Type'
+import { TData } from './TData'
+import { TDuration } from './TDuration'
 
 const TestData = new TData<void>()
 

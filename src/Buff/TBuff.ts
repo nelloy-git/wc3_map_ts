@@ -1,5 +1,5 @@
-import type { TData } from './Data/Type'
-import type { TDuration } from './Duration/Type'
+import type { TData } from './TData'
+import type { TDuration } from './TDuration'
 
 export class TBuff<T> {
     constructor(TData: TData<T>, TDuration: TDuration<T>){

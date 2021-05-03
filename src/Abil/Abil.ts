@@ -18,26 +18,18 @@ export class Abil<T extends TargetType[]> {
         this.owner = owner
         this.type = type
         this.actions = new EventActions(this.toString())
+        Abil.actions.link(Abil.__global_event_map, this.actions)
 
         this.Casting = new Casting(this, type.TCasting)
         this.Charges = new Charges(this, type.TCharges)
         this.Data = new Data(this, type.TData)
         this.Targeting = new Targeting(this, type.TTargeting)
 
-        this.Casting.actions.add('START', () => {this.__runActions('CASTING_START')})
-        this.Casting.actions.add('LOOP', () => {this.__runActions('CASTING_LOOP')})
-        this.Casting.actions.add('CANCEL', () => {this.__runActions('CASTING_CANCEL')})
-        this.Casting.actions.add('INTERRUPT', () => {this.__runActions('CASTING_INTERRUPT')})
-        this.Casting.actions.add('FINISH', () => {this.__runActions('CASTING_FINISH')})
+        this.Casting.actions.link(Abil.__casting_event_map, this.actions, (e, [abil, targ]) => {return [abil]})
+        this.Charges.actions.link(Abil.__charges_event_map, this.actions)
+        this.Targeting.actions.link(Abil.__targeting_event_map, this.actions, (e, [abil, pl]) => {return [abil]})
 
-        this.Charges.actions.add('CHANGED', () => {this.__runActions('CHARGES_CHANGED')})
-        this.Charges.actions.add('LOOP', () => {this.__runActions('CHARGES_LOOP')})
-
-        this.Targeting.actions.add('START', () => {this.__runActions('TARGETING_START')})
-        this.Targeting.actions.add('CANCEL', () => {this.__runActions('TARGETING_CANCEL')})
-        this.Targeting.actions.add('FINISH', () => {this.__runActions('TARGETING_FINISH')})
-
-        this.__runActions('NEW')
+        this.actions.run('NEW', this)
     }
 
     static get(id: number | undefined){
@@ -52,15 +44,9 @@ export class Abil<T extends TargetType[]> {
     }
 
     destroy(){
-        this.__runActions('DESTROY')
-
+        this.actions.run('DESTROY', this)
         this.Casting.destroy()
         this.Charges.destroy()
-    }
-
-    private __runActions(event: Abil.Event){
-        Abil.actions.run(event, this)
-        this.actions.run(event, this)
     }
 
     readonly id: number
@@ -80,13 +66,49 @@ export class Abil<T extends TargetType[]> {
         Abil.__id2abil.set(Abil.__last_id, abil)
         return Abil.__last_id
     }
+    
+    private static readonly __global_event_map: ReadonlyMap<Abil.Event, Abil.Event> = new Map([
+        ['NEW', 'NEW'],
+        ['DESTROY', 'DESTROY'],
+        ['CASTING_START', 'CASTING_START'],
+        ['CASTING_LOOP', 'CASTING_LOOP'],
+        ['CASTING_CANCEL', 'CASTING_CANCEL'],
+        ['CASTING_INTERRUPT', 'CASTING_INTERRUPT'],
+        ['CASTING_FINISH', 'CASTING_FINISH'],
+        ['CHARGES_ADDED', 'CHARGES_ADDED'],
+        ['CHARGES_REMOVED', 'CHARGES_REMOVED'],
+        ['CHARGES_LOOP', 'CHARGES_LOOP'],
+        ['TARGETING_START', 'TARGETING_START'],
+        ['TARGETING_CANCEL', 'TARGETING_CANCEL'],
+        ['TARGETING_FINISH', 'TARGETING_FINISH'],
+    ])
+
+    private static readonly __casting_event_map: ReadonlyMap<Casting.Event, Abil.Event> = new Map([
+        ['START', 'CASTING_START'],
+        ['LOOP', 'CASTING_LOOP'],
+        ['CANCEL', 'CASTING_CANCEL'],
+        ['INTERRUPT', 'CASTING_INTERRUPT'],
+        ['FINISH', 'CASTING_FINISH'],
+    ])
+
+    private static readonly __charges_event_map: ReadonlyMap<Charges.Event, Abil.Event> = new Map([
+        ['ADDED', 'CHARGES_ADDED'],
+        ['REMOVED', 'CHARGES_REMOVED'],
+        ['LOOP', 'CHARGES_LOOP'],
+    ])
+
+    private static readonly __targeting_event_map: ReadonlyMap<Targeting.Event, Abil.Event> = new Map([
+        ['START', 'TARGETING_START'],
+        ['CANCEL', 'TARGETING_CANCEL'],
+        ['FINISH', 'TARGETING_FINISH'],
+    ])
 }   
 
 export namespace Abil {
     export type Event = 'NEW' | 'DESTROY' |
                         'CASTING_START' | 'CASTING_LOOP' |'CASTING_CANCEL' | 
                         'CASTING_INTERRUPT' | 'CASTING_FINISH' | 
-                        'CHARGES_CHANGED' | 'CHARGES_LOOP' |
+                        'CHARGES_ADDED' | 'CHARGES_REMOVED' | 'CHARGES_LOOP' |
                         'TARGETING_START' | 'TARGETING_CANCEL' | 'TARGETING_FINISH'
 
     export const actions = new EventActions<Abil.Event,

@@ -1,4 +1,4 @@
-import { EventActions } from '../Utils'
+import { EventActions, log } from '../Utils'
 import { hTimer } from './Timer'
 
 export class hMultiTimer extends hTimer {
@@ -16,9 +16,8 @@ export class hMultiTimer extends hTimer {
         delay.start(start_delay, false)
 
         this.actions.add(() => {
-            const t = this.cur_time
             for (const sub of this.__sub_timers){
-                if (sub.endTime < 0){
+                if (!sub.running){
                     continue
                 }
 
@@ -32,6 +31,8 @@ export class hMultiTimer extends hTimer {
             (<number>this.cur_time) += period
         })
     }
+
+    get length(){return this.__sub_timers}
 
     add(){
         let sub: hMultiTimerSub = new hMultiTimerSubHidden(this)
@@ -57,6 +58,7 @@ class hMultiTimerSubHidden {
         this.owner = owner
         this.actions = new EventActions(this.toString())
 
+        this.running = false
         this.__start = -1
         this.__end = -1
     }
@@ -67,9 +69,11 @@ class hMultiTimerSubHidden {
 
     get left(){return this.__end - this.owner.cur_time}
     set left(time: number){
-        if (this.__start > 0){
-            this.__end = this.owner.cur_time + time
+        if (!this.running){
+            log(this.toString() + ': can not get timer time left. Is not running', 'Wrn')
+            return
         }
+        this.__end = this.owner.cur_time + time
     }
 
     get dt(){return this.owner.timeout}
@@ -78,17 +82,28 @@ class hMultiTimerSubHidden {
     get fullTime(){return this.__end - this.__start}
 
     start(timeout: number){
+        if (this.running){
+            log(this.toString() + ': can not start timer. Already running', 'Wrn')
+            return
+        }
+
+        (<boolean>this.running) = true
         this.__start = this.owner.cur_time
         this.__end = this.__start + timeout
         this.actions.run('START', this)
     }
 
     period(is_extra: boolean = false){
+        if (!this.running){
+            log(this.toString() + ': can not run timer period. Is not running', 'Wrn')
+            return
+        }
+
         if (is_extra){
             this.__end -= this.dt
         }
 
-        if (this.left <= this.dt){
+        if (this.owner.cur_time + this.dt >= this.__end){
             this.finish()
         } else {
             this.actions.run('LOOP', this)
@@ -96,24 +111,34 @@ class hMultiTimerSubHidden {
     }
 
     stop(){
-        this.actions.run('STOP', this)
-        this.__start = -1
-        this.__end = -1
+        if (!this.running){
+            log(this.toString() + ': can not stop timer. Is not running', 'Wrn')
+            return
+        }
+
+        (<boolean>this.running) = false
+        this.actions.run('STOP', this);
     }
 
     finish(){
-        this.actions.run('FINISH', this)
-        this.__start = -1
-        this.__end = -1
+        if (!this.running){
+            log(this.toString() + ': can finish stop timer. Is not running', 'Wrn')
+            return
+        }
+
+        (<boolean>this.running) = false
+        this.actions.run('FINISH', this);
     }
 
     destroy(){
-        this.actions.destroy()
+        (<boolean>this.running) = false
         this.owner.remove(this)
     }
 
     pause: boolean = false
     readonly owner: hMultiTimer
+    readonly running: boolean
+
     readonly actions: EventActions<hMultiTimerSub.Event, [mtimer: hMultiTimerSub]>
 
     private __start: number

@@ -1,6 +1,7 @@
 import * as Utils from "./Utils"
 
-import { hTimer, hUnit } from './Handle'
+import { hMultiTimer, hTimer, hUnit } from './Handle'
+import * as Abil from './Abil'
 import * as Buff from './Buff'
 import * as Param from './Parameter'
 import * as Frame from './FrameExt'
@@ -28,10 +29,18 @@ if (IsGame()){
     let u = new hUnit(Utils.id2int('hfoo'), Player(0))
     let buffs = new Buff.Container(u)
     let param = new Param.ContainerUnit(u)
+    let abils = new Abil.Container(u)
+    abils.set(2, Abil.TestType)
 
-    let t = new hTimer()
-    t.actions.add(() => {buffs.add(u, 5, Buff.TestType, undefined)})
-    t.start(0.02, true)
+    // let a = 3
+    // let tm = new hTimer()
+    // let mt = new hMultiTimer(0.05)
+    // tm.actions.add(() => {
+    //     for (let i = 0; i < a; i++){
+    //         buffs.add(5, Buff.TestType, undefined)
+    //     }
+    // })
+    // tm.start(0.02, true)
     
     Init()
 
